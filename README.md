@@ -1,4 +1,4 @@
-# Field Notes static wiki
+# Personal Wiki static site
 
 A dependency-free, client-rendered wiki for GitHub Pages. Content lives in plain-text Markdown files under `pages/`; `app.js` fetches and renders them into the HTML shell.
 
@@ -73,5 +73,7 @@ Strudel blocks are evaluated as JavaScript. Only publish Markdown from authors y
 The parser is intentionally small rather than fully CommonMark-compliant; nested lists, tables, images, raw HTML, multiline quotes, and complex inline nesting are not supported. If those become important, replace `renderMarkdown()` with a maintained parser while keeping the same page format and extension registry.
 
 ## GitHub Pages
+
+Published site: [https://ashleyf.github.io/wiki/](https://ashleyf.github.io/wiki/)
 
 Publish this directory from a branch or GitHub Actions. Relative asset and content URLs make it work both at a user site and under a project subpath. File names must use lowercase letters, digits, and hyphens because the router rejects other characters.

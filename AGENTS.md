@@ -1,10 +1,10 @@
-# Field Notes: agent guide
+# Personal Wiki: agent guide
 
 This file is the project briefing for coding agents and maintainers. Read it before changing the site.
 
 ## Purpose and product concept
 
-Field Notes is a personal, static wiki for writing ordinary prose alongside small domain-specific languages. The source of truth is meant to remain readable plain text—currently a deliberately small Markdown dialect—while the browser turns selected fenced blocks into richer, interactive artifacts.
+Personal Wiki is a personal, static wiki for writing ordinary prose alongside small domain-specific languages. The source of truth is meant to remain readable plain text—currently a deliberately small Markdown dialect—while the browser turns selected fenced blocks into richer, interactive artifacts.
 
 The first interactive custom language is Strudel. A note can explain a musical idea and place executable Strudel code directly beside the explanation:
 

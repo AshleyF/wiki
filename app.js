@@ -886,10 +886,10 @@ async function loadPage() {
     renderAbcBlocks();
     renderDrumBlocks();
     renderCubeBlocks();
-    document.title = `${content.querySelector('h1')?.textContent || 'Wiki'} — Field Notes`;
+    document.title = `${content.querySelector('h1')?.textContent || 'Wiki'} — Personal Wiki`;
   } catch (error) {
     content.innerHTML = `<div class="error"><h1>Page not found</h1><p>There is no page named <code>${escapeHtml(page)}</code>. <a href="#/home">Return home</a>.</p></div>`;
-    document.title = 'Page not found — Field Notes';
+    document.title = 'Page not found — Personal Wiki';
   }
 
   sidebar.classList.remove('open');
