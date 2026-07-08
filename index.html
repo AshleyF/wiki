@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A small, static, Markdown-driven wiki.">
+    <title>Field Notes</title>
+    <link rel="stylesheet" href="styles.css?v=20260708-8">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#/home" aria-label="Field Notes home">
+        <span class="brand-mark">F/N</span>
+        <span>Field Notes</span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="sidebar">Menu</button>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" id="sidebar">
+        <nav aria-label="Wiki pages">
+          <p class="nav-label">Contents</p>
+          <a href="#/home">Home</a>
+          <a href="#/drawing">Drawing notes</a>
+          <a href="#/sound">Sound sketches</a>
+          <a href="#/cubing">Cubing algorithms</a>
+        </nav>
+        <p class="sidebar-note">Plain text in.<br>Static HTML out.</p>
+      </aside>
+
+      <main id="content" class="content" tabindex="-1" aria-live="polite">
+        <p class="loading">Loading…</p>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+    <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+    <script src="cube-notation.js?v=20260708-2"></script>
+    <script type="module" src="app.js?v=20260708-9"></script>
+  </body>
+</html>
