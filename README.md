@@ -45,6 +45,7 @@ CDEF GABc | cBAG FEDC |]
 ```drums
 tempo 104
 meter 4/4
+division 8
 hh: x x x x x x o x
 sn: . . x . . . x .
 bd: x . . x . x . .
@@ -60,11 +61,13 @@ R U R' U R U2 R'
 
 Add renderers to `fenceRenderers` in `app.js`. Unknown labels fall back to escaped code. The `strudel` renderer shows a Play button that toggles to Stop during playback, plus a collapsible Source section. It uses the pinned `@strudel/web@1.0.3` browser build from unpkg, so playback requires a network connection unless that dependency is vendored locally. Browsers also require the user to press Play before audio can begin.
 
-The `abc` renderer uses the pinned `abcjs@6.6.3` browser build from jsDelivr to render ABC notation as SVG sheet music and play it through abcjs's synthesized audio. During playback, the current note or chord is highlighted in the score. The raw ABC remains available in a collapsible Source section. Ordinary notation defaults to acoustic grand piano playback. ABC is plain-text music notation, so the source remains readable even without the renderer.
+The `abc` renderer uses the pinned `abcjs@6.6.3` browser build from jsDelivr to render ABC notation as SVG sheet music and play it through abcjs's synthesized audio. During playback, the current note or chord is highlighted in the score, and playback repeats until stopped. The raw ABC remains available in a collapsible Source section. Ordinary notation defaults to acoustic grand piano playback. ABC is plain-text music notation, so the source remains readable even without the renderer.
 
-The `drums` renderer uses the pinned `vexflow@4.2.2` browser build from jsDelivr to render a small human-friendly drum notation DSL. This first version renders one 4/4 bar divided into eight eighth-note slots. Simultaneous kit parts share one upward stem and beam, matching compact drum-set notation without filler rests. Its Play button schedules the parsed hits through a dependency-free Web Audio drum synth and highlights the current chord as it plays.
+The `drums` renderer uses the pinned `vexflow@4.2.2` browser build from jsDelivr to render a small human-friendly drum notation DSL. `division 8` divides a 4/4 bar into eight eighth-note slots, `division 12` divides it into twelve eighth-note-triplet slots, `division 16` divides it into sixteen sixteenth-note slots, and `division 24` divides it into twenty-four sixteenth-triplet/sextuplet slots. Simultaneous kit parts share one upward stem and beam, matching compact drum-set notation without filler rests. Its Play button schedules the parsed hits through a dependency-free Web Audio drum synth, highlights the current chord as it plays, and repeats until stopped.
 
-Drum tokens can add common engraving modifiers: `x>` for an accent, `(x)` for a parenthesized ghost note, `x/` for a double, `f` for a flam, and `d` for a drag. A `stick:` row adds aligned `R`/`L` sticking below the staff. The renderer translates these into VexFlow articulations, parentheses, tremolo slashes, grace-note groups, and annotations. Additional rows include crash (`cr`), ride (`rd`), high/mid/floor toms (`ht`, `mt`, `ft`), and pedal hi-hat (`ph`).
+Drum tokens can add common engraving modifiers: `x>` for an accent, `(x)` for a parenthesized ghost note, `x/`, `x//`, or `x///` for one to three tremolo slashes, `f` for a flam, and `d` for a drag. A `stick:` row adds aligned `R`/`L` sticking below the staff. The renderer translates these into VexFlow articulations, parentheses, tremolo slashes, grace-note groups, and annotations. Additional rows include crash (`cr`), ride (`rd`), high/mid/floor toms (`ht`, `mt`, `ft`), and pedal hi-hat (`ph`).
+
+In tuplet grids, dotted space after a single landing hit can engrave as that hit's longer duration. This keeps rudiments such as Single Stroke Seven readable as a sextuplet plus accented quarter-note landing while preserving the plain slot-based source.
 
 The `cube-cmll` renderer is a dependency-free port of Brief Cubing's case-generation approach. It applies the inverse of the written algorithm to a solved facelet model, then renders a CMLL top-layer diagram. Fence options can reveal edges or the U center and specify an AUF or cube rotation.
 

@@ -13,7 +13,7 @@ R U R' F' R U R' U' R' F R2 U' R'
 OH
 
 ```cube-cmll
-R U2' R' U' R U2 z U' z' U R' U' z U z'
+R U2 R' U' R U2 z U' z' U R' U' z U z'
 ```
 
 Diagonal Swap
@@ -30,7 +30,7 @@ F R U' R' U' R U R' F' R U R' U' R' F R F'
 
 ## H Cases
 
-## Columns
+### Columns
 
 Two ways. First one also OH.
 
@@ -42,7 +42,7 @@ R U2 R' U' R U R' U' R U' R'
 R U R' U R U' R' U R U2' R'
 ```
 
-## Rows
+### Rows
 
 F sexy3 F'. Also OH.
 
@@ -50,7 +50,7 @@ F sexy3 F'. Also OH.
 F R U R' U' R U R' U' R U R' U' F'
 ```
 
-## Column
+### Column
 
 ```cube-cmll
 R U2' R2' F R F' U2 R' F R F'
@@ -62,7 +62,7 @@ OH
 F R U' R' U R U2 R' U' R U R' U' F'
 ```
 
-## Row
+### Row
 
 ```cube-cmll
 r U' r2' D' r U' r' D r2 U r'
@@ -72,4 +72,22 @@ OH
 
 ```cube-cmll
 R' U' R U' R' U' z U z' U' R U z U' z'
+```
+
+## Pi Cases
+
+### Right Bar
+
+F sexy2 F'. Also OH.
+
+```cube-cmll
+F R U R' U' R U R' U' F'
+```
+
+### Back Slash
+
+Also OH.
+
+```cube-cmll
+F R' F' R U2 R U' R' U R U2' R'
 ```

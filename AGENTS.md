@@ -170,6 +170,7 @@ The `drums` DSL is intentionally narrow in its first version:
 
 - `tempo N`
 - `meter 4/4`
+- `division 8`, `division 12`, `division 16`, or `division 24`; `8` means eighth-note slots, `12` means eighth-note-triplet slots, `16` means sixteenth-note slots, and `24` means sixteenth-triplet/sextuplet slots
 - `hh: ...` for hi-hat
 - `sn: ...` for snare
 - `bd: ...` for bass drum/kick
@@ -178,17 +179,19 @@ The `drums` DSL is intentionally narrow in its first version:
 - `ph: ...` for pedal hi-hat
 - `wb: ...` for woodblock
 
-Each row currently takes exactly eight eighth-note slots. `x` means hit, `o` means open hi-hat in source semantics, and `.` means rest. Rendering maps hi-hat and woodblock to X noteheads with upward stems, and kick/snare to normal noteheads with downward stems. This is visual-only for now; playback should be added later from the parsed event grid rather than by reverse-engineering rendered SVG.
+Each row currently takes exactly `division` slots: eight slots for eighth notes, twelve slots for eighth-note triplets, sixteen slots for sixteenth notes, or twenty-four slots for sixteenth-note triplets/sextuplets. `x` means hit, `o` means open hi-hat in source semantics, and `.` means rest. Rendering maps hi-hat and woodblock to X noteheads with upward stems, and kick/snare to normal noteheads with downward stems. Playback is scheduled from the parsed event grid rather than by reverse-engineering rendered SVG.
 
 Keep `drums` separate from ABC. ABC remains useful for melodic staff notation and abcjs playback, but abcjs does not provide idiomatic drum-kit engraving such as X-shaped hi-hat noteheads and compact kit layout. The `drums` fence exists specifically to preserve a human-friendly source format while targeting a renderer with lower-level engraving control.
 
-The renderer treats each eighth-note slot as one rhythmic event. Every instrument hit in that slot becomes a notehead in a single VexFlow chord with an upward stem; the hi-hat eighth notes provide the shared beam. This deliberately avoids separate percussion voices and the rests they introduce, producing the compact drum-set convention used by teaching tools such as Drumeo.
+The renderer treats each slot as one rhythmic event. Every instrument hit in that slot becomes a notehead in a single VexFlow chord with an upward stem; continuous hits provide the shared beam. This deliberately avoids separate percussion voices and the rests they introduce, producing the compact drum-set convention used by teaching tools such as Drumeo.
 
-Tokens may carry idiomatic modifiers: `x>` adds a VexFlow `Articulation('a>')`, `(x)` wraps that row's notehead with `Parenthesis` modifiers, `x/` adds one `Tremolo` slash and schedules a second stroke, `f` attaches one slashed `GraceNote` as a flam, and `d` attaches two beamed grace notes as a drag. A separate `stick:` row accepts `R`, `L`, `RL`, `LR`, or `.` in each slot and adds a bottom-positioned VexFlow `Annotation`. These are DSL conventions, not VexFlow's own text syntax; VexFlow is the rendering target.
+For tuplet grids, the renderer may collapse a beat group that contains one hit followed only by `.` slots into a longer landing note. For example, in `division 24`, `x x x x x x x> . . . . .` engraves as a sextuplet followed by an accented quarter-note landing instead of a short sextuplet note followed by hidden spacer rests. Playback still follows the original source slots.
 
-VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule a small dependency-free Web Audio kit: a pitched oscillator for kick and woodblock, filtered noise plus a short tone for snare, and filtered noise for closed/open hi-hat. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each eighth-note slot, and stops automatically after the one-bar pattern. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
+Tokens may carry idiomatic modifiers: `x>` adds a VexFlow `Articulation('a>')`, `(x)` wraps that row's notehead with `Parenthesis` modifiers, `x/`, `x//`, or `x///` add one to three VexFlow `Tremolo` slashes, `f` attaches one slashed `GraceNote` as a flam, and `d` attaches two beamed grace notes as a drag. Playback treats `x/` as a double and `x//`/`x///` as short multiple-bounce clusters. A separate `stick:` row accepts `R`, `L`, `RL`, `LR`, or `.` in each slot and adds a bottom-positioned VexFlow `Annotation`. These are DSL conventions, not VexFlow's own text syntax; VexFlow is the rendering target.
 
-Playback highlighting is bound through each of the eight main `StaveNote` objects' `getSVGElement()` result. Do not reconstruct this mapping by querying every `.vf-stavenote`: grace notes used by flams and drags also have that class and will shift the timeline-to-element correspondence.
+VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule a small dependency-free Web Audio kit: a pitched oscillator for kick and woodblock, filtered noise plus a short tone for snare, and filtered noise for closed/open hi-hat. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each slot, and loops until the user presses Stop or navigates away. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
+
+Playback highlighting is bound through each main `StaveNote` object's `getSVGElement()` result. Do not reconstruct this mapping by querying every `.vf-stavenote`: grace notes used by flams and drags also have that class and will shift the timeline-to-element correspondence.
 
 ## Cube notation integration
 
@@ -222,7 +225,8 @@ The CDN dependency means first playback requires network access. Vendoring the p
 
 `styles.css` owns the complete visual system. Important characteristics:
 
-- CSS custom properties define the paper, ink, accent, and code colors.
+- CSS custom properties define the paper, ink, accent, code, and notation panel colors.
+- Theme selection uses `data-theme="dark|light"` on `<html>`, defaults to dark, and persists the user's choice in `localStorage` under `personal-wiki-theme`.
 - Desktop layout is a three-column grid with the article in the center and a sticky sidebar.
 - Below 720 px, the layout becomes single-column and navigation is toggled by the Menu button.
 - Article typography and extension components are scoped under `.content` or language-specific classes.

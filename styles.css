@@ -1,4 +1,30 @@
 :root {
+  color-scheme: dark;
+  --paper: #171817;
+  --ink: #ece6d8;
+  --muted: #aaa294;
+  --rule: #3a3933;
+  --accent: #f08a6b;
+  --panel: #24241f;
+  --code: #0f100f;
+  --code-ink: #f0eadf;
+  --notation-panel: #0a0a0a;
+  --notation-paper: #000;
+  --notation-ink: #f6f0e6;
+  --notation-muted: #b8b0a2;
+  --notation-button-border: #4c4841;
+  --notation-open-fill: #000;
+  --cube-panel: #000;
+  --cube-ink: #f6f0e6;
+  --cube-rule: #f6f0e6;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
   --paper: #f5f1e8;
   --ink: #24251f;
   --muted: #707064;
@@ -7,10 +33,15 @@
   --panel: #e9e3d6;
   --code: #20231f;
   --code-ink: #e8e8dc;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--ink);
-  background: var(--paper);
-  font-synthesis: none;
+  --notation-panel: #fffaf0;
+  --notation-paper: #fffdf8;
+  --notation-ink: #24251f;
+  --notation-muted: #707064;
+  --notation-button-border: #d4cfc1;
+  --notation-open-fill: #fffdf8;
+  --cube-panel: #fffdf8;
+  --cube-ink: #24251f;
+  --cube-rule: #d4cfc1;
 }
 
 * { box-sizing: border-box; }
@@ -33,7 +64,13 @@ body { margin: 0; min-height: 100vh; }
 
 .brand { display: flex; gap: .8rem; align-items: center; color: inherit; text-decoration: none; font-weight: 700; }
 .brand-mark { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; color: var(--paper); background: var(--ink); font: 700 .75rem/1 monospace; }
+.header-actions { display: flex; gap: .7rem; align-items: center; }
 .menu-button { display: none; border: 1px solid var(--ink); padding: .45rem .75rem; color: inherit; background: transparent; font: inherit; }
+.theme-toggle { display: inline-grid; place-items: center; width: 2.2rem; height: 2.2rem; border: 0; padding: 0; color: inherit; background: transparent; font: 700 1.25rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; }
+.theme-toggle:hover,
+.theme-toggle:focus-visible { color: var(--accent); }
+.menu-button:hover,
+.menu-button:focus-visible { color: var(--paper); background: var(--ink); }
 
 .layout { display: grid; grid-template-columns: minmax(190px, 1fr) minmax(0, 760px) minmax(80px, 1fr); gap: 4vw; padding: 3rem 5vw 7rem; }
 .sidebar { grid-column: 1; position: sticky; top: 104px; align-self: start; }
@@ -54,60 +91,100 @@ body { margin: 0; min-height: 100vh; }
 .code-block { position: relative; overflow: auto; margin: 1.5rem 0; padding: 2.4rem 1.2rem 1.2rem; color: var(--code-ink); background: var(--code); }
 .code-block::before { content: attr(data-language); position: absolute; top: .7rem; left: 1.2rem; color: #aaa; font: .65rem/1 monospace; letter-spacing: .12em; text-transform: uppercase; }
 .code-block code { padding: 0; background: none; white-space: pre; }
-.abc-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: #fffaf0; }
-.abc-render { overflow-x: auto; padding: 1rem; background: #fffdf8; }
+.abc-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
+.abc-render { overflow-x: auto; padding: 1rem; background: var(--notation-paper); }
 .abc-render svg { display: block; max-width: 100%; height: auto; }
 .abc-render .abc-current-note,
 .abc-render .abc-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }
 .abc-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }
-.abc-controls { display: flex; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: #fffdf8; }
-.abc-controls button { border: 1px solid var(--rule); padding: .5rem .85rem; color: var(--ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
-.abc-controls button:hover { border-color: var(--ink); color: var(--paper); background: var(--ink); }
-.abc-controls button[data-state="playing"] { border-color: var(--ink); color: var(--paper); background: var(--ink); }
+.abc-controls { display: flex; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
+.abc-controls button { border: 1px solid var(--notation-button-border); padding: .5rem .85rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
+.abc-controls button:hover { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
+.abc-controls button[data-state="playing"] { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
 .abc-controls button[data-state="error"] { border-color: var(--accent); color: var(--accent); }
 .abc-toggle { min-width: 7.5rem; }
 .abc-source { border-top: 1px solid var(--rule); }
-.abc-source summary { padding: .65rem .9rem; color: var(--muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.abc-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .abc-source pre { overflow-x: auto; margin: 0; padding: 1rem; border-top: 1px solid var(--rule); background: var(--panel); }
 .abc-source code { padding: 0; background: transparent; white-space: pre; }
-.drum-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: #fffaf0; }
-.drum-render { overflow-x: auto; padding: 1rem; background: #fffdf8; }
+.drum-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
+.drum-render { overflow-x: auto; padding: 1rem; background: var(--notation-paper); }
 .drum-render svg { display: block; max-width: 100%; height: auto; }
-.drum-render .drum-open-hat { fill: #fffdf8; stroke: var(--ink); stroke-width: 1.2; }
+.drum-render .drum-open-hat { fill: var(--notation-open-fill); stroke: var(--notation-ink); stroke-width: 1.2; }
 .drum-render .drum-current-note,
 .drum-render .drum-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }
-.drum-render .drum-current-note .drum-open-hat { fill: #fffdf8 !important; }
-.drum-controls { display: flex; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: #fffdf8; }
-.drum-controls button { border: 1px solid var(--rule); padding: .5rem .85rem; color: var(--ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
-.drum-controls button:hover { border-color: var(--ink); color: var(--paper); background: var(--ink); }
-.drum-controls button[data-state="playing"] { border-color: var(--ink); color: var(--paper); background: var(--ink); }
+.drum-render svg .drum-current-note.vf-stem path { fill: none !important; stroke: var(--accent) !important; }
+.drum-render .drum-current-note .vf-annotation,
+.drum-render .drum-current-note .vf-annotation * { fill: var(--notation-ink) !important; stroke: none !important; }
+.drum-render .drum-current-note .drum-open-hat { fill: var(--notation-open-fill) !important; stroke: var(--accent) !important; }
+.drum-render svg .vf-tuplet rect,
+.drum-render svg .vf-tuplet path { fill: var(--notation-ink); stroke: none; }
+.drum-controls { display: flex; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
+.drum-controls button { border: 1px solid var(--notation-button-border); padding: .5rem .85rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
+.drum-controls button:hover { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
+.drum-controls button[data-state="playing"] { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
 .drum-controls button[data-state="error"] { border-color: var(--accent); color: var(--accent); }
 .drum-toggle { min-width: 7.5rem; }
-.drum-legend { margin: 0; padding: .8rem 1rem; border-top: 1px solid var(--rule); color: var(--muted); background: #fffdf8; font: .86rem/1.5 ui-monospace, monospace; }
 .drum-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }
 .drum-source { border-top: 1px solid var(--rule); }
-.drum-source summary { padding: .65rem .9rem; color: var(--muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.drum-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .drum-source pre { overflow-x: auto; margin: 0; padding: 1rem; border-top: 1px solid var(--rule); background: var(--panel); }
 .drum-source code { padding: 0; background: transparent; white-space: pre; }
-.cube-block { display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: center; gap: 1rem; margin: 1.8rem 0; padding: 1rem; border: 1px solid var(--rule); background: #fffdf8; }
+:root[data-theme="dark"] .abc-render svg * { stroke: var(--notation-ink) !important; }
+:root[data-theme="dark"] .abc-render svg [fill]:not([fill="none"]) { fill: var(--notation-ink) !important; }
+:root[data-theme="dark"] .drum-render svg .vf-stave path,
+:root[data-theme="dark"] .drum-render svg .vf-stem path,
+:root[data-theme="dark"] .drum-render svg .vf-stavebarline path,
+:root[data-theme="dark"] .drum-render svg .vf-stavebarline rect,
+:root[data-theme="dark"] .drum-render svg path[fill="none"][stroke]:not([stroke="none"]) { stroke: var(--notation-ink) !important; }
+:root[data-theme="dark"] .drum-render svg .vf-stavenote path:not([fill="none"]):not([stroke]),
+:root[data-theme="dark"] .drum-render svg .vf-stavenote > path[stroke="none"] { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .drum-render svg .vf-clef path,
+:root[data-theme="dark"] .drum-render svg .vf-timesignature path,
+:root[data-theme="dark"] .drum-render svg .vf-notehead path,
+:root[data-theme="dark"] .drum-render svg .vf-modifiers path,
+:root[data-theme="dark"] .drum-render svg .vf-annotation path,
+:root[data-theme="dark"] .drum-render svg .vf-flag path,
+:root[data-theme="dark"] .drum-render svg .vf-tremolo path,
+:root[data-theme="dark"] .drum-render svg text { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .drum-render svg .vf-beam path { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .drum-render svg .vf-tuplet rect,
+:root[data-theme="dark"] .drum-render svg .vf-tuplet path { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .abc-render .abc-current-note,
+:root[data-theme="dark"] .abc-render .abc-current-note *,
+:root[data-theme="dark"] .drum-render .drum-current-note,
+:root[data-theme="dark"] .drum-render .drum-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .drum-render svg .drum-current-note.vf-stem path { fill: none !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .drum-render svg .drum-current-note .vf-notehead path,
+:root[data-theme="dark"] .drum-render svg .drum-current-note .vf-stem path,
+:root[data-theme="dark"] .drum-render svg .drum-current-note .vf-flag path,
+:root[data-theme="dark"] .drum-render svg .drum-current-note .vf-modifiers path,
+:root[data-theme="dark"] .drum-render svg .drum-current-note .vf-tremolo path,
+:root[data-theme="dark"] .drum-render svg .drum-current-note path:not([fill="none"]):not([stroke]),
+:root[data-theme="dark"] .drum-render svg .drum-current-note > path[stroke="none"] { fill: var(--accent) !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .drum-render .drum-current-note .vf-annotation,
+:root[data-theme="dark"] .drum-render .drum-current-note .vf-annotation * { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .drum-render .drum-open-hat { fill: var(--notation-open-fill) !important; stroke: var(--notation-ink) !important; }
+:root[data-theme="dark"] .drum-render .drum-current-note .drum-open-hat { fill: var(--notation-open-fill) !important; stroke: var(--accent) !important; }
+.cube-block { display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: center; gap: 1rem; margin: 1.8rem 0; padding: 1rem; border: 1px solid var(--cube-rule); background: var(--cube-panel); color: var(--cube-ink); }
 .cube-render { min-width: 0; }
 .cube-diagram { display: block; width: 100%; height: auto; }
 .cube-algorithm { margin: 0; font: 700 1rem/1.65 ui-monospace, monospace; }
-.cube-algorithm code { white-space: normal; }
+.cube-algorithm code { color: inherit; background: transparent; white-space: normal; }
 .cube-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }
 @media (max-width: 650px) {
   .cube-block { grid-template-columns: 6rem minmax(0, 1fr); }
   .cube-render { width: 6rem; }
 }
-.strudel-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: #fffaf0; }
-.strudel-controls { display: flex; gap: .6rem; padding: 1rem; background: #fffdf8; }
-.strudel-controls button { border: 1px solid var(--rule); padding: .5rem .85rem; color: var(--ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
-.strudel-controls button:hover { border-color: var(--ink); color: var(--paper); background: var(--ink); }
-.strudel-controls button[data-state="playing"] { border-color: var(--ink); color: var(--paper); background: var(--ink); }
+.strudel-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
+.strudel-controls { display: flex; gap: .6rem; padding: 1rem; background: var(--notation-paper); }
+.strudel-controls button { border: 1px solid var(--notation-button-border); padding: .5rem .85rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
+.strudel-controls button:hover { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
+.strudel-controls button[data-state="playing"] { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
 .strudel-controls button[data-state="error"] { border-color: var(--accent); color: var(--accent); }
 .strudel-toggle { min-width: 7.5rem; }
 .strudel-source { border-top: 1px solid var(--rule); }
-.strudel-source summary { padding: .65rem .9rem; color: var(--muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.strudel-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .strudel-source pre { overflow-x: auto; margin: 0; padding: 1rem; border-top: 1px solid var(--rule); background: var(--panel); }
 .strudel-source code { padding: 0; background: transparent; white-space: pre; }
 .loading, .error { color: var(--muted); }

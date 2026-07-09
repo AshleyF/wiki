@@ -1,5 +1,9 @@
 # Sound sketches
 
+My [drum rudiments page](#/rudiments).
+
+## Strudel
+
 Strudel patterns can live next to the thinking that produced them. Press **Play** below to run this pattern in the browser; the button changes to **Stop** while it is playing. See the [Strudel documentation](https://strudel.cc/learn/getting-started/) for the live-coding language behind this block.
 
 ```strudel

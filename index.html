@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A small, static, Markdown-driven wiki.">
     <title>Personal Wiki</title>
-    <link rel="stylesheet" href="styles.css?v=20260708-9">
+    <script>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem('personal-wiki-theme');
+        } catch (error) {
+          theme = null;
+        }
+        document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260708-27">
   </head>
   <body>
     <header class="site-header">
@@ -13,7 +24,10 @@
         <span class="brand-mark">P/W</span>
         <span>Personal Wiki</span>
       </a>
-      <button class="menu-button" type="button" aria-expanded="false" aria-controls="sidebar">Menu</button>
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+        <button class="menu-button" type="button" aria-expanded="false" aria-controls="sidebar">Menu</button>
+      </div>
     </header>
 
     <div class="layout">
@@ -35,7 +49,7 @@
     <script src="https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
     <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
-    <script src="cube-notation.js?v=20260708-2"></script>
-    <script type="module" src="app.js?v=20260708-9"></script>
+    <script src="cube-notation.js?v=20260708-4"></script>
+    <script type="module" src="app.js?v=20260709-5"></script>
   </body>
 </html>
