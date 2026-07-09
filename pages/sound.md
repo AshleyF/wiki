@@ -61,4 +61,4 @@ The `strudel` label is a clean boundary between prose and a sub-language. Its re
 - Unknown languages still appear as safe, escaped code.
 - The source stays independent of the visual design.
 
-Return to [drawing](#/drawing) or the [home page](#/home).
+Return to the [home page](#/home).

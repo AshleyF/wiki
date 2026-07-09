@@ -6,7 +6,6 @@ This is a small wiki whose source material is ordinary text. The browser fetches
 
 ## Start exploring
 
-- Visit the [drawing notes](#/drawing) for marks, gestures, and a small embedded language.
 - Open the [sound sketches](#/sound) to see a fenced Strudel block.
 - Check out the [cubing algs](#/cubing) to see alg rendering.
 - Read this page's source at `pages/home.md`.

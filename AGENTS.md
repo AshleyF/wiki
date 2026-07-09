@@ -69,7 +69,6 @@ Third-party browser dependencies are acceptable when they unlock an interactive 
 ├── cube-notation.js Rubik's Cube facelet model and CMLL SVG renderer
 ├── pages/           Plain-text wiki content
 │   ├── home.md
-│   ├── drawing.md
 │   ├── sound.md
 │   └── cubing.md
 ├── README.md        Short operator and author documentation
@@ -83,7 +82,7 @@ There is intentionally no generated output directory. GitHub Pages serves these 
 The runtime has four layers:
 
 1. `index.html` provides a persistent header, navigation sidebar, and empty `<main id="content">` element.
-2. The hash router in `app.js` converts a URL such as `#/drawing` into `pages/drawing.md`.
+2. The hash router in `app.js` converts a URL such as `#/sound` into `pages/sound.md`.
 3. `fetch()` loads that file as plain text and `renderMarkdown()` converts the supported syntax to HTML.
 4. Fenced-language renderers and delegated event handlers add behavior to special blocks such as Strudel.
 
@@ -103,7 +102,7 @@ inline() handles supported inline syntax
 HTML replaces #content; shell remains mounted
 ```
 
-All content navigation uses hash URLs such as `#/home`. This is required because GitHub Pages has no rewrite rule that maps `/drawing` back to `index.html`. A hash changes client-side state without requesting a different HTML file from the host.
+All content navigation uses hash URLs such as `#/home`. This is required because GitHub Pages has no rewrite rule that maps `/sound` back to `index.html`. A hash changes client-side state without requesting a different HTML file from the host.
 
 Page slugs are restricted by `currentPage()` to lowercase ASCII letters, digits, and hyphens. This prevents arbitrary paths and defines the file-naming convention. An invalid or missing hash resolves to `home`. A valid slug whose file does not exist renders the in-shell not-found state.
 
@@ -262,7 +261,7 @@ There is no automated test suite yet. For every behavioral change:
 1. Run `node --check app.js`.
 2. Serve the repository over HTTP rather than using `file://`.
 3. Load `#/home` and confirm Markdown rendering.
-4. Navigate home → drawing → sound → home and verify the URL, active sidebar item, title, scroll reset, and content replacement.
+4. Navigate home → sound → cubing → home and verify the URL, active sidebar item, title, scroll reset, and content replacement.
 5. Visit a missing slug and verify the not-found state.
 6. At a narrow viewport, verify the Menu control and article layout.
 7. For Strudel changes, verify the Play/Stop toggle, playback replacement, navigation cleanup, and retry state when the runtime or pattern fails.

@@ -1,6 +1,6 @@
 # CMLL
 
-Mostly from [Kian Mansour's site](https://sites.google.com/view/kianroux/cmll).
+These are the CMLL algs that I use. Mostly from [Kian Mansour's site](https://sites.google.com/view/kianroux/cmll).
 
 ## O Cases
 
