@@ -10,7 +10,7 @@ Adjacent Swap
 R U R' F' R U R' U' R' F R2 U' R'
 ```
 
-OH
+OH:
 
 ```cube-cmll
 R U2 R' U' R U2 z U' z' U R' U' z U z'
@@ -22,7 +22,7 @@ Diagonal Swap
 r2 D r' U r D' R2' U' F' U' F
 ```
 
-OH
+OH:
 
 ```cube-cmll
 F R U' R' U' R U R' F' R U R' U' R' F R F'
@@ -32,7 +32,7 @@ F R U' R' U' R U R' F' R U R' U' R' F R F'
 
 ### Columns
 
-Two ways. First one also OH.
+Two ways. First one also OH:
 
 ```cube-cmll
 R U2 R' U' R U R' U' R U' R'
@@ -44,7 +44,7 @@ R U R' U R U' R' U R U2' R'
 
 ### Rows
 
-F sexy3 F'. Also OH.
+F sexy3 F'. Also OH:
 
 ```cube-cmll
 F R U R' U' R U R' U' R U R' U' F'
@@ -56,7 +56,7 @@ F R U R' U' R U R' U' R U R' U' F'
 R U2' R2' F R F' U2 R' F R F'
 ```
 
-OH
+OH:
 
 ```cube-cmll
 F R U' R' U R U2 R' U' R U R' U' F'
@@ -68,7 +68,7 @@ F R U' R' U R U2 R' U' R U R' U' F'
 r U' r2' D' r U' r' D r2 U r'
 ```
 
-OH
+OH:
 
 ```cube-cmll
 R' U' R U' R' U' z U z' U' R U z U' z'
@@ -78,7 +78,7 @@ R' U' R U' R' U' z U z' U' R U z U' z'
 
 ### Right Bar
 
-F sexy2 F'. Also OH.
+F sexy2 F'. Also OH:
 
 ```cube-cmll
 F R U R' U' R U R' U' F'
@@ -86,8 +86,20 @@ F R U R' U' R U R' U' F'
 
 ### Back Slash
 
-Also OH.
+Also OH:
 
 ```cube-cmll
 F R' F' R U2 R U' R' U R U2' R'
+```
+
+### X Checkerboard
+
+```cube-cmll
+R' F R U F U' R U R' U' F'
+```
+
+OH:
+
+```cube-cmll
+F R U' R' U' R U R' U R U' R' F'
 ```

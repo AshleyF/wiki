@@ -1114,7 +1114,7 @@ menuButton.addEventListener('click', () => {
   const open = sidebar.classList.toggle('open');
   menuButton.setAttribute('aria-expanded', String(open));
   if (open) {
-    document.querySelector('.site-header')?.scrollIntoView({ block: 'start' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
 setTheme(currentTheme());
