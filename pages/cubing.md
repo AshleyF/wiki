@@ -2,6 +2,8 @@
 
 Cube fences keep standard algorithm notation readable while adding the case state needed for recognition. A `cube-cmll` fence starts with a solved cube, applies the inverse of the algorithm, and renders the resulting CMLL case.
 
+See the [CMLL page](#/cmll).
+
 ## CMLL
 
 ```cube-cmll
