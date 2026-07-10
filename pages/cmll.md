@@ -35,7 +35,7 @@ F R U' R' U' R U R' F' R U R' U' R' F R F'
 Two ways. First one also OH:
 
 ```cube-cmll
-R U2 R' U' R U R' U' R U' R'
+R U2' R' U' R U R' U' R U' R'
 ```
 
 ```cube-cmll
@@ -76,7 +76,7 @@ R' U' R U' R' U' z U z' U' R U z U' z'
 
 ## Pi Cases
 
-### Right Bar
+### Top Bar
 
 F sexy2 F'. Also OH:
 
@@ -102,4 +102,36 @@ OH:
 
 ```cube-cmll
 F R U' R' U' R U R' U R U' R' F'
+```
+
+### Forward Slash
+
+```cube-cmll
+R U2 R' U' R U R' U2' R' F R F'
+```
+
+OH:
+
+```cube-cmll
+R U2 R' U' R U R' U2 R' F R F
+```
+
+### Columns
+
+```cube-cmll
+r U' r2' D' r U r' D r2 U r'
+```
+
+OH:
+
+```cube-cmll
+L' U R U' L U' R' U' R U' R'
+```
+
+### Bottom Bar
+
+Also OH:
+
+```cube-cmll
+R' U' R' F R F' R U' R' U2 R
 ```
