@@ -6,7 +6,7 @@ This is a small wiki whose source material is ordinary text. The browser fetches
 
 ## Start exploring
 
-- Open the [sound sketches](#/sound) to see a fenced Strudel block.
+- Open the [music](#/music) to see a fenced Strudel block.
 - Check out the [cubing algs](#/cubing) to see alg rendering.
 - Read this page's source at `pages/home.md`.
 

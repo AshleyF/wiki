@@ -37,7 +37,7 @@ wb: . . . . . . x .
 ```
 ````
 
-Rubik's Cube notes use a standard algorithm body with a purpose-specific fence label:
+Cubing notes use a standard algorithm body with a purpose-specific fence label:
 
 ````md
 ```cube-cmll edges=hide center=hide
@@ -66,7 +66,7 @@ Third-party browser dependencies are acceptable when they unlock an interactive 
 ├── index.html       Persistent page shell and sidebar navigation
 ├── styles.css       All shell, article, responsive, and extension styling
 ├── app.js           Router, Markdown renderer, extension renderers, interactions
-├── cube-notation.js Rubik's Cube facelet model and CMLL SVG renderer
+├── cube-notation.js Cubing facelet model and CMLL SVG renderer
 ├── pages/           Plain-text wiki content
 │   ├── home.md
 │   ├── sound.md
@@ -82,7 +82,7 @@ There is intentionally no generated output directory. GitHub Pages serves these 
 The runtime has four layers:
 
 1. `index.html` provides a persistent header, navigation sidebar, and empty `<main id="content">` element.
-2. The hash router in `app.js` converts a URL such as `#/sound` into `pages/sound.md`.
+2. The hash router in `app.js` converts a URL such as `#/music` into `pages/music/index.md`, and nested URLs such as `#/music/rudiments` into matching nested Markdown files.
 3. `fetch()` loads that file as plain text and `renderMarkdown()` converts the supported syntax to HTML.
 4. Fenced-language renderers and delegated event handlers add behavior to special blocks such as Strudel.
 
@@ -93,7 +93,7 @@ initial load or hashchange
         ↓
 currentPage() validates #/<slug>
         ↓
-loadPage() fetches pages/<slug>.md
+loadPage() fetches the matching Markdown file under pages/
         ↓
 renderMarkdown() walks source line by line
         ↓
@@ -104,7 +104,7 @@ HTML replaces #content; shell remains mounted
 
 All content navigation uses hash URLs such as `#/home`. This is required because GitHub Pages has no rewrite rule that maps `/sound` back to `index.html`. A hash changes client-side state without requesting a different HTML file from the host.
 
-Page slugs are restricted by `currentPage()` to lowercase ASCII letters, digits, and hyphens. This prevents arbitrary paths and defines the file-naming convention. An invalid or missing hash resolves to `home`. A valid slug whose file does not exist renders the in-shell not-found state.
+Page paths are restricted by `currentPage()` to lowercase ASCII letters, digits, hyphens, and single `/` separators. This prevents arbitrary paths and defines the file-naming convention. An invalid or missing hash resolves to `home`. A valid path whose file does not exist renders the in-shell not-found state.
 
 ## Markdown dialect
 
@@ -181,15 +181,30 @@ The `drums` DSL is intentionally narrow in its first version:
 
 Each row currently takes exactly `division` slots: eight slots for eighth notes, twelve slots for eighth-note triplets, sixteen slots for sixteenth notes, or twenty-four slots for sixteenth-note triplets/sextuplets. `x` means hit, `o` means open hi-hat in source semantics, and `.` means rest. Rendering maps hi-hat and woodblock to X noteheads with upward stems, and kick/snare to normal noteheads with downward stems. Playback is scheduled from the parsed event grid rather than by reverse-engineering rendered SVG.
 
+When adding rudiments, keep the audible stroke spacing consistent with the existing examples unless the note is deliberately about a different speed. The playback engine computes one source slot as `240 / (tempo * division)` seconds, so equivalent plain-stroke grids need different tempos:
+
+- `division 16` at `tempo 100` is the baseline plain sixteenth-note spacing.
+- `division 8` needs `tempo 200` to sound equally fast with plain `x` strokes.
+- `division 12` needs `tempo 133.333` to sound equally fast with plain triplet-grid strokes.
+- `division 24` needs `tempo 66.667` when the written figure uses twice as many tuplet slots for the same audible stroke spacing.
+
+Do not use diddle shorthand (`x/`) just to save horizontal space when the rudiment is meant to show evenly spaced written strokes. `x/` schedules two hits inside one source slot, so its effective inner stroke spacing is half the slot duration. For diddle-roll examples that use `x/`, slow the slot tempo accordingly; for explicit triplet or paradiddle examples, prefer plain `x` tokens and set `tempo` from the grid division.
+
+Flams and drags add grace-note playback around the written slot. Their grace timing should stay proportional to the current `stepDuration`; do not use a fixed millisecond offset that makes faster rudiments feel rushed or slower rudiments feel too open. When a flam or drag token is accented, the accent applies to the main written stroke, not to the grace note; keep grace-note playback light.
+
 Keep `drums` separate from ABC. ABC remains useful for melodic staff notation and abcjs playback, but abcjs does not provide idiomatic drum-kit engraving such as X-shaped hi-hat noteheads and compact kit layout. The `drums` fence exists specifically to preserve a human-friendly source format while targeting a renderer with lower-level engraving control.
 
 The renderer treats each slot as one rhythmic event. Every instrument hit in that slot becomes a notehead in a single VexFlow chord with an upward stem; continuous hits provide the shared beam. This deliberately avoids separate percussion voices and the rests they introduce, producing the compact drum-set convention used by teaching tools such as Drumeo.
+
+Future rudiment-specific rendering may deserve its own fence, likely `rudiment`, instead of continuing to force all rudiments through VexFlow drum-staff notation. A useful target is the common single-line rudimental engraving style: one horizontal line, right-hand noteheads above the line, left-hand noteheads below the line, rhythm shown by stems/beams, and accents/flams/roll slashes drawn directly. This would preserve the current plain-text `drums`-style source while giving rudiments cleaner notation, simpler dark-mode styling, and more reliable playback highlighting. Keep VexFlow for full drum-staff examples unless this custom renderer is implemented deliberately.
 
 For tuplet grids, the renderer may collapse a beat group that contains one hit followed only by `.` slots into a longer landing note. For example, in `division 24`, `x x x x x x x> . . . . .` engraves as a sextuplet followed by an accented quarter-note landing instead of a short sextuplet note followed by hidden spacer rests. Playback still follows the original source slots.
 
 Tokens may carry idiomatic modifiers: `x>` adds a VexFlow `Articulation('a>')`, `(x)` wraps that row's notehead with `Parenthesis` modifiers, `x/`, `x//`, or `x///` add one to three VexFlow `Tremolo` slashes, `f` attaches one slashed `GraceNote` as a flam, and `d` attaches two beamed grace notes as a drag. Playback treats `x/` as a double and `x//`/`x///` as short multiple-bounce clusters. A separate `stick:` row accepts `R`, `L`, `RL`, `LR`, or `.` in each slot and adds a bottom-positioned VexFlow `Annotation`. These are DSL conventions, not VexFlow's own text syntax; VexFlow is the rendering target.
 
 VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule a small dependency-free Web Audio kit: a pitched oscillator for kick and woodblock, filtered noise plus a short tone for snare, and filtered noise for closed/open hi-hat. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each slot, and loops until the user presses Stop or navigates away. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
+
+Drum notation renders begin/end repeat barlines by default, matching playback behavior: every drum sample loops until stopped. Do not remove repeat signs from rudiment examples unless playback behavior is also changed or the source gains an explicit repeat directive.
 
 Playback highlighting is bound through each main `StaveNote` object's `getSVGElement()` result. Do not reconstruct this mapping by querying every `.vf-stavenote`: grace notes used by flams and drags also have that class and will shift the timeline-to-element correspondence.
 
@@ -236,7 +251,7 @@ Maintain keyboard access, visible focus behavior, semantic controls, and status 
 
 ## Content authoring conventions
 
-- Place pages in `pages/<slug>.md`.
+- Place top-level pages in `pages/<slug>.md` and section pages in `pages/<section>/<slug>.md`; section landing pages use `pages/<section>/index.md`.
 - Use lowercase kebab-case slugs only.
 - Link between wiki pages with `[label](#/slug)`.
 - Add important pages to the static sidebar in `index.html`.
@@ -265,7 +280,7 @@ There is no automated test suite yet. For every behavioral change:
 1. Run `node --check app.js`.
 2. Serve the repository over HTTP rather than using `file://`.
 3. Load `#/home` and confirm Markdown rendering.
-4. Navigate home → sound → cubing → home and verify the URL, active sidebar item, title, scroll reset, and content replacement.
+4. Navigate home → music → cubing → home and verify the URL, active sidebar item, title, scroll reset, and content replacement.
 5. Visit a missing slug and verify the not-found state.
 6. At a narrow viewport, verify the Menu control and article layout.
 7. For Strudel changes, verify the Play/Stop toggle, playback replacement, navigation cleanup, and retry state when the runtime or pattern fails.

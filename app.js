@@ -2,6 +2,7 @@ const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
 const menuButton = document.querySelector('.menu-button');
 const themeToggle = document.querySelector('.theme-toggle');
+const currentPathLabel = document.querySelector('#current-path');
 let strudelReady;
 let abcBlockId = 0;
 let drumBlockId = 0;
@@ -85,10 +86,17 @@ const fenceRenderers = {
   drums(source) {
     const encodedSource = encodeURIComponent(source);
     const targetId = `drum-notation-${drumBlockId += 1}`;
+    const tempo = source.match(/^tempo\s+([0-9.]+)/im)?.[1] || '120';
     return `<section class="drum-block" data-drum-source="${encodedSource}" data-playing="false">
       <div class="drum-render" id="${targetId}" aria-label="Rendered drum notation"></div>
       <div class="drum-controls">
         <button class="drum-toggle" type="button" aria-label="Play this drum notation">▶ Play</button>
+        <label class="drum-tempo-control">
+          <span>Tempo</span>
+          <button class="drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
+          <input class="drum-tempo" type="number" min="20" max="400" step="1" value="${escapeHtml(tempo)}" aria-label="Drum playback tempo">
+          <button class="drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
+        </label>
       </div>
       <details class="drum-source">
         <summary>Source</summary>
@@ -126,6 +134,9 @@ function renderMarkdown(markdown) {
   const output = [];
   let paragraph = [];
   let listType = null;
+  const sectionStack = [];
+  const usedHeadingIds = new Map();
+  let sectionId = 0;
 
   const flushParagraph = () => {
     if (paragraph.length) output.push(`<p>${inline(paragraph.join(' '))}</p>`);
@@ -134,6 +145,18 @@ function renderMarkdown(markdown) {
   const closeList = () => {
     if (listType) output.push(`</${listType}>`);
     listType = null;
+  };
+  const uniqueHeadingId = (text) => {
+    const base = slugify(text) || 'section';
+    const count = usedHeadingIds.get(base) || 0;
+    usedHeadingIds.set(base, count + 1);
+    return count ? `${base}-${count + 1}` : base;
+  };
+  const closeSections = (level = 0) => {
+    while (sectionStack.length && sectionStack.at(-1) >= level) {
+      output.push('</div></section>');
+      sectionStack.pop();
+    }
   };
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -158,7 +181,18 @@ function renderMarkdown(markdown) {
     if (heading) {
       flushParagraph(); closeList();
       const level = heading[1].length;
-      output.push(`<h${level} id="${slugify(heading[2])}">${inline(heading[2])}</h${level}>`);
+      closeSections(level);
+      const headingId = uniqueHeadingId(heading[2]);
+      const bodyId = `section-body-${sectionId += 1}`;
+      const expanded = level === 1;
+      output.push(`<section class="wiki-section wiki-section-level-${level} ${expanded ? 'is-expanded' : 'is-collapsed'}">`);
+      if (level === 1) {
+        output.push(`<h1 id="${headingId}"><span class="wiki-section-title">${inline(heading[2])}</span></h1>`);
+      } else {
+        output.push(`<h${level} id="${headingId}"><button class="wiki-section-toggle" type="button" aria-expanded="${String(expanded)}" aria-controls="${bodyId}" title="Click to expand or collapse. Shift-click cycles descendants."><span class="wiki-section-arrow" aria-hidden="true">▸</span><span class="wiki-section-title">${inline(heading[2])}</span></button></h${level}>`);
+      }
+      output.push(`<div class="wiki-section-body" id="${bodyId}" aria-hidden="${String(!expanded)}">`);
+      sectionStack.push(level);
     } else if (unordered || ordered) {
       flushParagraph();
       const nextType = unordered ? 'ul' : 'ol';
@@ -175,6 +209,7 @@ function renderMarkdown(markdown) {
   }
 
   flushParagraph(); closeList();
+  closeSections();
   return output.join('\n');
 }
 
@@ -220,6 +255,26 @@ function waitForStrudelDsl(timeoutMs = 3000) {
     };
 
     check();
+  });
+}
+
+function setSectionExpanded(section, expanded) {
+  const toggle = section?.querySelector(':scope > h1 .wiki-section-toggle, :scope > h2 .wiki-section-toggle, :scope > h3 .wiki-section-toggle');
+  const body = toggle ? document.getElementById(toggle.getAttribute('aria-controls')) : null;
+  if (!toggle) return;
+  toggle?.setAttribute('aria-expanded', String(expanded));
+  section?.classList.toggle('is-collapsed', !expanded);
+  section?.classList.toggle('is-expanded', expanded);
+  body?.setAttribute('aria-hidden', String(!expanded));
+}
+
+function sectionHasExpandedDescendants(section) {
+  return Boolean(section?.querySelector(':scope > .wiki-section-body .wiki-section .wiki-section-toggle[aria-expanded="true"]'));
+}
+
+function setDescendantSectionsExpanded(section, expanded) {
+  section?.querySelectorAll(':scope > .wiki-section-body .wiki-section').forEach((child) => {
+    setSectionExpanded(child, expanded);
   });
 }
 
@@ -641,7 +696,7 @@ function makeDrumVoice(pattern) {
         const activeRows = drumActiveRowsAt(pattern, index);
         const note = activeRows.length
           ? makeDrumHit(activeRows, index, pattern, duration)
-          : makeDrumRestNote(duration, pattern.division === 12);
+          : makeDrumRestNote(duration, true);
         note.wikiStep = index;
         note.wikiTupletGroup = groupStart;
         return note;
@@ -733,6 +788,13 @@ function renderedStemForNote(stems, note) {
   return stems.find((stem) => Math.abs(stem.x - stemX) < 0.75)?.element || null;
 }
 
+function setDrumRepeatBarlines(stave, Flow) {
+  const repeatBegin = Flow.Barline?.type?.REPEAT_BEGIN;
+  const repeatEnd = Flow.Barline?.type?.REPEAT_END;
+  if (repeatBegin && typeof stave.setBegBarType === 'function') stave.setBegBarType(repeatBegin);
+  if (repeatEnd && typeof stave.setEndBarType === 'function') stave.setEndBarType(repeatEnd);
+}
+
 function renderDrumNotation(target, pattern) {
   const Flow = window.Vex.Flow;
   target.innerHTML = '';
@@ -747,6 +809,7 @@ function renderDrumNotation(target, pattern) {
   context.setFont('Arial', 10);
 
   const stave = new Flow.Stave(16, 28, width - 32);
+  setDrumRepeatBarlines(stave, Flow);
   stave.addClef('percussion').addTimeSignature(pattern.meter);
   stave.setContext(context).draw();
 
@@ -788,6 +851,11 @@ function renderDrumNotation(target, pattern) {
       }
     }
     addDrumStepElement(stepElements, step, group);
+    group.querySelectorAll('.vf-stavenote .vf-stem, .vf-stavenote path[fill="none"], :scope > path[fill="none"]').forEach((element) => {
+      element.classList.add('drum-step-grace');
+      element.dataset.drumStep = String(step);
+      addDrumStepElement(stepElements, step, element);
+    });
     const stem = renderedStemForNote(stems, note);
     if (stem) {
       stem.classList.add('drum-step-stem');
@@ -888,8 +956,19 @@ function highlightDrumStep(block, step) {
   block.querySelectorAll(`.drum-step-stem[data-drum-step="${step}"]`).forEach((element) => {
     element.classList.add('drum-current-note');
   });
+  block.querySelectorAll(`.drum-step-grace[data-drum-step="${step}"]`).forEach((element) => {
+    element.classList.add('drum-current-note');
+    element.querySelectorAll?.('path').forEach((path) => {
+      path.classList.add('drum-current-note');
+    });
+  });
   block.drumStepElements?.[step]?.forEach((element) => {
     element.classList.add('drum-current-note');
+    if (element.classList.contains('drum-step-grace')) {
+      element.querySelectorAll?.('path').forEach((path) => {
+        path.classList.add('drum-current-note');
+      });
+    }
   });
 }
 
@@ -946,11 +1025,14 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1) {
 
 function scheduleDrumHit(context, instrument, rawToken, time, stepDuration) {
   const token = parseDrumToken(rawToken);
-  const strength = (token.accent ? 1.3 : 1) * (token.ghost ? 0.35 : 1);
-  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - 0.045, strength * 0.55);
+  const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
+  const graceStrength = token.ghost ? 0.35 : 1;
+  const flamOffset = Math.min(0.045, stepDuration * 0.18);
+  const dragOffset = Math.min(0.075, stepDuration * 0.3);
+  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - flamOffset, graceStrength * 0.55);
   if (token.kind === 'd') {
-    scheduleDrumSound(context, instrument, token, time - 0.075, strength * 0.45);
-    scheduleDrumSound(context, instrument, token, time - 0.038, strength * 0.55);
+    scheduleDrumSound(context, instrument, token, time - dragOffset, graceStrength * 0.45);
+    scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55);
   }
   scheduleDrumSound(context, instrument, token, time, strength);
   if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength * 0.9);
@@ -963,10 +1045,13 @@ function scheduleDrumHit(context, instrument, rawToken, time, stepDuration) {
   }
 }
 
-function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
-  activeDrumHighlightTimers.forEach(clearTimeout);
-  activeDrumHighlightTimers = [];
+function scheduleDrumPattern(block, pattern, startTime, stepDuration, clearExistingTimers = true) {
+  if (clearExistingTimers) {
+    activeDrumHighlightTimers.forEach(clearTimeout);
+    activeDrumHighlightTimers = [];
+  }
 
+  const loopDuration = stepDuration * pattern.steps;
   Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
     tokens.forEach((token, index) => {
       if (parseDrumToken(token).hit) scheduleDrumHit(drumAudioContext, instrument, token, startTime + (index * stepDuration), stepDuration);
@@ -979,11 +1064,14 @@ function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
   });
 
   setDrumButton(block, 'playing');
+  const nextStartTime = startTime + loopDuration;
+  const lookahead = 0.2;
+  const rescheduleDelay = Math.max(0, (nextStartTime - drumAudioContext.currentTime - lookahead) * 1000);
   activeDrumStopTimer = setTimeout(() => {
     activeDrumStopTimer = null;
     if (block.dataset.playing !== 'true' || !document.body.contains(block)) return;
-    scheduleDrumPattern(block, pattern, drumAudioContext.currentTime + 0.05, stepDuration);
-  }, (stepDuration * pattern.steps) * 1000);
+    scheduleDrumPattern(block, pattern, nextStartTime, stepDuration, false);
+  }, rescheduleDelay);
 }
 
 async function playDrumBlock(block) {
@@ -993,12 +1081,45 @@ async function playDrumBlock(block) {
   if (drumAudioContext.state === 'suspended') await drumAudioContext.resume();
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
-  const tempo = Number(pattern.tempo) || 120;
+  const tempoInput = block.querySelector('.drum-tempo');
+  const tempo = Number(tempoInput?.value) || Number(pattern.tempo) || 120;
   const stepDuration = 240 / (tempo * pattern.division);
   scheduleDrumPattern(block, pattern, drumAudioContext.currentTime + 0.1, stepDuration);
 }
 
+async function restartDrumBlockIfPlaying(block) {
+  if (block?.dataset.playing !== 'true') return;
+  try {
+    stopDrumBlocks();
+    await playDrumBlock(block);
+  } catch (error) {
+    console.error(error);
+    stopDrumBlocks();
+    setDrumButton(block, 'error');
+  }
+}
+
 content.addEventListener('click', async (event) => {
+  const sectionToggle = event.target.closest('.wiki-section-toggle');
+  if (sectionToggle) {
+    const section = sectionToggle.closest('.wiki-section');
+    const expanded = sectionToggle.getAttribute('aria-expanded') === 'true';
+    const deepToggle = event.shiftKey;
+    if (deepToggle) {
+      if (!expanded) {
+        setSectionExpanded(section, true);
+      } else if (!sectionHasExpandedDescendants(section)) {
+        setDescendantSectionsExpanded(section, true);
+      } else {
+        setDescendantSectionsExpanded(section, false);
+        setSectionExpanded(section, false);
+      }
+    } else {
+      setSectionExpanded(section, !expanded);
+    }
+    return;
+  }
+
   const abcButton = event.target.closest('.abc-toggle');
   if (abcButton) {
     const block = event.target.closest('.abc-block');
@@ -1020,6 +1141,18 @@ content.addEventListener('click', async (event) => {
       stopAbcBlocks();
       setAbcButton(block, 'error');
     }
+    return;
+  }
+
+  const tempoButton = event.target.closest('.drum-tempo-step');
+  if (tempoButton) {
+    const block = event.target.closest('.drum-block');
+    const input = block?.querySelector('.drum-tempo');
+    const step = Number(tempoButton.dataset.tempoStep) || 0;
+    const current = Number(input?.value) || 120;
+    const next = Math.max(20, Math.min(400, Math.round(current + step)));
+    if (input) input.value = String(next);
+    await restartDrumBlockIfPlaying(block);
     return;
   }
 
@@ -1076,23 +1209,39 @@ content.addEventListener('click', async (event) => {
   }
 });
 
+content.addEventListener('change', async (event) => {
+  const input = event.target.closest('.drum-tempo');
+  if (!input) return;
+  const block = input.closest('.drum-block');
+  const tempo = Math.max(20, Math.min(400, Number(input.value) || 120));
+  input.value = String(Math.round(tempo));
+  await restartDrumBlockIfPlaying(block);
+});
+
 function currentPage() {
-  const candidate = location.hash.match(/^#\/([a-z0-9-]+)$/)?.[1] || 'home';
+  const candidate = location.hash.match(/^#\/([a-z0-9-]+(?:\/[a-z0-9-]+)*)$/)?.[1] || 'home';
   return candidate;
+}
+
+function pagePath(page) {
+  if (page === 'music' || page === 'cubing') return `pages/${page}/index.md`;
+  return `pages/${page}.md`;
 }
 
 async function loadPage() {
   const page = currentPage();
+  if (currentPathLabel) currentPathLabel.textContent = `(/${page})`;
   stopStrudelBlocks();
   stopAbcBlocks();
   stopDrumBlocks();
   content.innerHTML = '<p class="loading">Loading…</p>';
   document.querySelectorAll('.sidebar a').forEach((link) => {
-    link.toggleAttribute('aria-current', link.getAttribute('href') === `#/${page}`);
+    const hrefPage = link.getAttribute('href')?.replace(/^#\//, '');
+    link.toggleAttribute('aria-current', hrefPage === page || page.startsWith(`${hrefPage}/`));
   });
 
   try {
-    const response = await fetch(`pages/${page}.md`, { cache: 'no-store' });
+    const response = await fetch(pagePath(page), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Page returned ${response.status}`);
     content.innerHTML = renderMarkdown(await response.text());
     renderAbcBlocks();

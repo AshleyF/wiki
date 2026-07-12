@@ -1,8 +1,8 @@
-# Cubing algorithms
+# Cubing
 
-Cube fences keep standard algorithm notation readable while adding the case state needed for recognition. A `cube-cmll` fence starts with a solved cube, applies the inverse of the algorithm, and renders the resulting CMLL case.
+Cubing fences keep standard algorithm notation readable while adding the case state needed for recognition. A `cube-cmll` fence starts with a solved cube, applies the inverse of the algorithm, and renders the resulting CMLL case.
 
-See the [CMLL page](#/cmll).
+See the [CMLL page](#/cubing/cmll).
 
 ## CMLL
 
@@ -20,4 +20,4 @@ R U2 R' U' R U' R'
 
 Supported parameters are `edges=show|hide`, `center=show|hide`, `auf=<move>`, and `rotation=<move>`. Standard face, slice, wide, and cube-rotation notation is accepted in the algorithm body.
 
-Return to the [home page](#/home) or visit the [sound sketches](#/sound).
+Return to the [home page](#/home) or visit the [music](#/music).

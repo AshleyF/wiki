@@ -16,13 +16,13 @@
         document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260708-27">
+    <link rel="stylesheet" href="styles.css?v=20260710-15">
   </head>
   <body>
     <header class="site-header">
       <a class="brand" href="#/home" aria-label="Personal Wiki home">
-        <span class="brand-mark">P/W</span>
-        <span>Personal Wiki</span>
+        <img class="brand-mark" src="assets/me.svg?v=20260710-1" alt="" aria-hidden="true">
+        <span class="brand-text">Personal Wiki <span class="brand-path" id="current-path">(/home)</span></span>
       </a>
       <div class="header-actions">
         <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
@@ -35,8 +35,8 @@
         <nav aria-label="Wiki pages">
           <p class="nav-label">Contents</p>
           <a href="#/home">Home</a>
-          <a href="#/sound">Sound sketches</a>
-          <a href="#/cubing">Cubing algorithms</a>
+          <a href="#/music">Music</a>
+          <a href="#/cubing">Cubing</a>
         </nav>
         <p class="sidebar-note">Plain text in.<br>Static HTML out.</p>
       </aside>
@@ -50,6 +50,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
     <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
     <script src="cube-notation.js?v=20260708-4"></script>
-    <script type="module" src="app.js?v=20260709-6"></script>
+    <script type="module" src="app.js?v=20260710-18"></script>
   </body>
 </html>

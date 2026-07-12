@@ -1,6 +1,6 @@
-# Sound sketches
+# Music
 
-My [drum rudiments page](#/rudiments).
+My [drum rudiments page](#/music/rudiments).
 
 ## Strudel
 
