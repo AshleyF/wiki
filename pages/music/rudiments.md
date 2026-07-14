@@ -14,6 +14,8 @@ sn:    x x x x x x x x x x x x x x x x
 stick: R L R L R L R L R L R L R L R L
 ```
 
+[Drumeo: John Wooton](https://app.musora.com/drumeo/lessons/rudiment/373171)
+
 ### Single Stroke Four
 
 ```drums

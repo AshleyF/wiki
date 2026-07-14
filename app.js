@@ -62,8 +62,8 @@ function inline(text) {
   result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
     const safeHref = /^(https?:|mailto:|#)/.test(href) ? href : '#';
-    const external = /^https?:/.test(safeHref) ? ' target="_blank" rel="noreferrer"' : '';
-    return `<a href="${safeHref}"${external}>${label}</a>`;
+    const external = /^https?:/.test(safeHref) ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return `<a href="${escapeHtml(safeHref)}"${external}>${label}</a>`;
   });
   return result;
 }
@@ -1224,7 +1224,7 @@ function currentPage() {
 }
 
 function pagePath(page) {
-  if (page === 'music' || page === 'cubing') return `pages/${page}/index.md`;
+  if (page === 'music' || page === 'cubing' || page === 'microblog') return `pages/${page}/index.md`;
   return `pages/${page}.md`;
 }
 

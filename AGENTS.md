@@ -121,6 +121,8 @@ It does not support nested lists, images, tables, raw HTML, multiline block quot
 
 Raw HTML from Markdown is intentionally unsupported. `escapeHtml()` runs before inline substitutions, and ordinary fenced code is escaped. Link destinations are limited to `http:`, `https:`, `mailto:`, and hash links. Do not weaken these rules without explicitly redesigning the trust model.
 
+Rendered external `http:` and `https:` Markdown links open in a new tab with `target="_blank"` and `rel="noopener noreferrer"`. Hash wiki links and `mailto:` links stay in the current browsing context.
+
 ## Fenced-language extension architecture
 
 `fenceRenderers` is the extension registry. The word immediately following an opening triple-backtick fence selects a renderer:
