@@ -73,3 +73,9 @@ I finally got the last three decroative panels for the drum room. I spent a coup
 ## 14 JUL 2026 Tue - Calvin
 
 Went to lunch with Calvin and Tracey went and visited Chelsea (and saw first hand how Aurora is doing). Calvin is doing great. He has $1200 saved, he's still keeping his weight down, and is now doing daily exercises, and is still doing the ocarina. I drummed, again with full sound while Tracey was gone. Worked on the wiki. Read The View from Nowhere book.
+
+## 15 JUL 2026 Wed - Payday
+
+I got the big retirement payout! I'll still get my bonus and two sets of stock to come. We booked a cruise for the end of 2027 across the Pacific to Austrailia! 25 days at sea! I love being as sea. I worked on refreshing my memory of 2H CMLLs, did 100 solves at a mat, and fixed a couple of briefcubing.com bugs. Drummed in the evening.
+
+## 16 JUL 2026 Thu - 
