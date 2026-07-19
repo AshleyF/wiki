@@ -113,77 +113,77 @@ r2' D' r U r' D r2 U' r' U' r
 ## S Cases
 
 ```cube-cmll
-
+R U R' U R U2 R'
 ```
 
 ```cube-cmll
-
+L' U2 L U2' L F' L' F
 ```
 
 ```cube-cmll
-
+F R' F' R U2 R U2' R'    
 ```
 
 ```cube-cmll
-
+R U R' U' R' F R F' R U R' U R U2' R'
 ```
 
 ```cube-cmll
-
+R U R' U R' F R F' R U2' R'
 ```
 
 ```cube-cmll
-
+R U' L' U R' U' L
 ```
 
 ## A Cases
 
 ```cube-cmll
-
+L' U' L U' L' U2 L
 ```
 
 ```cube-cmll
-
+R2 D R' U R D' R' U R' U' R U' R'
 ```
 
 ```cube-cmll
-
+F' L F L' U2' L' U2 L
 ```
 
 ```cube-cmll
-
+R U2' R' U2 R' F R F'
 ```
 
 ```cube-cmll
-
+L' U R U' L U R'
 ```
 
 ```cube-cmll
-
+R' U' R U' R' U R' F R F' U R
 ```
 
 ## L Cases
 
 ```cube-cmll
-
+F R U' R' U' R U R' F'
 ```
 
 ```cube-cmll
-
+F R' F' R U R U' R'
 ```
 
 ```cube-cmll
-
+R U2 R' U' R U R' U' R U R' U' R U' R'
 ```
 
 ```cube-cmll
-
+R U2 R D R' U2 R D' R2' 
 ```
 
 ```cube-cmll
-
+R U2' R2' F R F' R U2' R'
 ```
 
 ```cube-cmll
-
+R' U2 R' D' R U2 R' D R2
 ```
