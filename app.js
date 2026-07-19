@@ -1228,9 +1228,19 @@ function pagePath(page) {
   return `pages/${page}.md`;
 }
 
+function renderCurrentPath(page) {
+  if (!currentPathLabel) return;
+  const parts = page.split('/');
+  const links = parts.map((part, index) => {
+    const path = parts.slice(0, index + 1).join('/');
+    return `<a href="#/${escapeHtml(path)}">${escapeHtml(part)}</a>`;
+  });
+  currentPathLabel.innerHTML = `(/${links.join('/')})`;
+}
+
 async function loadPage() {
   const page = currentPage();
-  if (currentPathLabel) currentPathLabel.textContent = `(/${page})`;
+  renderCurrentPath(page);
   stopStrudelBlocks();
   stopAbcBlocks();
   stopDrumBlocks();

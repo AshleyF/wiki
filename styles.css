@@ -62,10 +62,14 @@ body { margin: 0; min-height: 100vh; }
   backdrop-filter: blur(12px);
 }
 
-.brand { display: flex; gap: .8rem; align-items: center; color: inherit; text-decoration: none; font-weight: 700; }
+.brand-line { display: flex; gap: .35rem; align-items: baseline; flex-wrap: wrap; }
+.brand { display: inline-flex; gap: .8rem; align-items: center; color: inherit; text-decoration: none; font-weight: 700; }
 .brand-mark { display: block; width: 2.3rem; height: 2.3rem; border: 1px solid #888; background: #fff; object-fit: contain; image-rendering: pixelated; }
-.brand-text { display: flex; gap: .35rem; align-items: baseline; flex-wrap: wrap; }
+.brand-text { display: inline-flex; gap: .35rem; align-items: baseline; flex-wrap: wrap; }
 .brand-path { color: var(--muted); font: 500 .78rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.brand-path a { color: inherit; text-decoration: none; text-underline-offset: .18em; }
+.brand-path a:hover,
+.brand-path a:focus-visible { color: var(--accent); text-decoration: underline; }
 .header-actions { display: flex; gap: .7rem; align-items: center; }
 .menu-button { display: none; border: 1px solid var(--ink); padding: .45rem .75rem; color: inherit; background: transparent; font: inherit; }
 .theme-toggle { display: inline-grid; place-items: center; width: 2.2rem; height: 2.2rem; border: 0; padding: 0; color: inherit; background: transparent; font: 700 1.25rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; }
