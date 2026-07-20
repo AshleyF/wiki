@@ -84,10 +84,12 @@ Tracey and I were talking about how AI isn't accessible to the masses yet. I sai
 
 # 18 JUL 2026 Sat - Nathan
 
-I spent a couple of hours talking with Nathan/Than while practicing drum rudiments on the balcony. Mostly we talked about politics, immigration policy and how a "free association" collection of peolpe could be organized. Obviously, that is his idea. My main argument against it is that tribalism has existed in humans for at least tens of thousands of years, formal "coutries" for centuries, and there is nowhere on Earth that is run any other way. Even the Sentinilese will kill you if you go to their island. Welcome to Earth... Tracey and I watched American Psycho for the first time and booked tickets to see the Oddesy on IMAX in a couple of weeks.
+I spent a couple of hours talking with Nathan/Than while practicing drum rudiments on the balcony. Mostly we talked about politics, immigration policy and how a "free association" collection of peolpe could be organized. Obviously, that is his idea. My main argument against it is that tribalism has existed in humans for at least tens of thousands of years, formal "coutries" for centuries, and there is nowhere on Earth that is run any other way. Even the Sentinilese will kill you if you go to their island. Welcome to Earth... Tracey and I watched American Psycho for the first time and booked tickets to see the Oddesy on IMAX in a couple of weeks. #debate
 
 # 19 JUL 2026 Sun - Cubing
 
-The cubing comp is coming up. I took stock of what I still need to learn. I have 7 2H CMLLs to really get into my fingers and freaking 32 OH CMLLs to learn. My plan is to learn two per day and then really drill them in over the final week and a half. I also finally finished the Nagel book Kaitlyn gave me. Also, Tracey and I have been playing a game of chess each day starting several days back. Today she got a stalemate.  ❤️
+The cubing comp is coming up. I took stock of what I still need to learn. I have 7 2H CMLLs to really get into my fingers and freaking 32 OH CMLLs to learn. My plan is to learn two per day and then really drill them in over the final week and a half. Also, Tracey and I have been playing a game of chess each day starting several days back. Today she got a stalemate. ❤️ #cubing
 
-# 20 JUL 2026 Mon - 
+# 20 JUL 2026 Mon - Stories
+
+I finally finished the Nagel book Kaitlyn gave me. I started a texting thread with the kids and gave them a link to the Storyworth book, and posted a few of the stories (Values, America, Jason, ...) and a bunch of photos. I'll keep posting to this thread as I write more. #stories

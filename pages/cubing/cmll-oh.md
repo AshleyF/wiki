@@ -21,7 +21,7 @@ F R U R' U' R U R' U' R U R' U' F'
 ```
 
 ```cube-cmll
-F R U' R' U R U2 R' U' R U R' U' F'
+F R U' R' U R U2' R' U' R U R' U' F'
 ```
 
 ```cube-cmll
