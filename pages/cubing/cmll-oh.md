@@ -43,7 +43,7 @@ F R U' R' U' R U R' U R U' R' F'
 ```
 
 ```cube-cmll
-R U2 R' U' R U R' U2 R' F R F
+R U2 R' U' R U R' U2' R' F R F'
 ```
 
 ```cube-cmll

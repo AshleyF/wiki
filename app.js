@@ -59,7 +59,9 @@ function inline(text) {
   let result = escapeHtml(text);
   result = result.replace(/`([^`]+)`/g, '<code>$1</code>');
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  result = result.replace(/(^|[^\w])__([^_\n]+?)__(?=[^\w]|$)/g, '$1<strong>$2</strong>');
   result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  result = result.replace(/(^|[^\w])_([^_\n]+?)_(?=[^\w]|$)/g, '$1<em>$2</em>');
   result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
     const safeHref = /^(https?:|mailto:|#)/.test(href) ? href : '#';
     const external = /^https?:/.test(safeHref) ? ' target="_blank" rel="noopener noreferrer"' : '';

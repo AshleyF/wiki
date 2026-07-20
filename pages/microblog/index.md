@@ -82,14 +82,14 @@ We were up early (4:30). We had coffee and I read (about free will) this morning
 
 Tracey and I were talking about how AI isn't accessible to the masses yet. I said that I don't know why not. I opened replit and she dictated a game idea, which it built quite nicely! She wanted to keep iterating, so I gave the same prompt to codex and we sat and built this word scramble/cooking game for a few hours. It's starting out pretty good: [Word Whisk](https://ashleyf.github.io/wordwhisk/). In preparation for my cubing competition on 15 AUG, I've been doing 100 proper solves at a mat with a timer. Did that for the third day in a row today. I grilled some NY strip steaks and Tracy made some taco salad and also did some canning. I drummed, as usual for about an hour. I was going to visit my parents, but my dad was in Spokane in the afternoon. Maybe tomorrow... First week home after retirement, by the way. Feels pretty normal. Also, we're down enormously in the stock market; almost erasing my whole Microsoft payout :(
 
-# 18 JUL 2026 Sat - Nathan
+## 18 JUL 2026 Sat - Nathan
 
 I spent a couple of hours talking with Nathan/Than while practicing drum rudiments on the balcony. Mostly we talked about politics, immigration policy and how a "free association" collection of peolpe could be organized. Obviously, that is his idea. My main argument against it is that tribalism has existed in humans for at least tens of thousands of years, formal "coutries" for centuries, and there is nowhere on Earth that is run any other way. Even the Sentinilese will kill you if you go to their island. Welcome to Earth... Tracey and I watched American Psycho for the first time and booked tickets to see the Oddesy on IMAX in a couple of weeks. #debate
 
-# 19 JUL 2026 Sun - Cubing
+## 19 JUL 2026 Sun - Cubing
 
 The cubing comp is coming up. I took stock of what I still need to learn. I have 7 2H CMLLs to really get into my fingers and freaking 32 OH CMLLs to learn. My plan is to learn two per day and then really drill them in over the final week and a half. Also, Tracey and I have been playing a game of chess each day starting several days back. Today she got a stalemate. ❤️ #cubing
 
-# 20 JUL 2026 Mon - Stories
+## 20 JUL 2026 Mon - Stories
 
 I finally finished the Nagel book Kaitlyn gave me. I started a texting thread with the kids and gave them a link to the Storyworth book, and posted a few of the stories (Values, America, Jason, ...) and a bunch of photos. I'll keep posting to this thread as I write more. #stories
