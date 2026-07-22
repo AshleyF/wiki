@@ -951,6 +951,28 @@ function trackDrumNode(node) {
   }, { once: true });
 }
 
+function drumPanForSticking(sticking) {
+  if (sticking === 'R') return 0.65;
+  if (sticking === 'L') return -0.65;
+  return 0;
+}
+
+function oppositeDrumSticking(sticking) {
+  if (sticking === 'R') return 'L';
+  if (sticking === 'L') return 'R';
+  return '.';
+}
+
+function connectDrumOutput(context, node, pan = 0) {
+  if (pan && typeof context.createStereoPanner === 'function') {
+    const panner = context.createStereoPanner();
+    panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), context.currentTime);
+    node.connect(panner).connect(context.destination);
+    return;
+  }
+  node.connect(context.destination);
+}
+
 function highlightDrumStep(block, step) {
   block.querySelectorAll('.drum-current-note').forEach((element) => {
     element.classList.remove('drum-current-note');
@@ -974,7 +996,7 @@ function highlightDrumStep(block, step) {
   });
 }
 
-function drumNoise(context, time, duration, filterFrequency, volume) {
+function drumNoise(context, time, duration, filterFrequency, volume, pan = 0) {
   const frameCount = Math.ceil(context.sampleRate * duration);
   const buffer = context.createBuffer(1, frameCount, context.sampleRate);
   const data = buffer.getChannelData(0);
@@ -988,13 +1010,14 @@ function drumNoise(context, time, duration, filterFrequency, volume) {
   filter.frequency.value = filterFrequency;
   gain.gain.setValueAtTime(volume, time);
   gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-  source.connect(filter).connect(gain).connect(context.destination);
+  source.connect(filter).connect(gain);
+  connectDrumOutput(context, gain, pan);
   source.start(time);
   source.stop(time + duration);
   trackDrumNode(source);
 }
 
-function drumTone(context, time, frequency, duration, volume, type = 'sine', endFrequency = frequency) {
+function drumTone(context, time, frequency, duration, volume, type = 'sine', endFrequency = frequency, pan = 0) {
   const oscillator = context.createOscillator();
   const gain = context.createGain();
   oscillator.type = type;
@@ -1002,47 +1025,51 @@ function drumTone(context, time, frequency, duration, volume, type = 'sine', end
   oscillator.frequency.exponentialRampToValueAtTime(endFrequency, time + duration);
   gain.gain.setValueAtTime(volume, time);
   gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-  oscillator.connect(gain).connect(context.destination);
+  oscillator.connect(gain);
+  connectDrumOutput(context, gain, pan);
   oscillator.start(time);
   oscillator.stop(time + duration);
   trackDrumNode(oscillator);
 }
 
-function scheduleDrumSound(context, instrument, token, time, strength = 1) {
-  if (instrument === 'bd') drumTone(context, time, 145, 0.18, 0.8 * strength, 'sine', 48);
+function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0) {
+  if (instrument === 'bd') drumTone(context, time, 145, 0.18, 0.8 * strength, 'sine', 48, pan);
   if (instrument === 'sn') {
-    drumNoise(context, time, 0.13, 900, 0.38 * strength);
-    drumTone(context, time, 180, 0.08, 0.18 * strength, 'triangle', 120);
+    drumNoise(context, time, 0.13, 900, 0.38 * strength, pan);
+    drumTone(context, time, 180, 0.08, 0.18 * strength, 'triangle', 120, pan);
   }
   if (['hh', 'ph'].includes(instrument)) {
-    drumNoise(context, time, token.kind === 'o' ? 0.32 : 0.055, 6500, 0.18 * strength);
+    drumNoise(context, time, token.kind === 'o' ? 0.32 : 0.055, 6500, 0.18 * strength, pan);
   }
-  if (instrument === 'cr') drumNoise(context, time, 0.65, 3500, 0.22 * strength);
-  if (instrument === 'rd') drumNoise(context, time, 0.16, 5200, 0.14 * strength);
-  if (instrument === 'ht') drumTone(context, time, 220, 0.17, 0.42 * strength, 'sine', 150);
-  if (instrument === 'mt') drumTone(context, time, 175, 0.19, 0.44 * strength, 'sine', 115);
-  if (instrument === 'ft') drumTone(context, time, 125, 0.22, 0.48 * strength, 'sine', 78);
-  if (instrument === 'wb') drumTone(context, time, 920, 0.07, 0.24 * strength, 'square', 720);
+  if (instrument === 'cr') drumNoise(context, time, 0.65, 3500, 0.22 * strength, pan);
+  if (instrument === 'rd') drumNoise(context, time, 0.16, 5200, 0.14 * strength, pan);
+  if (instrument === 'ht') drumTone(context, time, 220, 0.17, 0.42 * strength, 'sine', 150, pan);
+  if (instrument === 'mt') drumTone(context, time, 175, 0.19, 0.44 * strength, 'sine', 115, pan);
+  if (instrument === 'ft') drumTone(context, time, 125, 0.22, 0.48 * strength, 'sine', 78, pan);
+  if (instrument === 'wb') drumTone(context, time, 920, 0.07, 0.24 * strength, 'square', 720, pan);
 }
 
-function scheduleDrumHit(context, instrument, rawToken, time, stepDuration) {
+function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, sticking = '.') {
   const token = parseDrumToken(rawToken);
   const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
   const graceStrength = token.ghost ? 0.35 : 1;
   const flamOffset = Math.min(0.045, stepDuration * 0.18);
   const dragOffset = Math.min(0.075, stepDuration * 0.3);
-  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - flamOffset, graceStrength * 0.55);
+  const mainPan = drumPanForSticking(sticking);
+  const gracePan = drumPanForSticking(oppositeDrumSticking(sticking));
+
+  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - flamOffset, graceStrength * 0.55, gracePan);
   if (token.kind === 'd') {
-    scheduleDrumSound(context, instrument, token, time - dragOffset, graceStrength * 0.45);
-    scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55);
+    scheduleDrumSound(context, instrument, token, time - dragOffset, graceStrength * 0.45, gracePan);
+    scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, gracePan);
   }
-  scheduleDrumSound(context, instrument, token, time, strength);
-  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength * 0.9);
+  scheduleDrumSound(context, instrument, token, time, strength, mainPan);
+  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength * 0.9, mainPan);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
       const bounceTime = time + ((stepDuration * 0.72 * bounce) / (bounceCount + 1));
-      scheduleDrumSound(context, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)));
+      scheduleDrumSound(context, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), mainPan);
     }
   }
 }
@@ -1056,7 +1083,9 @@ function scheduleDrumPattern(block, pattern, startTime, stepDuration, clearExist
   const loopDuration = stepDuration * pattern.steps;
   Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
     tokens.forEach((token, index) => {
-      if (parseDrumToken(token).hit) scheduleDrumHit(drumAudioContext, instrument, token, startTime + (index * stepDuration), stepDuration);
+      if (parseDrumToken(token).hit) {
+        scheduleDrumHit(drumAudioContext, instrument, token, startTime + (index * stepDuration), stepDuration, pattern.sticking[index]);
+      }
     });
   });
 

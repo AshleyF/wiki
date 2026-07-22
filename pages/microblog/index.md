@@ -90,6 +90,12 @@ I spent a couple of hours talking with Nathan/Than while practicing drum rudimen
 
 The cubing comp is coming up. I took stock of what I still need to learn. I have 7 2H CMLLs to really get into my fingers and freaking 32 OH CMLLs to learn. My plan is to learn two per day and then really drill them in over the final week and a half. Also, Tracey and I have been playing a game of chess each day starting several days back. Today she got a stalemate. ❤️ #cubing
 
-## 20 JUL 2026 Mon - Stories
+## 20 JUL 2026 Mon - Parents
 
-I finally finished the Nagel book Kaitlyn gave me. I started a texting thread with the kids and gave them a link to the Storyworth book, and posted a few of the stories (Values, America, Jason, ...) and a bunch of photos. I'll keep posting to this thread as I write more. #stories
+I finally finished the Nagel book Kaitlyn gave me. I started a texting thread with the kids and gave them a link to the Storyworth book, and posted a few of the stories (Values, America, Jason, ...) and a bunch of photos. I'll keep posting to this thread as I write more. I went out to my parent's place for the afternoon and evening. Tracey made carror cake (with carrots from the garden) and apricot jam. They liked both. My dad had an MRI on his liver because they saw something on his PET scan for prostate cancer. We'll see what that is, but at any rate he's going to do radiation and hormone treatment. Their landscaping is pretty astonishing. It looks like a different world plopped down in the forest. Something I found odd is that they were planning to go to Vegas, but "people aren't planning it." I asked my dad *who* wasn't planning it and he admitted that it was Kaitie's idea and that they asked Josh but he couldn't go. He even said it was going to be a "mini family vacation like the Florida trip." For one, why was I never asked? For two, why is Katie always the one planning the _family_ vacations? Right before bed I started the Project Hail Mary book. #stories
+
+## 21 JUL 2026 Tue - Reading
+
+I spent several hours reading the Hail Mary book; really good! Funny enough, I know that Ryan Gosling plays the main character and I can't help but picture him while reading. It'll be fun to see the movie. Tracey and I booked our flights to Singapore and hotels there. Getting more concrete. We also booked flights and hotels to South Carolina. I learned a few more OH CMLL algs.
+
+## 22 JUL 2026 - 

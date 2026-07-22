@@ -206,6 +206,8 @@ Tokens may carry idiomatic modifiers: `x>` adds a VexFlow `Articulation('a>')`, 
 
 VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule a small dependency-free Web Audio kit: a pitched oscillator for kick and woodblock, filtered noise plus a short tone for snare, and filtered noise for closed/open hi-hat. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each slot, and loops until the user presses Stop or navigates away. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
 
+If a drum block includes a `stick:` row, playback uses simple stereo placement: `R` pans the slot right, `L` pans it left, and `RL`, `LR`, `.`, or missing sticking stay centered. Flam and drag grace notes use the opposite hand from the main written stroke, so a right-hand flam sounds left-right and a left-hand drag sounds right-right-left. Keep this tied to the parsed sticking data instead of deriving it from rendered annotations, because rendering details can change.
+
 Drum notation renders begin/end repeat barlines by default, matching playback behavior: every drum sample loops until stopped. Do not remove repeat signs from rudiment examples unless playback behavior is also changed or the source gains an explicit repeat directive.
 
 Playback highlighting is bound through each main `StaveNote` object's `getSVGElement()` result. Do not reconstruct this mapping by querying every `.vf-stavenote`: grace notes used by flams and drags also have that class and will shift the timeline-to-element correspondence.
