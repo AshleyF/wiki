@@ -8,10 +8,13 @@ An early Cilian Murphy film. Set in Ireland in 1919-1921 during the end of the B
 
 We seen this many times, but this time was at the Sphere in Las Vegas. They did a fantastic job with the tornado scene, with wind and debris and smells. It was pretty wild. A few other places they broke the fourth wall with things like apples falling on the audiance. Other parts were lame with flying monkeys on cables. It was just the moving itself mostly, on a giant screen with generative fill.
 
-## The Odyssey (28 JUL 2026, IMAX, Rever Park Square)
-
-TODO: We have tickets...
 
 ## Praject Hail Mary
 
+I read the book this week (20-24 JUL 2026) and then we watched the movie a few hours later.
+
 TODO: I'm planning to read the book, then we'll see the movie on streaming...
+
+## The Odyssey (28 JUL 2026, IMAX, Rever Park Square)
+
+TODO: We have tickets...

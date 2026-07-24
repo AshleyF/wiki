@@ -98,4 +98,18 @@ I finally finished the Nagel book Kaitlyn gave me. I started a texting thread wi
 
 I spent several hours reading the Hail Mary book; really good! Funny enough, I know that Ryan Gosling plays the main character and I can't help but picture him while reading. It'll be fun to see the movie. Tracey and I booked our flights to Singapore and hotels there. Getting more concrete. We also booked flights and hotels to South Carolina. I learned a few more OH CMLL algs.
 
-## 22 JUL 2026 - 
+## 22 JUL 2026 - Financial Planning
+
+I had a call with a Fidelity 401K advisor this morning. I'm making plans for the 401K now that I'm retired: Do a NUA lump sum distribution of the MSFT stock to a regular account and an IRA rollover of the rest in the same year, next year because it will be a zero-income year. Then do partial Roth conversions over the next several years while I'm still not having income. The Rule of 55 applies to me, starting this year and I can use that for the MSFT stock. I lose that rule once the 401K is converted to an IRA though, but I gain more freedom in controlling the investments. I drummed in the evening. Tracey's been getting into chess (without my instigation). We played a couple of games.
+
+## 23 JUL 2026 - Reading
+
+Partway through the day, Tracey said we should watch a movie. I've been wanting to finish the Hail Mary book and then see the movie... maybe I can finish the book today! I spend several hours reading but by 20:00, I still had 80 pages left and gave up. Tomorrow... I learned only one CMLL, and drummed in the evening.
+
+I also talked to a different financial planner about the whole of retirement planning and the pros and cons of moving the 401K to an IRA. Essentially, it gives me more flexibility to invest as I see fit, but I lose the Rule of 55. That's fine.
+
+We thought that the piano may be delivered today. They guy from Sweetwater said it would. But no contact from the shipping company.
+
+## 24 JUL 2026 - Hail Mary
+
+The piano has been delivered to Spokane. But the "white glove" company can't deliver it here for two weeks (07 AUG). I finally finished the book. What a great story.
