@@ -65,7 +65,7 @@ z' U2' R' U z U2 z' U' R U z U2' R
 ```
 
 ```cube-cmll
-R' U' R U' R' U2 R2 U R' U R U2 R'
+R' U' R U' R' U2 R2' U R' U R U2 R'
 ```
 
 ```cube-cmll

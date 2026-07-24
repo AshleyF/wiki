@@ -69,7 +69,7 @@ R2' D' R U2 R' D R U2 R
 ```
 
 ```cube-cmll
-R2' F U' F U F2 R2' U' R' F R
+R2' F U' F U F2 R2 U' R' F R
 ```
 
 ```cube-cmll
