@@ -98,11 +98,11 @@ I finally finished the Nagel book Kaitlyn gave me. I started a texting thread wi
 
 I spent several hours reading the Hail Mary book; really good! Funny enough, I know that Ryan Gosling plays the main character and I can't help but picture him while reading. It'll be fun to see the movie. Tracey and I booked our flights to Singapore and hotels there. Getting more concrete. We also booked flights and hotels to South Carolina. I learned a few more OH CMLL algs.
 
-## 22 JUL 2026 - Financial Planning
+## 22 JUL 2026 Wed - Financial Planning
 
 I had a call with a Fidelity 401K advisor this morning. I'm making plans for the 401K now that I'm retired: Do a NUA lump sum distribution of the MSFT stock to a regular account and an IRA rollover of the rest in the same year, next year because it will be a zero-income year. Then do partial Roth conversions over the next several years while I'm still not having income. The Rule of 55 applies to me, starting this year and I can use that for the MSFT stock. I lose that rule once the 401K is converted to an IRA though, but I gain more freedom in controlling the investments. I drummed in the evening. Tracey's been getting into chess (without my instigation). We played a couple of games.
 
-## 23 JUL 2026 - Reading
+## 23 JUL 2026 Thu - Reading
 
 Partway through the day, Tracey said we should watch a movie. I've been wanting to finish the Hail Mary book and then see the movie... maybe I can finish the book today! I spend several hours reading but by 20:00, I still had 80 pages left and gave up. Tomorrow... I learned only one CMLL, and drummed in the evening.
 
@@ -110,6 +110,22 @@ I also talked to a different financial planner about the whole of retirement pla
 
 We thought that the piano may be delivered today. They guy from Sweetwater said it would. But no contact from the shipping company.
 
-## 24 JUL 2026 - Hail Mary
+The market was down enormously today!
 
-The piano has been delivered to Spokane. But the "white glove" company can't deliver it here for two weeks (07 AUG). I finally finished the book. What a great story.
+## 24 JUL 2026 Fri - Hail Mary
+
+The piano has been delivered to Spokane. But the "white glove" company can't deliver it here for two weeks (07 AUG). I finally finished the book. What a great story. We watched the [movie](#/microblog/movies). It was pretty good, but nothing like the book of course. The marked was down some more today...
+
+## 25 JUL 2026 Sat - Kaitlyn
+
+I talked with Kailyn for an hour or so this morning. She's enjoying school and developing theories or a model of approach to family counseling. One idea is that virtually everyone feels a lack of atonomy in their lives. The attitude that you simply must do what your boss says, what your spouse says, parents say, or whoever else you allow to "run your life." It's just not true. The Steve Jobs quote about learning that everything in life was made by people no smarter than you, everything is up for grabs, embrace and change the world around you. It's not just a given for you to live in. I don't think I've ever had a problem with that. But, of people coming to a therapist, Kaitlyn estimates that 100% have this as the core issue. There was also some political drama at her school over some directory lady who was just hired who has ties to an anti LGBTQ church. I guess a bunch of the people in Kaitlyn's class are LBGT or Q and take exception to her being the director. They confronted her and she says that she "affirms" them, but can't publically because her husband works for the church and her house is provided by the church. The students would want her to give that up to affirm them publically. I think that's pretty ridiculous. She says she's "with them" but that's not good enough. She has to give up her house and her husband's career over it. The students even threaten to go public with what was said in the meeting. I'm fine with the movement as long as it's just, "let me live however I want." Certainly, let them. But as soon as they start demanding that everyone else not live how they like then I have a problem with it. I don't agree with the church, but I don't want to live in a country in which such religious "lifestyles" are not okay, any more than I want to live in a country in which LGBTQ lifestyles are not okay. Just go about your life and stop worrying about everyone around you unless they're trampling on your right to be left to live as you please. This lady is not doing anything against the students. She's affiliated with a church that maybe has, but she personally has done nothing and has said she supports them, just not publically. Get freaking real and stop acting like a victim. Go after people actively trying to stop you from living as you want. Leave this lady alone. Anyway, it was a fun conversation with Kaitlyn.
+
+I've started reading Contact and Tracey and I watched the movie today. I've read it before, so no need to wait to see the movie. I did notice, as usual, that the movie doesn't match the book. For example, in the book Elli's dad dies and her mom hooks up with some new guy who is anti-science and anti-feminist. In the movie her mom dies in child birth and her dad dies when she's 9, then the religious tention comes from a boyfriend of hers instead. Also, the religious stuff permeates the whole story to the end.
+
+## 26 JUL 2026 Sun - Birthday Gathering
+
+We had a birthday gathering out at my parent's place, for my dad, Katie, Amy and Kayson. I gave dad AirPods and we tried out the "babblefish" feature. Pretty cool! Katie got a book and a wallet. We have stuff for Amy that we'll get to her (birday is actually 01 AUG). It was the first time Tracey saw all the landscaping out there and the mostly finished patio. It's pretty useful to have a BBQ out there. I drummed and read as usual.
+
+## 27 JUL 2026 Mon - Model X
+
+We took the truck in to have the PCS replaced. I haven't been able to charge at home for months now! But they did give me free charing all this time. They'll fix that, the tonneau cover leak and replace the thin pannels above the doors. That'll mean that I have to rewrap them! They gave me a $300 credit for that. They gave me a Model X as a loaner. It has some nifty features: the screen tilts, the doors open completely automatically, thae gallwing doors are cool, the screen behind the steering wheel is useful. Tracey drove too. We went for coffee and a snack after dropping the car off, then she went shopping for plants, then we went for another drive in the X (her driving) up to Loon Lake for ice cream. I drummed in the moring (I should do that more often) and then again in the afternoon. Getting a little better at improvising while listening to music (no chart). I need a bigger "vocabulary" though. SPCX has dropped even more. I bought more as it went down and then just bought more shares today (sold MSFT). I think it will do very well long term.
