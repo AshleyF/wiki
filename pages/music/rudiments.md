@@ -318,6 +318,6 @@ stick: R  L R R L L L  R L L R R
 tempo 133.333
 meter 4/4
 division 12
-sn:    f> d x f> d x f> d x f> d x
-stick: R  L R L  R L R  L R L  R L
+sn:    f> x/ x f> x/ x f> x/ x f> x/ x
+stick: R  L  R L  R  L R  L  R L  R  L
 ```
