@@ -139,3 +139,7 @@ Before the movie, Tracey and I has sushi at Izumi and after we followed our nose
 ## 29 JUL 2026 Wed - Calvin + Truck Repair
 
 Calvin and I went to lunch at Denny's. I picked him up in the X and we went to Tesla afterwards and swapped it for the truck, which has been repaired. They replaced the PCS, added a slat to the tonneau cover and replaced the panels above the doors. That part sucks. Now it's silver again and I'll have to re-wrap it. They'll give me a $300 credit for that. Everything else was free (under warranty). In the evening, I worked on memorizing more CMLLs, getting used to flam-drag-taps, and reading Contact.
+
+## 30 JUL 2026 Thu - Zebra
+
+A thrift store in Spokane posted a zebra skin for sale. It could be pretty cool under the piano! Tracey and I went in to take a look. We decided not to get it because it had a few holes and warn spots. But now, getting a zebra skin is in our future. Maybe one of the kids will choose sub-Saharan Africa or we'll have to go, and import a skin. It'll be even cooler if we get it that way! ... We watched Fool's Gold; a pretty goofy rom-com. ... The market was up quite a bit today. MSFT in particular was up 15.5%! ... Graham pinged me to see if I wanted to join him on some AI startup with Wes McKinney. I'll have to stop by and see what he's up to (mainly his Flux project) when I'm in Redmond. But nah, I'm pretty set on staying actually retired.

@@ -153,7 +153,7 @@ body { margin: 0; min-height: 100vh; }
 .drum-toggle { min-width: 7.5rem; }
 .drum-tempo-control { display: inline-flex; align-items: center; gap: .35rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
 .drum-tempo-control span { margin-left: .2rem; }
-.drum-tempo-control .drum-tempo-step { min-width: 2.1rem; padding-inline: .45rem; }
+.drum-tempo-control .drum-tempo-step { min-width: 2.1rem; padding-inline: .45rem; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .drum-tempo { width: 4.8rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; }
 .drum-tempo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .drum-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }

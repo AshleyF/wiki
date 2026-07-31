@@ -210,7 +210,7 @@ stick: R  L R R L L L  R L L R R
 
 ## Flams
 
-### Hand-to-hand Flams
+### Flams
 
 ```drums
 tempo 200
@@ -243,11 +243,11 @@ stick: R  L R L  R L R  L R L  R L
 ### Flamacue
 
 ```drums
-tempo 200
+tempo 100
 meter 4/4
-division 8
-sn:    f x> x x f . . .
-stick: R L  R L R . . .
+division 16
+sn:    f x> x x f . . . f x> x x f . . .
+stick: R L  R L R . . . L R  L R L . . .
 ```
 
 ### Single Flammed Mill
@@ -290,6 +290,88 @@ sn:    f> x f> x f> x f> x
 stick: R  L L  R R  L L  R
 ```
 
+## Drags
+
+### Drag Ruff
+
+```drums
+tempo 200
+meter 4/4
+division 8
+sn:    d> . d> . d> . d> .
+stick: R  . L  . R  . L  .
+```
+
+### Single Drag Tap
+
+```drums
+tempo 200
+meter 4/4
+division 8
+sn:    d x> d x> d x> d x>
+stick: R L  L R  R L  L R
+```
+
+### Double Drag Tap
+
+```drums
+tempo 133.333
+meter 4/4
+division 12
+sn:    d d x> d d x> d d x> d d x>
+stick: R R L  L L R  R R L  L L R
+```
+
+### Lesson 25
+
+```drums
+tempo 133.333
+meter 4/4
+division 12
+sn:    d x x> d x x> d x x> d x x>
+stick: R L R  L R L  R L R  L R L
+```
+
+### Single Dragadiddle
+
+```drums
+tempo 100
+meter 4/4
+division 16
+sn:    x/> x x x x/> x x x x/> x x x x/> x x x
+stick: R   L R R L   R L L R   L R R L   R L L
+```
+
+### Single Ratamacue
+
+```drums
+tempo 133.333
+meter 4/4
+division 12
+sn:    d x x x> . . d x x x> . .
+stick: L R L R  . . R L R L  . .
+```
+
+### Double Ratamacue
+
+```drums
+tempo 200
+meter 4/4
+division 8
+sn:    d . d x x x> . . d . d x x x> . .
+stick: L . L R L R  . . R . R L R L  . .
+```
+
+### Triple Ratamacue
+
+```drums
+tempo 133.333
+meter 4/4
+division 12
+sn:    d . . d . . d x x x> . . d . . d . . d x x x> . .
+stick: R . . R . . R L R L  . . L . . L . . L R L R  . .
+```
+
 ## Hybrid
 
 ### Flam Paradiddle
@@ -320,4 +402,24 @@ meter 4/4
 division 12
 sn:    f> x/ x f> x/ x f> x/ x f> x/ x
 stick: R  L  R L  R  L R  L  R L  R  L
+```
+
+### Drag Paradiddle #1
+
+```drums
+tempo 100
+meter 4/4
+division 16
+sn:    x> . . . d x x x x> . . . d x x x
+stick: R  . . . R L R R L  . . . L R L L
+```
+
+### Drag Paradiddle #2
+
+```drums
+tempo 200
+meter 4/4
+division 8
+sn:    x> . d . d x x x x> . d . d x x x
+stick: R  . R . R L R R L  . L . L R L L
 ```

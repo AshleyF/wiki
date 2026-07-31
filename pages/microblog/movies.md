@@ -19,3 +19,7 @@ The movie doesn't match the book. For example, in the book Elli's dad dies and h
 ## The Odyssey (28 JUL 2026, IMAX, Rever Park Square)
 
 The Odyssey on IMAX was very good! Everything about it as a standalone story and the acting and effects were perfect. The only issue I have with it is that Nolan diverted from the actual Odyssey. This was Nolan's Odyssey, not Homer's Odyssey. Showing the Trojan horse and the character played by Elliot Paige was a fine addition. The whole idea that the horse was immoral trickery wasn't from the book. In fact, in the book he was a much more cunning trickster and less of a disturbed war veteran. The gods were demoted to an imagined religion that Odysseus waffed back and forth on. He ate the lotus leaf and forgot about home for seven years. He never ate it in the book and even pulled his crew from it and *never* did he forget home. The slaughter of the suiters was changed. His son didn't take part and didn't hand the maids. And then the *son* became king while Odysseus and his wife went into exhile. That's not from the book at all.
+
+## Fool's Gold (30 JUL 2026)
+
+Goofy rom-com. That is all. (Nah, it was fun to watch)
