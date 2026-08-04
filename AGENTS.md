@@ -114,6 +114,8 @@ Page paths are restricted by `currentPage()` to lowercase ASCII letters, digits,
 - paragraphs
 - ordered and unordered single-level lists
 - single-line block quotes
+- horizontal rules from lines containing four or more hyphens
+- forced line breaks from a trailing backslash at the end of a paragraph line
 - fenced code blocks using triple backticks
 - inline code, bold, emphasis, and links
 

@@ -23,3 +23,7 @@ The Odyssey on IMAX was very good! Everything about it as a standalone story and
 ## Fool's Gold (30 JUL 2026)
 
 Goofy rom-com. That is all. (Nah, it was fun to watch)
+
+## Bobby Fischer Against the World (03 AUG 2026)
+
+About the rise and fall of Bobby Fischer of course. His match with Spasky and rematch in Yugoslovia in 1992 and his decline into paranoia and pretty much insanity. I remember working at the newspaper when he defied the UN for the 1992 match and was exhiled. I remember seeing in the news when he died too. Pretty brilliant and lonely, sad life really...

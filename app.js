@@ -141,8 +141,17 @@ function renderMarkdown(markdown) {
   let sectionId = 0;
 
   const flushParagraph = () => {
-    if (paragraph.length) output.push(`<p>${inline(paragraph.join(' '))}</p>`);
+    if (paragraph.length) {
+      const html = paragraph.map((part) => `${inline(part.text)}${part.forcedBreak ? '<br>' : ''}`).join('');
+      output.push(`<p>${html}</p>`);
+    }
     paragraph = [];
+  };
+  const addParagraphLine = (text) => {
+    const forcedBreak = /\\\s*$/.test(text);
+    const cleanText = forcedBreak ? text.replace(/\\\s*$/, '') : text;
+    if (paragraph.length && !paragraph.at(-1).forcedBreak) paragraph.at(-1).text += ' ';
+    paragraph.push({ text: cleanText, forcedBreak });
   };
   const closeList = () => {
     if (listType) output.push(`</${listType}>`);
@@ -176,6 +185,7 @@ function renderMarkdown(markdown) {
     }
 
     const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    const horizontalRule = line.match(/^\s*-{4,}\s*$/);
     const unordered = line.match(/^[-*]\s+(.+)$/);
     const ordered = line.match(/^\d+\.\s+(.+)$/);
     const quote = line.match(/^>\s?(.*)$/);
@@ -195,6 +205,9 @@ function renderMarkdown(markdown) {
       }
       output.push(`<div class="wiki-section-body" id="${bodyId}" aria-hidden="${String(!expanded)}">`);
       sectionStack.push(level);
+    } else if (horizontalRule) {
+      flushParagraph(); closeList();
+      output.push('<hr>');
     } else if (unordered || ordered) {
       flushParagraph();
       const nextType = unordered ? 'ul' : 'ol';
@@ -206,7 +219,7 @@ function renderMarkdown(markdown) {
     } else if (!line.trim()) {
       flushParagraph(); closeList();
     } else {
-      paragraph.push(line.trim());
+      addParagraphLine(line.trim());
     }
   }
 
