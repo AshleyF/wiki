@@ -3,6 +3,7 @@
 [Books](#/microblog/books)
 [Movies](#/microblog/movies)
 [Shows](#/microblog/shows)
+[Classes](#/microblog/classes)
 
 ----
 

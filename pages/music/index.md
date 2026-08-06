@@ -1,6 +1,6 @@
 # Music
 
-My [drum rudiments page](#/music/rudiments).
+My [drum rudiments page](#/music/rudiments). I am also building a [rhythm study map](#/music/rhythm) for rhythm theory, drumset grooves, percussion sounds, and technique.
 
 ## Strudel
 
