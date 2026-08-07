@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A static drum-groove generation, analysis, notation, and playback laboratory.">
+    <title>Drum Groove Explorer</title>
+    <script>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem('personal-wiki-theme');
+        } catch (error) {
+          theme = null;
+        }
+        document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260807-2">
+  </head>
+  <body>
+    <header class="project-header">
+      <div>
+        <p class="eyebrow">Static rhythm laboratory</p>
+        <h1>Drum Groove Explorer</h1>
+      </div>
+      <button class="theme-toggle icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="intro-title">
+        <h2 id="intro-title">Build, generate, hear, and inspect a groove</h2>
+        <p>Edit any cell directly or generate a pattern from musical tendencies rather than a genre label. The notation, playback, analysis, and plain-text source all follow the same pattern.</p>
+      </section>
+
+      <section class="workbench" aria-label="Groove workbench">
+        <div class="transport panel">
+          <button id="play-toggle" class="primary-button" type="button" aria-label="Play groove">▶ Play</button>
+          <label class="compact-control">
+            <span>Tempo</span>
+            <input id="tempo" type="number" min="30" max="300" step="1" value="100" inputmode="numeric">
+            <span>BPM</span>
+          </label>
+          <label class="compact-control">
+            <span>Meter</span>
+            <select id="meter">
+              <option value="4/4">4/4</option>
+              <option value="3/4">3/4</option>
+              <option value="5/4">5/4</option>
+              <option value="6/8">6/8</option>
+              <option value="7/8">7/8</option>
+            </select>
+          </label>
+          <label class="compact-control">
+            <span>Length</span>
+            <select id="length">
+              <option value="1">1 bar</option>
+              <option value="2">2 bars</option>
+            </select>
+          </label>
+          <button id="clear-pattern" class="quiet-button" type="button">Clear</button>
+          <button id="copy-source" class="quiet-button" type="button">Copy source</button>
+          <span id="save-status" class="save-status" role="status" aria-live="polite">Saved locally</span>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="generator panel" aria-labelledby="generator-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Generator</p>
+                <h2 id="generator-title">Shape the probabilities</h2>
+              </div>
+              <button id="generate-pattern" class="primary-button" type="button">Generate</button>
+            </div>
+
+            <label class="field">
+              <span>Starting character</span>
+              <select id="preset">
+                <option value="interlocking">Interlocking</option>
+                <option value="grounded">Grounded rock</option>
+                <option value="funk">Syncopated funk</option>
+                <option value="hiphop">Laid-back hip-hop</option>
+                <option value="dance">Four-on-the-floor</option>
+                <option value="toms">Tom-led</option>
+                <option value="open">Open canvas</option>
+              </select>
+            </label>
+
+            <label class="field range-field">
+              <span><span>Kick density <span class="help-tip" tabindex="0" aria-label="The approximate number of kick attacks generated in each bar." data-tooltip="The approximate number of kick attacks generated in each bar.">?</span></span><output id="kick-density-output">28%</output></span>
+              <input id="kick-density" type="range" min="0" max="100" value="28">
+            </label>
+            <label class="field range-field">
+              <span><span>Syncopation <span class="help-tip" tabindex="0" aria-label="Moves probability away from strong metric positions and toward offbeats and anticipations." data-tooltip="Moves probability away from strong metric positions and toward offbeats and anticipations.">?</span></span><output id="syncopation-output">55%</output></span>
+              <input id="syncopation" type="range" min="0" max="100" value="55">
+            </label>
+            <label class="field range-field">
+              <span><span>Pattern surprise <span class="help-tip" tabindex="0" aria-label="Controls how much later material departs from the pattern already established." data-tooltip="Controls how much later material departs from the pattern already established.">?</span></span><output id="surprise-output">48%</output></span>
+              <input id="surprise" type="range" min="0" max="100" value="48">
+            </label>
+            <label class="field range-field">
+              <span><span>Orchestration <span class="help-tip" tabindex="0" aria-label="Adds more tom, cymbal, cowbell, ghost-note, and fill activity beyond the core groove." data-tooltip="Adds more tom, cymbal, cowbell, ghost-note, and fill activity beyond the core groove.">?</span></span><output id="orchestration-output">18%</output></span>
+              <input id="orchestration" type="range" min="0" max="100" value="18">
+            </label>
+            <label class="field range-field">
+              <span><span>Linearity <span class="help-tip" tabindex="0" aria-label="At the high end, instruments interlock one at a time. At the low end, kick, snare, cymbals, and toms may strike together." data-tooltip="At the high end, instruments interlock one at a time. At the low end, kick, snare, cymbals, and toms may strike together.">?</span></span><output id="linearity-output">35%</output></span>
+              <input id="linearity" type="range" min="0" max="100" value="35">
+            </label>
+
+            <div class="switches">
+              <label><input id="keep-backbeat" type="checkbox" checked> Anchor a meter-aware backbeat <span class="help-tip" tabindex="0" aria-label="Places accented snare anchors at conventional structural points for the selected meter." data-tooltip="Places accented snare anchors at conventional structural points for the selected meter.">?</span></label>
+            </div>
+
+            <div class="generator-actions">
+              <button id="mutate-pattern" class="quiet-button" type="button">Mutate current groove</button>
+              <button id="money-beat" class="quiet-button" type="button">Load money beat</button>
+            </div>
+          </section>
+
+          <section class="analysis panel" aria-labelledby="analysis-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Analysis</p>
+                <h2 id="analysis-title">What the pattern is doing</h2>
+              </div>
+            </div>
+            <dl class="metrics">
+              <div><dt>Kick strokes</dt><dd id="metric-kicks">0</dd></div>
+              <div><dt>Offbeat kicks</dt><dd id="metric-offbeats">0</dd></div>
+              <div><dt>Kick/snare unisons</dt><dd id="metric-unisons">0</dd></div>
+              <div><dt>Longest kick run</dt><dd id="metric-run">0</dd></div>
+              <div><dt>Kick period</dt><dd id="metric-period">16 steps</dd></div>
+              <div><dt>Spacing variation</dt><dd id="metric-spacing">—</dd></div>
+            </dl>
+            <div id="character-tags" class="character-tags" aria-label="Groove character"></div>
+            <p id="analysis-note" class="analysis-note"></p>
+          </section>
+        </div>
+
+        <section class="sequencer panel" aria-labelledby="sequencer-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Step editor</p>
+              <h2 id="sequencer-title">Instrument grid</h2>
+            </div>
+            <p class="grid-help">Click a cell repeatedly to cycle its articulations.</p>
+          </div>
+          <div id="step-grid" class="step-grid" role="group" aria-label="Editable drum sequencer"></div>
+          <div class="legend" aria-label="Grid legend">
+            <span><i class="legend-swatch hit"></i> hit</span>
+            <span><i class="legend-swatch accent"></i> accent</span>
+            <span><i class="legend-swatch ghost"></i> ghost</span>
+            <span><i class="legend-swatch open"></i> open</span>
+            <span><i class="legend-swatch bark"></i> bark</span>
+            <span><i class="legend-swatch cross-stick"></i> cross-stick</span>
+            <span><i class="legend-swatch flam"></i> flam</span>
+            <span><i class="legend-swatch drag"></i> drag</span>
+          </div>
+        </section>
+
+        <section class="notation panel" aria-labelledby="notation-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">VexFlow</p>
+              <h2 id="notation-title">Drum notation</h2>
+            </div>
+          </div>
+          <div id="notation-target" class="notation-target" aria-label="Rendered drum notation"></div>
+        </section>
+
+        <details class="source-panel panel">
+          <summary>Plain-text pattern source</summary>
+          <textarea id="pattern-source" readonly spellcheck="false" aria-label="Plain-text groove source"></textarea>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      <p>Everything runs locally in this static page. Generated patterns are saved in this browser.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+    <script type="module" src="app.js?v=20260807-preset-sync"></script>
+  </body>
+</html>

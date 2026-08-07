@@ -71,6 +71,7 @@ Third-party browser dependencies are acceptable when they unlock an interactive 
 │   ├── home.md
 │   ├── sound.md
 │   └── cubing.md
+├── projects/        Standalone static experiments linked from the wiki
 ├── README.md        Short operator and author documentation
 └── AGENTS.md        Architecture and maintenance guidance (this file)
 ```
@@ -121,9 +122,9 @@ Page paths are restricted by `currentPage()` to lowercase ASCII letters, digits,
 
 It does not support nested lists, images, tables, raw HTML, multiline block quotes, alternate heading syntax, or complex/nested inline markup. Preserve this distinction in documentation and tests. If the content eventually needs broad Markdown compatibility, replace the parser with a maintained implementation rather than continually growing fragile regular expressions. Keep the fenced renderer contract when doing so.
 
-Raw HTML from Markdown is intentionally unsupported. `escapeHtml()` runs before inline substitutions, and ordinary fenced code is escaped. Link destinations are limited to `http:`, `https:`, `mailto:`, and hash links. Do not weaken these rules without explicitly redesigning the trust model.
+Raw HTML from Markdown is intentionally unsupported. `escapeHtml()` runs before inline substitutions, and ordinary fenced code is escaped. Link destinations are limited to `http:`, `https:`, `mailto:`, hash links, and restricted relative paths under `projects/`. Do not weaken these rules without explicitly redesigning the trust model.
 
-Rendered external `http:` and `https:` Markdown links open in a new tab with `target="_blank"` and `rel="noopener noreferrer"`. Hash wiki links and `mailto:` links stay in the current browsing context.
+Rendered external `http:` and `https:` Markdown links and local `projects/...` links open in a new tab with `target="_blank"` and `rel="noopener noreferrer"`. Hash wiki links and `mailto:` links stay in the current browsing context. Project-relative links deliberately accept only lowercase letters, digits, slashes, and hyphens; traversal and arbitrary relative assets remain rejected.
 
 ## Fenced-language extension architecture
 
@@ -263,6 +264,7 @@ Maintain keyboard access, visible focus behavior, semantic controls, and status 
 - Use lowercase kebab-case slugs only.
 - Link between wiki pages with `[label](#/slug)`.
 - Add important pages to the static sidebar in `index.html`.
+- Put a standalone static experiment in `projects/<slug>/`, link it with `[label](projects/<slug>/)`, and do not assume that it shares the wiki shell.
 - Keep each page understandable as raw Markdown.
 - Put sub-language source in a labeled fence; do not hide canonical content in generated HTML.
 - Treat every Strudel fence as executable code during review.

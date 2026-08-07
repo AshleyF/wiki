@@ -63,8 +63,9 @@ function inline(text) {
   result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   result = result.replace(/(^|[^\w])_([^_\n]+?)_(?=[^\w]|$)/g, '$1<em>$2</em>');
   result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
-    const safeHref = /^(https?:|mailto:|#)/.test(href) ? href : '#';
-    const external = /^https?:/.test(safeHref) ? ' target="_blank" rel="noopener noreferrer"' : '';
+    const projectLink = /^projects\/[a-z0-9][a-z0-9/-]*\/?$/.test(href);
+    const safeHref = /^(https?:|mailto:|#)/.test(href) || projectLink ? href : '#';
+    const external = /^https?:/.test(safeHref) || projectLink ? ' target="_blank" rel="noopener noreferrer"' : '';
     return `<a href="${escapeHtml(safeHref)}"${external}>${label}</a>`;
   });
   return result;
