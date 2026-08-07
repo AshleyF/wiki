@@ -110,7 +110,7 @@ Page paths are restricted by `currentPage()` to lowercase ASCII letters, digits,
 
 `renderMarkdown()` is a small purpose-built renderer, not a CommonMark implementation. It currently supports:
 
-- ATX headings at levels 1–3
+- ATX headings at levels 1–6
 - paragraphs
 - ordered and unordered single-level lists
 - single-line block quotes

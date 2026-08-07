@@ -184,7 +184,7 @@ function renderMarkdown(markdown) {
       continue;
     }
 
-    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
     const horizontalRule = line.match(/^\s*-{4,}\s*$/);
     const unordered = line.match(/^[-*]\s+(.+)$/);
     const ordered = line.match(/^\d+\.\s+(.+)$/);
@@ -274,7 +274,7 @@ function waitForStrudelDsl(timeoutMs = 3000) {
 }
 
 function setSectionExpanded(section, expanded) {
-  const toggle = section?.querySelector(':scope > h1 .wiki-section-toggle, :scope > h2 .wiki-section-toggle, :scope > h3 .wiki-section-toggle');
+  const toggle = section?.querySelector(':scope > h1 .wiki-section-toggle, :scope > h2 .wiki-section-toggle, :scope > h3 .wiki-section-toggle, :scope > h4 .wiki-section-toggle, :scope > h5 .wiki-section-toggle, :scope > h6 .wiki-section-toggle');
   const body = toggle ? document.getElementById(toggle.getAttribute('aria-controls')) : null;
   if (!toggle) return;
   toggle?.setAttribute('aria-expanded', String(expanded));
