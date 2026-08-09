@@ -16,23 +16,15 @@
         document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260808-midi-audit">
+    <link rel="stylesheet" href="styles.css?v=20260809-scroll-tabs">
   </head>
   <body>
     <header class="project-header">
-      <div>
-        <p class="eyebrow">Static rhythm laboratory</p>
-        <h1>Drum Groove Explorer</h1>
-      </div>
+      <h1>Drum Groove Explorer</h1>
       <button class="theme-toggle icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
     </header>
 
     <main>
-      <section class="intro" aria-labelledby="intro-title">
-        <h2 id="intro-title">Build, generate, hear, and inspect a groove</h2>
-        <p>Edit any cell directly or generate a pattern from musical tendencies rather than a genre label. The notation, playback, analysis, and plain-text source all follow the same pattern.</p>
-      </section>
-
       <section class="workbench" aria-label="Groove workbench">
         <div class="transport panel">
           <button id="play-toggle" class="primary-button" type="button" aria-label="Play groove">▶ Play</button>
@@ -66,28 +58,38 @@
               <option value="8">8 bars</option>
             </select>
           </label>
-          <button id="clear-pattern" class="quiet-button" type="button">Clear</button>
-          <button id="copy-source" class="quiet-button" type="button">Copy source</button>
-          <button id="enable-midi" class="quiet-button" type="button" title="Allow this page to send drum notes to a MIDI device or virtual port">Enable MIDI</button>
-          <label class="compact-control midi-control">
-            <span>MIDI out</span>
-            <select id="midi-output" disabled>
-              <option value="">Off</option>
-            </select>
-          </label>
-          <label class="compact-control midi-channel-control">
-            <span>Channel</span>
-            <select id="midi-channel" aria-label="MIDI channel">
-              <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-              <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-              <option value="9">9</option><option value="10" selected>10</option><option value="11">11</option><option value="12">12</option>
-              <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
-            </select>
-          </label>
+          <details class="transport-more">
+            <summary>More</summary>
+            <div class="transport-more-menu">
+              <button id="clear-pattern" class="quiet-button" type="button">Clear pattern</button>
+              <button id="copy-source" class="quiet-button" type="button">Copy source</button>
+              <button id="enable-midi" class="quiet-button" type="button" title="Allow this page to send drum notes to a MIDI device or virtual port">Enable MIDI</button>
+              <label class="compact-control midi-control">
+                <span>MIDI out</span>
+                <select id="midi-output" disabled><option value="">Off</option></select>
+              </label>
+              <label class="compact-control midi-channel-control">
+                <span>Channel</span>
+                <select id="midi-channel" aria-label="MIDI channel">
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                  <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                  <option value="9">9</option><option value="10" selected>10</option><option value="11">11</option><option value="12">12</option>
+                  <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                </select>
+              </label>
+            </div>
+          </details>
           <span id="save-status" class="save-status" role="status" aria-live="polite">Saved locally</span>
         </div>
 
-        <section class="performance-controls panel" aria-labelledby="performance-title">
+        <nav class="view-tabs" aria-label="Explorer areas">
+          <button type="button" data-view="play" aria-pressed="true">Live</button>
+          <button type="button" data-view="shape" aria-pressed="false">Shape</button>
+          <button type="button" data-view="edit" aria-pressed="false">Edit</button>
+          <button type="button" data-view="inspect" aria-pressed="false">Inspect</button>
+        </nav>
+
+        <section class="performance-controls panel" aria-labelledby="performance-title" data-view-panel="play">
           <div class="performance-heading">
             <div>
               <p class="eyebrow">Live drummer</p>
@@ -100,19 +102,24 @@
             <label class="compact-performance-control"><span>Evolution</span><input id="live-evolution" type="range" min="0" max="100" value="24"><output id="live-evolution-output" for="live-evolution">24%</output></label>
             <label class="compact-performance-control"><span>Cut chance</span><input id="live-cut-chance" type="range" min="0" max="100" value="6"><output id="live-cut-chance-output" for="live-cut-chance">6%</output></label>
             <label class="compact-control"><span>Queue at</span><select id="interjection-boundary"><option value="half">Next half-bar</option><option value="bar" selected>Next bar</option></select></label>
+            <button id="queue-fill" class="quiet-button" type="button" title="Replace the lead-in to the next boundary with the configured fill and landing.">Queue fill</button>
+            <button id="queue-cut" class="quiet-button" type="button" title="Silence the selected amount at the next boundary, then return on kick and crash.">Queue cut</button>
+          </div>
+          <details class="live-options">
+            <summary>Fill &amp; cut settings</summary>
+            <div class="performance-fields">
             <label class="compact-control"><span>Fill length</span><select id="live-fill-length"><option value="beat">1 beat</option><option value="half" selected>Half bar</option><option value="bar">1 bar</option></select></label>
             <label class="compact-control"><span>Fill shape</span><select id="live-fill-style"><option value="tom-sweep" selected>Tom sweep</option><option value="snare-toms">Snare → toms</option><option value="snare-roll">Snare roll</option><option value="around-kit">Around the kit</option><option value="cymbal-punches">Cymbal punches</option></select></label>
             <label class="compact-performance-control"><span>Fill activity</span><input id="live-fill-activity" type="range" min="25" max="100" value="85"><output id="live-fill-activity-output" for="live-fill-activity">85%</output></label>
             <label class="compact-control"><span>Fill landing</span><select id="live-fill-landing"><option value="kick-crash" selected>Kick + crash</option><option value="crash">Crash only</option><option value="kick">Kick only</option><option value="none">No forced landing</option></select></label>
             <label class="compact-control"><span>Cut length</span><select id="live-cut-length"><option value="beat" selected>1 beat</option><option value="half">Half bar</option><option value="bar">1 bar</option></select></label>
-            <button id="queue-fill" class="quiet-button" type="button" title="Replace the lead-in to the next boundary with the configured fill and landing.">Queue fill</button>
-            <button id="queue-cut" class="quiet-button" type="button" title="Silence the selected amount at the next boundary, then return on kick and crash.">Queue cut</button>
-          </div>
-          <p class="performance-help">Fill replaces the selected amount before the boundary and uses the configured landing. Cut removes the selected amount after the boundary, then returns with kick and crash.</p>
+            </div>
+            <p class="performance-help">Fill replaces the selected amount before the boundary and uses the configured landing. Cut removes the selected amount after the boundary, then returns with kick and crash.</p>
+          </details>
           <p id="live-status" class="performance-status" role="status" aria-live="polite">The 2-bar core loop repeats while small variations play over it.</p>
         </section>
 
-        <details class="midi-help panel">
+        <details class="midi-help panel" data-view-panel="inspect" hidden>
           <summary>MIDI setup</summary>
           <p>Enable MIDI, choose the virtual or physical port received by Superior Drummer, and use the same channel there. Notes use the General MIDI drum map on channel 10 by default. Hi-hat hits also send pedal CC4 (127 closed, 0 open) so Superior Drummer's e-drum mapping receives an explicit openness state. Browser volume and mute affect only the built-in sounds; MIDI continues playing.</p>
           <p>Superior Drummer libraries can assign additional aliases or substitute articulations. Its Help → MIDI Mapping Layout shows the definitive map for the loaded library.</p>
@@ -134,7 +141,7 @@
           </div>
         </details>
 
-        <div class="workspace-grid">
+        <div class="workspace-grid" data-view-panel="shape" hidden>
           <section class="generator panel" aria-labelledby="generator-title">
             <div class="panel-heading">
               <div>
@@ -177,7 +184,7 @@
               </select>
             </label>
 
-            <details class="parameter-group" open>
+            <details class="parameter-group">
               <summary>Core character</summary>
               <div class="parameter-fields">
                 <label class="field range-field"><span><span>Kick density <span class="help-tip" tabindex="0" aria-label="The approximate number of kick attacks generated in each bar." data-tooltip="The approximate number of kick attacks generated in each bar.">?</span></span><output id="kick-density-output">28%</output></span><input id="kick-density" type="range" min="0" max="100" value="28"></label>
@@ -261,7 +268,7 @@
           </section>
         </div>
 
-        <section class="sequencer panel" aria-labelledby="sequencer-title">
+        <section class="sequencer panel" aria-labelledby="sequencer-title" data-view-panel="edit" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">Step editor</p>
@@ -290,7 +297,7 @@
           </div>
         </section>
 
-        <section class="notation panel" aria-labelledby="notation-title">
+        <section class="notation panel" aria-labelledby="notation-title" data-view-panel="inspect" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">VexFlow</p>
@@ -300,7 +307,7 @@
           <div id="notation-target" class="notation-target" aria-label="Rendered drum notation"></div>
         </section>
 
-        <details class="source-panel panel">
+        <details class="source-panel panel" data-view-panel="inspect" hidden>
           <summary>Plain-text pattern source</summary>
           <textarea id="pattern-source" readonly spellcheck="false" aria-label="Plain-text groove source"></textarea>
         </details>
@@ -312,6 +319,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
-    <script type="module" src="app.js?v=20260808-one-fill-probability"></script>
+    <script type="module" src="app.js?v=20260809-follow-playback"></script>
   </body>
 </html>

@@ -3,6 +3,7 @@ const $ = (selector) => document.querySelector(selector);
 const THEME_KEY = 'personal-wiki-theme';
 const PATTERN_KEY = 'drum-groove-explorer-pattern-v1';
 const SETTINGS_KEY = 'drum-groove-explorer-settings-v1';
+const VIEW_KEY = 'drum-groove-explorer-view-v1';
 
 const instruments = [
   { id: 'cr2', label: 'Crash 2', key: 'c/6/X2', family: 'cymbal', midi: 57, pan: .55, states: ['off', 'hit', 'accent'] },
@@ -50,6 +51,23 @@ const refs = {
   mutate: $('#mutate-pattern'), money: $('#money-beat'), grid: $('#step-grid'), notation: $('#notation-target'),
   source: $('#pattern-source'), tags: $('#character-tags'), note: $('#analysis-note'), theme: $('.theme-toggle')
 };
+
+const viewButtons = [...document.querySelectorAll('.view-tabs [data-view]')];
+const viewPanels = [...document.querySelectorAll('[data-view-panel]')];
+
+function selectView(view, { persist = true } = {}) {
+  const selected = viewButtons.some(button => button.dataset.view === view) ? view : 'play';
+  viewButtons.forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.view === selected));
+  });
+  viewPanels.forEach(panel => {
+    panel.hidden = panel.dataset.viewPanel !== selected;
+  });
+  if (selected === 'inspect') renderNotation();
+  if (persist) {
+    try { localStorage.setItem(VIEW_KEY, selected); } catch (error) { /* The view can remain session-only. */ }
+  }
+}
 
 const controlKeys = [
   'density', 'syncopation', 'surprise', 'orchestration', 'linearity', 'pulseDensity', 'swing', 'humanization',
@@ -1021,6 +1039,23 @@ function clearHighlight() {
   document.querySelectorAll('.notation-target .current-note').forEach(element => element.classList.remove('current-note'));
 }
 
+function followHorizontal(container, element, leadingInset = 16) {
+  if (!container || !element || container.offsetWidth === 0) return;
+  const containerRect = container.getBoundingClientRect();
+  const elementRect = element.getBoundingClientRect();
+  const elementCenter = container.scrollLeft + elementRect.left - containerRect.left + elementRect.width / 2;
+  const visibleCenter = leadingInset + (container.clientWidth - leadingInset) / 2;
+  const maximum = Math.max(0, container.scrollWidth - container.clientWidth);
+  container.scrollLeft = Math.max(0, Math.min(maximum, elementCenter - visibleCenter));
+}
+
+function followPlaybackStep(step) {
+  const gridMarker = refs.grid.querySelector(`.grid-header .step-number:nth-child(${step + 2})`);
+  const gridLabel = refs.grid.querySelector('.grid-label');
+  followHorizontal(refs.grid, gridMarker, (gridLabel?.offsetWidth || 0) + 12);
+  followHorizontal(refs.notation, notationElements[step]);
+}
+
 function applyPendingInterjections(step) {
   const cut = queuedCuts.find(cue => cue.boundary === step);
   if (cut) {
@@ -1048,6 +1083,7 @@ function highlightStep(step, atTime) {
     clearHighlight();
     refs.grid.querySelectorAll(`[data-step="${step}"]`).forEach(element => element.classList.add('is-current'));
     notationElements[step]?.classList.add('current-note');
+    followPlaybackStep(step);
   }, delay);
   highlightTimers.push(timer);
 }
@@ -1246,6 +1282,7 @@ for (const ref of [refs.timekeeper, refs.period, refs.phraseContour, refs.backbe
 refs.preset.addEventListener('change', applyPresetSelection);
 refs.resetEverything.addEventListener('click', resetEverything);
 refs.theme.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+viewButtons.forEach(button => button.addEventListener('click', () => selectView(button.dataset.view)));
 window.addEventListener('resize', () => { window.clearTimeout(resizeTimer); resizeTimer = window.setTimeout(renderNotation, 150); });
 window.addEventListener('pagehide', stopPlayback);
 
@@ -1256,3 +1293,6 @@ syncAudioControls();
 updateLiveOutputs();
 setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
 updateAll({ save: false });
+let initialView = 'play';
+try { initialView = localStorage.getItem(VIEW_KEY) || 'play'; } catch (error) { /* Use the default view. */ }
+selectView(initialView, { persist: false });
