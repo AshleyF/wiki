@@ -4,6 +4,8 @@ const THEME_KEY = 'personal-wiki-theme';
 const PATTERN_KEY = 'drum-groove-explorer-pattern-v1';
 const SETTINGS_KEY = 'drum-groove-explorer-settings-v1';
 const VIEW_KEY = 'drum-groove-explorer-view-v1';
+const SCENE_SCHEMA = 2;
+const sceneIds = ['verse-1', 'verse-2', 'chorus-1', 'chorus-2', 'bridge-1', 'bridge-2'];
 
 const instruments = [
   { id: 'cr2', label: 'Crash 2', key: 'c/6/X2', family: 'cymbal', midi: 57, pan: .55, states: ['off', 'hit', 'accent'] },
@@ -31,13 +33,18 @@ const meters = {
 
 const refs = {
   play: $('#play-toggle'), mute: $('#mute-toggle'), volume: $('#master-volume'), volumeOutput: $('#master-volume-output'),
-  midiEnable: $('#enable-midi'), midiOutput: $('#midi-output'), midiChannel: $('#midi-channel'),
+  midiEnable: $('#enable-midi'), midiOutput: $('#midi-output'), midiChannel: $('#midi-channel'), midiClock: $('#midi-clock'),
   liveDrummer: $('#live-drummer'), coreLoopBars: $('#core-loop-bars'), liveEvolution: $('#live-evolution'), liveEvolutionOutput: $('#live-evolution-output'),
+  embellishment: $('#embellishment'), embellishmentOutput: $('#embellishment-output'),
+  punctuationEvery: $('#punctuation-every'), punctuationChance: $('#punctuation-chance'), punctuationChanceOutput: $('#punctuation-chance-output'),
+  scenePhraseBars: $('#scene-phrase-bars'), sceneTransition: $('#scene-transition'), currentScene: $('#current-scene'), queuedScene: $('#queued-scene'),
+  sceneButtons: [...document.querySelectorAll('[data-scene]')], cancelScene: $('#cancel-scene'), sceneSelector: $('#scene-selector'),
+  sceneContextLabel: $('#scene-context-label'), sceneContextQueued: $('#scene-context-queued'),
   liveCutChance: $('#live-cut-chance'), liveCutChanceOutput: $('#live-cut-chance-output'),
   interjectionBoundary: $('#interjection-boundary'), liveFillLength: $('#live-fill-length'), liveFillStyle: $('#live-fill-style'),
   liveFillActivity: $('#live-fill-activity'), liveFillActivityOutput: $('#live-fill-activity-output'), liveFillLanding: $('#live-fill-landing'),
   liveCutLength: $('#live-cut-length'),
-  queueFill: $('#queue-fill'), queueCut: $('#queue-cut'), liveStatus: $('#live-status'),
+  queueFill: $('#queue-fill'), cancelFill: $('#cancel-fill'), queueCut: $('#queue-cut'), cancelCut: $('#cancel-cut'), liveStatus: $('#live-status'),
   tempo: $('#tempo'), meter: $('#meter'), length: $('#length'), clear: $('#clear-pattern'), copy: $('#copy-source'),
   status: $('#save-status'), preset: $('#preset'), density: $('#kick-density'), syncopation: $('#syncopation'),
   surprise: $('#surprise'), orchestration: $('#orchestration'), linearity: $('#linearity'), backbeat: $('#keep-backbeat'),
@@ -48,9 +55,124 @@ const refs = {
   fillProbability: $('#fill-probability'), fillLength: $('#fill-length'), registerMovement: $('#register-movement'),
   eventSpacing: $('#event-spacing'), repetition: $('#repetition'), period: $('#period'), phraseContour: $('#phrase-contour'),
   generate: $('#generate-pattern'), resetEverything: $('#reset-everything'), muteAllTracks: $('#mute-all-tracks'), unmuteAllTracks: $('#unmute-all-tracks'),
-  mutate: $('#mutate-pattern'), money: $('#money-beat'), grid: $('#step-grid'), notation: $('#notation-target'),
-  source: $('#pattern-source'), tags: $('#character-tags'), note: $('#analysis-note'), theme: $('.theme-toggle')
+  mutationMode: $('#mutation-mode'), mutate: $('#mutate-pattern'), grid: $('#step-grid'), notation: $('#notation-target'),
+  source: $('#pattern-source'), tags: $('#character-tags'), theme: $('.theme-toggle')
 };
+
+const controlHelp = {
+  '#play-toggle': 'Starts or stops the current section. Playback loops and follows queued section changes, fills, and cuts.',
+  '#master-volume': 'Controls the built-in drum sounds. It does not change MIDI output volume.',
+  '#tempo': 'Sets playback speed in beats per minute.',
+  '#meter': 'Sets the number and grouping of beats in each bar.',
+  '#length': 'Sets how many bars each editable section contains.',
+  '#clear-pattern': 'Removes every note from the current section.',
+  '#copy-source': 'Copies the current rhythm as plain-text drum notation.',
+  '#midi-output': 'Chooses the MIDI destination that receives the drum performance.',
+  '#midi-channel': 'Chooses the MIDI channel. Channel 10 is the standard drum channel.',
+  '#midi-clock': 'Sends MIDI timing clock at 24 pulses per quarter note, plus Start and Stop, so connected software or hardware can follow Rhythm Explorer’s tempo.',
+  '#scene-selector': 'Chooses the section shown by Shape, Edit, and Inspect. During playback, choosing a different section queues it.',
+  '#live-drummer': 'Allows the stable section to acquire controlled variation, embellishments, fills, and punctuation while it plays.',
+  '#core-loop-bars': 'The stable repeating foundation inside each section. Later bars borrow from this one-, two-, or four-bar core.',
+  '#scene-phrase-bars': 'The musical span used for major boundaries. Queued sections and automatic phrase events wait for the end of this many bars.',
+  '#scene-transition': 'Chooses what happens at the boundary where a queued section becomes active.',
+  '#live-evolution': 'Higher values preserve the established groove. Lower values allow more bar-to-bar rhythmic movement.',
+  '#embellishment': 'Controls small details layered over the core, such as ghost notes and occasional open hi-hats.',
+  '#punctuation-every': 'Sets how often the drummer gets an opportunity to add a structural cymbal accent.',
+  '#punctuation-chance': 'Sets the probability that a scheduled punctuation point actually receives a crash.',
+  '#live-cut-chance': 'Sets the probability of an automatic brief silence at a phrase ending.',
+  '#interjection-boundary': 'Sets how long manual Fill and Cut actions wait before they happen.',
+  '#live-fill-length': 'Sets how much time immediately before the selected boundary is replaced by the fill.',
+  '#live-fill-style': 'Chooses the instruments and motion used by manually queued and section-transition fills.',
+  '#live-fill-activity': 'Controls how many available subdivisions in a fill contain strokes.',
+  '#live-fill-landing': 'Chooses the accent that marks the return to the groove after a fill.',
+  '#live-cut-length': 'Sets how long a manually queued cut remains silent before the groove returns.',
+  '#preset': 'Loads a coordinated starting character for all generation controls.',
+  '#mutation-mode': 'Chooses whether mutation changes note timing, instrument assignment, or both.',
+  '#mutate-pattern': 'Makes a related variation of the selected section using the chosen mutation mode.'
+};
+
+function installControlHelp() {
+  document.querySelectorAll('.help-tip').forEach(tip => {
+    const description = tip.dataset.tooltip || tip.getAttribute('aria-label');
+    const label = tip.closest('label');
+    const control = label?.querySelector('input, select');
+    if (description && label) label.title = description;
+    if (description && control) {
+      control.title = description;
+      control.setAttribute('aria-description', description);
+      if (!control.hasAttribute('aria-label')) {
+        const labelFragment = [...tip.parentElement.childNodes]
+          .filter(node => node !== tip)
+          .map(node => node.textContent || '')
+          .join('')
+          .trim();
+        if (labelFragment) control.setAttribute('aria-label', labelFragment);
+      }
+    }
+    tip.remove();
+  });
+
+  Object.entries(controlHelp).forEach(([selector, description]) => {
+    const control = $(selector);
+    if (!control) return;
+    control.title = description;
+    control.setAttribute('aria-description', description);
+    const label = control.closest('label');
+    if (!label) return;
+    label.title = description;
+    const labelText = label.querySelector(':scope > span:first-child');
+    if (!control.hasAttribute('aria-label')) {
+      const accessibleName = selector === '#scene-selector' ? 'Section' : labelText?.textContent.trim() || (selector === '#live-drummer' ? 'Layered performance' : '');
+      if (accessibleName) control.setAttribute('aria-label', accessibleName);
+    }
+  });
+
+  const titledControls = {
+    '.view-tabs [data-view="play"]': 'Perform sections and queue live changes.',
+    '.view-tabs [data-view="shape"]': 'Generate and mutate the selected section.',
+    '.view-tabs [data-view="edit"]': 'Edit every instrument and subdivision directly.',
+    '.view-tabs [data-view="inspect"]': 'View notation, analysis details, MIDI setup, and plain-text source.',
+    '.scene-button': 'Choose this section now, or queue it for the next phrase boundary during playback.',
+    '#cancel-scene': 'Cancel the pending section change.',
+    '#queue-fill': 'Queue a fill at the selected boundary.',
+    '#cancel-fill': 'Cancel the pending fill.',
+    '#queue-cut': 'Queue a brief silence at the selected boundary.',
+    '#cancel-cut': 'Cancel the pending cut.',
+    '#reset-everything': 'Restore the complete Pocket Rock starting state.',
+    '#generate-pattern': 'Create a new version of the selected section from the Shape controls.',
+    '#mute-all-tracks': 'Silence every instrument without deleting its notes.',
+    '#unmute-all-tracks': 'Restore playback for every instrument.',
+    '.transport-more > summary': 'Open pattern, source, and MIDI actions.',
+    '.live-options > summary': 'Adjust the shape, duration, activity, and landing of fills and cuts.',
+    '.midi-help > summary': 'Show MIDI routing instructions and the drum-note map.',
+    '.source-panel > summary': 'Show the current rhythm in portable plain-text notation.'
+  };
+  Object.entries(titledControls).forEach(([selector, description]) => {
+    document.querySelectorAll(selector).forEach(control => {
+      control.title = description;
+      control.setAttribute('aria-description', description);
+    });
+  });
+
+  const metricHelp = {
+    'Written attacks': 'The total number of instrument strokes, counting simultaneous instruments separately.',
+    'Occupied steps': 'The number of grid positions containing at least one stroke.',
+    'Layered steps': 'The number of grid positions where multiple instruments strike together.',
+    'Offbeat attacks': 'Attacks outside the meter’s primary beat-group anchors.',
+    'Pattern period': 'The shortest number of steps after which the complete pattern repeats exactly.',
+    'Articulations': 'The number of accents, ghost notes, flams, drags, open hats, and other special strokes.'
+  };
+  document.querySelectorAll('.metrics dt').forEach(term => {
+    const description = metricHelp[term.textContent.trim()];
+    if (description) {
+      term.title = description;
+      term.setAttribute('aria-description', description);
+    }
+  });
+
+}
+
+installControlHelp();
 
 const viewButtons = [...document.querySelectorAll('.view-tabs [data-view]')];
 const viewPanels = [...document.querySelectorAll('[data-view-panel]')];
@@ -64,6 +186,7 @@ function selectView(view, { persist = true } = {}) {
     panel.hidden = panel.dataset.viewPanel !== selected;
   });
   if (selected === 'inspect') renderNotation();
+  refs.sceneContextLabel.textContent = ({ play: 'Live section', shape: 'Shaping section', edit: 'Editing section', inspect: 'Inspecting section' })[selected];
   if (persist) {
     try { localStorage.setItem(VIEW_KEY, selected); } catch (error) { /* The view can remain session-only. */ }
   }
@@ -124,6 +247,7 @@ let muted = false;
 let mutedInstruments = new Set();
 let midiAccess = null;
 let midiOutput = null;
+let midiClockRunning = false;
 let pendingMidiOutputId = null;
 let playing = false;
 let schedulerTimer = null;
@@ -136,6 +260,12 @@ let generationTimer = null;
 let scheduledStepCount = 0;
 let visualRefreshTimer = null;
 let performanceTemplateTracks = null;
+let scenes = [];
+let activeSceneId = 'verse-1';
+let queuedSceneId = null;
+let restoredSceneState = null;
+let sceneBar = 1;
+let totalBarsStarted = 1;
 let queuedCuts = [];
 let queuedFills = [];
 let queuedLandings = [];
@@ -169,6 +299,113 @@ function moneyBeat(meter = pattern.meter, bars = pattern.bars) {
   return next;
 }
 
+function cloneTracks(tracks) {
+  return Object.fromEntries(instruments.map(({ id }) => [id, [...tracks[id]]]));
+}
+
+function sceneName(id) {
+  return ({
+    'verse-1': 'Verse 1', 'verse-2': 'Verse 2',
+    'chorus-1': 'Chorus 1', 'chorus-2': 'Chorus 2',
+    'bridge-1': 'Bridge 1', 'bridge-2': 'Bridge 2'
+  })[id] || id;
+}
+
+function buildScenesFromPattern() {
+  const base = cloneTracks(pattern.tracks);
+  const verse2 = cloneTracks(base);
+  const chorus1 = cloneTracks(base);
+  const chorus2 = cloneTracks(base);
+  const bridge1 = cloneTracks(base);
+  const bridge2 = cloneTracks(base);
+  const config = meterConfig();
+  for (let bar = 0; bar < pattern.bars; bar += 1) {
+    const offset = bar * config.slots;
+    config.backbeats.forEach(local => {
+      if (chorus1.sn[offset + local] !== 'off') chorus1.sn[offset + local] = 'accent';
+      if (chorus2.sn[offset + local] !== 'off') chorus2.sn[offset + local] = 'accent';
+    });
+    config.groups.forEach((local, index) => {
+      const step = offset + local;
+      if (chorus1.hh[step] === 'closed') chorus1.hh[step] = 'accent';
+      if (chorus2.hh[step] === 'closed') chorus2.hh[step] = 'accent';
+      if (chorus2.ride[step] === 'off') chorus2.ride[step] = index % 2 ? 'accent' : 'hit';
+      if (bridge1.hh[step] !== 'off') bridge1.hh[step] = 'off';
+      if (bridge1.ride[step] === 'off') bridge1.ride[step] = 'hit';
+      bridge2.hh[step] = 'off';
+      bridge2[index % 2 ? 'ft' : 'mt'][step] = index === config.groups.length - 1 ? 'accent' : 'hit';
+    });
+    for (let local = 1; local < config.slots; local += 2) {
+      if (chorus1.hh[offset + local] === 'off') chorus1.hh[offset + local] = 'closed';
+      if (chorus2.hh[offset + local] === 'off') chorus2.hh[offset + local] = 'closed';
+    }
+    const midpoint = offset + Math.floor(config.slots / 2);
+    const anticipation = offset + config.slots - 3;
+    if (verse2.bd[anticipation] === 'off') verse2.bd[anticipation] = 'hit';
+    verse2.hh[offset + config.slots - 2] = 'open';
+    if (chorus1.bd[midpoint] === 'off') chorus1.bd[midpoint] = 'hit';
+    if (chorus1.bd[anticipation] === 'off') chorus1.bd[anticipation] = 'hit';
+    if (chorus2.bd[midpoint] === 'off') chorus2.bd[midpoint] = 'accent';
+    chorus1.hh[offset + config.slots - 2] = 'open';
+    chorus2.hh[offset + config.slots - 2] = 'open';
+    bridge1.ft[offset] = 'hit';
+    if (config.groups[2] !== undefined) bridge1.mt[offset + config.groups[2]] = 'hit';
+  }
+  scenes = [
+    { id: 'verse-1', name: sceneName('verse-1'), tracks: base },
+    { id: 'verse-2', name: sceneName('verse-2'), tracks: verse2 },
+    { id: 'chorus-1', name: sceneName('chorus-1'), tracks: chorus1 },
+    { id: 'chorus-2', name: sceneName('chorus-2'), tracks: chorus2 },
+    { id: 'bridge-1', name: sceneName('bridge-1'), tracks: bridge1 },
+    { id: 'bridge-2', name: sceneName('bridge-2'), tracks: bridge2 }
+  ];
+  activeSceneId = 'verse-1';
+  queuedSceneId = null;
+  sceneBar = 1;
+  totalBarsStarted = 1;
+}
+
+function applyRestoredSceneState() {
+  if (!restoredSceneState) return;
+  const restored = restoredSceneState.scenes.map(scene => {
+    const sanitized = sanitizePattern({ ...pattern, tracks: scene.tracks });
+    return { id: scene.id, name: sceneName(scene.id), tracks: sanitized.tracks };
+  }).filter(scene => sceneIds.includes(scene.id));
+  if (restored.length === sceneIds.length) scenes = restored;
+  const requested = restoredSceneState.activeSceneId;
+  activeSceneId = scenes.some(scene => scene.id === requested) ? requested : 'verse-1';
+  const activeScene = scenes.find(scene => scene.id === activeSceneId);
+  if (activeScene) {
+    pattern.tracks = cloneTracks(activeScene.tracks);
+    performanceTemplateTracks = cloneTracks(activeScene.tracks);
+  }
+  restoredSceneState = null;
+}
+
+function renderSceneState() {
+  refs.currentScene.textContent = sceneName(activeSceneId);
+  refs.queuedScene.textContent = queuedSceneId ? sceneName(queuedSceneId) : 'None';
+  refs.sceneSelector.value = activeSceneId;
+  refs.sceneContextQueued.textContent = queuedSceneId ? sceneName(queuedSceneId) : 'None';
+  refs.cancelScene.disabled = !queuedSceneId;
+  refs.sceneButtons.forEach(button => {
+    const active = button.dataset.scene === activeSceneId;
+    button.setAttribute('aria-pressed', String(active));
+    button.classList.toggle('is-queued', button.dataset.scene === queuedSceneId);
+  });
+}
+
+function syncCueButtons() {
+  const fillQueued = queuedFills.length > 0;
+  const cutQueued = queuedCuts.length > 0;
+  refs.queueFill.classList.toggle('is-queued', fillQueued);
+  refs.queueFill.setAttribute('aria-pressed', String(fillQueued));
+  refs.cancelFill.disabled = !fillQueued;
+  refs.queueCut.classList.toggle('is-queued', cutQueued);
+  refs.queueCut.setAttribute('aria-pressed', String(cutQueued));
+  refs.cancelCut.disabled = !cutQueued;
+}
+
 function sanitizePattern(value) {
   const meter = meters[value?.meter] ? value.meter : '4/4';
   const inferredBars = Number(value?.bars) || Math.round((Number(value?.steps) || meterConfig(meter).slots) / meterConfig(meter).slots);
@@ -187,6 +424,7 @@ function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(PATTERN_KEY));
     pattern = saved ? sanitizePattern(saved) : moneyBeat('4/4', 4);
+    if (saved?.sceneState?.version === SCENE_SCHEMA && Array.isArray(saved.sceneState.scenes)) restoredSceneState = saved.sceneState;
     const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     if (settings) {
       if (settings.preset !== undefined && presetProfiles[settings.preset]) refs.preset.value = settings.preset;
@@ -195,11 +433,17 @@ function loadState() {
       refs.volume.value = settings.volume ?? 70;
       muted = settings.muted ?? false;
       refs.midiChannel.value = settings.midiChannel ?? '10';
+      refs.midiClock.checked = settings.midiClock ?? false;
       mutedInstruments = new Set(Array.isArray(settings.mutedInstruments) ? settings.mutedInstruments.filter(id => instruments.some(item => item.id === id)) : []);
       pendingMidiOutputId = settings.midiOutputId === undefined ? null : settings.midiOutputId;
       refs.liveDrummer.checked = settings.liveDrummer ?? true;
       refs.coreLoopBars.value = settings.coreLoopBars ?? '2';
-      refs.liveEvolution.value = settings.liveEvolution ?? 24;
+      refs.liveEvolution.value = settings.stability ?? 90;
+      refs.embellishment.value = settings.embellishment ?? 12;
+      refs.punctuationEvery.value = settings.punctuationEvery ?? '4';
+      refs.punctuationChance.value = settings.punctuationChance ?? 65;
+      refs.scenePhraseBars.value = settings.scenePhraseBars ?? '4';
+      refs.sceneTransition.value = settings.sceneTransition ?? 'fill-crash';
       refs.liveCutChance.value = settings.liveCutChance ?? 6;
       refs.interjectionBoundary.value = settings.interjectionBoundary ?? 'bar';
       refs.liveFillLength.value = settings.liveFillLength ?? 'half';
@@ -207,6 +451,7 @@ function loadState() {
       refs.liveFillActivity.value = settings.liveFillActivity ?? 85;
       refs.liveFillLanding.value = settings.liveFillLanding ?? 'kick-crash';
       refs.liveCutLength.value = settings.liveCutLength ?? 'beat';
+      refs.mutationMode.value = settings.mutationMode ?? 'both';
     }
   } catch (error) {
     pattern = moneyBeat('4/4', 4);
@@ -218,21 +463,30 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem(PATTERN_KEY, JSON.stringify(pattern));
+    localStorage.setItem(PATTERN_KEY, JSON.stringify({
+      ...pattern,
+      sceneState: {
+        version: SCENE_SCHEMA,
+        activeSceneId,
+        scenes: scenes.map(scene => ({ id: scene.id, name: scene.name, tracks: scene.tracks }))
+      }
+    }));
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({ preset: refs.preset.value, backbeat: refs.backbeat.checked,
-      volume: refs.volume.value, muted, midiChannel: refs.midiChannel.value,
+      volume: refs.volume.value, muted, midiChannel: refs.midiChannel.value, midiClock: refs.midiClock.checked,
       mutedInstruments: [...mutedInstruments],
       midiOutputId: midiOutput?.id || pendingMidiOutputId,
-      liveDrummer: refs.liveDrummer.checked, coreLoopBars: refs.coreLoopBars.value, liveEvolution: refs.liveEvolution.value,
+      liveDrummer: refs.liveDrummer.checked, coreLoopBars: refs.coreLoopBars.value, stability: refs.liveEvolution.value,
+      embellishment: refs.embellishment.value, punctuationEvery: refs.punctuationEvery.value,
+      punctuationChance: refs.punctuationChance.value, scenePhraseBars: refs.scenePhraseBars.value,
+      sceneTransition: refs.sceneTransition.value,
       liveCutChance: refs.liveCutChance.value,
       interjectionBoundary: refs.interjectionBoundary.value,
       liveFillLength: refs.liveFillLength.value, liveFillStyle: refs.liveFillStyle.value,
       liveFillActivity: refs.liveFillActivity.value, liveFillLanding: refs.liveFillLanding.value,
-      liveCutLength: refs.liveCutLength.value,
+      liveCutLength: refs.liveCutLength.value, mutationMode: refs.mutationMode.value,
       ...Object.fromEntries(controlKeys.map(key => [key, refs[key].value])) }));
-    refs.status.textContent = 'Saved locally';
   } catch (error) {
-    refs.status.textContent = 'Local save unavailable';
+    refs.status.textContent = 'Save unavailable';
   }
 }
 
@@ -252,14 +506,20 @@ function sourceText() {
     `humanization ${refs.humanization.value}`,
     `live ${refs.liveDrummer.checked ? 'on' : 'off'}`,
     `core-loop ${refs.coreLoopBars.value}`,
-    `evolution ${refs.liveEvolution.value}`,
+    `stability ${refs.liveEvolution.value}`,
+    `embellishment ${refs.embellishment.value}`,
+    `punctuation-every ${refs.punctuationEvery.value}`,
+    `punctuation-chance ${refs.punctuationChance.value}`,
+    `section ${activeSceneId}`,
+    `section-phrase ${refs.scenePhraseBars.value}`,
     `fill-probability ${refs.fillProbability.value}`,
     `live-cut-chance ${refs.liveCutChance.value}`,
     `live-fill-length ${refs.liveFillLength.value}`,
     `live-fill-style ${refs.liveFillStyle.value}`,
     `live-fill-activity ${refs.liveFillActivity.value}`,
     `live-fill-landing ${refs.liveFillLanding.value}`,
-    `live-cut-length ${refs.liveCutLength.value}`
+    `live-cut-length ${refs.liveCutLength.value}`,
+    `mutation-mode ${refs.mutationMode.value}`
   ];
   if (mutedInstruments.size) lines.push(`muted ${[...mutedInstruments].join(' ')}`);
   for (const instrument of instruments) lines.push(`${instrument.id}: ${pattern.tracks[instrument.id].map(sourceToken).join(' ')}`);
@@ -416,7 +676,6 @@ function updateAnalysis() {
   if (Number(refs.humanization.value) >= 35) tags.push('loose');
   if (!tags.length) tags.push('open texture');
   refs.tags.innerHTML = tags.map(tag => `<span class="character-tag">${tag}</span>`).join('');
-  refs.note.textContent = `This groove is ${tags.slice(0, -1).join(', ')}${tags.length > 1 ? ' and ' : ''}${tags.at(-1)}. ${layers ? `${layers} subdivision${layers === 1 ? '' : 's'} layer multiple instruments.` : 'Every occupied subdivision belongs to a single instrument.'}`;
 }
 
 function updateOutputs() {
@@ -439,6 +698,7 @@ function updateAll({ save = true } = {}) {
   renderGrid();
   renderNotation();
   updateAnalysis();
+  if (scenes.length) renderSceneState();
   refs.source.value = sourceText();
   updateOutputs();
   if (save) saveState();
@@ -525,19 +785,25 @@ function applyRepetition(amount, surprise) {
   }
 }
 
-function capturePerformanceTemplate() {
+function capturePerformanceTemplate(rebuildScenes = false) {
   performanceTemplateTracks = Object.fromEntries(instruments.map(({ id }) => [id, [...pattern.tracks[id]]]));
+  if (rebuildScenes || !scenes.length) buildScenesFromPattern();
+  else {
+    const activeScene = scenes.find(scene => scene.id === activeSceneId);
+    if (activeScene) activeScene.tracks = cloneTracks(performanceTemplateTracks);
+  }
   queuedCuts = [];
   queuedFills = [];
   queuedLandings = [];
+  syncCueButtons();
 }
 
 function liveReadyStatus() {
   const bars = Math.max(1, Number(refs.coreLoopBars.value) || 2);
   const fillStatus = Number(refs.fillProbability.value) === 0 ? ' Automatic fills are off; Queue fill remains manual.' : '';
   return refs.liveDrummer.checked
-    ? `The ${bars}-bar core loop repeats while small variations play over it.${fillStatus}`
-    : 'Continuous variation is frozen; the written phrase will loop unchanged.';
+    ? `${sceneName(activeSceneId)} repeats from a stable ${bars}-bar core; movement is ${refs.liveEvolution.value}% stable.${fillStatus}`
+    : 'Performance layers are frozen; the selected section will loop unchanged.';
 }
 
 function applyPreferredPeriod() {
@@ -636,10 +902,6 @@ function generatePattern() {
   const backbeatDisplacement = Number(refs.backbeatDisplacement.value) / 100;
   const ghostDensity = Number(refs.ghostDensity.value) / 100;
   const articulation = Number(refs.articulationComplexity.value) / 100;
-  const cymbalPunctuation = Number(refs.cymbalPunctuation.value) / 100;
-  const fillProbability = Number(refs.fillProbability.value) / 100;
-  const fillLength = Number(refs.fillLength.value) / 100;
-  const registerMovement = Number(refs.registerMovement.value) / 100;
   const eventSpacing = Number(refs.eventSpacing.value) / 100;
   const repetition = Number(refs.repetition.value) / 100;
   for (let bar = 0; bar < pattern.bars; bar += 1) {
@@ -661,23 +923,7 @@ function generatePattern() {
       if (Math.random() < orchestration * .055 * contourWeight(step)) pattern.tracks.cowbell[step] = 'hit';
       if (pulseInstrument() !== 'ride' && Math.random() < orchestration * .045 * contourWeight(step)) pattern.tracks.ride[step] = 'hit';
     }
-    if (Math.random() < cymbalPunctuation) pattern.tracks.cr1[offset] = 'accent';
-    if (Math.random() < cymbalPunctuation * .45) pattern.tracks.china[offset + config.groups[Math.floor(config.groups.length / 2)]] = 'accent';
-    if (pattern.bars > 1 && bar === pattern.bars - 1 && Math.random() < cymbalPunctuation) pattern.tracks.cr2[offset] = 'accent';
-    if (pulseInstrument() === 'hh' && Math.random() < cymbalPunctuation * .7) pattern.tracks.hh[offset + config.slots - 2] = 'open';
-    if (Math.random() < fillProbability) {
-      const maxLength = Math.max(1, Math.min(8, Math.floor(config.slots / 2)));
-      const length = Math.max(1, Math.round(1 + fillLength * (maxLength - 1)));
-      const start = offset + config.slots - length;
-      const toms = ['ht', 'mt', 'lt', 'ft'];
-      const fixedTom = toms[Math.floor(Math.random() * toms.length)];
-      for (let i = 0; i < length; i += 1) {
-        if (Math.random() > .3 + orchestration * .55) continue;
-        const movingIndex = Math.min(toms.length - 1, Math.floor(i / Math.max(1, length / toms.length)));
-        const id = Math.random() < registerMovement ? toms[movingIndex] : fixedTom;
-        pattern.tracks[id][start + i] = i === length - 1 ? 'accent' : 'hit';
-      }
-    }
+    // Crashes and fills belong to phrase-level performance layers, not the stable scene core.
   }
   applyRepetition(repetition, surprise);
   applyPreferredPeriod();
@@ -686,24 +932,29 @@ function generatePattern() {
   applyDisplacement(Number(refs.beatDisplacement.value));
   applyLinearity(linearity);
   enforcePresetOstinato();
-  capturePerformanceTemplate();
+  capturePerformanceTemplate(true);
   updateAll();
   refs.liveStatus.textContent = liveReadyStatus();
 }
 
 function mutatePattern() {
-  const amount = Math.max(1, Math.round(pattern.steps * (Number(refs.surprise.value) / 100) * .35));
-  const preferred = instruments.filter(item => ['bd', 'sn', 'hh', 'ht', 'mt', 'lt', 'ft', 'ride'].includes(item.id));
-  for (let i = 0; i < amount; i += 1) {
-    const instrument = preferred[Math.floor(Math.random() * preferred.length)];
-    const step = Math.floor(Math.random() * pattern.steps);
-    const playableStates = instrument.states.slice(1);
-    pattern.tracks[instrument.id][step] = pattern.tracks[instrument.id][step] === 'off'
-      ? playableStates[Math.floor(Math.random() * playableStates.length)]
-      : 'off';
+  const mode = refs.mutationMode.value;
+  if (mode === 'rhythm' || mode === 'both') {
+    const amount = Math.max(1, Math.round(pattern.steps * (Number(refs.surprise.value) / 100) * .35));
+    const preferred = instruments.filter(item => ['bd', 'sn', 'hh', 'ht', 'mt', 'lt', 'ft', 'ride'].includes(item.id));
+    for (let i = 0; i < amount; i += 1) {
+      const instrument = preferred[Math.floor(Math.random() * preferred.length)];
+      const step = Math.floor(Math.random() * pattern.steps);
+      const defaultState = instrument.id === 'hh' ? 'closed' : instrument.states.includes('hit') ? 'hit' : instrument.states[1];
+      pattern.tracks[instrument.id][step] = pattern.tracks[instrument.id][step] === 'off'
+        ? defaultState
+        : 'off';
+    }
   }
+  if (mode === 'orchestration' || mode === 'both') reorchestrateRange(0, pattern.steps, 'full');
   capturePerformanceTemplate();
   updateAll();
+  refs.liveStatus.textContent = `${sceneName(activeSceneId)} section mutated: ${mode === 'both' ? 'rhythm and orchestration' : mode}.`;
 }
 
 function wrappedStep(step) {
@@ -745,6 +996,8 @@ function insertFillEndingAt(boundary, trackLanding = false, requestedLength = nu
   const length = requestedLength || Math.max(3, Math.round(3 + (Number(refs.fillLength.value) / 100) * (maxLength - 3)));
   const start = boundary - length;
   const toms = ['ht', 'mt', 'lt', 'ft'];
+  const fixedTom = toms[Math.floor(Math.random() * toms.length)];
+  const registerMovement = Number(refs.registerMovement.value) / 100;
   const activity = Number(refs.liveFillActivity.value) / 100;
   for (let offset = 0; offset < length; offset += 1) {
     const step = wrappedStep(start + offset);
@@ -752,7 +1005,7 @@ function insertFillEndingAt(boundary, trackLanding = false, requestedLength = nu
     if (offset !== length - 1 && Math.random() > activity) continue;
     const progress = offset / Math.max(1, length - 1);
     const tomIndex = Math.min(toms.length - 1, Math.floor(progress * toms.length));
-    let instrument = toms[tomIndex];
+    let instrument = Math.random() < registerMovement ? toms[tomIndex] : fixedTom;
     if (refs.liveFillStyle.value === 'snare-toms') instrument = progress < .38 ? 'sn' : toms[Math.min(toms.length - 1, Math.floor(((progress - .38) / .62) * toms.length))];
     if (refs.liveFillStyle.value === 'snare-roll') instrument = 'sn';
     if (refs.liveFillStyle.value === 'around-kit') instrument = ['sn', 'ht', 'sn', 'mt', 'sn', 'lt', 'ft'][offset % 7];
@@ -786,41 +1039,152 @@ function boundaryPositions(mode) {
   return new Set(positions);
 }
 
-function nextBoundary(mode, minimumDistance) {
-  const positions = boundaryPositions(mode);
+function nextCueTarget(mode, minimumDistance) {
   const cursor = playing ? nextStep : 0;
+  const baseCount = playing ? scheduledStepCount : 0;
+  const bars = Number(mode);
+  if (Number.isFinite(bars) && bars >= 2) {
+    const slots = meterConfig().slots;
+    const local = cursor % slots;
+    let distance = (slots - local) % slots;
+    if (distance < Math.max(1, minimumDistance)) distance += slots;
+    distance += (bars - 1) * slots;
+    return { boundary: wrappedStep(cursor + distance), atCount: baseCount + distance, distance };
+  }
+  const positions = boundaryPositions(mode);
   for (let distance = Math.max(1, minimumDistance); distance <= pattern.steps + minimumDistance; distance += 1) {
     const step = wrappedStep(cursor + distance);
-    if (positions.has(step)) return step;
+    if (positions.has(step)) return { boundary: step, atCount: baseCount + distance, distance };
   }
-  return 0;
+  return { boundary: 0, atCount: baseCount + pattern.steps, distance: pattern.steps };
 }
 
 function queueInterjection(type) {
   const config = meterConfig();
   const length = cueLength(type, config);
   const safety = type === 'fill' ? length + 1 : 3;
-  const boundary = nextBoundary(refs.interjectionBoundary.value, safety);
+  const target = nextCueTarget(refs.interjectionBoundary.value, safety);
   if (type === 'fill') {
-    insertFillEndingAt(boundary, true, length);
-    if (!queuedFills.some(cue => cue.boundary === boundary)) queuedFills.push({ boundary, length });
+    queuedFills = [{ boundary: target.boundary, atCount: target.atCount, startAtCount: target.atCount - length, length }];
   }
   else {
-    insertCutAt(boundary, length);
-    if (!queuedCuts.some(cue => cue.boundary === boundary)) queuedCuts.push({ boundary, length });
-    const landing = wrappedStep(boundary + length);
-    if (!queuedLandings.some(item => item.step === landing && item.type === 'cut')) queuedLandings.push({ step: landing, type: 'cut' });
+    queuedCuts = [{ boundary: target.boundary, atCount: target.atCount, length }];
   }
-  updateAll();
-  const bar = Math.floor(boundary / config.slots) + 1;
-  const location = boundary % config.slots === 0 ? `bar ${bar}` : `the middle of bar ${bar}`;
+  syncCueButtons();
+  const location = refs.interjectionBoundary.options[refs.interjectionBoundary.selectedIndex]?.textContent.toLowerCase() || 'selected boundary';
   refs.liveStatus.textContent = type === 'fill'
-    ? `${cueLengthLabel('fill')} fill placed immediately before ${location}.`
-    : `${cueLengthLabel('cut')} cut queued at ${location}.`;
+    ? `${cueLengthLabel('fill')} fill queued for ${location}.`
+    : `${cueLengthLabel('cut')} cut queued for ${location}.`;
 }
 
-function evolveBar(barStart) {
-  const amount = Number(refs.liveEvolution.value) / 100;
+function cancelInterjection(type) {
+  if (type === 'fill') queuedFills = [];
+  else queuedCuts = [];
+  syncCueButtons();
+  refs.liveStatus.textContent = `${type === 'fill' ? 'Fill' : 'Cut'} queue cancelled.`;
+}
+
+function stateForInstrument(state, instrument) {
+  if (instrument.states.includes(state)) return state;
+  if (state === 'accent' && instrument.states.includes('accent')) return 'accent';
+  if (instrument.family === 'hat') return state === 'accent' ? 'accent' : 'closed';
+  if (instrument.states.includes('hit')) return 'hit';
+  return instrument.states[1] || 'off';
+}
+
+function reorchestrateRange(start, length, layer) {
+  const config = meterConfig();
+  const grooveIds = ['bd', 'sn', 'ht', 'mt', 'lt', 'ft'];
+  const detailIds = ['sn', 'hh', 'ride', 'ht', 'mt', 'lt', 'ft'];
+  const fullIds = ['bd', 'sn', 'hh', 'ph', 'ride', 'cowbell', 'ht', 'mt', 'lt', 'ft'];
+  const detailStates = new Set(['ghost', 'flam', 'drag', 'open', 'bark']);
+  const sourceIds = layer === 'details' ? detailIds : layer === 'full' ? fullIds : grooveIds;
+  const targetIds = sourceIds;
+  for (let offset = 0; offset < length; offset += 1) {
+    const step = wrappedStep(start + offset);
+    const local = step % config.slots;
+    const events = sourceIds.map(id => ({ id, state: pattern.tracks[id][step] }))
+      .filter(event => event.state !== 'off' && (layer !== 'details' || detailStates.has(event.state)));
+    if (!events.length) continue;
+    const locked = events.filter(event => event.id === 'sn' && refs.backbeat.checked && config.backbeats.includes(local));
+    const movable = events.filter(event => !locked.includes(event));
+    movable.forEach(event => { pattern.tracks[event.id][step] = 'off'; });
+    const occupied = new Set(locked.map(event => event.id));
+    movable.forEach(event => {
+      const alternatives = targetIds.filter(id => !occupied.has(id) && id !== event.id);
+      const fallback = targetIds.filter(id => !occupied.has(id));
+      const choices = alternatives.length ? alternatives : fallback;
+      const targetId = choices[Math.floor(Math.random() * choices.length)] || event.id;
+      const instrument = instruments.find(item => item.id === targetId);
+      pattern.tracks[targetId][step] = stateForInstrument(event.state, instrument);
+      occupied.add(targetId);
+    });
+  }
+}
+
+function activateScene(id, { refresh = true } = {}) {
+  const scene = scenes.find(item => item.id === id);
+  if (!scene) return false;
+  activeSceneId = id;
+  queuedSceneId = null;
+  pattern.tracks = cloneTracks(scene.tracks);
+  performanceTemplateTracks = cloneTracks(scene.tracks);
+  sceneBar = 1;
+  renderSceneState();
+  if (refresh) updateAll();
+  return true;
+}
+
+function chooseScene(id) {
+  if (!scenes.some(scene => scene.id === id)) return;
+  if (!playing) {
+    queuedCuts = [];
+    queuedFills = [];
+    queuedLandings = [];
+    syncCueButtons();
+    activateScene(id);
+    refs.liveStatus.textContent = `${sceneName(id)} selected. It will start from its stable core.`;
+    return;
+  }
+  if (id === activeSceneId) {
+    queuedSceneId = null;
+    renderSceneState();
+    refs.liveStatus.textContent = `${sceneName(id)} remains active.`;
+    return;
+  }
+  queuedSceneId = id;
+  renderSceneState();
+  const transition = refs.sceneTransition.options[refs.sceneTransition.selectedIndex]?.textContent || 'selected transition';
+  refs.liveStatus.textContent = `${sceneName(id)} queued for the next ${refs.scenePhraseBars.value}-bar boundary with ${transition.toLowerCase()}.`;
+}
+
+function cancelQueuedScene() {
+  queuedSceneId = null;
+  renderSceneState();
+  refs.liveStatus.textContent = `${sceneName(activeSceneId)} continues; the section change was cancelled.`;
+}
+
+function advancePerformanceBar(step) {
+  const phraseBars = Math.max(1, Number(refs.scenePhraseBars.value) || 4);
+  totalBarsStarted += 1;
+  let switched = false;
+  if (queuedSceneId && sceneBar >= phraseBars) {
+    const nextScene = queuedSceneId;
+    switched = activateScene(nextScene, { refresh: false });
+  } else {
+    sceneBar = sceneBar >= phraseBars ? 1 : sceneBar + 1;
+  }
+  if (refs.liveDrummer.checked) evolveBar(step, switched);
+  else if (switched && refs.sceneTransition.value !== 'clean') {
+    pattern.tracks.cr1[step] = 'accent';
+    if (refs.sceneTransition.value === 'fill-crash') pattern.tracks.bd[step] = 'accent';
+    updateAll();
+  }
+  renderSceneState();
+}
+
+function evolveBar(barStart, sceneSwitched = false) {
+  const instability = 1 - Number(refs.liveEvolution.value) / 100;
   const config = meterConfig();
   if (!performanceTemplateTracks) capturePerformanceTemplate();
   instruments.forEach(({ id }) => {
@@ -832,8 +1196,8 @@ function evolveBar(barStart) {
 
   const mutable = instruments.filter(({ id }) => ['bd', 'sn', 'hh', 'ride', 'cowbell', 'ht', 'mt', 'lt', 'ft'].includes(id)
     && !(refs.preset.value === 'jazz-ride' && ['ride', 'cowbell'].includes(id)));
-  const mutationCount = Math.round(amount * 4);
-  for (let mutation = 0; mutation < mutationCount; mutation += 1) {
+  for (let mutation = 0; mutation < 4; mutation += 1) {
+    if (Math.random() >= instability) continue;
     const instrument = mutable[Math.floor(Math.random() * mutable.length)];
     const local = Math.floor(Math.random() * config.slots);
     if (instrument.id === 'sn' && refs.backbeat.checked && config.backbeats.includes(local)) continue;
@@ -857,23 +1221,45 @@ function evolveBar(barStart) {
       if (pattern.tracks.sn[step] === 'off') pattern.tracks.sn[step] = 'hit';
     });
   }
-  const addedFill = Math.random() < Number(refs.fillProbability.value) / 100;
-  const addedCut = Math.random() < Number(refs.liveCutChance.value) / 100;
-  if (addedFill) insertFillEndingAt(barStart + config.slots, true, cueLength('fill', config));
+
+  const embellishment = Number(refs.embellishment.value) / 100;
+  const embellishmentCount = Math.round(embellishment * 4);
+  for (let detail = 0; detail < embellishmentCount; detail += 1) {
+    const local = Math.floor(Math.random() * config.slots);
+    const step = wrappedStep(barStart + local);
+    if (detail % 2 === 0 && pattern.tracks.sn[step] === 'off' && !config.backbeats.includes(local)) pattern.tracks.sn[step] = 'ghost';
+    else if (pattern.tracks.hh[step] === 'closed') pattern.tracks.hh[step] = Math.random() < .72 ? 'open' : 'bark';
+  }
+
+  const phraseEnding = sceneBar === Math.max(1, Number(refs.scenePhraseBars.value) || 4);
+  const sceneTransitionFill = phraseEnding && queuedSceneId && refs.sceneTransition.value === 'fill-crash';
+  const addedFill = phraseEnding && !sceneTransitionFill && Math.random() < Number(refs.fillProbability.value) / 100;
+  const addedCut = phraseEnding && Math.random() < Number(refs.liveCutChance.value) / 100;
+  if (sceneTransitionFill) insertFillEndingAt(barStart + config.slots, true, cueLength('fill', config));
+  if (addedFill) insertFillEndingAt(barStart + config.slots, true);
   if (addedCut) {
     const boundary = wrappedStep(barStart + config.slots);
     const length = cueLength('cut', config);
     insertCutAt(boundary, length);
-    if (!queuedCuts.some(cue => cue.boundary === boundary)) queuedCuts.push({ boundary, length });
     const landing = wrappedStep(boundary + length);
     if (!queuedLandings.some(item => item.step === landing && item.type === 'cut')) queuedLandings.push({ step: landing, type: 'cut' });
   }
-  queuedFills.forEach(cue => {
-    const fillBar = Math.floor(wrappedStep(cue.boundary - 1) / config.slots);
-    if (fillBar === Math.floor(wrappedStep(barStart) / config.slots)) insertFillEndingAt(cue.boundary, true, cue.length);
-  });
+  const punctuationEvery = Number(refs.punctuationEvery.value);
+  const punctuated = punctuationEvery > 0 && totalBarsStarted > 1 && (totalBarsStarted - 1) % punctuationEvery === 0
+    && Math.random() < Number(refs.punctuationChance.value) / 100;
+  if (punctuated) {
+    const palette = Number(refs.cymbalPunctuation.value) / 100;
+    const cymbal = Math.random() < palette * .25 ? 'china' : Math.random() < palette * .4 ? 'cr2' : 'cr1';
+    pattern.tracks[cymbal][wrappedStep(barStart)] = 'accent';
+  }
+  if (sceneSwitched && refs.sceneTransition.value !== 'clean') {
+    pattern.tracks.cr1[wrappedStep(barStart)] = 'accent';
+    if (refs.sceneTransition.value === 'fill-crash') pattern.tracks.bd[wrappedStep(barStart)] = 'accent';
+  }
   const bar = Math.floor(barStart / config.slots) + 1;
-  refs.liveStatus.textContent = `Bar ${bar} evolved${addedFill ? ' with a fill' : ''}${addedCut ? `${addedFill ? ' and' : ' with'} a cut` : ''}.`;
+  refs.liveStatus.textContent = sceneSwitched
+    ? `${sceneName(activeSceneId)} started with ${refs.sceneTransition.value === 'clean' ? 'a clean transition' : 'a phrase landing'}.`
+    : `${sceneName(activeSceneId)}, phrase bar ${sceneBar}: stable core${punctuated ? ' plus punctuation' : ''}${addedFill ? ' and a fill' : ''}${addedCut ? ' and a cut' : ''}.`;
 
   window.clearTimeout(visualRefreshTimer);
   visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
@@ -881,6 +1267,8 @@ function evolveBar(barStart) {
 
 function updateLiveOutputs() {
   refs.liveEvolutionOutput.value = `${refs.liveEvolution.value}%`;
+  refs.embellishmentOutput.value = `${refs.embellishment.value}%`;
+  refs.punctuationChanceOutput.value = `${refs.punctuationChance.value}%`;
   refs.liveCutChanceOutput.value = `${refs.liveCutChance.value}%`;
   refs.liveFillActivityOutput.value = `${refs.liveFillActivity.value}%`;
 }
@@ -922,6 +1310,7 @@ function refreshMidiOutputs() {
 
 async function enableMidi() {
   if (!navigator.requestMIDIAccess) throw new Error('Web MIDI is not supported by this browser');
+  const restartForClock = playing && refs.midiClock.checked;
   refs.midiEnable.disabled = true;
   refs.midiEnable.textContent = 'Connecting…';
   try {
@@ -931,6 +1320,10 @@ async function enableMidi() {
     refs.midiEnable.textContent = 'MIDI enabled';
     refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI enabled; no output found';
     saveState();
+    if (restartForClock && midiOutput) {
+      stopPlayback();
+      startPlayback();
+    }
   } catch (error) {
     refs.midiEnable.disabled = false;
     refs.midiEnable.textContent = 'Enable MIDI';
@@ -982,6 +1375,32 @@ function scheduleMidiInstrument(instrument, state, time, strength) {
     midiOutput.send([0x80 | channel, note, 0], timestamp + 70);
   } catch (error) {
     refs.status.textContent = `MIDI error: ${error.message || error}`;
+  }
+}
+
+function midiTimestamp(time) {
+  return performance.now() + Math.max(0, time - audioContext.currentTime) * 1000;
+}
+
+function sendMidiTransport(message, time = null) {
+  if (!midiOutput || !refs.midiClock.checked) return;
+  try {
+    if (time === null) midiOutput.send([message]);
+    else midiOutput.send([message], midiTimestamp(time));
+  } catch (error) {
+    refs.status.textContent = `MIDI clock error: ${error.message || error}`;
+  }
+}
+
+function scheduleMidiClock(stepTime) {
+  if (!midiOutput || !refs.midiClock.checked || !audioContext) return;
+  const pulseDuration = 60 / pattern.tempo / 24;
+  try {
+    for (let pulse = 0; pulse < 6; pulse += 1) {
+      midiOutput.send([0xF8], midiTimestamp(stepTime + pulse * pulseDuration));
+    }
+  } catch (error) {
+    refs.status.textContent = `MIDI clock error: ${error.message || error}`;
   }
 }
 
@@ -1057,11 +1476,25 @@ function followPlaybackStep(step) {
 }
 
 function applyPendingInterjections(step) {
-  const cut = queuedCuts.find(cue => cue.boundary === step);
+  const fill = queuedFills.find(cue => cue.startAtCount === scheduledStepCount);
+  if (fill) {
+    insertFillEndingAt(fill.boundary, true, fill.length);
+    queuedFills = queuedFills.filter(cue => cue !== fill);
+    syncCueButtons();
+    refs.liveStatus.textContent = 'Fill playing now; the groove lands at the selected boundary.';
+    window.clearTimeout(visualRefreshTimer);
+    visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
+  }
+  const cut = queuedCuts.find(cue => cue.atCount === scheduledStepCount);
   if (cut) {
     insertCutAt(step, cut.length);
-    queuedCuts = queuedCuts.filter(cue => cue.boundary !== step);
+    queuedCuts = queuedCuts.filter(cue => cue !== cut);
+    const landing = wrappedStep(step + cut.length);
+    if (!queuedLandings.some(item => item.step === landing && item.type === 'cut')) queuedLandings.push({ step: landing, type: 'cut' });
+    syncCueButtons();
     refs.liveStatus.textContent = 'Cut playing now; the groove returns on the next beat.';
+    window.clearTimeout(visualRefreshTimer);
+    visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
   }
   const landings = queuedLandings.filter(item => item.step === step);
   landings.forEach(item => {
@@ -1074,7 +1507,6 @@ function applyPendingInterjections(step) {
   if (landings.length) {
     queuedLandings = queuedLandings.filter(item => item.step !== step);
   }
-  queuedFills = queuedFills.filter(cue => cue.boundary !== step);
 }
 
 function highlightStep(step, atTime) {
@@ -1090,8 +1522,9 @@ function highlightStep(step, atTime) {
 
 function scheduleStep(step, time) {
   const config = meterConfig();
-  if (refs.liveDrummer.checked && scheduledStepCount > 0 && step % config.slots === 0) evolveBar(step);
+  if (scheduledStepCount > 0 && step % config.slots === 0) advancePerformanceBar(step);
   applyPendingInterjections(step);
+  scheduleMidiClock(time);
   const stepDuration = 60 / pattern.tempo / 4;
   const swingDelay = step % config.slots % 4 === 2 ? stepDuration * (Number(refs.swing.value) / 100) * (2 / 3) : 0;
   const timingJitter = (Math.random() - .5) * stepDuration * (Number(refs.humanization.value) / 100) * .22;
@@ -1121,15 +1554,20 @@ async function startPlayback() {
   nextStep = 0;
   nextStepTime = audioContext.currentTime + .09;
   scheduledStepCount = 0;
+  sceneBar = 1;
+  totalBarsStarted = 1;
   playing = true;
   refs.play.textContent = '■ Stop';
   refs.play.dataset.playing = 'true';
   refs.play.setAttribute('aria-label', 'Stop groove');
+  sendMidiTransport(0xFA, nextStepTime);
+  midiClockRunning = Boolean(midiOutput && refs.midiClock.checked);
   scheduler();
   schedulerTimer = window.setInterval(scheduler, 40);
 }
 
 function stopPlayback() {
+  const wasPlaying = playing;
   playing = false;
   scheduledStepCount = 0;
   if (schedulerTimer) window.clearInterval(schedulerTimer);
@@ -1139,11 +1577,21 @@ function stopPlayback() {
   if (midiOutput) {
     try {
       midiOutput.clear?.();
+      if (midiClockRunning) midiOutput.send([0xFC]);
       const channel = Math.max(0, Math.min(15, Number(refs.midiChannel.value) - 1));
       midiOutput.send([0xB0 | channel, 123, 0]);
     } catch (error) { /* disconnected outputs are refreshed through MIDI state changes */ }
   }
+  midiClockRunning = false;
   clearHighlight();
+  if (wasPlaying && performanceTemplateTracks) {
+    queuedCuts = [];
+    queuedFills = [];
+    queuedLandings = [];
+    syncCueButtons();
+    pattern.tracks = cloneTracks(performanceTemplateTracks);
+    updateAll();
+  }
   refs.play.textContent = '▶ Play';
   refs.play.dataset.playing = 'false';
   refs.play.setAttribute('aria-label', 'Play groove');
@@ -1192,28 +1640,42 @@ refs.midiEnable.addEventListener('click', () => enableMidi().catch(error => {
   refs.status.textContent = `MIDI unavailable: ${error.message || error}`;
 }));
 refs.midiOutput.addEventListener('change', () => {
+  const restart = playing;
+  if (restart) stopPlayback();
   midiOutput = refs.midiOutput.value && midiAccess ? midiAccess.outputs.get(refs.midiOutput.value) : null;
   pendingMidiOutputId = refs.midiOutput.value;
   refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI output off';
   saveState();
+  if (restart) startPlayback();
 });
 refs.midiChannel.addEventListener('change', saveState);
+refs.midiClock.addEventListener('change', () => {
+  const restart = playing;
+  if (restart) stopPlayback();
+  saveState();
+  if (restart) startPlayback();
+});
 refs.liveDrummer.addEventListener('change', () => {
   refs.liveStatus.textContent = liveReadyStatus();
   saveState();
 });
 refs.coreLoopBars.addEventListener('change', generatePattern);
-for (const ref of [refs.liveEvolution, refs.liveCutChance, refs.liveFillActivity]) ref.addEventListener('input', () => {
+for (const ref of [refs.liveEvolution, refs.embellishment, refs.punctuationChance, refs.liveCutChance, refs.liveFillActivity]) ref.addEventListener('input', () => {
   updateLiveOutputs();
   saveState();
 });
-for (const ref of [refs.interjectionBoundary, refs.liveFillLength, refs.liveFillStyle, refs.liveFillLanding, refs.liveCutLength]) ref.addEventListener('change', saveState);
+for (const ref of [refs.scenePhraseBars, refs.sceneTransition, refs.punctuationEvery, refs.interjectionBoundary, refs.liveFillLength, refs.liveFillStyle, refs.liveFillLanding, refs.liveCutLength]) ref.addEventListener('change', saveState);
+refs.mutationMode.addEventListener('change', () => { refs.source.value = sourceText(); saveState(); });
+refs.sceneButtons.forEach(button => button.addEventListener('click', () => chooseScene(button.dataset.scene)));
+refs.sceneSelector.addEventListener('change', () => chooseScene(refs.sceneSelector.value));
+refs.cancelScene.addEventListener('click', cancelQueuedScene);
 refs.queueFill.addEventListener('click', () => queueInterjection('fill'));
+refs.cancelFill.addEventListener('click', () => cancelInterjection('fill'));
 refs.queueCut.addEventListener('click', () => queueInterjection('cut'));
+refs.cancelCut.addEventListener('click', () => cancelInterjection('cut'));
 refs.generate.addEventListener('click', generatePattern);
 refs.mutate.addEventListener('click', mutatePattern);
-refs.money.addEventListener('click', () => { pattern = moneyBeat('4/4', 1); capturePerformanceTemplate(); updateAll(); });
-refs.clear.addEventListener('click', () => { pattern = createPattern(pattern.meter, pattern.bars, pattern.tempo); capturePerformanceTemplate(); updateAll(); });
+refs.clear.addEventListener('click', () => { pattern = createPattern(pattern.meter, pattern.bars, pattern.tempo); capturePerformanceTemplate(true); updateAll(); });
 refs.muteAllTracks.addEventListener('click', () => { mutedInstruments = new Set(instruments.map(({ id }) => id)); renderGrid(); saveState(); });
 refs.unmuteAllTracks.addEventListener('click', () => { mutedInstruments.clear(); renderGrid(); saveState(); });
 refs.copy.addEventListener('click', async () => {
@@ -1240,7 +1702,12 @@ function resetEverything() {
   refs.preset.value = 'pocket';
   refs.liveDrummer.checked = true;
   refs.coreLoopBars.value = '2';
-  refs.liveEvolution.value = 24;
+  refs.liveEvolution.value = 90;
+  refs.embellishment.value = 12;
+  refs.punctuationEvery.value = '4';
+  refs.punctuationChance.value = 65;
+  refs.scenePhraseBars.value = '4';
+  refs.sceneTransition.value = 'fill-crash';
   refs.liveCutChance.value = 6;
   refs.interjectionBoundary.value = 'bar';
   refs.liveFillLength.value = 'half';
@@ -1248,8 +1715,10 @@ function resetEverything() {
   refs.liveFillActivity.value = 85;
   refs.liveFillLanding.value = 'kick-crash';
   refs.liveCutLength.value = 'beat';
+  refs.mutationMode.value = 'both';
   refs.volume.value = 70;
   refs.midiChannel.value = '10';
+  refs.midiClock.checked = false;
   mutedInstruments.clear();
   muted = false;
   syncAudioControls();
@@ -1268,7 +1737,7 @@ function regenerateStructure() {
 
 refs.meter.addEventListener('change', regenerateStructure);
 refs.length.addEventListener('change', regenerateStructure);
-const playbackOnlyKeys = new Set(['swing', 'humanization', 'dynamicRange']);
+const playbackOnlyKeys = new Set(['swing', 'humanization', 'dynamicRange', 'cymbalPunctuation', 'fillProbability', 'fillLength', 'registerMovement']);
 controlKeys.filter(key => refs[key]?.type === 'range').forEach(key => refs[key].addEventListener('input', () => {
   updateOutputs();
   if (playbackOnlyKeys.has(key)) {
@@ -1289,6 +1758,7 @@ window.addEventListener('pagehide', stopPlayback);
 loadState();
 enforcePresetOstinato();
 capturePerformanceTemplate();
+applyRestoredSceneState();
 syncAudioControls();
 updateLiveOutputs();
 setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');

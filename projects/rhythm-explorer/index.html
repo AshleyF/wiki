@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Generate, shape, perform, inspect, and edit rhythms for drum kit.">
+    <title>Rhythm Explorer</title>
+    <script>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem('personal-wiki-theme');
+        } catch (error) {
+          theme = null;
+        }
+        document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260810-label-tooltips">
+  </head>
+  <body>
+    <header class="project-header">
+      <h1>Rhythm Explorer</h1>
+      <button class="theme-toggle icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="workbench" aria-label="Groove workbench">
+        <div class="transport panel">
+          <button id="play-toggle" class="primary-button" type="button" aria-label="Play groove">▶ Play</button>
+          <button id="mute-toggle" class="quiet-button icon-transport-button" type="button" aria-label="Mute browser audio" title="Mute browser audio">🔊</button>
+          <label class="compact-control volume-control">
+            <span>Volume</span>
+            <input id="master-volume" type="range" min="0" max="100" step="1" value="70" aria-label="Browser audio volume">
+            <output id="master-volume-output" for="master-volume">70%</output>
+          </label>
+          <label class="compact-control">
+            <span>Tempo</span>
+            <input id="tempo" type="number" min="30" max="300" step="1" value="100" inputmode="numeric">
+            <span>BPM</span>
+          </label>
+          <label class="compact-control">
+            <span>Meter</span>
+            <select id="meter">
+              <option value="4/4">4/4</option>
+              <option value="3/4">3/4</option>
+              <option value="5/4">5/4</option>
+              <option value="6/8">6/8</option>
+              <option value="7/8">7/8</option>
+            </select>
+          </label>
+          <label class="compact-control">
+            <span>Length</span>
+            <select id="length">
+              <option value="1">1 bar</option>
+              <option value="2">2 bars</option>
+              <option value="4">4 bars</option>
+              <option value="8">8 bars</option>
+            </select>
+          </label>
+          <details class="transport-more">
+            <summary>More</summary>
+            <div class="transport-more-menu">
+              <button id="clear-pattern" class="quiet-button" type="button">Clear pattern</button>
+              <button id="copy-source" class="quiet-button" type="button">Copy source</button>
+              <button id="enable-midi" class="quiet-button" type="button" title="Allow this page to send drum notes to a MIDI device or virtual port">Enable MIDI</button>
+              <label class="compact-control midi-control">
+                <span>MIDI out</span>
+                <select id="midi-output" disabled><option value="">Off</option></select>
+              </label>
+              <label class="compact-control midi-channel-control">
+                <span>Channel</span>
+                <select id="midi-channel" aria-label="MIDI channel">
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                  <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                  <option value="9">9</option><option value="10" selected>10</option><option value="11">11</option><option value="12">12</option>
+                  <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                </select>
+              </label>
+              <label class="midi-clock-control"><input id="midi-clock" type="checkbox"> Send MIDI clock</label>
+            </div>
+          </details>
+          <span id="save-status" class="save-status" role="status" aria-live="polite"></span>
+        </div>
+
+        <nav class="view-tabs" aria-label="Explorer areas">
+          <button type="button" data-view="play" aria-pressed="true">Live</button>
+          <button type="button" data-view="shape" aria-pressed="false">Shape</button>
+          <button type="button" data-view="edit" aria-pressed="false">Edit</button>
+          <button type="button" data-view="inspect" aria-pressed="false">Inspect</button>
+        </nav>
+        <div class="scene-context-bar" aria-label="Current section context">
+          <label class="compact-control">
+            <span id="scene-context-label">Live section</span>
+            <select id="scene-selector">
+              <option value="verse-1">Verse 1</option>
+              <option value="verse-2">Verse 2</option>
+              <option value="chorus-1">Chorus 1</option>
+              <option value="chorus-2">Chorus 2</option>
+              <option value="bridge-1">Bridge 1</option>
+              <option value="bridge-2">Bridge 2</option>
+            </select>
+          </label>
+          <span class="scene-context-next">Queued <strong id="scene-context-queued">None</strong></span>
+        </div>
+
+        <section class="performance-controls panel" aria-labelledby="performance-title" data-view-panel="play">
+          <div class="performance-heading">
+            <div>
+              <p class="eyebrow">Live drummer</p>
+              <h2 id="performance-title">Sections and layers</h2>
+            </div>
+            <label class="live-toggle"><input id="live-drummer" type="checkbox" checked> Layered performance</label>
+          </div>
+          <section class="scene-launcher" aria-label="Section launcher">
+            <div class="scene-readout">
+              <span>Now <strong id="current-scene">Verse 1</strong></span>
+              <span>Next <strong id="queued-scene">None</strong></span>
+            </div>
+            <div class="scene-buttons" role="group" aria-label="Choose or queue a section">
+              <button class="scene-button" type="button" data-scene="verse-1" aria-pressed="true">Verse 1</button>
+              <button class="scene-button" type="button" data-scene="verse-2" aria-pressed="false">Verse 2</button>
+              <button class="scene-button" type="button" data-scene="chorus-1" aria-pressed="false">Chorus 1</button>
+              <button class="scene-button" type="button" data-scene="chorus-2" aria-pressed="false">Chorus 2</button>
+              <button class="scene-button" type="button" data-scene="bridge-1" aria-pressed="false">Bridge 1</button>
+              <button class="scene-button" type="button" data-scene="bridge-2" aria-pressed="false">Bridge 2</button>
+              <button id="cancel-scene" class="quiet-button" type="button" disabled>Cancel queue</button>
+            </div>
+          </section>
+          <div class="performance-fields">
+            <label class="compact-control"><span>Core loop</span><select id="core-loop-bars"><option value="1">1 bar</option><option value="2" selected>2 bars</option><option value="4">4 bars</option></select></label>
+            <label class="compact-control"><span>Phrase</span><select id="scene-phrase-bars"><option value="4" selected>4 bars</option><option value="8">8 bars</option><option value="16">16 bars</option></select></label>
+            <label class="compact-control"><span>Section transition</span><select id="scene-transition"><option value="fill-crash" selected>Fill + crash</option><option value="crash">Crash</option><option value="clean">Clean</option></select></label>
+            <label class="compact-performance-control"><span>Movement stability</span><input id="live-evolution" type="range" min="0" max="100" value="90"><output id="live-evolution-output" for="live-evolution">90%</output></label>
+            <label class="compact-performance-control"><span>Embellishment</span><input id="embellishment" type="range" min="0" max="100" value="12"><output id="embellishment-output" for="embellishment">12%</output></label>
+            <label class="compact-control"><span>Punctuation</span><select id="punctuation-every"><option value="0">Off</option><option value="2">Every 2 bars</option><option value="4" selected>Every 4 bars</option><option value="8">Every 8 bars</option><option value="16">Every 16 bars</option></select></label>
+            <label class="compact-performance-control"><span>Crash chance</span><input id="punctuation-chance" type="range" min="0" max="100" value="65"><output id="punctuation-chance-output" for="punctuation-chance">65%</output></label>
+            <label class="compact-performance-control"><span>Cut chance</span><input id="live-cut-chance" type="range" min="0" max="100" value="6"><output id="live-cut-chance-output" for="live-cut-chance">6%</output></label>
+            <label class="compact-control"><span>Queue at</span><select id="interjection-boundary"><option value="half">Next half-bar</option><option value="bar" selected>Next bar</option><option value="2">2 bars</option><option value="4">4 bars</option><option value="8">8 bars</option></select></label>
+            <button id="queue-fill" class="quiet-button cue-button" type="button" aria-pressed="false" title="Replace the lead-in to the selected boundary with the configured fill and landing.">Fill</button>
+            <button id="cancel-fill" class="quiet-button cue-cancel" type="button" disabled>Cancel fill</button>
+            <button id="queue-cut" class="quiet-button cue-button" type="button" aria-pressed="false" title="Silence the selected amount at the selected boundary, then return on kick and crash.">Cut</button>
+            <button id="cancel-cut" class="quiet-button cue-cancel" type="button" disabled>Cancel cut</button>
+          </div>
+          <details class="live-options">
+            <summary>Fill &amp; cut settings</summary>
+            <div class="performance-fields">
+            <label class="compact-control"><span>Fill length</span><select id="live-fill-length"><option value="beat">1 beat</option><option value="half" selected>Half bar</option><option value="bar">1 bar</option></select></label>
+            <label class="compact-control"><span>Fill shape</span><select id="live-fill-style"><option value="tom-sweep" selected>Tom sweep</option><option value="snare-toms">Snare → toms</option><option value="snare-roll">Snare roll</option><option value="around-kit">Around the kit</option><option value="cymbal-punches">Cymbal punches</option></select></label>
+            <label class="compact-performance-control"><span>Fill activity</span><input id="live-fill-activity" type="range" min="25" max="100" value="85"><output id="live-fill-activity-output" for="live-fill-activity">85%</output></label>
+            <label class="compact-control"><span>Fill landing</span><select id="live-fill-landing"><option value="kick-crash" selected>Kick + crash</option><option value="crash">Crash only</option><option value="kick">Kick only</option><option value="none">No forced landing</option></select></label>
+            <label class="compact-control"><span>Cut length</span><select id="live-cut-length"><option value="beat" selected>1 beat</option><option value="half">Half bar</option><option value="bar">1 bar</option></select></label>
+            </div>
+          </details>
+          <p id="live-status" class="performance-status" role="status" aria-live="polite">Verse 1 repeats from a stable core; higher layers add restrained variation.</p>
+        </section>
+
+        <details class="midi-help panel" data-view-panel="inspect" hidden>
+          <summary>MIDI setup</summary>
+          <p>Enable MIDI, choose the virtual or physical port received by Superior Drummer, and use the same channel there. Send MIDI clock transmits tempo at the standard 24 pulses per quarter note, plus Start and Stop messages. Notes use the General MIDI drum map on channel 10 by default. Hi-hat hits also send pedal CC4 (127 closed, 0 open) so Superior Drummer's e-drum mapping receives an explicit openness state. Browser volume and mute affect only the built-in sounds; MIDI continues playing.</p>
+          <p>Superior Drummer libraries can assign additional aliases or substitute articulations. Its Help → MIDI Mapping Layout shows the definitive map for the loaded library.</p>
+          <div class="midi-map-wrap">
+            <table class="midi-map">
+              <thead><tr><th>Explorer voice</th><th>MIDI note</th><th>GM articulation</th></tr></thead>
+              <tbody>
+                <tr><td>Kick</td><td>36</td><td>Bass Drum 1</td></tr>
+                <tr><td>Snare / cross-stick</td><td>38 / 37</td><td>Acoustic Snare / Side Stick</td></tr>
+                <tr><td>Hi-hat closed / open</td><td>42 / 46</td><td>Closed / Open Hi-hat</td></tr>
+                <tr><td>Pedal hi-hat</td><td>44</td><td>Pedal Hi-hat</td></tr>
+                <tr><td>Floor / low / mid / high tom</td><td>43 / 45 / 47 / 50</td><td>GM toms</td></tr>
+                <tr><td>Crash 1 / Crash 2</td><td>49 / 57</td><td>Crash Cymbal 1 / 2</td></tr>
+                <tr><td>Ride</td><td>51</td><td>Ride Cymbal 1</td></tr>
+                <tr><td>China</td><td>52</td><td>Chinese Cymbal</td></tr>
+                <tr><td>Cowbell</td><td>56</td><td>Cowbell</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <div class="workspace-grid" data-view-panel="shape" hidden>
+          <section class="generator panel" aria-labelledby="generator-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Generator</p>
+                <h2 id="generator-title">Shape the probabilities</h2>
+              </div>
+              <div class="panel-actions">
+                <button id="reset-everything" class="quiet-button" type="button" title="Restore Pocket Rock, generator, live drummer, playback, and cue defaults">Reset everything</button>
+                <button id="generate-pattern" class="primary-button" type="button">Generate</button>
+              </div>
+            </div>
+
+            <label class="field">
+              <span>Starting character</span>
+              <select id="preset">
+                <option value="pocket">Pocket rock</option>
+                <option value="linear-funk">Linear funk</option>
+                <option value="halftime">Half-time pocket</option>
+                <option value="boom-bap">Boom bap</option>
+                <option value="disco">Disco</option>
+                <option value="shuffle">Shuffle</option>
+                <option value="jazz-ride">Basic jazz</option>
+                <option value="ballad-68">6/8 ballad</option>
+                <option value="motorik">Motorik</option>
+                <option value="breakbeat">Breakbeat</option>
+                <option value="dnb">Drum and bass</option>
+                <option value="metal">Metal drive</option>
+                <option value="tom-ostinato">Tom ostinato</option>
+                <option value="cymbal-wash">Cymbal wash</option>
+                <option value="sparse">Sparse / ambient</option>
+                <option value="odd-anchor">Odd-meter anchor</option>
+                <option value="polyrhythmic">Polyrhythmic</option>
+                <option value="interlocking">Interlocking</option>
+                <option value="grounded">Grounded rock</option>
+                <option value="funk">Syncopated funk</option>
+                <option value="hiphop">Laid-back hip-hop</option>
+                <option value="dance">Four-on-the-floor</option>
+                <option value="toms">Tom-led</option>
+                <option value="open">Open canvas</option>
+              </select>
+            </label>
+
+            <details class="parameter-group">
+              <summary>Core character</summary>
+              <div class="parameter-fields">
+                <label class="field range-field"><span><span>Kick density <span class="help-tip" tabindex="0" aria-label="The approximate number of kick attacks generated in each bar." data-tooltip="The approximate number of kick attacks generated in each bar.">?</span></span><output id="kick-density-output">28%</output></span><input id="kick-density" type="range" min="0" max="100" value="28"></label>
+                <label class="field range-field"><span><span>Syncopation <span class="help-tip" tabindex="0" aria-label="Moves probability away from strong metric positions and toward offbeats and anticipations." data-tooltip="Moves probability away from strong metric positions and toward offbeats and anticipations.">?</span></span><output id="syncopation-output">55%</output></span><input id="syncopation" type="range" min="0" max="100" value="55"></label>
+                <label class="field range-field"><span><span>Pattern surprise <span class="help-tip" tabindex="0" aria-label="Controls how much later material departs from the pattern already established." data-tooltip="Controls how much later material departs from the pattern already established.">?</span></span><output id="surprise-output">48%</output></span><input id="surprise" type="range" min="0" max="100" value="48"></label>
+                <label class="field range-field"><span><span>Orchestration <span class="help-tip" tabindex="0" aria-label="Controls how much of the kit participates beyond the core kick, snare, and timekeeper." data-tooltip="Controls how much of the kit participates beyond the core kick, snare, and timekeeper.">?</span></span><output id="orchestration-output">18%</output></span><input id="orchestration" type="range" min="0" max="100" value="18"></label>
+                <label class="field range-field"><span><span>Linearity <span class="help-tip" tabindex="0" aria-label="At the high end, instruments interlock one at a time. At the low end, voices may strike together." data-tooltip="At the high end, instruments interlock one at a time. At the low end, voices may strike together.">?</span></span><output id="linearity-output">35%</output></span><input id="linearity" type="range" min="0" max="100" value="35"></label>
+              </div>
+            </details>
+
+            <details class="parameter-group">
+              <summary>Pulse and timing</summary>
+              <div class="parameter-fields">
+                <label class="field range-field"><span><span>Pulse density <span class="help-tip" tabindex="0" aria-label="Ranges from sparse structural pulses to continuous sixteenth-note timekeeping." data-tooltip="Ranges from sparse structural pulses to continuous sixteenth-note timekeeping.">?</span></span><output id="pulse-density-output">55%</output></span><input id="pulse-density" type="range" min="0" max="100" value="55"></label>
+                <label class="field"><span>Timekeeper <span class="help-tip" tabindex="0" aria-label="Chooses the instrument carrying the regular pulse." data-tooltip="Chooses the instrument carrying the regular pulse.">?</span></span><select id="timekeeper"><option value="auto">Automatic</option><option value="hh">Hi-hat</option><option value="ride">Ride</option><option value="cowbell">Cowbell</option><option value="none">None</option></select></label>
+                <label class="field range-field"><span><span>Swing <span class="help-tip" tabindex="0" aria-label="Delays alternating subdivisions during playback without changing the written grid." data-tooltip="Delays alternating subdivisions during playback without changing the written grid.">?</span></span><output id="swing-output">0%</output></span><input id="swing" type="range" min="0" max="100" value="0"></label>
+                <label class="field range-field"><span><span>Humanization <span class="help-tip" tabindex="0" aria-label="Adds small timing and velocity variations during playback." data-tooltip="Adds small timing and velocity variations during playback.">?</span></span><output id="humanization-output">8%</output></span><input id="humanization" type="range" min="0" max="100" value="8"></label>
+                <label class="field range-field"><span><span>Kick independence <span class="help-tip" tabindex="0" aria-label="Moves the kick from structural pulse anchors toward an independent syncopated line." data-tooltip="Moves the kick from structural pulse anchors toward an independent syncopated line.">?</span></span><output id="kick-independence-output">45%</output></span><input id="kick-independence" type="range" min="0" max="100" value="45"></label>
+                <label class="field range-field"><span><span>Beat displacement <span class="help-tip" tabindex="0" aria-label="Rotates the generated pattern left or right by sixteenth-note steps." data-tooltip="Rotates the generated pattern left or right by sixteenth-note steps.">?</span></span><output id="beat-displacement-output">0</output></span><input id="beat-displacement" type="range" min="-4" max="4" step="1" value="0"></label>
+              </div>
+            </details>
+
+            <details class="parameter-group">
+              <summary>Dynamics and articulation</summary>
+              <div class="parameter-fields">
+                <label class="field range-field"><span><span>Backbeat strength <span class="help-tip" tabindex="0" aria-label="Ranges from ghosted structural snare notes to strongly accented backbeats." data-tooltip="Ranges from ghosted structural snare notes to strongly accented backbeats.">?</span></span><output id="backbeat-strength-output">80%</output></span><input id="backbeat-strength" type="range" min="0" max="100" value="80"></label>
+                <label class="field range-field"><span><span>Backbeat displacement <span class="help-tip" tabindex="0" aria-label="Increases the chance that a backbeat lands one subdivision early or late." data-tooltip="Increases the chance that a backbeat lands one subdivision early or late.">?</span></span><output id="backbeat-displacement-output">0%</output></span><input id="backbeat-displacement" type="range" min="0" max="100" value="0"></label>
+                <label class="field range-field"><span><span>Ghost-note density <span class="help-tip" tabindex="0" aria-label="Adds quiet connective snare notes in otherwise open positions." data-tooltip="Adds quiet connective snare notes in otherwise open positions.">?</span></span><output id="ghost-density-output">15%</output></span><input id="ghost-density" type="range" min="0" max="100" value="15"></label>
+                <label class="field range-field"><span><span>Dynamic range <span class="help-tip" tabindex="0" aria-label="Controls the audible distance between ghost notes, ordinary strokes, and accents." data-tooltip="Controls the audible distance between ghost notes, ordinary strokes, and accents.">?</span></span><output id="dynamic-range-output">60%</output></span><input id="dynamic-range" type="range" min="0" max="100" value="60"></label>
+                <label class="field range-field"><span><span>Articulation complexity <span class="help-tip" tabindex="0" aria-label="Increases flams, drags, cross-sticks, open hats, barks, ghosts, and accents." data-tooltip="Increases flams, drags, cross-sticks, open hats, barks, ghosts, and accents.">?</span></span><output id="articulation-complexity-output">18%</output></span><input id="articulation-complexity" type="range" min="0" max="100" value="18"></label>
+              </div>
+            </details>
+
+            <details class="parameter-group">
+              <summary>Orchestration and fills</summary>
+              <div class="parameter-fields">
+                <label class="field range-field"><span><span>Cymbal variety <span class="help-tip" tabindex="0" aria-label="Broadens phrase punctuation from the main crash to crash 2 and china." data-tooltip="At low values, punctuation uses the main crash. Higher values occasionally choose crash 2 or china.">?</span></span><output id="cymbal-punctuation-output">25%</output></span><input id="cymbal-punctuation" type="range" min="0" max="100" value="25"></label>
+                <label class="field range-field"><span><span>Fill probability <span class="help-tip" tabindex="0" aria-label="Controls automatic fills at phrase boundaries. Zero leaves only manually queued fills and section transitions." data-tooltip="Controls automatic fills at phrase boundaries. Zero leaves only manually queued fills and section transitions.">?</span></span><output id="fill-probability-output">20%</output></span><input id="fill-probability" type="range" min="0" max="100" value="20" aria-label="Fill probability"></label>
+                <label class="field range-field"><span><span>Automatic fill length <span class="help-tip" tabindex="0" aria-label="Controls how much of the final bar an automatic phrase fill occupies." data-tooltip="Controls how much of the final bar an automatic phrase fill occupies. Manually queued and section-transition fills use the Live settings.">?</span></span><output id="fill-length-output">30%</output></span><input id="fill-length" type="range" min="0" max="100" value="30"></label>
+                <label class="field range-field"><span><span>Register movement <span class="help-tip" tabindex="0" aria-label="Moves fills across high, mid, low, and floor toms instead of staying on one surface." data-tooltip="Moves fills across high, mid, low, and floor toms instead of staying on one surface.">?</span></span><output id="register-movement-output">55%</output></span><input id="register-movement" type="range" min="0" max="100" value="55"></label>
+                <label class="field range-field"><span><span>Event spacing <span class="help-tip" tabindex="0" aria-label="At high values, discourages consecutive clusters on the same non-timekeeping voice." data-tooltip="At high values, discourages consecutive clusters on the same non-timekeeping voice.">?</span></span><output id="event-spacing-output">50%</output></span><input id="event-spacing" type="range" min="0" max="100" value="50"></label>
+              </div>
+            </details>
+
+            <details class="parameter-group">
+              <summary>Form and development</summary>
+              <div class="parameter-fields">
+                <label class="field range-field"><span><span>Repetition <span class="help-tip" tabindex="0" aria-label="Controls how literally later bars copy material established earlier." data-tooltip="Controls how literally later bars copy material established earlier.">?</span></span><output id="repetition-output">60%</output></span><input id="repetition" type="range" min="0" max="100" value="60"></label>
+                <label class="field"><span>Preferred period <span class="help-tip" tabindex="0" aria-label="Favors a short repeating cell, a bar-length idea, or development across the whole phrase." data-tooltip="Favors a short repeating cell, a bar-length idea, or development across the whole phrase.">?</span></span><select id="period"><option value="auto">Automatic</option><option value="beat">One beat group</option><option value="half">Half bar</option><option value="bar">One bar</option><option value="phrase">Whole phrase</option></select></label>
+                <label class="field"><span>Phrase contour <span class="help-tip" tabindex="0" aria-label="Shapes activity across the phrase: level, building, fading, arching, or ending-weighted." data-tooltip="Shapes activity across the phrase: level, building, fading, arching, or ending-weighted.">?</span></span><select id="phrase-contour"><option value="flat">Flat</option><option value="build">Build</option><option value="fade">Fade</option><option value="arch">Arch</option><option value="ending">Ending-weighted</option></select></label>
+              </div>
+            </details>
+
+            <div class="switches">
+              <label><input id="keep-backbeat" type="checkbox" checked> Anchor a meter-aware backbeat <span class="help-tip" tabindex="0" aria-label="Places accented snare anchors at conventional structural points for the selected meter." data-tooltip="Places accented snare anchors at conventional structural points for the selected meter.">?</span></label>
+            </div>
+
+            <div class="generator-actions">
+              <label class="compact-control mutation-control"><span>Mutation</span><select id="mutation-mode"><option value="rhythm">Rhythm only</option><option value="orchestration">Orchestration only</option><option value="both" selected>Rhythm + orchestration</option></select></label>
+              <button id="mutate-pattern" class="quiet-button" type="button">Mutate current section</button>
+            </div>
+          </section>
+
+          <section class="analysis panel" aria-labelledby="analysis-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Analysis</p>
+                <h2 id="analysis-title">What the pattern is doing</h2>
+              </div>
+            </div>
+            <dl class="metrics">
+              <div><dt>Written attacks</dt><dd id="metric-events">0</dd></div>
+              <div><dt>Occupied steps</dt><dd id="metric-occupied">0</dd></div>
+              <div><dt>Layered steps</dt><dd id="metric-layers">0</dd></div>
+              <div><dt>Offbeat attacks</dt><dd id="metric-offbeats">0</dd></div>
+              <div><dt>Pattern period</dt><dd id="metric-period">16 steps</dd></div>
+              <div><dt>Articulations</dt><dd id="metric-articulations">0</dd></div>
+            </dl>
+            <div id="character-tags" class="character-tags" aria-label="Groove character"></div>
+          </section>
+        </div>
+
+        <section class="sequencer panel" aria-labelledby="sequencer-title" data-view-panel="edit" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Step editor</p>
+              <h2 id="sequencer-title">Instrument grid</h2>
+            </div>
+            <div class="sequencer-actions">
+              <p class="grid-help">Click a cell repeatedly to cycle its articulations.</p>
+              <div class="panel-actions">
+                <button id="mute-all-tracks" class="quiet-button" type="button">Mute all</button>
+                <button id="unmute-all-tracks" class="quiet-button" type="button">Unmute all</button>
+              </div>
+            </div>
+          </div>
+          <div id="step-grid" class="step-grid" role="group" aria-label="Editable drum sequencer"></div>
+          <div class="legend" aria-label="Grid legend">
+            <span><i class="legend-swatch hit"></i> hit</span>
+            <span><i class="legend-swatch accent"></i> accent</span>
+            <span><i class="legend-swatch ghost"></i> ghost</span>
+            <span><i class="legend-swatch open"></i> open</span>
+            <span><i class="legend-swatch bark"></i> bark</span>
+            <span><i class="legend-swatch chick"></i> foot chick</span>
+            <span><i class="legend-swatch splash"></i> foot splash</span>
+            <span><i class="legend-swatch cross-stick"></i> cross-stick</span>
+            <span><i class="legend-swatch flam"></i> flam</span>
+            <span><i class="legend-swatch drag"></i> drag</span>
+          </div>
+        </section>
+
+        <section class="notation panel" aria-labelledby="notation-title" data-view-panel="inspect" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2 id="notation-title">Drum notation</h2>
+            </div>
+          </div>
+          <div id="notation-target" class="notation-target" aria-label="Rendered drum notation"></div>
+        </section>
+
+        <details class="source-panel panel" data-view-panel="inspect" hidden>
+          <summary>Plain-text pattern source</summary>
+          <textarea id="pattern-source" readonly spellcheck="false" aria-label="Plain-text groove source"></textarea>
+        </details>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+    <script type="module" src="app.js?v=20260812-midi-clock"></script>
+  </body>
+</html>
