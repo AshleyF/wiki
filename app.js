@@ -1188,8 +1188,10 @@ function trackDrumNode(node) {
 }
 
 function drumPanForSticking(sticking) {
-  if (sticking === 'R') return 0.65;
-  if (sticking === 'L') return -0.65;
+  // Keep the hands distinguishable without making one snare sound like two
+  // instruments placed at opposite sides of the listener.
+  if (sticking === 'R') return 0.22;
+  if (sticking === 'L') return -0.22;
   return 0;
 }
 
