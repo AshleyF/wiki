@@ -71,7 +71,7 @@ Third-party browser dependencies are acceptable when they unlock an interactive 
 │   ├── home.md
 │   ├── sound.md
 │   └── cubing.md
-├── projects/        Standalone static experiments linked from the wiki
+├── projects/        Standalone static experiments and reusable project assets
 ├── README.md        Short operator and author documentation
 └── AGENTS.md        Architecture and maintenance guidance (this file)
 ```
@@ -209,7 +209,13 @@ For ordinary grids such as `division 16`, the renderer may also collapse a hit f
 
 Tokens may carry idiomatic modifiers: `x>` adds a VexFlow `Articulation('a>')`, `(x)` wraps that row's notehead with `Parenthesis` modifiers, `x/`, `x//`, or `x///` add one to three VexFlow `Tremolo` slashes, `f` attaches one slashed `GraceNote` as a flam, and `d` attaches two beamed grace notes as a drag. Playback treats `x/` as a double and `x//`/`x///` as short multiple-bounce clusters. A separate `stick:` row accepts `R`, `L`, `RL`, `LR`, or `.` in each slot and adds a bottom-positioned VexFlow `Annotation`. In rendering, a single diddle token such as `x/` expands a simple sticking annotation from `R` to `RR` or from `L` to `LL`, while accented written strokes render their sticking annotation in bold. These are DSL conventions, not VexFlow's own text syntax; VexFlow is the rendering target.
 
-VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule a small dependency-free Web Audio kit: a pitched oscillator for kick and woodblock, filtered noise plus a short tone for snare, and filtered noise for closed/open hi-hat. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each slot, and loops until the user presses Stop or navigates away. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
+VexFlow is an engraving library and does not provide audio. Drum playback therefore uses the same parsed DSL events to schedule Web Audio. Snare hits use the velocity-layered, round-robin sample kit under `projects/rhythm-explorer/assets/drums/snare-center/`; the remaining instruments retain the dependency-free synthesized kit. Playback honors the optional `tempo` directive, highlights the VexFlow chord at each slot, and loops until the user presses Stop or navigates away. Open hi-hats use the conventional circle just above the X notehead; this marker is added to the finished SVG because VexFlow's generic top annotation is positioned above the beam instead.
+
+`projects/rhythm-explorer/drum-sample-kit.js` is a reusable, DOM-free sample library shared from the Rhythm Explorer directory. It validates the `drum-sample-kit/1` manifest, fetches only the velocity layers required by the current pattern, decodes and caches their WAV files, selects variants with the manifest's weights while avoiding immediate repeats, and applies each variant's `gain_linear`. The wiki maps its existing strength convention to MIDI-style velocity (`82` for an ordinary hit, `127` for the current accent, lower values for ghosts and grace notes) and preserves right/left stereo panning after sample selection. If the manifest or a sample cannot load, snare playback falls back to the synthesized sound. MIDI mode bypasses browser sample playback exactly as it bypassed the synthesized kit.
+
+Every drum block has a playback-only swing control. Its range is deliberately symmetric around triplet swing: 50% at the left is straight 1:1 timing, 66⅔% at the physical midpoint is a 2:1 pair, and 83⅓% at the right is the same additional percentage-point distance beyond triplet swing. The midpoint has a visible tick and a narrow pointer/touch-only magnetic snap zone; do not apply that snap indiscriminately to keyboard input or the arrow keys can become trapped at the midpoint. Swing delays every odd-numbered grid slot while leaving each two-slot pair's total duration unchanged. Web Audio, MIDI, and playback highlighting must all use the same swung timestamps. Moving the slider updates playback without stopping or restarting it: both MIDI and Web Audio use short rolling schedulers and latch the latest value at the next two-slot pair. The slider does not rewrite the fenced source or alter VexFlow engraving.
+
+Each drum block also exposes a persistent MIDI mode and output selector. MIDI mode uses Web MIDI, sends percussion on channel 10, and automatically suppresses the built-in Web Audio sounds while preserving looping and notation highlighting. The scheduler maps the same parsed hit data—including accents, ghost notes, flams, drags, and tremolo/bounce strokes—to MIDI timing. Most instruments use General MIDI drum notes. Snare sticking uses a Superior Drummer-oriented articulation convention: `R` sends center-snare note 38, `L` sends off-center-snare note 125, and unsticked snare hits remain on note 38. Flam and drag grace notes use the opposite hand's snare articulation, matching built-in stereo playback. Toontrack mappings can vary by library, so a non-core kit may need those notes assigned in Superior Drummer's MIDI mapping. MIDI uses a short rolling lookahead rather than timestamping a whole loop. Stopping or navigating cancels that scheduler, clears the output queue, and sends immediate plus tail-end All Sound Off and All Notes Off messages. Replacing an active MIDI rudiment delays the new start only through that bounded tail, preventing the old and new patterns from overlapping. Web MIDI requires a compatible browser and a secure context such as GitHub Pages or localhost.
 
 If a drum block includes a `stick:` row, playback uses simple stereo placement: `R` pans the slot right, `L` pans it left, and `RL`, `LR`, `.`, or missing sticking stay centered. Flam and drag grace notes use the opposite hand from the main written stroke, so a right-hand flam sounds left-right and a left-hand drag sounds right-right-left. Keep this tied to the parsed sticking data instead of deriving it from rendered annotations, because rendering details can change.
 
@@ -244,6 +250,10 @@ Navigation also calls `hush()` so sound does not continue after leaving a page. 
 Strudel source is JavaScript and is evaluated globally. Therefore, Markdown files are trusted executable project content. This site must not fetch or render arbitrary user submissions. If untrusted authors are introduced, this architecture is insufficient; use a sandboxed iframe with a carefully designed message boundary.
 
 The CDN dependency means first playback requires network access. Vendoring the pinned runtime is the likely future path for offline behavior. Strudel uses the AGPL-3.0 license; review its obligations before bundling, modifying, or distributing a derived deployment.
+
+## Rhythm Explorer language architecture
+
+The standalone Rhythm Explorer under `projects/rhythm-explorer/` has its own source/grid round-trip language. `rhythm-language.js` is a DOM-free ES module that owns parsing and shortest-period serialization; keep language semantics there rather than embedding them in the explorer's already-large `app.js`. The Edit view regenerates compact source from the selected section and applies valid edits back through the same pattern model used by the grid, notation, Web Audio, and MIDI. Invalid source must leave the last valid pattern untouched. `rhythm-language.test.mjs` provides dependency-free Node fixtures for round trips, pattern algebra, articulations, and errors; run it whenever the language changes. `RHYTHM-LANGUAGE.md` distinguishes the implemented subset from future design.
 
 ## Presentation architecture
 
@@ -295,7 +305,8 @@ There is no automated test suite yet. For every behavioral change:
 6. At a narrow viewport, verify the Menu control and article layout.
 7. For Strudel changes, verify the Play/Stop toggle, playback replacement, navigation cleanup, and retry state when the runtime or pattern fails.
 8. For ABC changes, verify an `abc` fence renders staff notation and the Source section still shows readable text if the library fails.
-9. Check the browser console for unexpected errors.
+9. For drum sample changes, run `node projects/rhythm-explorer/drum-sample-kit.test.mjs`, verify only required velocity layers load, and confirm Play/Stop plus MIDI bypass still work.
+10. Check the browser console for unexpected errors.
 
 If parser behavior grows, add isolated automated fixtures before expanding syntax further. Important fixtures should cover HTML escaping, rejected link protocols, unclosed fences, list transitions, and extension dispatch.
 

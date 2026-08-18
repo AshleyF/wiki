@@ -65,8 +65,8 @@ main { max-width: 1500px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 4rem) 5rem
 .view-tabs button { min-height: 2.7rem; border: 0; border-bottom: 3px solid transparent; padding: .7rem; color: var(--muted); background: transparent; font: 850 .72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
 .view-tabs button:hover { color: var(--ink); background: var(--panel-strong); }
 .view-tabs button[aria-pressed="true"] { border-bottom-color: var(--accent); color: var(--ink); background: var(--panel-strong); }
-.scene-context-bar { display: flex; align-items: center; gap: .75rem 1.5rem; padding: .55rem .75rem; border: 1px solid var(--rule); border-top: 0; background: var(--panel); }
-.scene-context-bar select { min-width: 8rem; }
+.scene-context-bar { display: flex; align-items: center; gap: .75rem 1.5rem; padding: .75rem; background: var(--panel-strong); }
+.scene-context-bar select { min-width: 9rem; font-weight: 800; }
 .scene-context-next { margin-left: auto; color: var(--muted); font: 750 .68rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .scene-context-next strong { margin-left: .35rem; color: var(--ink); }
 .primary-button, .quiet-button { border: 1px solid var(--rule); padding: .68rem .9rem; background: transparent; font: 800 .72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
@@ -108,6 +108,8 @@ main { max-width: 1500px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 4rem) 5rem
 .performance-heading h2 { margin: .2rem 0 0; font-size: 1rem; }
 .live-toggle { display: inline-flex; align-items: center; gap: .45rem; color: var(--ink); font: 800 .7rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .live-toggle input { accent-color: var(--accent); }
+.auto-evolve-toggle { min-height: 2.35rem; padding: 0 .7rem; border: 1px solid var(--rule); background: var(--panel-strong); }
+.auto-evolve-toggle:has(input:checked) { border-color: var(--accent); }
 .scene-launcher { display: grid; gap: .65rem; margin-bottom: .85rem; padding: .75rem; border: 1px solid var(--rule); background: color-mix(in srgb, var(--panel-strong) 60%, transparent); }
 .scene-readout { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; color: var(--muted); font: 750 .68rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .scene-readout strong { margin-left: .35rem; color: var(--ink); }
@@ -127,6 +129,7 @@ main { max-width: 1500px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 4rem) 5rem
 .compact-performance-control input { grid-column: 1 / -1; width: 100%; }
 .compact-performance-control output { color: var(--ink); }
 .performance-status { margin: .75rem 0 0; color: var(--muted); font: .68rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.performance-status:empty { display: none; }
 .live-options { margin-top: .8rem; padding-top: .75rem; border-top: 1px solid var(--rule); }
 .live-options summary { color: var(--muted); font: 800 .7rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
 .live-options[open] summary { margin-bottom: .75rem; }
@@ -233,7 +236,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 .source-panel { padding: 0; }
 .source-panel summary { padding: 1rem; color: var(--muted); font: 800 .72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
-.source-panel textarea { display: block; width: 100%; min-height: 20rem; resize: vertical; border: 0; border-top: 1px solid var(--rule); padding: 1rem; color: var(--ink); background: var(--paper); font: .75rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.source-actions { display: flex; align-items: center; gap: .55rem; padding: 0 1rem 1rem; }
+.source-status { margin-left: auto; color: var(--muted); font: .7rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.source-status[data-state="success"] { color: var(--accent); }
+.source-status[data-state="error"] { color: var(--danger, #d65959); }
+.source-panel textarea { display: block; width: 100%; min-height: 13rem; resize: vertical; border: 0; border-top: 1px solid var(--rule); padding: 1rem; color: var(--ink); background: var(--paper); font: .78rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; tab-size: 2; }
+.source-panel textarea[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--danger, #d65959); }
 
 @media (max-width: 800px) {
   .project-header { padding-top: 1.5rem; }

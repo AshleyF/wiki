@@ -1,10 +1,12 @@
+import { compileRhythmSource, serializeRhythmPattern } from './rhythm-language.js';
+
 const $ = (selector) => document.querySelector(selector);
 
 const THEME_KEY = 'personal-wiki-theme';
 const PATTERN_KEY = 'drum-groove-explorer-pattern-v1';
 const SETTINGS_KEY = 'drum-groove-explorer-settings-v1';
 const VIEW_KEY = 'drum-groove-explorer-view-v1';
-const SCENE_SCHEMA = 2;
+const SCENE_SCHEMA = 4;
 const sceneIds = ['verse-1', 'verse-2', 'chorus-1', 'chorus-2', 'bridge-1', 'bridge-2'];
 
 const instruments = [
@@ -15,10 +17,10 @@ const instruments = [
   { id: 'cowbell', label: 'Cowbell', key: 'f/5/X2', family: 'cowbell', midi: 56, pan: .2, states: ['off', 'hit', 'accent'] },
   { id: 'hh', label: 'Hi-hat', key: 'f/5/X2', family: 'hat', midi: 42, pan: -.35, states: ['off', 'closed', 'open', 'bark', 'accent'] },
   { id: 'ph', label: 'Pedal hi-hat', key: 'd/4/X2', family: 'pedal-hat', midi: 44, pan: -.35, states: ['off', 'chick', 'splash', 'accent'] },
-  { id: 'ht', label: 'High tom', key: 'e/5', family: 'tom', midi: 50, pitch: 190, pan: -.35, states: ['off', 'hit', 'flam', 'drag', 'accent'] },
-  { id: 'mt', label: 'Mid tom', key: 'd/5', family: 'tom', midi: 47, pitch: 145, pan: .05, states: ['off', 'hit', 'flam', 'drag', 'accent'] },
-  { id: 'lt', label: 'Low tom', key: 'b/4', family: 'tom', midi: 45, pitch: 112, pan: .28, states: ['off', 'hit', 'flam', 'drag', 'accent'] },
-  { id: 'ft', label: 'Floor tom', key: 'a/4', family: 'tom', midi: 43, pitch: 82, pan: .48, states: ['off', 'hit', 'flam', 'drag', 'accent'] },
+  { id: 'ht', label: 'High tom', key: 'e/5', family: 'tom', midi: 50, pitch: 190, pan: -.35, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
+  { id: 'mt', label: 'Mid tom', key: 'd/5', family: 'tom', midi: 47, pitch: 145, pan: .05, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
+  { id: 'lt', label: 'Low tom', key: 'b/4', family: 'tom', midi: 45, pitch: 112, pan: .28, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
+  { id: 'ft', label: 'Floor tom', key: 'a/4', family: 'tom', midi: 43, pitch: 82, pan: .48, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
   { id: 'sn', label: 'Snare', key: 'c/5', family: 'snare', midi: 38, pan: .08, states: ['off', 'hit', 'ghost', 'cross-stick', 'flam', 'drag', 'accent'] },
   { id: 'bd', label: 'Kick', key: 'f/4', family: 'kick', midi: 36, pan: 0, states: ['off', 'hit', 'accent'] }
 ];
@@ -56,7 +58,8 @@ const refs = {
   eventSpacing: $('#event-spacing'), repetition: $('#repetition'), period: $('#period'), phraseContour: $('#phrase-contour'),
   generate: $('#generate-pattern'), resetEverything: $('#reset-everything'), muteAllTracks: $('#mute-all-tracks'), unmuteAllTracks: $('#unmute-all-tracks'),
   mutationMode: $('#mutation-mode'), mutate: $('#mutate-pattern'), grid: $('#step-grid'), notation: $('#notation-target'),
-  source: $('#pattern-source'), tags: $('#character-tags'), theme: $('.theme-toggle')
+  source: $('#pattern-source'), sourceApply: $('#apply-source'), sourceRevert: $('#revert-source'), sourceStatus: $('#source-status'),
+  tags: $('#character-tags'), theme: $('.theme-toggle')
 };
 
 const controlHelp = {
@@ -70,8 +73,8 @@ const controlHelp = {
   '#midi-output': 'Chooses the MIDI destination that receives the drum performance.',
   '#midi-channel': 'Chooses the MIDI channel. Channel 10 is the standard drum channel.',
   '#midi-clock': 'Sends MIDI timing clock at 24 pulses per quarter note, plus Start and Stop, so connected software or hardware can follow Rhythm Explorer’s tempo.',
-  '#scene-selector': 'Chooses the section shown by Shape, Edit, and Inspect. During playback, choosing a different section queues it.',
-  '#live-drummer': 'Allows the stable section to acquire controlled variation, embellishments, fills, and punctuation while it plays.',
+  '#scene-selector': 'Chooses the complete drum-machine section configured by every tab and by tempo, meter, and length. Selecting here while playing stops playback; use the Live section buttons to queue a musical transition.',
+  '#live-drummer': 'Allows the selected section to change between bars while it plays. Turn this off to keep playback fixed while editing.',
   '#core-loop-bars': 'The stable repeating foundation inside each section. Later bars borrow from this one-, two-, or four-bar core.',
   '#scene-phrase-bars': 'The musical span used for major boundaries. Queued sections and automatic phrase events wait for the end of this many bars.',
   '#scene-transition': 'Chooses what happens at the boundary where a queued section becomes active.',
@@ -80,8 +83,8 @@ const controlHelp = {
   '#punctuation-every': 'Sets how often the drummer gets an opportunity to add a structural cymbal accent.',
   '#punctuation-chance': 'Sets the probability that a scheduled punctuation point actually receives a crash.',
   '#live-cut-chance': 'Sets the probability of an automatic brief silence at a phrase ending.',
-  '#interjection-boundary': 'Sets how long manual Fill and Cut actions wait before they happen.',
-  '#live-fill-length': 'Sets how much time immediately before the selected boundary is replaced by the fill.',
+  '#interjection-boundary': 'Sets the landing boundary for a manual fill or the starting boundary for a cut. A long fill uses the first matching boundary with enough lead-in.',
+  '#live-fill-length': 'Sets how much time immediately before the selected boundary is replaced by the fill, from one beat through eight bars.',
   '#live-fill-style': 'Chooses the instruments and motion used by manually queued and section-transition fills.',
   '#live-fill-activity': 'Controls how many available subdivisions in a fill contain strokes.',
   '#live-fill-landing': 'Chooses the accent that marks the return to the groove after a fill.',
@@ -122,7 +125,7 @@ function installControlHelp() {
     label.title = description;
     const labelText = label.querySelector(':scope > span:first-child');
     if (!control.hasAttribute('aria-label')) {
-      const accessibleName = selector === '#scene-selector' ? 'Section' : labelText?.textContent.trim() || (selector === '#live-drummer' ? 'Layered performance' : '');
+      const accessibleName = selector === '#scene-selector' ? 'Section' : labelText?.textContent.trim() || (selector === '#live-drummer' ? 'Auto-evolve' : '');
       if (accessibleName) control.setAttribute('aria-label', accessibleName);
     }
   });
@@ -130,7 +133,7 @@ function installControlHelp() {
   const titledControls = {
     '.view-tabs [data-view="play"]': 'Perform sections and queue live changes.',
     '.view-tabs [data-view="shape"]': 'Generate and mutate the selected section.',
-    '.view-tabs [data-view="edit"]': 'Edit every instrument and subdivision directly.',
+    '.view-tabs [data-view="edit"]': 'Edit the selected section as compact rhythm source or as an instrument grid.',
     '.view-tabs [data-view="inspect"]': 'View notation, analysis details, MIDI setup, and plain-text source.',
     '.scene-button': 'Choose this section now, or queue it for the next phrase boundary during playback.',
     '#cancel-scene': 'Cancel the pending section change.',
@@ -145,7 +148,9 @@ function installControlHelp() {
     '.transport-more > summary': 'Open pattern, source, and MIDI actions.',
     '.live-options > summary': 'Adjust the shape, duration, activity, and landing of fills and cuts.',
     '.midi-help > summary': 'Show MIDI routing instructions and the drum-note map.',
-    '.source-panel > summary': 'Show the current rhythm in portable plain-text notation.'
+    '.source-panel > summary': 'Edit the selected section in the compact rhythm language.',
+    '#apply-source': 'Compile the source into the selected section. Command-Enter or Control-Enter does the same thing.',
+    '#revert-source': 'Discard unapplied source edits and regenerate the shortest source for the current grid.'
   };
   Object.entries(titledControls).forEach(([selector, description]) => {
     document.querySelectorAll(selector).forEach(control => {
@@ -186,7 +191,7 @@ function selectView(view, { persist = true } = {}) {
     panel.hidden = panel.dataset.viewPanel !== selected;
   });
   if (selected === 'inspect') renderNotation();
-  refs.sceneContextLabel.textContent = ({ play: 'Live section', shape: 'Shaping section', edit: 'Editing section', inspect: 'Inspecting section' })[selected];
+  refs.sceneContextLabel.textContent = 'Section';
   if (persist) {
     try { localStorage.setItem(VIEW_KEY, selected); } catch (error) { /* The view can remain session-only. */ }
   }
@@ -269,6 +274,48 @@ let totalBarsStarted = 1;
 let queuedCuts = [];
 let queuedFills = [];
 let queuedLandings = [];
+let activeFill = null;
+let rhythmSourceDirty = false;
+
+const sectionSettingKeys = [
+  'preset', 'backbeat', ...controlKeys,
+  'liveDrummer',
+  'coreLoopBars', 'liveEvolution', 'embellishment', 'punctuationEvery', 'punctuationChance',
+  'scenePhraseBars', 'sceneTransition', 'liveCutChance', 'interjectionBoundary', 'liveFillLength', 'liveFillStyle',
+  'liveFillActivity', 'liveFillLanding', 'liveCutLength', 'mutationMode'
+];
+
+function captureSectionSettings() {
+  return {
+    ...Object.fromEntries(sectionSettingKeys.map(key => [key, refs[key]?.type === 'checkbox' ? refs[key].checked : refs[key]?.value])),
+    mutedInstruments: [...mutedInstruments]
+  };
+}
+
+function applySectionSettings(settings) {
+  if (!settings) return;
+  sectionSettingKeys.forEach(key => {
+    const ref = refs[key];
+    if (!ref || settings[key] === undefined) return;
+    if (ref.type === 'checkbox') ref.checked = Boolean(settings[key]);
+    else ref.value = settings[key];
+  });
+  if (Array.isArray(settings.mutedInstruments)) {
+    mutedInstruments = new Set(settings.mutedInstruments.filter(id => instruments.some(item => item.id === id)));
+  }
+  updateOutputs();
+  updateLiveOutputs();
+}
+
+function storeActiveSectionState() {
+  const scene = scenes.find(item => item.id === activeSceneId);
+  if (!scene) return;
+  scene.settings = captureSectionSettings();
+  scene.pattern = sanitizePattern({
+    ...pattern,
+    tracks: performanceTemplateTracks || pattern.tracks
+  });
+}
 
 function meterConfig(meter = pattern?.meter || '4/4') {
   return meters[meter] || meters['4/4'];
@@ -313,6 +360,11 @@ function sceneName(id) {
 
 function buildScenesFromPattern() {
   const base = cloneTracks(pattern.tracks);
+  const settings = captureSectionSettings();
+  const previousSettings = new Map(scenes.map(scene => [scene.id, scene.settings]));
+  const previousPatterns = new Map(scenes.map(scene => [scene.id, scene.pattern]));
+  if (scenes.length) previousSettings.set(activeSceneId, settings);
+  if (scenes.length) previousPatterns.set(activeSceneId, sanitizePattern(pattern));
   const verse2 = cloneTracks(base);
   const chorus1 = cloneTracks(base);
   const chorus2 = cloneTracks(base);
@@ -351,13 +403,14 @@ function buildScenesFromPattern() {
     bridge1.ft[offset] = 'hit';
     if (config.groups[2] !== undefined) bridge1.mt[offset + config.groups[2]] = 'hit';
   }
+  const scenePattern = (id, tracks) => previousPatterns.get(id) || sanitizePattern({ ...pattern, tracks });
   scenes = [
-    { id: 'verse-1', name: sceneName('verse-1'), tracks: base },
-    { id: 'verse-2', name: sceneName('verse-2'), tracks: verse2 },
-    { id: 'chorus-1', name: sceneName('chorus-1'), tracks: chorus1 },
-    { id: 'chorus-2', name: sceneName('chorus-2'), tracks: chorus2 },
-    { id: 'bridge-1', name: sceneName('bridge-1'), tracks: bridge1 },
-    { id: 'bridge-2', name: sceneName('bridge-2'), tracks: bridge2 }
+    { id: 'verse-1', name: sceneName('verse-1'), pattern: scenePattern('verse-1', base), settings: { ...(previousSettings.get('verse-1') || settings) } },
+    { id: 'verse-2', name: sceneName('verse-2'), pattern: scenePattern('verse-2', verse2), settings: { ...(previousSettings.get('verse-2') || settings) } },
+    { id: 'chorus-1', name: sceneName('chorus-1'), pattern: scenePattern('chorus-1', chorus1), settings: { ...(previousSettings.get('chorus-1') || settings) } },
+    { id: 'chorus-2', name: sceneName('chorus-2'), pattern: scenePattern('chorus-2', chorus2), settings: { ...(previousSettings.get('chorus-2') || settings) } },
+    { id: 'bridge-1', name: sceneName('bridge-1'), pattern: scenePattern('bridge-1', bridge1), settings: { ...(previousSettings.get('bridge-1') || settings) } },
+    { id: 'bridge-2', name: sceneName('bridge-2'), pattern: scenePattern('bridge-2', bridge2), settings: { ...(previousSettings.get('bridge-2') || settings) } }
   ];
   activeSceneId = 'verse-1';
   queuedSceneId = null;
@@ -368,16 +421,20 @@ function buildScenesFromPattern() {
 function applyRestoredSceneState() {
   if (!restoredSceneState) return;
   const restored = restoredSceneState.scenes.map(scene => {
-    const sanitized = sanitizePattern({ ...pattern, tracks: scene.tracks });
-    return { id: scene.id, name: sceneName(scene.id), tracks: sanitized.tracks };
+    const restoredPattern = scene.pattern || { ...pattern, tracks: scene.tracks };
+    return { id: scene.id, name: sceneName(scene.id), pattern: sanitizePattern(restoredPattern), settings: scene.settings || captureSectionSettings() };
   }).filter(scene => sceneIds.includes(scene.id));
   if (restored.length === sceneIds.length) scenes = restored;
   const requested = restoredSceneState.activeSceneId;
   activeSceneId = scenes.some(scene => scene.id === requested) ? requested : 'verse-1';
   const activeScene = scenes.find(scene => scene.id === activeSceneId);
   if (activeScene) {
-    pattern.tracks = cloneTracks(activeScene.tracks);
-    performanceTemplateTracks = cloneTracks(activeScene.tracks);
+    pattern = sanitizePattern(activeScene.pattern);
+    performanceTemplateTracks = cloneTracks(pattern.tracks);
+    applySectionSettings(activeScene.settings);
+    refs.tempo.value = pattern.tempo;
+    refs.meter.value = pattern.meter;
+    refs.length.value = String(pattern.bars);
   }
   restoredSceneState = null;
 }
@@ -396,7 +453,7 @@ function renderSceneState() {
 }
 
 function syncCueButtons() {
-  const fillQueued = queuedFills.length > 0;
+  const fillQueued = queuedFills.length > 0 || Boolean(activeFill);
   const cutQueued = queuedCuts.length > 0;
   refs.queueFill.classList.toggle('is-queued', fillQueued);
   refs.queueFill.setAttribute('aria-pressed', String(fillQueued));
@@ -424,7 +481,7 @@ function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(PATTERN_KEY));
     pattern = saved ? sanitizePattern(saved) : moneyBeat('4/4', 4);
-    if (saved?.sceneState?.version === SCENE_SCHEMA && Array.isArray(saved.sceneState.scenes)) restoredSceneState = saved.sceneState;
+    if (saved?.sceneState?.version >= 2 && Array.isArray(saved.sceneState.scenes)) restoredSceneState = saved.sceneState;
     const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     if (settings) {
       if (settings.preset !== undefined && presetProfiles[settings.preset]) refs.preset.value = settings.preset;
@@ -463,12 +520,13 @@ function loadState() {
 
 function saveState() {
   try {
+    storeActiveSectionState();
     localStorage.setItem(PATTERN_KEY, JSON.stringify({
       ...pattern,
       sceneState: {
         version: SCENE_SCHEMA,
         activeSceneId,
-        scenes: scenes.map(scene => ({ id: scene.id, name: scene.name, tracks: scene.tracks }))
+        scenes: scenes.map(scene => ({ id: scene.id, name: scene.name, pattern: scene.pattern, settings: scene.settings }))
       }
     }));
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({ preset: refs.preset.value, backbeat: refs.backbeat.checked,
@@ -490,40 +548,49 @@ function saveState() {
   }
 }
 
-function sourceToken(state) {
-  return ({ off: '.', hit: 'x', closed: 'x', chick: 'p', splash: 's', accent: 'x>', ghost: '(x)', 'cross-stick': 'c', flam: 'f', drag: 'd', open: 'o', bark: '+' })[state] || '.';
+function sourceText() {
+  return serializeRhythmPattern(pattern, instruments);
 }
 
-function sourceText() {
-  const lines = [
-    `character ${refs.preset.value}`,
-    `tempo ${pattern.tempo}`,
-    `meter ${pattern.meter}`,
-    `division 16`,
-    `bars ${pattern.bars}`,
-    `steps ${pattern.steps}`,
-    `swing ${refs.swing.value}`,
-    `humanization ${refs.humanization.value}`,
-    `live ${refs.liveDrummer.checked ? 'on' : 'off'}`,
-    `core-loop ${refs.coreLoopBars.value}`,
-    `stability ${refs.liveEvolution.value}`,
-    `embellishment ${refs.embellishment.value}`,
-    `punctuation-every ${refs.punctuationEvery.value}`,
-    `punctuation-chance ${refs.punctuationChance.value}`,
-    `section ${activeSceneId}`,
-    `section-phrase ${refs.scenePhraseBars.value}`,
-    `fill-probability ${refs.fillProbability.value}`,
-    `live-cut-chance ${refs.liveCutChance.value}`,
-    `live-fill-length ${refs.liveFillLength.value}`,
-    `live-fill-style ${refs.liveFillStyle.value}`,
-    `live-fill-activity ${refs.liveFillActivity.value}`,
-    `live-fill-landing ${refs.liveFillLanding.value}`,
-    `live-cut-length ${refs.liveCutLength.value}`,
-    `mutation-mode ${refs.mutationMode.value}`
-  ];
-  if (mutedInstruments.size) lines.push(`muted ${[...mutedInstruments].join(' ')}`);
-  for (const instrument of instruments) lines.push(`${instrument.id}: ${pattern.tracks[instrument.id].map(sourceToken).join(' ')}`);
-  return lines.join('\n');
+function setRhythmSourceStatus(message = '', state = '') {
+  refs.sourceStatus.textContent = message;
+  refs.sourceStatus.dataset.state = state;
+  refs.source.toggleAttribute('aria-invalid', state === 'error');
+}
+
+function revertRhythmSource() {
+  rhythmSourceDirty = false;
+  refs.source.value = sourceText();
+  setRhythmSourceStatus('Reverted', 'success');
+}
+
+async function applyRhythmSource() {
+  let nextPattern;
+  try {
+    nextPattern = compileRhythmSource(refs.source.value, { currentPattern: pattern, instruments, meters });
+  } catch (error) {
+    setRhythmSourceStatus(error.message || String(error), 'error');
+    return;
+  }
+
+  const wasPlaying = playing;
+  if (wasPlaying) stopPlayback();
+  pattern = nextPattern;
+  refs.tempo.value = String(pattern.tempo);
+  refs.meter.value = pattern.meter;
+  refs.length.value = String(pattern.bars);
+  rhythmSourceDirty = false;
+  capturePerformanceTemplate();
+  updateAll();
+  setRhythmSourceStatus('Applied', 'success');
+  if (wasPlaying) {
+    try {
+      await startPlayback();
+    } catch (error) {
+      stopPlayback();
+      setRhythmSourceStatus(`Applied; playback failed: ${error.message || error}`, 'error');
+    }
+  }
 }
 
 function stepLabel(index) {
@@ -699,7 +766,7 @@ function updateAll({ save = true } = {}) {
   renderNotation();
   updateAnalysis();
   if (scenes.length) renderSceneState();
-  refs.source.value = sourceText();
+  if (!rhythmSourceDirty) refs.source.value = sourceText();
   updateOutputs();
   if (save) saveState();
 }
@@ -790,20 +857,16 @@ function capturePerformanceTemplate(rebuildScenes = false) {
   if (rebuildScenes || !scenes.length) buildScenesFromPattern();
   else {
     const activeScene = scenes.find(scene => scene.id === activeSceneId);
-    if (activeScene) activeScene.tracks = cloneTracks(performanceTemplateTracks);
+    if (activeScene) {
+      activeScene.pattern = sanitizePattern({ ...pattern, tracks: performanceTemplateTracks });
+      activeScene.settings = captureSectionSettings();
+    }
   }
   queuedCuts = [];
   queuedFills = [];
   queuedLandings = [];
+  activeFill = null;
   syncCueButtons();
-}
-
-function liveReadyStatus() {
-  const bars = Math.max(1, Number(refs.coreLoopBars.value) || 2);
-  const fillStatus = Number(refs.fillProbability.value) === 0 ? ' Automatic fills are off; Queue fill remains manual.' : '';
-  return refs.liveDrummer.checked
-    ? `${sceneName(activeSceneId)} repeats from a stable ${bars}-bar core; movement is ${refs.liveEvolution.value}% stable.${fillStatus}`
-    : 'Performance layers are frozen; the selected section will loop unchanged.';
 }
 
 function applyPreferredPeriod() {
@@ -885,7 +948,61 @@ function enforcePresetOstinato() {
   }
 }
 
-function generatePattern() {
+function generatedSnareState(strength, ghostDensity) {
+  const roll = Math.random();
+  const accentChance = .08 + strength * .52;
+  const ghostChance = .08 + (1 - strength) * .22 + ghostDensity * .12;
+  if (roll < accentChance) return 'accent';
+  if (roll < accentChance + ghostChance) return 'ghost';
+  return 'hit';
+}
+
+function generateSnareBar(offset, config, { preset, density, sync, surprise, strength, displacement, ghostDensity, articulation }) {
+  const structural = ['halftime', 'dnb'].includes(preset) && pattern.meter === '4/4' ? [8] : config.backbeats;
+  const occupied = new Set();
+  if (refs.backbeat.checked) {
+    const anchorChance = Math.min(.78, .28 + strength * .45 - surprise * .1);
+    structural.forEach(local => {
+      if (Math.random() > anchorChance) return;
+      const shifted = Math.random() < displacement ? (Math.random() < .5 ? -1 : 1) : 0;
+      const anchor = (local + shifted + config.slots) % config.slots;
+      pattern.tracks.sn[offset + anchor] = generatedSnareState(strength, ghostDensity);
+      occupied.add(anchor);
+
+      const doubleChance = .08 + surprise * .18 + articulation * .2;
+      if (Math.random() < doubleChance) {
+        const neighbor = (anchor + (Math.random() < .78 ? 1 : -1) + config.slots) % config.slots;
+        if (!occupied.has(neighbor)) {
+          pattern.tracks.sn[offset + neighbor] = Math.random() < ghostDensity * .6 ? 'ghost' : 'hit';
+          occupied.add(neighbor);
+        }
+      }
+    });
+  }
+
+  const freeHitTarget = (refs.backbeat.checked
+    ? surprise * .7 + articulation * .5 + density * .3
+    : .7 + density * 1.3 + surprise * 1.2) * Math.max(1, config.slots / 16);
+  const freeHitCount = Math.floor(freeHitTarget) + (Math.random() < freeHitTarget % 1 ? 1 : 0);
+  for (let hit = 0; hit < freeHitCount; hit += 1) {
+    const candidates = Array.from({ length: config.slots }, (_, local) => local)
+      .filter(local => !occupied.has(local) && pattern.tracks.sn[offset + local] === 'off');
+    if (!candidates.length) break;
+    const weighted = candidates.map(local => {
+      const structuralDistance = Math.min(...structural.map(anchor => Math.abs(anchor - local)));
+      const onGrid = config.groups.includes(local);
+      const structuralWeight = refs.backbeat.checked ? Math.max(.15, 1 - structuralDistance * .22) : .45;
+      const syncWeight = onGrid ? 1 - sync * .72 : .35 + sync * .9;
+      return { local, weight: Math.max(.05, structuralWeight * syncWeight) };
+    });
+    let pick = Math.random() * weighted.reduce((sum, item) => sum + item.weight, 0);
+    const chosen = weighted.find(item => (pick -= item.weight) <= 0) || weighted[weighted.length - 1];
+    pattern.tracks.sn[offset + chosen.local] = Math.random() < ghostDensity * .45 ? 'ghost' : generatedSnareState(strength * .72, ghostDensity);
+    occupied.add(chosen.local);
+  }
+}
+
+function generatePattern({ rebuildScenes = false } = {}) {
   const meter = refs.meter.value;
   const bars = Number(refs.length.value);
   pattern = createPattern(meter, bars, Number(refs.tempo.value) || 100);
@@ -907,14 +1024,7 @@ function generatePattern() {
   for (let bar = 0; bar < pattern.bars; bar += 1) {
     const offset = bar * config.slots;
     generatePulseBar(offset, config, pulseDensity);
-    if (refs.backbeat.checked) {
-      const backbeats = ['halftime', 'dnb'].includes(preset) && pattern.meter === '4/4' ? [8] : config.backbeats;
-      backbeats.forEach(local => {
-        const displaced = Math.random() < backbeatDisplacement ? (Math.random() < .5 ? -1 : 1) : 0;
-        const step = offset + (local + displaced + config.slots) % config.slots;
-        pattern.tracks.sn[step] = backbeatStrength < .25 ? 'ghost' : backbeatStrength < .7 ? 'hit' : 'accent';
-      });
-    }
+    generateSnareBar(offset, config, { preset, density, sync, surprise, strength: backbeatStrength, displacement: backbeatDisplacement, ghostDensity, articulation });
     const target = Math.max(1, Math.round((1 + density * 8 * config.slots / 16) * contourWeight(offset + config.slots / 2)));
     generateKickBar(offset, Math.min(config.slots - 1, target), sync, config, kickIndependence, eventSpacing);
     for (let local = 0; local < config.slots; local += 1) {
@@ -932,9 +1042,9 @@ function generatePattern() {
   applyDisplacement(Number(refs.beatDisplacement.value));
   applyLinearity(linearity);
   enforcePresetOstinato();
-  capturePerformanceTemplate(true);
+  capturePerformanceTemplate(rebuildScenes);
   updateAll();
-  refs.liveStatus.textContent = liveReadyStatus();
+  refs.liveStatus.textContent = '';
 }
 
 function mutatePattern() {
@@ -975,6 +1085,8 @@ function clearStepRange(start, length) {
 
 function cueLength(type, config = meterConfig()) {
   const choice = type === 'fill' ? refs.liveFillLength.value : refs.liveCutLength.value;
+  const multiBar = choice.match(/^(\d+)-bars$/);
+  if (multiBar) return Number(multiBar[1]) * config.slots;
   if (choice === 'bar') return config.slots;
   if (choice === 'half') return closestHalfBarBoundary(config) || Math.max(1, Math.round(config.slots / 2));
   return config.groups[1] || Math.max(1, Math.round(config.slots / config.numerator));
@@ -982,12 +1094,51 @@ function cueLength(type, config = meterConfig()) {
 
 function cueLengthLabel(type) {
   const select = type === 'fill' ? refs.liveFillLength : refs.liveCutLength;
-  return select.options[select.selectedIndex]?.textContent.toLowerCase() || 'one beat';
+  const label = select.options[select.selectedIndex]?.textContent.toLowerCase() || 'one beat';
+  if (label === '1 beat') return 'one-beat';
+  if (label === 'half bar') return 'half-bar';
+  return label.replace(/^(\d+) bars?$/, '$1-bar');
 }
 
-function applyFillLanding(step) {
-  if (refs.liveFillLanding.value === 'kick-crash' || refs.liveFillLanding.value === 'kick') pattern.tracks.bd[step] = 'accent';
-  if (refs.liveFillLanding.value === 'kick-crash' || refs.liveFillLanding.value === 'crash') pattern.tracks.cr1[step] = 'accent';
+function applyFillLanding(step, landingStyle = refs.liveFillLanding.value) {
+  if (landingStyle === 'kick-crash' || landingStyle === 'kick') pattern.tracks.bd[step] = 'accent';
+  if (landingStyle === 'kick-crash' || landingStyle === 'crash') pattern.tracks.cr1[step] = 'accent';
+}
+
+function createFillState() {
+  const toms = ['ht', 'mt', 'lt', 'ft'];
+  return {
+    toms,
+    fixedTom: toms[Math.floor(Math.random() * toms.length)],
+    registerMovement: Number(refs.registerMovement.value) / 100,
+    activity: Number(refs.liveFillActivity.value) / 100,
+    style: refs.liveFillStyle.value,
+    landingStyle: refs.liveFillLanding.value
+  };
+}
+
+function writeFillStep(step, offset, length, fillState) {
+  const { toms, fixedTom, registerMovement, activity, style } = fillState;
+  instruments.forEach(({ id }) => { pattern.tracks[id][step] = 'off'; });
+  if (offset !== length - 1 && Math.random() > activity) return;
+  const progress = offset / Math.max(1, length - 1);
+  if (style === 'buildup') {
+    const state = progress < .34 ? 'ghost' : progress < .72 ? 'hit' : 'accent';
+    pattern.tracks[offset % 2 ? 'ft' : 'sn'][step] = state;
+    if (offset === length - 1) {
+      pattern.tracks.sn[step] = 'accent';
+      pattern.tracks.ft[step] = 'accent';
+    }
+    return;
+  }
+  const tomIndex = Math.min(toms.length - 1, Math.floor(progress * toms.length));
+  let instrument = Math.random() < registerMovement ? toms[tomIndex] : fixedTom;
+  if (style === 'snare-toms') instrument = progress < .38 ? 'sn' : toms[Math.min(toms.length - 1, Math.floor(((progress - .38) / .62) * toms.length))];
+  if (style === 'snare-roll') instrument = 'sn';
+  if (style === 'around-kit') instrument = ['sn', 'ht', 'sn', 'mt', 'sn', 'lt', 'ft'][offset % 7];
+  if (style === 'cymbal-punches') instrument = offset % 2 ? toms[tomIndex] : 'sn';
+  pattern.tracks[instrument][step] = offset === length - 1 || (style === 'snare-roll' && offset % 4 === 0) ? 'accent' : 'hit';
+  if (style === 'cymbal-punches' && offset % 4 === 0) pattern.tracks[offset % 8 === 0 ? 'cr1' : 'china'][step] = 'accent';
 }
 
 function insertFillEndingAt(boundary, trackLanding = false, requestedLength = null) {
@@ -995,27 +1146,10 @@ function insertFillEndingAt(boundary, trackLanding = false, requestedLength = nu
   const maxLength = Math.max(3, Math.min(8, Math.floor(config.slots / 2)));
   const length = requestedLength || Math.max(3, Math.round(3 + (Number(refs.fillLength.value) / 100) * (maxLength - 3)));
   const start = boundary - length;
-  const toms = ['ht', 'mt', 'lt', 'ft'];
-  const fixedTom = toms[Math.floor(Math.random() * toms.length)];
-  const registerMovement = Number(refs.registerMovement.value) / 100;
-  const activity = Number(refs.liveFillActivity.value) / 100;
-  for (let offset = 0; offset < length; offset += 1) {
-    const step = wrappedStep(start + offset);
-    instruments.forEach(({ id }) => { pattern.tracks[id][step] = 'off'; });
-    if (offset !== length - 1 && Math.random() > activity) continue;
-    const progress = offset / Math.max(1, length - 1);
-    const tomIndex = Math.min(toms.length - 1, Math.floor(progress * toms.length));
-    let instrument = Math.random() < registerMovement ? toms[tomIndex] : fixedTom;
-    if (refs.liveFillStyle.value === 'snare-toms') instrument = progress < .38 ? 'sn' : toms[Math.min(toms.length - 1, Math.floor(((progress - .38) / .62) * toms.length))];
-    if (refs.liveFillStyle.value === 'snare-roll') instrument = 'sn';
-    if (refs.liveFillStyle.value === 'around-kit') instrument = ['sn', 'ht', 'sn', 'mt', 'sn', 'lt', 'ft'][offset % 7];
-    if (refs.liveFillStyle.value === 'cymbal-punches') instrument = offset % 2 ? toms[tomIndex] : 'sn';
-    const state = offset === length - 1 || (refs.liveFillStyle.value === 'snare-roll' && offset % 4 === 0) ? 'accent' : 'hit';
-    pattern.tracks[instrument][step] = state;
-    if (refs.liveFillStyle.value === 'cymbal-punches' && offset % 4 === 0) pattern.tracks[offset % 8 === 0 ? 'cr1' : 'china'][step] = 'accent';
-  }
+  const fillState = createFillState();
+  for (let offset = 0; offset < length; offset += 1) writeFillStep(wrappedStep(start + offset), offset, length, fillState);
   const landing = wrappedStep(boundary);
-  applyFillLanding(landing);
+  applyFillLanding(landing, fillState.landingStyle);
   if (trackLanding && !queuedLandings.some(item => item.step === landing && item.type === 'fill')) queuedLandings.push({ step: landing, type: 'fill' });
 }
 
@@ -1047,7 +1181,7 @@ function nextCueTarget(mode, minimumDistance) {
     const slots = meterConfig().slots;
     const local = cursor % slots;
     let distance = (slots - local) % slots;
-    if (distance < Math.max(1, minimumDistance)) distance += slots;
+    while (distance < Math.max(1, minimumDistance)) distance += slots;
     distance += (bars - 1) * slots;
     return { boundary: wrappedStep(cursor + distance), atCount: baseCount + distance, distance };
   }
@@ -1072,14 +1206,22 @@ function queueInterjection(type) {
   }
   syncCueButtons();
   const location = refs.interjectionBoundary.options[refs.interjectionBoundary.selectedIndex]?.textContent.toLowerCase() || 'selected boundary';
+  const boundaryLabel = location.replace(/^next /, '').replace(/^(\d+) bars$/, '$1-bar phrase');
   refs.liveStatus.textContent = type === 'fill'
-    ? `${cueLengthLabel('fill')} fill queued for ${location}.`
+    ? `${cueLengthLabel('fill')} fill queued for the first available ${boundaryLabel} boundary.`
     : `${cueLengthLabel('cut')} cut queued for ${location}.`;
 }
 
 function cancelInterjection(type) {
-  if (type === 'fill') queuedFills = [];
-  else queuedCuts = [];
+  if (type === 'fill') {
+    queuedFills = [];
+    queuedLandings = queuedLandings.filter(item => item.type !== 'fill');
+    if (activeFill && performanceTemplateTracks) {
+      pattern.tracks = cloneTracks(performanceTemplateTracks);
+      updateAll();
+    }
+    activeFill = null;
+  } else queuedCuts = [];
   syncCueButtons();
   refs.liveStatus.textContent = `${type === 'fill' ? 'Fill' : 'Cut'} queue cancelled.`;
 }
@@ -1106,7 +1248,8 @@ function reorchestrateRange(start, length, layer) {
     const events = sourceIds.map(id => ({ id, state: pattern.tracks[id][step] }))
       .filter(event => event.state !== 'off' && (layer !== 'details' || detailStates.has(event.state)));
     if (!events.length) continue;
-    const locked = events.filter(event => event.id === 'sn' && refs.backbeat.checked && config.backbeats.includes(local));
+    const locked = events.filter(event => event.id === 'sn' && refs.backbeat.checked && config.backbeats.includes(local)
+      && Math.random() < .25 + Number(refs.backbeatStrength.value) / 200);
     const movable = events.filter(event => !locked.includes(event));
     movable.forEach(event => { pattern.tracks[event.id][step] = 'off'; });
     const occupied = new Set(locked.map(event => event.id));
@@ -1125,11 +1268,22 @@ function reorchestrateRange(start, length, layer) {
 function activateScene(id, { refresh = true } = {}) {
   const scene = scenes.find(item => item.id === id);
   if (!scene) return false;
+  storeActiveSectionState();
   activeSceneId = id;
   queuedSceneId = null;
-  pattern.tracks = cloneTracks(scene.tracks);
-  performanceTemplateTracks = cloneTracks(scene.tracks);
+  pattern = sanitizePattern(scene.pattern);
+  rhythmSourceDirty = false;
+  performanceTemplateTracks = cloneTracks(pattern.tracks);
+  applySectionSettings(scene.settings);
+  refs.tempo.value = pattern.tempo;
+  refs.meter.value = pattern.meter;
+  refs.length.value = String(pattern.bars);
+  queuedCuts = [];
+  queuedFills = [];
+  queuedLandings = [];
+  activeFill = null;
   sceneBar = 1;
+  syncCueButtons();
   renderSceneState();
   if (refresh) updateAll();
   return true;
@@ -1141,9 +1295,10 @@ function chooseScene(id) {
     queuedCuts = [];
     queuedFills = [];
     queuedLandings = [];
+    activeFill = null;
     syncCueButtons();
     activateScene(id);
-    refs.liveStatus.textContent = `${sceneName(id)} selected. It will start from its stable core.`;
+    refs.liveStatus.textContent = `${sceneName(id)} selected.`;
     return;
   }
   if (id === activeSceneId) {
@@ -1156,6 +1311,16 @@ function chooseScene(id) {
   renderSceneState();
   const transition = refs.sceneTransition.options[refs.sceneTransition.selectedIndex]?.textContent || 'selected transition';
   refs.liveStatus.textContent = `${sceneName(id)} queued for the next ${refs.scenePhraseBars.value}-bar boundary with ${transition.toLowerCase()}.`;
+}
+
+function selectSceneForEditing(id) {
+  if (!scenes.some(scene => scene.id === id) || id === activeSceneId) return;
+  const wasPlaying = playing;
+  if (wasPlaying) stopPlayback();
+  activateScene(id);
+  refs.liveStatus.textContent = wasPlaying
+    ? `${sceneName(id)} selected; playback stopped.`
+    : `${sceneName(id)} selected.`;
 }
 
 function cancelQueuedScene() {
@@ -1174,13 +1339,15 @@ function advancePerformanceBar(step) {
   } else {
     sceneBar = sceneBar >= phraseBars ? 1 : sceneBar + 1;
   }
-  if (refs.liveDrummer.checked) evolveBar(step, switched);
+  const barStart = switched ? 0 : step;
+  if (refs.liveDrummer.checked) evolveBar(barStart, switched);
   else if (switched && refs.sceneTransition.value !== 'clean') {
-    pattern.tracks.cr1[step] = 'accent';
-    if (refs.sceneTransition.value === 'fill-crash') pattern.tracks.bd[step] = 'accent';
+    pattern.tracks.cr1[barStart] = 'accent';
+    if (refs.sceneTransition.value === 'fill-crash') pattern.tracks.bd[barStart] = 'accent';
     updateAll();
   }
   renderSceneState();
+  return switched;
 }
 
 function evolveBar(barStart, sceneSwitched = false) {
@@ -1200,7 +1367,6 @@ function evolveBar(barStart, sceneSwitched = false) {
     if (Math.random() >= instability) continue;
     const instrument = mutable[Math.floor(Math.random() * mutable.length)];
     const local = Math.floor(Math.random() * config.slots);
-    if (instrument.id === 'sn' && refs.backbeat.checked && config.backbeats.includes(local)) continue;
     const step = wrappedStep(barStart + local);
     const current = pattern.tracks[instrument.id][step];
     if (current === 'off') {
@@ -1216,9 +1382,13 @@ function evolveBar(barStart, sceneSwitched = false) {
   }
 
   if (refs.backbeat.checked) {
+    const strength = Number(refs.backbeatStrength.value) / 100;
+    const ghostDensity = Number(refs.ghostDensity.value) / 100;
     config.backbeats.forEach(local => {
       const step = wrappedStep(barStart + local);
-      if (pattern.tracks.sn[step] === 'off') pattern.tracks.sn[step] = 'hit';
+      if (pattern.tracks.sn[step] === 'off' && Math.random() < instability * (.12 + strength * .28)) {
+        pattern.tracks.sn[step] = generatedSnareState(strength, ghostDensity);
+      }
     });
   }
 
@@ -1256,10 +1426,7 @@ function evolveBar(barStart, sceneSwitched = false) {
     pattern.tracks.cr1[wrappedStep(barStart)] = 'accent';
     if (refs.sceneTransition.value === 'fill-crash') pattern.tracks.bd[wrappedStep(barStart)] = 'accent';
   }
-  const bar = Math.floor(barStart / config.slots) + 1;
-  refs.liveStatus.textContent = sceneSwitched
-    ? `${sceneName(activeSceneId)} started with ${refs.sceneTransition.value === 'clean' ? 'a clean transition' : 'a phrase landing'}.`
-    : `${sceneName(activeSceneId)}, phrase bar ${sceneBar}: stable core${punctuated ? ' plus punctuation' : ''}${addedFill ? ' and a fill' : ''}${addedCut ? ' and a cut' : ''}.`;
+  if (sceneSwitched) refs.liveStatus.textContent = `${sceneName(activeSceneId)} active.`;
 
   window.clearTimeout(visualRefreshTimer);
   visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
@@ -1478,12 +1645,16 @@ function followPlaybackStep(step) {
 function applyPendingInterjections(step) {
   const fill = queuedFills.find(cue => cue.startAtCount === scheduledStepCount);
   if (fill) {
-    insertFillEndingAt(fill.boundary, true, fill.length);
+    activeFill = { ...fill, fillState: createFillState() };
     queuedFills = queuedFills.filter(cue => cue !== fill);
+    queuedLandings.push({ step: fill.boundary, atCount: fill.atCount, type: 'fill', landingStyle: activeFill.fillState.landingStyle });
     syncCueButtons();
     refs.liveStatus.textContent = 'Fill playing now; the groove lands at the selected boundary.';
     window.clearTimeout(visualRefreshTimer);
     visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
+  }
+  if (activeFill && scheduledStepCount >= activeFill.startAtCount && scheduledStepCount < activeFill.atCount) {
+    writeFillStep(step, scheduledStepCount - activeFill.startAtCount, activeFill.length, activeFill.fillState);
   }
   const cut = queuedCuts.find(cue => cue.atCount === scheduledStepCount);
   if (cut) {
@@ -1496,16 +1667,20 @@ function applyPendingInterjections(step) {
     window.clearTimeout(visualRefreshTimer);
     visualRefreshTimer = window.setTimeout(() => updateAll(), 20);
   }
-  const landings = queuedLandings.filter(item => item.step === step);
+  const landings = queuedLandings.filter(item => item.atCount === undefined ? item.step === step : item.atCount === scheduledStepCount);
   landings.forEach(item => {
-    if (item.type === 'fill') applyFillLanding(step);
+    if (item.type === 'fill') {
+      applyFillLanding(step, item.landingStyle);
+      activeFill = null;
+      syncCueButtons();
+    }
     else {
       pattern.tracks.bd[step] = 'accent';
       pattern.tracks.cr1[step] = 'accent';
     }
   });
   if (landings.length) {
-    queuedLandings = queuedLandings.filter(item => item.step !== step);
+    queuedLandings = queuedLandings.filter(item => !landings.includes(item));
   }
 }
 
@@ -1521,8 +1696,13 @@ function highlightStep(step, atTime) {
 }
 
 function scheduleStep(step, time) {
-  const config = meterConfig();
-  if (scheduledStepCount > 0 && step % config.slots === 0) advancePerformanceBar(step);
+  let config = meterConfig();
+  const switched = scheduledStepCount > 0 && step % config.slots === 0 && advancePerformanceBar(step);
+  if (switched) {
+    step = 0;
+    nextStep = 0;
+    config = meterConfig();
+  }
   applyPendingInterjections(step);
   scheduleMidiClock(time);
   const stepDuration = 60 / pattern.tempo / 4;
@@ -1535,13 +1715,13 @@ function scheduleStep(step, time) {
   }
   highlightStep(step, performedTime);
   scheduledStepCount += 1;
+  return stepDuration;
 }
 
 function scheduler() {
-  const stepDuration = 60 / pattern.tempo / 4;
   // Keep enough audio/MIDI queued to absorb an occasional long VexFlow refresh as a live bar evolves.
   while (nextStepTime < audioContext.currentTime + .4) {
-    scheduleStep(nextStep, nextStepTime);
+    const stepDuration = scheduleStep(nextStep, nextStepTime);
     nextStep = (nextStep + 1) % pattern.steps;
     nextStepTime += stepDuration;
   }
@@ -1588,6 +1768,7 @@ function stopPlayback() {
     queuedCuts = [];
     queuedFills = [];
     queuedLandings = [];
+    activeFill = null;
     syncCueButtons();
     pattern.tracks = cloneTracks(performanceTemplateTracks);
     updateAll();
@@ -1656,7 +1837,8 @@ refs.midiClock.addEventListener('change', () => {
   if (restart) startPlayback();
 });
 refs.liveDrummer.addEventListener('change', () => {
-  refs.liveStatus.textContent = liveReadyStatus();
+  refs.liveStatus.textContent = '';
+  refs.status.textContent = refs.liveDrummer.checked ? 'Auto-evolve on' : 'Auto-evolve off';
   saveState();
 });
 refs.coreLoopBars.addEventListener('change', generatePattern);
@@ -1665,9 +1847,9 @@ for (const ref of [refs.liveEvolution, refs.embellishment, refs.punctuationChanc
   saveState();
 });
 for (const ref of [refs.scenePhraseBars, refs.sceneTransition, refs.punctuationEvery, refs.interjectionBoundary, refs.liveFillLength, refs.liveFillStyle, refs.liveFillLanding, refs.liveCutLength]) ref.addEventListener('change', saveState);
-refs.mutationMode.addEventListener('change', () => { refs.source.value = sourceText(); saveState(); });
+refs.mutationMode.addEventListener('change', saveState);
 refs.sceneButtons.forEach(button => button.addEventListener('click', () => chooseScene(button.dataset.scene)));
-refs.sceneSelector.addEventListener('change', () => chooseScene(refs.sceneSelector.value));
+refs.sceneSelector.addEventListener('change', () => selectSceneForEditing(refs.sceneSelector.value));
 refs.cancelScene.addEventListener('click', cancelQueuedScene);
 refs.queueFill.addEventListener('click', () => queueInterjection('fill'));
 refs.cancelFill.addEventListener('click', () => cancelInterjection('fill'));
@@ -1675,16 +1857,37 @@ refs.queueCut.addEventListener('click', () => queueInterjection('cut'));
 refs.cancelCut.addEventListener('click', () => cancelInterjection('cut'));
 refs.generate.addEventListener('click', generatePattern);
 refs.mutate.addEventListener('click', mutatePattern);
-refs.clear.addEventListener('click', () => { pattern = createPattern(pattern.meter, pattern.bars, pattern.tempo); capturePerformanceTemplate(true); updateAll(); });
+refs.clear.addEventListener('click', () => { pattern = createPattern(pattern.meter, pattern.bars, pattern.tempo); capturePerformanceTemplate(); updateAll(); });
 refs.muteAllTracks.addEventListener('click', () => { mutedInstruments = new Set(instruments.map(({ id }) => id)); renderGrid(); saveState(); });
 refs.unmuteAllTracks.addEventListener('click', () => { mutedInstruments.clear(); renderGrid(); saveState(); });
+refs.source.addEventListener('input', () => {
+  rhythmSourceDirty = true;
+  setRhythmSourceStatus('Unapplied changes');
+});
+refs.source.addEventListener('keydown', event => {
+  if (event.key !== 'Enter' || (!event.metaKey && !event.ctrlKey)) return;
+  event.preventDefault();
+  applyRhythmSource();
+});
+refs.sourceApply.addEventListener('click', applyRhythmSource);
+refs.sourceRevert.addEventListener('click', revertRhythmSource);
 refs.copy.addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText(sourceText()); refs.status.textContent = 'Source copied'; }
+  const text = rhythmSourceDirty ? refs.source.value : sourceText();
+  try { await navigator.clipboard.writeText(text); refs.status.textContent = 'Source copied'; }
   catch (error) { refs.source.focus(); refs.source.select(); refs.status.textContent = 'Source selected'; }
 });
-refs.tempo.addEventListener('change', () => { pattern.tempo = Number(refs.tempo.value) || 100; const restart = playing; stopPlayback(); updateAll(); if (restart) startPlayback(); });
+refs.tempo.addEventListener('input', () => {
+  pattern.tempo = Math.min(300, Math.max(30, Number(refs.tempo.value) || 100));
+  saveState();
+});
+refs.tempo.addEventListener('change', () => {
+  const restart = playing;
+  stopPlayback();
+  updateAll();
+  if (restart) startPlayback();
+});
 
-function applyPresetSelection() {
+function applyPresetSelection({ rebuildScenes = false } = {}) {
   const selected = presetProfiles[refs.preset.value] || presetProfiles.open;
   refs.meter.value = selected.meter;
   refs.length.value = String(selected.bars);
@@ -1694,11 +1897,13 @@ function applyPresetSelection() {
     if (selected[key] !== undefined && refs[key]) refs[key].value = selected[key];
   });
   updateOutputs();
-  generatePattern();
+  generatePattern({ rebuildScenes });
 }
 
 function resetEverything() {
   stopPlayback();
+  scenes = [];
+  activeSceneId = 'verse-1';
   refs.preset.value = 'pocket';
   refs.liveDrummer.checked = true;
   refs.coreLoopBars.value = '2';
@@ -1723,8 +1928,8 @@ function resetEverything() {
   muted = false;
   syncAudioControls();
   updateLiveOutputs();
-  applyPresetSelection();
-  refs.liveStatus.textContent = liveReadyStatus();
+  applyPresetSelection({ rebuildScenes: true });
+  refs.liveStatus.textContent = '';
   refs.status.textContent = 'Reset to Pocket Rock defaults';
 }
 
@@ -1748,7 +1953,7 @@ controlKeys.filter(key => refs[key]?.type === 'range').forEach(key => refs[key].
   generationTimer = window.setTimeout(generatePattern, 120);
 }));
 for (const ref of [refs.timekeeper, refs.period, refs.phraseContour, refs.backbeat]) ref.addEventListener('change', generatePattern);
-refs.preset.addEventListener('change', applyPresetSelection);
+refs.preset.addEventListener('change', () => applyPresetSelection());
 refs.resetEverything.addEventListener('click', resetEverything);
 refs.theme.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
 viewButtons.forEach(button => button.addEventListener('click', () => selectView(button.dataset.view)));

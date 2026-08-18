@@ -1,3 +1,5 @@
+import { DrumSampleKit, velocityFromStrength } from './projects/rhythm-explorer/drum-sample-kit.js';
+
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
 const menuButton = document.querySelector('.menu-button');
@@ -15,6 +17,30 @@ let drumAudioContext;
 let activeDrumNodes = [];
 let activeDrumStopTimer = null;
 let activeDrumHighlightTimers = [];
+let activeDrumMidiTimer = null;
+let drumMidiStartNotBefore = 0;
+let activeDrumSwingSlider = null;
+let drumMidiAccess = null;
+let drumMidiEnabled = false;
+let drumMidiOutputId = '';
+const DRUM_MIDI_LOOKAHEAD_SECONDS = 0.1;
+const DRUM_MIDI_SCHEDULER_INTERVAL_MS = 30;
+const DRUM_AUDIO_LOOKAHEAD_SECONDS = 0.1;
+const DRUM_AUDIO_SCHEDULER_INTERVAL_MS = 30;
+const DRUM_MIDI_MIN_SWITCH_GAP_MS = 160;
+const DRUM_TRIPLET_SWING_PERCENT = 200 / 3;
+const DRUM_SWING_SNAP_THRESHOLD = 1.25;
+const wikiSnareSampleKit = new DrumSampleKit(
+  new URL('./projects/rhythm-explorer/assets/drums/snare-center/kit.json', import.meta.url)
+);
+let drumSampleWarningShown = false;
+
+try {
+  drumMidiEnabled = localStorage.getItem('personal-wiki-drum-midi-enabled') === 'true';
+  drumMidiOutputId = localStorage.getItem('personal-wiki-drum-midi-output') || '';
+} catch {
+  // MIDI preferences remain session-only when browser storage is unavailable.
+}
 
 const escapeHtml = (value) => value
   .replaceAll('&', '&amp;')
@@ -100,6 +126,22 @@ const fenceRenderers = {
           <input class="drum-tempo" type="number" min="20" max="400" step="1" value="${escapeHtml(tempo)}" aria-label="Drum playback tempo">
           <button class="drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
         </label>
+        <label class="drum-swing-control" title="50% is straight, 66.7% is triplet swing, and 83.3% is the maximum delay.">
+          <span>Swing</span>
+          <span class="drum-swing-track">
+            <input class="drum-swing" type="range" min="50" max="83.333" step="0.001" value="50" aria-label="Drum playback swing" aria-valuetext="50%, straight">
+            <span class="drum-swing-triplet-mark" aria-hidden="true" title="Triplet swing: 66.7%"></span>
+          </span>
+          <output class="drum-swing-output">50%</output>
+        </label>
+        <label class="drum-midi-control" title="Send drums on MIDI channel 10 and mute the built-in sounds. Snare sticking uses Superior Drummer center (R) and off-center (L) articulations.">
+          <input class="drum-midi-enabled" type="checkbox"${drumMidiEnabled ? ' checked' : ''}>
+          <span>MIDI</span>
+        </label>
+        <select class="drum-midi-output" aria-label="Drum MIDI output" disabled>
+          <option value="">${drumMidiEnabled ? 'Connect on Play' : 'MIDI off'}</option>
+        </select>
+        <span class="drum-midi-status" role="status" aria-live="polite"></span>
       </div>
       <details class="drum-source">
         <summary>Source</summary>
@@ -616,6 +658,34 @@ function drumStepDuration(pattern, tempo) {
   return (60 / tempo) * meter.beats * (4 / meter.value) / pattern.division;
 }
 
+function drumSwingRatio(block) {
+  const percent = Number(block?.querySelector('.drum-swing')?.value) || 50;
+  return Math.max(0.5, Math.min(5 / 6, percent / 100));
+}
+
+function drumSwungStepDuration(step, stepDuration, swingRatio) {
+  return stepDuration * 2 * (step % 2 ? 1 - swingRatio : swingRatio);
+}
+
+function updateDrumSwingOutput(block) {
+  const input = block?.querySelector('.drum-swing');
+  const output = block?.querySelector('.drum-swing-output');
+  if (!input || !output) return;
+  const value = Number(input.value);
+  const label = `${value.toFixed(1).replace(/\.0$/, '')}%`;
+  const isTriplet = Math.abs(value - DRUM_TRIPLET_SWING_PERCENT) < 0.01;
+  input.classList.toggle('is-triplet', isTriplet);
+  input.setAttribute('aria-valuetext', isTriplet ? `${label}, triplet swing` : value === 50 ? `${label}, straight` : label);
+  output.textContent = label;
+}
+
+function snapDrumSwingInput(input) {
+  if (input !== activeDrumSwingSlider) return;
+  if (Math.abs(Number(input.value) - DRUM_TRIPLET_SWING_PERCENT) <= DRUM_SWING_SNAP_THRESHOLD) {
+    input.value = DRUM_TRIPLET_SWING_PERCENT.toFixed(3);
+  }
+}
+
 function makeDrumRestNote(duration = 8, visible = false) {
   const Flow = window.Vex.Flow;
   const vexDuration = String(duration);
@@ -958,6 +1028,75 @@ function renderDrumBlocks() {
       target.innerHTML = `<p class="drum-error">${escapeHtml(error.message || 'Could not render this drum pattern.')}</p>`;
     }
   });
+  syncDrumMidiControls();
+}
+
+function saveDrumMidiPreferences() {
+  try {
+    localStorage.setItem('personal-wiki-drum-midi-enabled', String(drumMidiEnabled));
+    localStorage.setItem('personal-wiki-drum-midi-output', drumMidiOutputId);
+  } catch {
+    // MIDI preferences remain session-only when browser storage is unavailable.
+  }
+}
+
+function setDrumMidiStatus(message = '') {
+  document.querySelectorAll('.drum-midi-status').forEach((status) => {
+    status.textContent = message;
+  });
+}
+
+function availableDrumMidiOutputs() {
+  return drumMidiAccess ? [...drumMidiAccess.outputs.values()].filter((output) => output.state !== 'disconnected') : [];
+}
+
+function syncDrumMidiControls() {
+  const outputs = availableDrumMidiOutputs();
+  if (outputs.length && !outputs.some((output) => output.id === drumMidiOutputId)) {
+    drumMidiOutputId = outputs[0].id;
+    saveDrumMidiPreferences();
+  }
+
+  document.querySelectorAll('.drum-block').forEach((block) => {
+    const enabled = block.querySelector('.drum-midi-enabled');
+    const select = block.querySelector('.drum-midi-output');
+    if (!enabled || !select) return;
+    enabled.checked = drumMidiEnabled;
+    select.replaceChildren();
+
+    if (!drumMidiEnabled) {
+      select.append(new Option('MIDI off', ''));
+      select.disabled = true;
+      return;
+    }
+    if (!drumMidiAccess) {
+      select.append(new Option('Connect on Play', ''));
+      select.disabled = true;
+      return;
+    }
+    if (!outputs.length) {
+      select.append(new Option('No MIDI outputs', ''));
+      select.disabled = true;
+      return;
+    }
+
+    outputs.forEach((output) => select.append(new Option(output.name || 'MIDI output', output.id)));
+    select.value = drumMidiOutputId;
+    select.disabled = false;
+  });
+}
+
+async function prepareDrumMidi() {
+  if (!navigator.requestMIDIAccess) throw new Error('This browser does not support Web MIDI.');
+  if (!drumMidiAccess) {
+    drumMidiAccess = await navigator.requestMIDIAccess();
+    drumMidiAccess.addEventListener?.('statechange', syncDrumMidiControls);
+  }
+  syncDrumMidiControls();
+  const output = availableDrumMidiOutputs().find((candidate) => candidate.id === drumMidiOutputId);
+  if (!output) throw new Error('No MIDI output is available. Connect or enable a MIDI device, then retry.');
+  setDrumMidiStatus();
+  return output;
 }
 
 function renderCubeBlocks() {
@@ -988,10 +1127,14 @@ function setDrumButton(block, state = 'play') {
   const button = block.querySelector('.drum-toggle');
   block.dataset.playing = state === 'playing' ? 'true' : 'false';
   button.dataset.state = state === 'play' ? '' : state;
+  button.disabled = state === 'loading';
 
   if (state === 'playing') {
     button.textContent = '■ Stop';
     button.setAttribute('aria-label', 'Stop drum playback');
+  } else if (state === 'loading') {
+    button.textContent = 'Loading…';
+    button.setAttribute('aria-label', 'Loading drum samples');
   } else if (state === 'error') {
     button.textContent = 'Error — retry';
     button.setAttribute('aria-label', 'Drum playback failed; retry');
@@ -1004,6 +1147,8 @@ function setDrumButton(block, state = 'play') {
 function stopDrumBlocks() {
   if (activeDrumStopTimer) clearTimeout(activeDrumStopTimer);
   activeDrumStopTimer = null;
+  if (activeDrumMidiTimer) clearTimeout(activeDrumMidiTimer);
+  activeDrumMidiTimer = null;
   activeDrumHighlightTimers.forEach(clearTimeout);
   activeDrumHighlightTimers = [];
   activeDrumNodes.forEach((node) => {
@@ -1013,7 +1158,26 @@ function stopDrumBlocks() {
   document.querySelectorAll('.drum-current-note').forEach((element) => {
     element.classList.remove('drum-current-note');
   });
-  document.querySelectorAll('.drum-block').forEach((block) => setDrumButton(block));
+  let midiHandoffGap = 0;
+  document.querySelectorAll('.drum-block').forEach((block) => {
+    if (block.drumMidiOutput) {
+      const handoffGap = Math.max(DRUM_MIDI_MIN_SWITCH_GAP_MS, block.drumMidiTailMs || 0);
+      midiHandoffGap = Math.max(midiHandoffGap, handoffGap);
+      try {
+        const now = performance.now();
+        block.drumMidiOutput.clear?.();
+        block.drumMidiOutput.send([0xB9, 120, 0]);
+        block.drumMidiOutput.send([0xB9, 123, 0]);
+        block.drumMidiOutput.send([0xB9, 120, 0], now + handoffGap - 20);
+        block.drumMidiOutput.send([0xB9, 123, 0], now + handoffGap - 20);
+      } catch {
+        // The output may have disconnected while playback was active.
+      }
+      block.drumMidiOutput = null;
+    }
+    setDrumButton(block);
+  });
+  if (midiHandoffGap) drumMidiStartNotBefore = performance.now() + midiHandoffGap;
 }
 
 function trackDrumNode(node) {
@@ -1107,6 +1271,15 @@ function drumTone(context, time, frequency, duration, volume, type = 'sine', end
 function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0) {
   if (instrument === 'bd') drumTone(context, time, 145, 0.18, 0.8 * strength, 'sine', 48, pan);
   if (instrument === 'sn') {
+    const sampleSource = wikiSnareSampleKit.schedule(context, {
+      velocity: velocityFromStrength(strength),
+      time,
+      pan
+    });
+    if (sampleSource) {
+      trackDrumNode(sampleSource);
+      return;
+    }
     drumNoise(context, time, 0.13, 900, 0.38 * strength, pan);
     drumTone(context, time, 180, 0.08, 0.18 * strength, 'triangle', 120, pan);
   }
@@ -1119,6 +1292,89 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
   if (instrument === 'mt') drumTone(context, time, 175, 0.19, 0.44 * strength, 'sine', 115, pan);
   if (instrument === 'ft') drumTone(context, time, 125, 0.22, 0.48 * strength, 'sine', 78, pan);
   if (instrument === 'wb') drumTone(context, time, 920, 0.07, 0.24 * strength, 'square', 720, pan);
+}
+
+function drumMidiNote(instrument, token, sticking = '.') {
+  if (instrument === 'hh') return token.kind === 'o' ? 46 : 42;
+  if (instrument === 'sn') return sticking === 'L' ? 125 : 38;
+  return {
+    bd: 36,
+    ph: 44,
+    ft: 43,
+    mt: 47,
+    ht: 50,
+    cr: 49,
+    rd: 51,
+    wb: 76
+  }[instrument];
+}
+
+function scheduleDrumMidiSound(context, output, instrument, token, time, strength = 1, sticking = '.') {
+  const note = drumMidiNote(instrument, token, sticking);
+  if (note === undefined) return;
+  const channel = 9;
+  const velocity = velocityFromStrength(strength);
+  const timestamp = performance.now() + Math.max(0, time - context.currentTime) * 1000;
+  output.send([0x90 | channel, note, velocity], timestamp);
+  output.send([0x80 | channel, note, 0], timestamp + 60);
+}
+
+function drumStrengthsForToken(rawToken) {
+  const token = parseDrumToken(rawToken);
+  if (!token.hit) return [];
+  const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
+  const graceStrength = token.ghost ? 0.35 : 1;
+  const strengths = [];
+  if (token.kind === 'f') strengths.push(graceStrength * 0.55);
+  if (token.kind === 'd') strengths.push(graceStrength * 0.45, graceStrength * 0.55);
+  strengths.push(strength);
+  if (token.tremolo === 1) strengths.push(strength * 0.9);
+  if (token.tremolo > 1) {
+    const bounceCount = token.tremolo === 2 ? 3 : 5;
+    for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
+      strengths.push(strength * Math.max(0.25, 0.7 - (bounce * 0.08)));
+    }
+  }
+  return strengths;
+}
+
+async function prepareWikiSnareSamples(context, pattern) {
+  const velocities = (pattern.rows.sn || [])
+    .flatMap(drumStrengthsForToken)
+    .map(strength => velocityFromStrength(strength));
+  if (!velocities.length) return;
+  try {
+    await wikiSnareSampleKit.prepare(context, velocities);
+  } catch (error) {
+    if (!drumSampleWarningShown) {
+      console.warn('Snare samples could not be prepared; using the synthesized fallback.', error);
+      drumSampleWarningShown = true;
+    }
+  }
+}
+
+function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDuration, sticking = '.') {
+  const token = parseDrumToken(rawToken);
+  const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
+  const graceStrength = token.ghost ? 0.35 : 1;
+  const flamOffset = Math.min(0.045, stepDuration * 0.18);
+  const dragOffset = Math.min(0.075, stepDuration * 0.3);
+  const graceSticking = oppositeDrumSticking(sticking);
+
+  if (token.kind === 'f') scheduleDrumMidiSound(context, output, instrument, token, time - flamOffset, graceStrength * 0.55, graceSticking);
+  if (token.kind === 'd') {
+    scheduleDrumMidiSound(context, output, instrument, token, time - dragOffset, graceStrength * 0.45, graceSticking);
+    scheduleDrumMidiSound(context, output, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, graceSticking);
+  }
+  scheduleDrumMidiSound(context, output, instrument, token, time, strength, sticking);
+  if (token.tremolo === 1) scheduleDrumMidiSound(context, output, instrument, token, time + (stepDuration / 2), strength * 0.9, sticking);
+  if (token.tremolo > 1) {
+    const bounceCount = token.tremolo === 2 ? 3 : 5;
+    for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
+      const bounceTime = time + ((stepDuration * 0.72 * bounce) / (bounceCount + 1));
+      scheduleDrumMidiSound(context, output, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), sticking);
+    }
+  }
 }
 
 function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, sticking = '.') {
@@ -1146,35 +1402,100 @@ function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, stic
   }
 }
 
-function scheduleDrumPattern(block, pattern, startTime, stepDuration, clearExistingTimers = true) {
-  if (clearExistingTimers) {
-    activeDrumHighlightTimers.forEach(clearTimeout);
-    activeDrumHighlightTimers = [];
-  }
+function drumMidiTailMilliseconds(pattern, stepDuration) {
+  let longestOffset = 0;
+  Object.values(pattern.rows).forEach((tokens) => tokens.forEach((rawToken) => {
+    const token = parseDrumToken(rawToken);
+    if (token.tremolo === 1) longestOffset = Math.max(longestOffset, stepDuration / 2);
+    if (token.tremolo > 1) {
+      const bounceCount = token.tremolo === 2 ? 3 : 5;
+      longestOffset = Math.max(longestOffset, stepDuration * 0.72 * bounceCount / (bounceCount + 1));
+    }
+  }));
+  return Math.ceil((DRUM_MIDI_LOOKAHEAD_SECONDS + longestOffset + 0.06) * 1000);
+}
 
-  const loopDuration = stepDuration * pattern.steps;
-  Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
-    tokens.forEach((token, index) => {
-      if (parseDrumToken(token).hit) {
-        scheduleDrumHit(drumAudioContext, instrument, token, startTime + (index * stepDuration), stepDuration, pattern.sticking[index]);
-      }
-    });
-  });
-
-  Array.from({ length: pattern.steps }, (_, step) => {
-    const delay = Math.max(0, (startTime - drumAudioContext.currentTime + (step * stepDuration)) * 1000);
-    activeDrumHighlightTimers.push(setTimeout(() => highlightDrumStep(block, step), delay));
-  });
-
+function scheduleDrumMidiPattern(block, pattern, startTime, stepDuration) {
+  activeDrumHighlightTimers.forEach(clearTimeout);
+  activeDrumHighlightTimers = [];
+  block.drumMidiNextStep = 0;
+  block.drumMidiNextTime = startTime;
+  block.drumMidiSwingRatio = drumSwingRatio(block);
+  block.drumMidiTailMs = drumMidiTailMilliseconds(pattern, drumSwungStepDuration(0, stepDuration, block.drumMidiSwingRatio));
   setDrumButton(block, 'playing');
-  const nextStartTime = startTime + loopDuration;
-  const lookahead = 0.2;
-  const rescheduleDelay = Math.max(0, (nextStartTime - drumAudioContext.currentTime - lookahead) * 1000);
-  activeDrumStopTimer = setTimeout(() => {
+
+  const scheduleAhead = () => {
+    activeDrumMidiTimer = null;
+    if (block.dataset.playing !== 'true' || !block.drumMidiOutput || !document.body.contains(block)) return;
+
+    const horizon = drumAudioContext.currentTime + DRUM_MIDI_LOOKAHEAD_SECONDS;
+    while (block.drumMidiNextTime < horizon) {
+      const step = block.drumMidiNextStep;
+      const time = block.drumMidiNextTime;
+      // Latch swing for each two-slot pair so moving the slider cannot change
+      // only half of a pair and cause a one-off jump in the pulse.
+      if (step % 2 === 0) block.drumMidiSwingRatio = drumSwingRatio(block);
+      const swungDuration = drumSwungStepDuration(step, stepDuration, block.drumMidiSwingRatio);
+      Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
+        const token = tokens[step];
+        if (parseDrumToken(token).hit) {
+          scheduleDrumMidiHit(drumAudioContext, block.drumMidiOutput, instrument, token, time, swungDuration, pattern.sticking[step]);
+        }
+      });
+
+      const delay = Math.max(0, (time - drumAudioContext.currentTime) * 1000);
+      activeDrumHighlightTimers.push(setTimeout(() => highlightDrumStep(block, step), delay));
+      block.drumMidiNextStep = (step + 1) % pattern.steps;
+      block.drumMidiNextTime = time + swungDuration;
+    }
+
+    activeDrumMidiTimer = setTimeout(scheduleAhead, DRUM_MIDI_SCHEDULER_INTERVAL_MS);
+  };
+
+  scheduleAhead();
+}
+
+function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
+  if (block.drumMidiOutput) {
+    scheduleDrumMidiPattern(block, pattern, startTime, stepDuration);
+    return;
+  }
+  activeDrumHighlightTimers.forEach(clearTimeout);
+  activeDrumHighlightTimers = [];
+  block.drumAudioNextStep = 0;
+  block.drumAudioNextTime = startTime;
+  block.drumAudioSwingRatio = drumSwingRatio(block);
+  setDrumButton(block, 'playing');
+
+  const scheduleAhead = () => {
     activeDrumStopTimer = null;
     if (block.dataset.playing !== 'true' || !document.body.contains(block)) return;
-    scheduleDrumPattern(block, pattern, nextStartTime, stepDuration, false);
-  }, rescheduleDelay);
+
+    const horizon = drumAudioContext.currentTime + DRUM_AUDIO_LOOKAHEAD_SECONDS;
+    while (block.drumAudioNextTime < horizon) {
+      const step = block.drumAudioNextStep;
+      const time = block.drumAudioNextTime;
+      // Keep each pair internally consistent while allowing live swing changes
+      // to take effect at the next pair rather than restarting the sequence.
+      if (step % 2 === 0) block.drumAudioSwingRatio = drumSwingRatio(block);
+      const swungDuration = drumSwungStepDuration(step, stepDuration, block.drumAudioSwingRatio);
+      Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
+        const token = tokens[step];
+        if (parseDrumToken(token).hit) {
+          scheduleDrumHit(drumAudioContext, instrument, token, time, swungDuration, pattern.sticking[step]);
+        }
+      });
+
+      const delay = Math.max(0, (time - drumAudioContext.currentTime) * 1000);
+      activeDrumHighlightTimers.push(setTimeout(() => highlightDrumStep(block, step), delay));
+      block.drumAudioNextStep = (step + 1) % pattern.steps;
+      block.drumAudioNextTime = time + swungDuration;
+    }
+
+    activeDrumStopTimer = setTimeout(scheduleAhead, DRUM_AUDIO_SCHEDULER_INTERVAL_MS);
+  };
+
+  scheduleAhead();
 }
 
 async function playDrumBlock(block) {
@@ -1182,22 +1503,30 @@ async function playDrumBlock(block) {
   if (!AudioContextConstructor) throw new Error('This browser does not support Web Audio.');
   if (!drumAudioContext) drumAudioContext = new AudioContextConstructor();
   if (drumAudioContext.state === 'suspended') await drumAudioContext.resume();
+  block.drumMidiOutput = drumMidiEnabled ? await prepareDrumMidi() : null;
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
+  if (!block.drumMidiOutput) await prepareWikiSnareSamples(drumAudioContext, pattern);
   const tempoInput = block.querySelector('.drum-tempo');
   const tempo = Number(tempoInput?.value) || Number(pattern.tempo) || 120;
   const stepDuration = drumStepDuration(pattern, tempo);
-  scheduleDrumPattern(block, pattern, drumAudioContext.currentTime + 0.1, stepDuration);
+  const handoffDelay = block.drumMidiOutput
+    ? Math.max(0, (drumMidiStartNotBefore - performance.now()) / 1000)
+    : 0;
+  const startTime = drumAudioContext.currentTime + Math.max(0.1, handoffDelay);
+  scheduleDrumPattern(block, pattern, startTime, stepDuration);
 }
 
 async function restartDrumBlockIfPlaying(block) {
   if (block?.dataset.playing !== 'true') return;
   try {
     stopDrumBlocks();
+    setDrumButton(block, 'loading');
     await playDrumBlock(block);
   } catch (error) {
     console.error(error);
     stopDrumBlocks();
+    if (drumMidiEnabled) setDrumMidiStatus(error.message || 'MIDI playback failed.');
     setDrumButton(block, 'error');
   }
 }
@@ -1271,10 +1600,12 @@ content.addEventListener('click', async (event) => {
       stopStrudelBlocks();
       stopAbcBlocks();
       stopDrumBlocks();
+      setDrumButton(block, 'loading');
       await playDrumBlock(block);
     } catch (error) {
       console.error(error);
       stopDrumBlocks();
+      if (drumMidiEnabled) setDrumMidiStatus(error.message || 'MIDI playback failed.');
       setDrumButton(block, 'error');
     }
     return;
@@ -1318,7 +1649,71 @@ content.addEventListener('dblclick', (event) => {
   event.stopPropagation();
 });
 
+content.addEventListener('pointerdown', (event) => {
+  const swingInput = event.target.closest('.drum-swing');
+  if (swingInput) activeDrumSwingSlider = swingInput;
+});
+
+window.addEventListener('pointerup', () => {
+  if (activeDrumSwingSlider) {
+    snapDrumSwingInput(activeDrumSwingSlider);
+    updateDrumSwingOutput(activeDrumSwingSlider.closest('.drum-block'));
+  }
+  activeDrumSwingSlider = null;
+});
+
+window.addEventListener('pointercancel', () => {
+  activeDrumSwingSlider = null;
+});
+
+content.addEventListener('input', (event) => {
+  const swingInput = event.target.closest('.drum-swing');
+  if (swingInput) {
+    snapDrumSwingInput(swingInput);
+    updateDrumSwingOutput(swingInput.closest('.drum-block'));
+  }
+});
+
 content.addEventListener('change', async (event) => {
+  const midiToggle = event.target.closest('.drum-midi-enabled');
+  if (midiToggle) {
+    const block = midiToggle.closest('.drum-block');
+    const wasPlaying = block?.dataset.playing === 'true';
+    drumMidiEnabled = midiToggle.checked;
+    saveDrumMidiPreferences();
+    syncDrumMidiControls();
+    try {
+      if (drumMidiEnabled) await prepareDrumMidi();
+      else setDrumMidiStatus();
+      if (wasPlaying) await restartDrumBlockIfPlaying(block);
+    } catch (error) {
+      console.error(error);
+      setDrumMidiStatus(error.message || 'Could not enable MIDI.');
+      if (wasPlaying) {
+        stopDrumBlocks();
+        setDrumButton(block, 'error');
+      }
+    }
+    return;
+  }
+
+  const midiSelect = event.target.closest('.drum-midi-output');
+  if (midiSelect) {
+    const block = midiSelect.closest('.drum-block');
+    drumMidiOutputId = midiSelect.value;
+    saveDrumMidiPreferences();
+    syncDrumMidiControls();
+    setDrumMidiStatus();
+    await restartDrumBlockIfPlaying(block);
+    return;
+  }
+
+  const swingInput = event.target.closest('.drum-swing');
+  if (swingInput) {
+    updateDrumSwingOutput(swingInput.closest('.drum-block'));
+    return;
+  }
+
   const input = event.target.closest('.drum-tempo');
   if (!input) return;
   const block = input.closest('.drum-block');

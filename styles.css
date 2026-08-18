@@ -168,6 +168,18 @@ body { margin: 0; min-height: 100vh; }
 .drum-tempo-control .drum-tempo-step { min-width: 2.1rem; padding-inline: .45rem; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .drum-tempo { width: 4.8rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; }
 .drum-tempo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.drum-swing-control { display: inline-flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.drum-swing-track { position: relative; display: inline-flex; align-items: center; }
+.drum-swing { width: 7.5rem; accent-color: var(--accent); }
+.drum-swing-triplet-mark { position: absolute; z-index: 2; top: 50%; left: 50%; width: 2px; height: .65rem; border-radius: 1px; background: var(--notation-ink); pointer-events: none; transform: translate(-1px, -50%); opacity: .55; }
+.drum-swing.is-triplet + .drum-swing-triplet-mark { background: var(--accent); opacity: 1; }
+.drum-swing-output { min-width: 3.6rem; color: var(--notation-ink); }
+.drum-midi-control { display: inline-flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.drum-midi-control input { accent-color: var(--accent); }
+.drum-midi-output { max-width: 14rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
+.drum-midi-output:disabled { opacity: .55; }
+.drum-midi-status { color: var(--accent); font: 700 .68rem/1.3 monospace; }
+.drum-midi-status:empty { display: none; }
 .drum-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }
 .drum-source { border-top: 1px solid var(--rule); }
 .drum-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }

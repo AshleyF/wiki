@@ -26,6 +26,20 @@
 
     <main>
       <section class="workbench" aria-label="Groove workbench">
+        <div class="scene-context-bar panel" aria-label="Selected section">
+          <label class="compact-control">
+            <span id="scene-context-label">Section</span>
+            <select id="scene-selector">
+              <option value="verse-1">Verse 1</option>
+              <option value="verse-2">Verse 2</option>
+              <option value="chorus-1">Chorus 1</option>
+              <option value="chorus-2">Chorus 2</option>
+              <option value="bridge-1">Bridge 1</option>
+              <option value="bridge-2">Bridge 2</option>
+            </select>
+          </label>
+          <span class="scene-context-next">Queued live <strong id="scene-context-queued">None</strong></span>
+        </div>
         <div class="transport panel">
           <button id="play-toggle" class="primary-button" type="button" aria-label="Play groove">▶ Play</button>
           <button id="mute-toggle" class="quiet-button icon-transport-button" type="button" aria-label="Mute browser audio" title="Mute browser audio">🔊</button>
@@ -58,6 +72,10 @@
               <option value="8">8 bars</option>
             </select>
           </label>
+          <label class="live-toggle auto-evolve-toggle">
+            <input id="live-drummer" type="checkbox" checked>
+            <span>Auto-evolve</span>
+          </label>
           <details class="transport-more">
             <summary>More</summary>
             <div class="transport-more-menu">
@@ -89,20 +107,6 @@
           <button type="button" data-view="edit" aria-pressed="false">Edit</button>
           <button type="button" data-view="inspect" aria-pressed="false">Inspect</button>
         </nav>
-        <div class="scene-context-bar" aria-label="Current section context">
-          <label class="compact-control">
-            <span id="scene-context-label">Live section</span>
-            <select id="scene-selector">
-              <option value="verse-1">Verse 1</option>
-              <option value="verse-2">Verse 2</option>
-              <option value="chorus-1">Chorus 1</option>
-              <option value="chorus-2">Chorus 2</option>
-              <option value="bridge-1">Bridge 1</option>
-              <option value="bridge-2">Bridge 2</option>
-            </select>
-          </label>
-          <span class="scene-context-next">Queued <strong id="scene-context-queued">None</strong></span>
-        </div>
 
         <section class="performance-controls panel" aria-labelledby="performance-title" data-view-panel="play">
           <div class="performance-heading">
@@ -110,7 +114,6 @@
               <p class="eyebrow">Live drummer</p>
               <h2 id="performance-title">Sections and layers</h2>
             </div>
-            <label class="live-toggle"><input id="live-drummer" type="checkbox" checked> Layered performance</label>
           </div>
           <section class="scene-launcher" aria-label="Section launcher">
             <div class="scene-readout">
@@ -136,23 +139,25 @@
             <label class="compact-control"><span>Punctuation</span><select id="punctuation-every"><option value="0">Off</option><option value="2">Every 2 bars</option><option value="4" selected>Every 4 bars</option><option value="8">Every 8 bars</option><option value="16">Every 16 bars</option></select></label>
             <label class="compact-performance-control"><span>Crash chance</span><input id="punctuation-chance" type="range" min="0" max="100" value="65"><output id="punctuation-chance-output" for="punctuation-chance">65%</output></label>
             <label class="compact-performance-control"><span>Cut chance</span><input id="live-cut-chance" type="range" min="0" max="100" value="6"><output id="live-cut-chance-output" for="live-cut-chance">6%</output></label>
+          </div>
+          <details class="live-options">
+            <summary>Fill &amp; cut settings</summary>
+            <div class="performance-fields">
+            <label class="compact-control"><span>Fill length</span><select id="live-fill-length"><option value="beat">1 beat</option><option value="half" selected>Half bar</option><option value="bar">1 bar</option><option value="2-bars">2 bars</option><option value="3-bars">3 bars</option><option value="4-bars">4 bars</option><option value="5-bars">5 bars</option><option value="6-bars">6 bars</option><option value="7-bars">7 bars</option><option value="8-bars">8 bars</option></select></label>
+            <label class="compact-control"><span>Fill shape</span><select id="live-fill-style"><option value="tom-sweep" selected>Tom sweep</option><option value="snare-toms">Snare → toms</option><option value="snare-roll">Snare roll</option><option value="buildup">Snare + floor buildup</option><option value="around-kit">Around the kit</option><option value="cymbal-punches">Cymbal punches</option></select></label>
+            <label class="compact-performance-control"><span>Fill activity</span><input id="live-fill-activity" type="range" min="25" max="100" value="85"><output id="live-fill-activity-output" for="live-fill-activity">85%</output></label>
+            <label class="compact-control"><span>Fill landing</span><select id="live-fill-landing"><option value="kick-crash" selected>Kick + crash</option><option value="crash">Crash only</option><option value="kick">Kick only</option><option value="none">No forced landing</option></select></label>
+            <label class="compact-control"><span>Cut length</span><select id="live-cut-length"><option value="beat" selected>1 beat</option><option value="half">Half bar</option><option value="bar">1 bar</option></select></label>
+            </div>
+          </details>
+          <div class="performance-fields">
             <label class="compact-control"><span>Queue at</span><select id="interjection-boundary"><option value="half">Next half-bar</option><option value="bar" selected>Next bar</option><option value="2">2 bars</option><option value="4">4 bars</option><option value="8">8 bars</option></select></label>
             <button id="queue-fill" class="quiet-button cue-button" type="button" aria-pressed="false" title="Replace the lead-in to the selected boundary with the configured fill and landing.">Fill</button>
             <button id="cancel-fill" class="quiet-button cue-cancel" type="button" disabled>Cancel fill</button>
             <button id="queue-cut" class="quiet-button cue-button" type="button" aria-pressed="false" title="Silence the selected amount at the selected boundary, then return on kick and crash.">Cut</button>
             <button id="cancel-cut" class="quiet-button cue-cancel" type="button" disabled>Cancel cut</button>
           </div>
-          <details class="live-options">
-            <summary>Fill &amp; cut settings</summary>
-            <div class="performance-fields">
-            <label class="compact-control"><span>Fill length</span><select id="live-fill-length"><option value="beat">1 beat</option><option value="half" selected>Half bar</option><option value="bar">1 bar</option></select></label>
-            <label class="compact-control"><span>Fill shape</span><select id="live-fill-style"><option value="tom-sweep" selected>Tom sweep</option><option value="snare-toms">Snare → toms</option><option value="snare-roll">Snare roll</option><option value="around-kit">Around the kit</option><option value="cymbal-punches">Cymbal punches</option></select></label>
-            <label class="compact-performance-control"><span>Fill activity</span><input id="live-fill-activity" type="range" min="25" max="100" value="85"><output id="live-fill-activity-output" for="live-fill-activity">85%</output></label>
-            <label class="compact-control"><span>Fill landing</span><select id="live-fill-landing"><option value="kick-crash" selected>Kick + crash</option><option value="crash">Crash only</option><option value="kick">Kick only</option><option value="none">No forced landing</option></select></label>
-            <label class="compact-control"><span>Cut length</span><select id="live-cut-length"><option value="beat" selected>1 beat</option><option value="half">Half bar</option><option value="bar">1 bar</option></select></label>
-            </div>
-          </details>
-          <p id="live-status" class="performance-status" role="status" aria-live="polite">Verse 1 repeats from a stable core; higher layers add restrained variation.</p>
+          <p id="live-status" class="performance-status" role="status" aria-live="polite"></p>
         </section>
 
         <details class="midi-help panel" data-view-panel="inspect" hidden>
@@ -246,7 +251,7 @@
             <details class="parameter-group">
               <summary>Dynamics and articulation</summary>
               <div class="parameter-fields">
-                <label class="field range-field"><span><span>Backbeat strength <span class="help-tip" tabindex="0" aria-label="Ranges from ghosted structural snare notes to strongly accented backbeats." data-tooltip="Ranges from ghosted structural snare notes to strongly accented backbeats.">?</span></span><output id="backbeat-strength-output">80%</output></span><input id="backbeat-strength" type="range" min="0" max="100" value="80"></label>
+                <label class="field range-field"><span><span>Backbeat strength <span class="help-tip" tabindex="0" aria-label="Controls how strongly the generator favors structural snare beats and how accented they are; it does not force every backbeat." data-tooltip="Controls how strongly the generator favors structural snare beats and how accented they are; it does not force every backbeat.">?</span></span><output id="backbeat-strength-output">80%</output></span><input id="backbeat-strength" type="range" min="0" max="100" value="80"></label>
                 <label class="field range-field"><span><span>Backbeat displacement <span class="help-tip" tabindex="0" aria-label="Increases the chance that a backbeat lands one subdivision early or late." data-tooltip="Increases the chance that a backbeat lands one subdivision early or late.">?</span></span><output id="backbeat-displacement-output">0%</output></span><input id="backbeat-displacement" type="range" min="0" max="100" value="0"></label>
                 <label class="field range-field"><span><span>Ghost-note density <span class="help-tip" tabindex="0" aria-label="Adds quiet connective snare notes in otherwise open positions." data-tooltip="Adds quiet connective snare notes in otherwise open positions.">?</span></span><output id="ghost-density-output">15%</output></span><input id="ghost-density" type="range" min="0" max="100" value="15"></label>
                 <label class="field range-field"><span><span>Dynamic range <span class="help-tip" tabindex="0" aria-label="Controls the audible distance between ghost notes, ordinary strokes, and accents." data-tooltip="Controls the audible distance between ghost notes, ordinary strokes, and accents.">?</span></span><output id="dynamic-range-output">60%</output></span><input id="dynamic-range" type="range" min="0" max="100" value="60"></label>
@@ -275,7 +280,7 @@
             </details>
 
             <div class="switches">
-              <label><input id="keep-backbeat" type="checkbox" checked> Anchor a meter-aware backbeat <span class="help-tip" tabindex="0" aria-label="Places accented snare anchors at conventional structural points for the selected meter." data-tooltip="Places accented snare anchors at conventional structural points for the selected meter.">?</span></label>
+              <label><input id="keep-backbeat" type="checkbox" checked> Favor a meter-aware backbeat <span class="help-tip" tabindex="0" aria-label="Biases the generated snare pattern toward conventional structural beats without forcing them. Turn it off for a freer snare line." data-tooltip="Biases the generated snare pattern toward conventional structural beats without forcing them. Turn it off for a freer snare line.">?</span></label>
             </div>
 
             <div class="generator-actions">
@@ -302,6 +307,16 @@
             <div id="character-tags" class="character-tags" aria-label="Groove character"></div>
           </section>
         </div>
+
+        <details class="source-panel panel" data-view-panel="edit" open hidden>
+          <summary>Rhythm language</summary>
+          <div class="source-actions">
+            <button id="apply-source" class="primary-button" type="button">Apply</button>
+            <button id="revert-source" class="quiet-button" type="button">Revert</button>
+            <span id="source-status" class="source-status" role="status" aria-live="polite"></span>
+          </div>
+          <textarea id="pattern-source" spellcheck="false" aria-label="Editable rhythm-language source" aria-describedby="source-status"></textarea>
+        </details>
 
         <section class="sequencer panel" aria-labelledby="sequencer-title" data-view-panel="edit" hidden>
           <div class="panel-heading">
@@ -341,14 +356,10 @@
           <div id="notation-target" class="notation-target" aria-label="Rendered drum notation"></div>
         </section>
 
-        <details class="source-panel panel" data-view-panel="inspect" hidden>
-          <summary>Plain-text pattern source</summary>
-          <textarea id="pattern-source" readonly spellcheck="false" aria-label="Plain-text groove source"></textarea>
-        </details>
       </section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
-    <script type="module" src="app.js?v=20260812-midi-clock"></script>
+    <script type="module" src="app.js?v=20260817-auto-evolve"></script>
   </body>
 </html>
