@@ -21,6 +21,82 @@ export function chooseWeightedVariant(variants, previousSampleId = '', random = 
   return available[available.length - 1];
 }
 
+export function listKitDefinitions(library, {
+  kitId = '',
+  instrument = '',
+  manufacturer = '',
+  model = '',
+  articulation = ''
+} = {}) {
+  if (library?.schema !== 'drum-sample-library/1' || !Array.isArray(library.drums)) {
+    throw new Error('Unsupported drum sample library manifest.');
+  }
+  const definitions = [];
+  for (const drum of library.drums) {
+    if (instrument && drum.instrument !== instrument) continue;
+    if (manufacturer && drum.manufacturer !== manufacturer) continue;
+    if (model && drum.model !== model) continue;
+    for (const entry of drum.articulations || []) {
+      if (kitId && entry.kit_id !== kitId) continue;
+      if (articulation && entry.name !== articulation) continue;
+      definitions.push({ ...entry, drum });
+    }
+  }
+  return definitions;
+}
+
+export function findKitDefinition(library, selector = {}) {
+  return listKitDefinitions(library, selector)[0] || null;
+}
+
+export class DrumSampleLibrary {
+  constructor(libraryUrl, { random = Math.random } = {}) {
+    this.libraryUrl = new URL(libraryUrl, import.meta.url);
+    this.random = random;
+    this.libraryPromise = null;
+    this.kits = new Map();
+  }
+
+  async load() {
+    if (!this.libraryPromise) {
+      this.libraryPromise = fetch(this.libraryUrl)
+        .then(response => {
+          if (!response.ok) throw new Error(`Could not load drum sample library (${response.status}).`);
+          return response.json();
+        })
+        .then(library => {
+          findKitDefinition(library);
+          return library;
+        })
+        .catch(error => {
+          this.libraryPromise = null;
+          throw error;
+        });
+    }
+    return this.libraryPromise;
+  }
+
+  async getKit(selector) {
+    const library = await this.load();
+    const definition = findKitDefinition(library, selector);
+    if (!definition?.manifest) {
+      const requested = selector?.kitId || [selector?.manufacturer, selector?.model, selector?.articulation].filter(Boolean).join(' ');
+      throw new Error(`Drum sample kit not found${requested ? `: ${requested}` : '.'}`);
+    }
+    if (!this.kits.has(definition.kit_id)) {
+      this.kits.set(definition.kit_id, new DrumSampleKit(
+        new URL(definition.manifest, this.libraryUrl),
+        { random: this.random }
+      ));
+    }
+    return this.kits.get(definition.kit_id);
+  }
+
+  async listKits(selector = {}) {
+    return listKitDefinitions(await this.load(), selector);
+  }
+}
+
 export class DrumSampleKit {
   constructor(manifestUrl, { random = Math.random } = {}) {
     this.manifestUrl = new URL(manifestUrl, import.meta.url);

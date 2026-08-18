@@ -178,6 +178,9 @@ body { margin: 0; min-height: 100vh; }
 .drum-midi-control input { accent-color: var(--accent); }
 .drum-midi-output { max-width: 14rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
 .drum-midi-output:disabled { opacity: .55; }
+.drum-kit-control { display: inline-flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.drum-kit-select { max-width: 15rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
+.drum-kit-select:disabled { opacity: .55; }
 .drum-midi-status { color: var(--accent); font: 700 .68rem/1.3 monospace; }
 .drum-midi-status:empty { display: none; }
 .drum-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }

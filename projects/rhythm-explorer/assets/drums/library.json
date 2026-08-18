@@ -1,0 +1,32 @@
+{
+  "schema": "drum-sample-library/1",
+  "library_id": "superior-drummer-local-captures",
+  "drums": [
+    {
+      "instrument": "snare",
+      "manufacturer": "Ludwig",
+      "model": "Black Beauty",
+      "articulations": [
+        {
+          "name": "center",
+          "midi_note": 38,
+          "kit_id": "ludwig-black-beauty-snare-center",
+          "manifest": "snares/ludwig-black-beauty/center/kit.json"
+        }
+      ]
+    },
+    {
+      "instrument": "snare",
+      "manufacturer": "Slingerland",
+      "model": null,
+      "articulations": [
+        {
+          "name": "center",
+          "midi_note": 38,
+          "kit_id": "slingerland-snare-center",
+          "manifest": "snares/slingerland/center/kit.json"
+        }
+      ]
+    }
+  ]
+}

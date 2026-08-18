@@ -1,4 +1,4 @@
-import { DrumSampleKit, velocityFromStrength } from './projects/rhythm-explorer/drum-sample-kit.js';
+import { DrumSampleLibrary, velocityFromStrength } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-kit-picker';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
@@ -30,14 +30,19 @@ const DRUM_AUDIO_SCHEDULER_INTERVAL_MS = 30;
 const DRUM_MIDI_MIN_SWITCH_GAP_MS = 160;
 const DRUM_TRIPLET_SWING_PERCENT = 200 / 3;
 const DRUM_SWING_SNAP_THRESHOLD = 1.25;
-const wikiSnareSampleKit = new DrumSampleKit(
-  new URL('./projects/rhythm-explorer/assets/drums/snare-center/kit.json', import.meta.url)
+const DEFAULT_WIKI_SNARE_KIT_ID = 'ludwig-black-beauty-snare-center';
+const wikiDrumSampleLibrary = new DrumSampleLibrary(
+  new URL('./projects/rhythm-explorer/assets/drums/library.json', import.meta.url)
 );
+let wikiSnareKitId = DEFAULT_WIKI_SNARE_KIT_ID;
+let wikiSnareSampleKit = null;
+let wikiSnareSampleKitPromise = null;
 let drumSampleWarningShown = false;
 
 try {
   drumMidiEnabled = localStorage.getItem('personal-wiki-drum-midi-enabled') === 'true';
   drumMidiOutputId = localStorage.getItem('personal-wiki-drum-midi-output') || '';
+  wikiSnareKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_WIKI_SNARE_KIT_ID;
 } catch {
   // MIDI preferences remain session-only when browser storage is unavailable.
 }
@@ -141,6 +146,12 @@ const fenceRenderers = {
         <select class="drum-midi-output" aria-label="Drum MIDI output" disabled>
           <option value="">${drumMidiEnabled ? 'Connect on Play' : 'MIDI off'}</option>
         </select>
+        <label class="drum-kit-control" title="Select the snare used by built-in browser audio. MIDI output uses the kit configured in the receiving application.">
+          <span>Snare</span>
+          <select class="drum-kit-select" aria-label="Snare sample kit" disabled>
+            <option value="">Loading kits…</option>
+          </select>
+        </label>
         <span class="drum-midi-status" role="status" aria-live="polite"></span>
       </div>
       <details class="drum-source">
@@ -1029,6 +1040,46 @@ function renderDrumBlocks() {
     }
   });
   syncDrumMidiControls();
+  syncDrumSampleKitControls();
+}
+
+function drumKitLabel(definition) {
+  return [definition.drum.manufacturer, definition.drum.model, definition.name !== 'center' ? definition.name : '']
+    .filter(Boolean)
+    .join(' ');
+}
+
+function saveDrumSampleKitPreference() {
+  try {
+    localStorage.setItem('personal-wiki-drum-snare-kit', wikiSnareKitId);
+  } catch {
+    // The selected kit remains session-only when browser storage is unavailable.
+  }
+}
+
+async function syncDrumSampleKitControls() {
+  const selects = [...document.querySelectorAll('.drum-kit-select')];
+  if (!selects.length) return;
+  try {
+    const definitions = await wikiDrumSampleLibrary.listKits({ instrument: 'snare', articulation: 'center' });
+    if (!definitions.some(definition => definition.kit_id === wikiSnareKitId)) {
+      wikiSnareKitId = definitions.some(definition => definition.kit_id === DEFAULT_WIKI_SNARE_KIT_ID)
+        ? DEFAULT_WIKI_SNARE_KIT_ID
+        : definitions[0]?.kit_id || '';
+      saveDrumSampleKitPreference();
+    }
+    selects.forEach(select => {
+      select.replaceChildren(...definitions.map(definition => new Option(drumKitLabel(definition), definition.kit_id)));
+      select.value = wikiSnareKitId;
+      select.disabled = definitions.length === 0;
+    });
+  } catch (error) {
+    console.warn('Could not populate drum sample kits.', error);
+    selects.forEach(select => {
+      select.replaceChildren(new Option('Samples unavailable', ''));
+      select.disabled = true;
+    });
+  }
 }
 
 function saveDrumMidiPreferences() {
@@ -1273,7 +1324,7 @@ function drumTone(context, time, frequency, duration, volume, type = 'sine', end
 function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0) {
   if (instrument === 'bd') drumTone(context, time, 145, 0.18, 0.8 * strength, 'sine', 48, pan);
   if (instrument === 'sn') {
-    const sampleSource = wikiSnareSampleKit.schedule(context, {
+    const sampleSource = wikiSnareSampleKit?.schedule(context, {
       velocity: velocityFromStrength(strength),
       time,
       pan
@@ -1346,7 +1397,19 @@ async function prepareWikiSnareSamples(context, pattern) {
     .map(strength => velocityFromStrength(strength));
   if (!velocities.length) return;
   try {
-    await wikiSnareSampleKit.prepare(context, velocities);
+    if (!wikiSnareSampleKitPromise) {
+      wikiSnareSampleKitPromise = wikiDrumSampleLibrary.getKit({ kitId: wikiSnareKitId })
+        .then(kit => {
+          wikiSnareSampleKit = kit;
+          return kit;
+        })
+        .catch(error => {
+          wikiSnareSampleKitPromise = null;
+          throw error;
+        });
+    }
+    const kit = await wikiSnareSampleKitPromise;
+    await kit.prepare(context, velocities);
   } catch (error) {
     if (!drumSampleWarningShown) {
       console.warn('Snare samples could not be prepared; using the synthesized fallback.', error);
@@ -1677,6 +1740,20 @@ content.addEventListener('input', (event) => {
 });
 
 content.addEventListener('change', async (event) => {
+  const kitSelect = event.target.closest('.drum-kit-select');
+  if (kitSelect) {
+    const block = kitSelect.closest('.drum-block');
+    const wasPlaying = block?.dataset.playing === 'true';
+    wikiSnareKitId = kitSelect.value || DEFAULT_WIKI_SNARE_KIT_ID;
+    wikiSnareSampleKit = null;
+    wikiSnareSampleKitPromise = null;
+    drumSampleWarningShown = false;
+    saveDrumSampleKitPreference();
+    await syncDrumSampleKitControls();
+    if (wasPlaying) await restartDrumBlockIfPlaying(block);
+    return;
+  }
+
   const midiToggle = event.target.closest('.drum-midi-enabled');
   if (midiToggle) {
     const block = midiToggle.closest('.drum-block');
