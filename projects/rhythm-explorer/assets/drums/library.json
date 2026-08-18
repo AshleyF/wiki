@@ -18,13 +18,13 @@
     {
       "instrument": "snare",
       "manufacturer": "Slingerland",
-      "model": null,
+      "model": "Radio King 50s",
       "articulations": [
         {
           "name": "center",
           "midi_note": 38,
-          "kit_id": "slingerland-snare-center",
-          "manifest": "snares/slingerland/center/kit.json"
+          "kit_id": "slingerland-radio-king-50s-snare-center",
+          "manifest": "snares/slingerland-radio-king-50s/center/kit.json"
         }
       ]
     }
