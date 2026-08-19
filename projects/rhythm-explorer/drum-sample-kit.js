@@ -21,12 +21,39 @@ export function chooseWeightedVariant(variants, previousSampleId = '', random = 
   return available[available.length - 1];
 }
 
+export function conformSampleBufferChannels(context, buffer, sample = {}) {
+  const declaredMono = Number(sample.channel_count) === 1 || sample.channel_layout === 'mono';
+  if (!declaredMono || buffer?.numberOfChannels === 1) return buffer;
+  if (!buffer?.numberOfChannels || typeof buffer.getChannelData !== 'function' || typeof context.createBuffer !== 'function') {
+    return buffer;
+  }
+
+  let selectedChannel = 0;
+  let selectedEnergy = -1;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
+    const data = buffer.getChannelData(channel);
+    let energy = 0;
+    for (let index = 0; index < data.length; index += 1) energy += data[index] * data[index];
+    if (energy > selectedEnergy) {
+      selectedChannel = channel;
+      selectedEnergy = energy;
+    }
+  }
+
+  const monoBuffer = context.createBuffer(1, buffer.length, buffer.sampleRate);
+  const selectedData = buffer.getChannelData(selectedChannel);
+  if (typeof monoBuffer.copyToChannel === 'function') monoBuffer.copyToChannel(selectedData, 0);
+  else monoBuffer.getChannelData(0).set(selectedData);
+  return monoBuffer;
+}
+
 export function listKitDefinitions(library, {
   kitId = '',
   instrument = '',
   manufacturer = '',
   model = '',
-  articulation = ''
+  articulation = '',
+  midiNote = null
 } = {}) {
   if (library?.schema !== 'drum-sample-library/1' || !Array.isArray(library.drums)) {
     throw new Error('Unsupported drum sample library manifest.');
@@ -39,6 +66,7 @@ export function listKitDefinitions(library, {
     for (const entry of drum.articulations || []) {
       if (kitId && entry.kit_id !== kitId) continue;
       if (articulation && entry.name !== articulation) continue;
+      if (midiNote !== null && Number(entry.midi_note) !== Number(midiNote)) continue;
       definitions.push({ ...entry, drum });
     }
   }
@@ -59,7 +87,7 @@ export class DrumSampleLibrary {
 
   async load() {
     if (!this.libraryPromise) {
-      this.libraryPromise = fetch(this.libraryUrl)
+      this.libraryPromise = fetch(this.libraryUrl, { cache: 'no-cache' })
         .then(response => {
           if (!response.ok) throw new Error(`Could not load drum sample library (${response.status}).`);
           return response.json();
@@ -111,7 +139,7 @@ export class DrumSampleKit {
 
   async loadManifest() {
     if (!this.manifestPromise) {
-      this.manifestPromise = fetch(this.manifestUrl)
+      this.manifestPromise = fetch(this.manifestUrl, { cache: 'no-cache' })
         .then(response => {
           if (!response.ok) throw new Error(`Could not load drum sample manifest (${response.status}).`);
           return response.json();
@@ -138,12 +166,13 @@ export class DrumSampleKit {
       const sample = this.sampleById.get(sampleId);
       if (!sample?.file) throw new Error(`Unknown drum sample ${sampleId}.`);
       const sampleUrl = new URL(sample.file, this.manifestUrl);
-      const promise = fetch(sampleUrl)
+      const promise = fetch(sampleUrl, { cache: 'no-cache' })
         .then(response => {
           if (!response.ok) throw new Error(`Could not load drum sample ${sampleId} (${response.status}).`);
           return response.arrayBuffer();
         })
         .then(data => context.decodeAudioData(data))
+        .then(buffer => conformSampleBufferChannels(context, buffer, sample))
         .then(buffer => {
           this.buffers.set(sampleId, buffer);
           return buffer;
@@ -157,7 +186,7 @@ export class DrumSampleKit {
     return this.bufferPromises.get(sampleId);
   }
 
-  async prepare(context, velocities) {
+  async prepare(context, velocities, { onLoadStart } = {}) {
     await this.loadManifest();
     const requested = [...new Set(velocities.map(clampVelocity))];
     const sampleIds = new Set();
@@ -166,6 +195,7 @@ export class DrumSampleKit {
       if (!variants?.length) throw new Error(`The drum sample kit has no mapping for velocity ${velocity}.`);
       variants.forEach(variant => sampleIds.add(variant.sample_id));
     });
+    if ([...sampleIds].some(sampleId => !this.buffers.has(sampleId))) onLoadStart?.();
     await Promise.all([...sampleIds].map(sampleId => this.loadBuffer(context, sampleId)));
   }
 
@@ -177,6 +207,8 @@ export class DrumSampleKit {
 
     const source = context.createBufferSource();
     const gain = context.createGain();
+    const sample = this.sampleById.get(variant.sample_id);
+    const playbackOffset = Math.max(0, Number(sample?.playback_offset_seconds) || 0);
     source.buffer = this.buffers.get(variant.sample_id);
     gain.gain.setValueAtTime(Math.max(0, Number(variant.gain_linear) || 0), time);
     source.connect(gain);
@@ -190,7 +222,7 @@ export class DrumSampleKit {
     }
 
     this.previousSampleId = variant.sample_id;
-    source.start(time);
+    source.start(time, playbackOffset);
     return source;
   }
 }

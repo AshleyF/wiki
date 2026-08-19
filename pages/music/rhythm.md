@@ -38,6 +38,22 @@ One complete cycle of the meter. Many drum ideas are best understood as one-bar,
 
 The smaller grid inside the beat: eighths, sixteenths, triplets, sextuplets, and so on. Subdivision is the drummer's internal ruler.
 
+### Swing
+
+Swing is an interpretation of subdivision, not a different tempo or meter. In the most common `4/4` usage, the quarter-note beats remain steady while each beat's two eighth notes are unequal. The on-beat eighth is followed by a delayed offbeat `&`, creating a long-short pair. Straight eighths are approximately `1:1`; a textbook triplet model of swing is `2:1`, as though the notes occupy the first and third parts of an eighth-note triplet. Real players use a continuum of ratios, often playing closer to straight at fast tempos and more unevenly at slower tempos.
+
+Swing is therefore not limited to “the quarter-note grid,” but it must be understood relative to a subdivision level. *Eighth-note swing* reshapes the two eighths inside each quarter-note beat. *Sixteenth-note swing* reshapes pairs of sixteenths inside each eighth-note span and is common in some funk, hip-hop, and electronic feels. Compound meters such as `6/8` and `12/8` already divide their beats into threes; they may have a rolling or shuffle-like character without being produced by simply delaying every other written note.
+
+The mathematical delay is only a useful skeleton. A convincing swing feel also involves accent, note length, articulation, dynamics, and interaction. Jazz ride swing, for example, is defined partly by the ride pattern and cymbal sound; it is not merely a quantized stream of late offbeats. The swing ratio may vary slightly across the bar, between musicians, and with tempo. Musicians usually share a recognizable underlying feel without placing every note at exactly the same calculated percentage.
+
+**What swings in an ensemble?** Swing is a common rhythmic reference that the whole band can interpret, but it is not an instruction to shift every sound mechanically. A drummer's ride or hi-hat may state the subdivision most clearly, while kick and snare play fewer notes against it. Notes intended as exact unisons generally remain together, but different voices can sit differently around the shared feel. A bass line can articulate swung eighths while a sustained melody barely exposes the subdivision; a drummer can maintain a swinging ride while placing the snare backbeat slightly behind it. Some arrangements deliberately contrast a straight figure with a swinging rhythm section.
+
+**Swing and shuffle.** The terms overlap. A shuffle normally makes the triplet subdivision explicit and repetitive: a strong long-short pattern, commonly close to the first and third triplet partials, is continuously articulated by a timekeeping voice or riff. Swing is the broader and often more elastic category; it may be subtle, may change with tempo, and need not sound like a pronounced shuffle. A shuffle has swing, broadly speaking, but not every swinging performance is a shuffle.
+
+**Laid back, pushed, and on top.** These describe placement relative to the prevailing pulse or ensemble pocket, rather than the long-short proportion inside each subdivision pair. Playing *laid back* or *behind the beat* means consistently placing a note or voice a little late without losing the tempo. Playing *pushed*, *ahead of the beat*, or *on top of the beat* means placing it a little early, creating forward pressure. These choices can be voice-specific: the hi-hat may define the center of time, the snare may sit behind it, and the kick may sit directly on it or slightly ahead. They can coexist with either straight or swung subdivision.
+
+Deliberate placement remains stable around the reference pulse. *Rushing* and *dragging* usually describe unintended accumulation: the player progressively speeds up or slows down, so the tempo itself moves. A laid-back drummer is not necessarily dragging, and a drummer pushing the groove is not necessarily rushing.
+
 ### Tuplet
 
 An even division that does not fit the default subdivision of the meter, such as triplets in simple meter or duplets in compound meter.
@@ -113,6 +129,10 @@ Two different meter cycles running at the same pulse, such as a three-beat patte
 ### Cross-rhythm
 
 A rhythm that contradicts or cuts across the main meter, often creating temporary ambiguity.
+
+### Euclidean rhythm
+
+A chosen number of hits distributed as evenly as possible around a fixed number of equal slots. Changing the density and rotating the result produces a useful family of ostinatos and interlocking parts. See [Euclidean rhythms](#/music/euclidean-rhythms) for examples—and for why this method does not literally generate every possible rhythm.
 
 ## Groove concepts
 

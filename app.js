@@ -1,4 +1,4 @@
-import { DrumSampleLibrary, velocityFromStrength } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-kit-picker';
+import { DrumSampleLibrary, velocityFromStrength } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-sample-channels';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
@@ -146,9 +146,9 @@ const fenceRenderers = {
         <select class="drum-midi-output" aria-label="Drum MIDI output" disabled>
           <option value="">${drumMidiEnabled ? 'Connect on Play' : 'MIDI off'}</option>
         </select>
-        <label class="drum-kit-control" title="Select the snare used by built-in browser audio. MIDI output uses the kit configured in the receiving application.">
-          <span>Snare</span>
-          <select class="drum-kit-select" aria-label="Snare sample kit" disabled>
+        <label class="drum-kit-control" title="Select the sampled sound used for the snare part in built-in browser audio. MIDI output uses the kit configured in the receiving application.">
+          <span>Sound</span>
+          <select class="drum-kit-select" aria-label="Drum sample sound" disabled>
             <option value="">Loading kits…</option>
           </select>
         </label>
@@ -1061,7 +1061,7 @@ async function syncDrumSampleKitControls() {
   const selects = [...document.querySelectorAll('.drum-kit-select')];
   if (!selects.length) return;
   try {
-    const definitions = await wikiDrumSampleLibrary.listKits({ instrument: 'snare', articulation: 'center' });
+    const definitions = await wikiDrumSampleLibrary.listKits({ midiNote: 38 });
     if (!definitions.some(definition => definition.kit_id === wikiSnareKitId)) {
       wikiSnareKitId = definitions.some(definition => definition.kit_id === DEFAULT_WIKI_SNARE_KIT_ID)
         ? DEFAULT_WIKI_SNARE_KIT_ID
@@ -1177,6 +1177,7 @@ function renderCubeBlocks() {
 function setDrumButton(block, state = 'play') {
   const button = block.querySelector('.drum-toggle');
   block.dataset.playing = state === 'playing' ? 'true' : 'false';
+  block.dataset.loading = state === 'loading' ? 'true' : 'false';
   button.dataset.state = state === 'play' ? '' : state;
   button.disabled = state === 'loading';
 
@@ -1192,6 +1193,18 @@ function setDrumButton(block, state = 'play') {
   } else {
     button.textContent = '▶ Play';
     button.setAttribute('aria-label', 'Play this drum notation');
+  }
+}
+
+function prepareDrumButton(block, showLoading = false) {
+  const button = block.querySelector('.drum-toggle');
+  block.dataset.playing = 'false';
+  block.dataset.loading = 'true';
+  button.disabled = true;
+  if (showLoading) {
+    button.dataset.state = 'loading';
+    button.textContent = 'Loading…';
+    button.setAttribute('aria-label', 'Loading drum samples');
   }
 }
 
@@ -1381,7 +1394,7 @@ function drumStrengthsForToken(rawToken) {
   if (token.kind === 'f') strengths.push(graceStrength * 0.55);
   if (token.kind === 'd') strengths.push(graceStrength * 0.45, graceStrength * 0.55);
   strengths.push(strength);
-  if (token.tremolo === 1) strengths.push(strength * 0.9);
+  if (token.tremolo === 1) strengths.push(strength);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
@@ -1391,13 +1404,14 @@ function drumStrengthsForToken(rawToken) {
   return strengths;
 }
 
-async function prepareWikiSnareSamples(context, pattern) {
+async function prepareWikiSnareSamples(context, pattern, block) {
   const velocities = (pattern.rows.sn || [])
     .flatMap(drumStrengthsForToken)
     .map(strength => velocityFromStrength(strength));
   if (!velocities.length) return;
   try {
     if (!wikiSnareSampleKitPromise) {
+      prepareDrumButton(block, true);
       wikiSnareSampleKitPromise = wikiDrumSampleLibrary.getKit({ kitId: wikiSnareKitId })
         .then(kit => {
           wikiSnareSampleKit = kit;
@@ -1409,7 +1423,7 @@ async function prepareWikiSnareSamples(context, pattern) {
         });
     }
     const kit = await wikiSnareSampleKitPromise;
-    await kit.prepare(context, velocities);
+    await kit.prepare(context, velocities, { onLoadStart: () => prepareDrumButton(block, true) });
   } catch (error) {
     if (!drumSampleWarningShown) {
       console.warn('Snare samples could not be prepared; using the synthesized fallback.', error);
@@ -1432,7 +1446,7 @@ function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDu
     scheduleDrumMidiSound(context, output, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, graceSticking);
   }
   scheduleDrumMidiSound(context, output, instrument, token, time, strength, sticking);
-  if (token.tremolo === 1) scheduleDrumMidiSound(context, output, instrument, token, time + (stepDuration / 2), strength * 0.9, sticking);
+  if (token.tremolo === 1) scheduleDrumMidiSound(context, output, instrument, token, time + (stepDuration / 2), strength, sticking);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
@@ -1457,7 +1471,7 @@ function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, stic
     scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, gracePan);
   }
   scheduleDrumSound(context, instrument, token, time, strength, mainPan);
-  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength * 0.9, mainPan);
+  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength, mainPan);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
@@ -1571,7 +1585,7 @@ async function playDrumBlock(block) {
   block.drumMidiOutput = drumMidiEnabled ? await prepareDrumMidi() : null;
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
-  if (!block.drumMidiOutput) await prepareWikiSnareSamples(drumAudioContext, pattern);
+  if (!block.drumMidiOutput) await prepareWikiSnareSamples(drumAudioContext, pattern, block);
   const tempoInput = block.querySelector('.drum-tempo');
   const tempo = Number(tempoInput?.value) || Number(pattern.tempo) || 120;
   const stepDuration = drumStepDuration(pattern, tempo);
@@ -1586,7 +1600,7 @@ async function restartDrumBlockIfPlaying(block) {
   if (block?.dataset.playing !== 'true') return;
   try {
     stopDrumBlocks();
-    setDrumButton(block, 'loading');
+    prepareDrumButton(block);
     await playDrumBlock(block);
   } catch (error) {
     console.error(error);
@@ -1665,7 +1679,7 @@ content.addEventListener('click', async (event) => {
       stopStrudelBlocks();
       stopAbcBlocks();
       stopDrumBlocks();
-      setDrumButton(block, 'loading');
+      prepareDrumButton(block);
       await playDrumBlock(block);
     } catch (error) {
       console.error(error);

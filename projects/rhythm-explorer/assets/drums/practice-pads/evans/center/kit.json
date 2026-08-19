@@ -1,0 +1,4181 @@
+{
+  "schema": "drum-sample-kit/1",
+  "kit_id": "evans-practice-pad-center",
+  "display_name": "Evans Practice Pad \u2014 Center",
+  "drum": {
+    "manufacturer": "Evans",
+    "model": "Practice Pad"
+  },
+  "source_product": "User-recorded acoustic session",
+  "instrument": "practice-pad",
+  "articulation": "center",
+  "midi_note": 38,
+  "velocity_range": [
+    1,
+    127
+  ],
+  "sample_count": 63,
+  "selection": {
+    "strategy": "weighted-random",
+    "avoid_immediate_repeat": true,
+    "weight_source": "nearest inferred acoustic velocity"
+  },
+  "gain": {
+    "unit": "dBFS relative to recorded sample",
+    "application": "Apply gain_linear or gain_db.",
+    "representatives": "Samples at or above target loudness are attenuated; no intentional boost."
+  },
+  "velocity_inference": {
+    "method": "rank of maximum 20 ms RMS attack level",
+    "range": [
+      1,
+      127
+    ],
+    "quietest_attack_rms_db": -33.219,
+    "loudest_attack_rms_db": -15.6567
+  },
+  "source_capture_count": 63,
+  "rejected_capture_count": 5,
+  "audio": {
+    "channel_count": 1,
+    "channel_layout": "mono",
+    "channel_policy": "Highest-energy source channel selected per hit; silent interface channels discarded."
+  },
+  "samples": [
+    {
+      "id": "evans-practice-pad-center-001",
+      "file": "samples/evans-practice-pad-center-001.wav",
+      "minimum_velocity": 1,
+      "maximum_velocity": 1,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053437,
+      "attack_peak_seconds": 0.056854
+    },
+    {
+      "id": "evans-practice-pad-center-002",
+      "file": "samples/evans-practice-pad-center-002.wav",
+      "minimum_velocity": 3,
+      "maximum_velocity": 3,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.009979
+    },
+    {
+      "id": "evans-practice-pad-center-003",
+      "file": "samples/evans-practice-pad-center-003.wav",
+      "minimum_velocity": 5,
+      "maximum_velocity": 5,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.018792,
+      "attack_peak_seconds": 0.023417
+    },
+    {
+      "id": "evans-practice-pad-center-004",
+      "file": "samples/evans-practice-pad-center-004.wav",
+      "minimum_velocity": 7,
+      "maximum_velocity": 7,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.006313
+    },
+    {
+      "id": "evans-practice-pad-center-005",
+      "file": "samples/evans-practice-pad-center-005.wav",
+      "minimum_velocity": 9,
+      "maximum_velocity": 9,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.042729,
+      "attack_peak_seconds": 0.046187
+    },
+    {
+      "id": "evans-practice-pad-center-006",
+      "file": "samples/evans-practice-pad-center-006.wav",
+      "minimum_velocity": 11,
+      "maximum_velocity": 11,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.001583
+    },
+    {
+      "id": "evans-practice-pad-center-007",
+      "file": "samples/evans-practice-pad-center-007.wav",
+      "minimum_velocity": 13,
+      "maximum_velocity": 13,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0535,
+      "attack_peak_seconds": 0.058188
+    },
+    {
+      "id": "evans-practice-pad-center-008",
+      "file": "samples/evans-practice-pad-center-008.wav",
+      "minimum_velocity": 15,
+      "maximum_velocity": 15,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.018937,
+      "attack_peak_seconds": 0.023521
+    },
+    {
+      "id": "evans-practice-pad-center-009",
+      "file": "samples/evans-practice-pad-center-009.wav",
+      "minimum_velocity": 17,
+      "maximum_velocity": 17,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.050479,
+      "attack_peak_seconds": 0.053917
+    },
+    {
+      "id": "evans-practice-pad-center-010",
+      "file": "samples/evans-practice-pad-center-010.wav",
+      "minimum_velocity": 19,
+      "maximum_velocity": 19,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.019958,
+      "attack_peak_seconds": 0.023396
+    },
+    {
+      "id": "evans-practice-pad-center-011",
+      "file": "samples/evans-practice-pad-center-011.wav",
+      "minimum_velocity": 21,
+      "maximum_velocity": 21,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.093979,
+      "attack_peak_seconds": 0.098521
+    },
+    {
+      "id": "evans-practice-pad-center-012",
+      "file": "samples/evans-practice-pad-center-012.wav",
+      "minimum_velocity": 23,
+      "maximum_velocity": 23,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.031938,
+      "attack_peak_seconds": 0.0365
+    },
+    {
+      "id": "evans-practice-pad-center-013",
+      "file": "samples/evans-practice-pad-center-013.wav",
+      "minimum_velocity": 25,
+      "maximum_velocity": 25,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.016146
+    },
+    {
+      "id": "evans-practice-pad-center-014",
+      "file": "samples/evans-practice-pad-center-014.wav",
+      "minimum_velocity": 27,
+      "maximum_velocity": 27,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053458,
+      "attack_peak_seconds": 0.056938
+    },
+    {
+      "id": "evans-practice-pad-center-015",
+      "file": "samples/evans-practice-pad-center-015.wav",
+      "minimum_velocity": 29,
+      "maximum_velocity": 29,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.042438,
+      "attack_peak_seconds": 0.046979
+    },
+    {
+      "id": "evans-practice-pad-center-016",
+      "file": "samples/evans-practice-pad-center-016.wav",
+      "minimum_velocity": 31,
+      "maximum_velocity": 31,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0535,
+      "attack_peak_seconds": 0.056979
+    },
+    {
+      "id": "evans-practice-pad-center-017",
+      "file": "samples/evans-practice-pad-center-017.wav",
+      "minimum_velocity": 34,
+      "maximum_velocity": 34,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0535,
+      "attack_peak_seconds": 0.057958
+    },
+    {
+      "id": "evans-practice-pad-center-018",
+      "file": "samples/evans-practice-pad-center-018.wav",
+      "minimum_velocity": 36,
+      "maximum_velocity": 36,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.017375,
+      "attack_peak_seconds": 0.020146
+    },
+    {
+      "id": "evans-practice-pad-center-019",
+      "file": "samples/evans-practice-pad-center-019.wav",
+      "minimum_velocity": 38,
+      "maximum_velocity": 38,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0535,
+      "attack_peak_seconds": 0.057
+    },
+    {
+      "id": "evans-practice-pad-center-020",
+      "file": "samples/evans-practice-pad-center-020.wav",
+      "minimum_velocity": 40,
+      "maximum_velocity": 40,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.052062,
+      "attack_peak_seconds": 0.055438
+    },
+    {
+      "id": "evans-practice-pad-center-021",
+      "file": "samples/evans-practice-pad-center-021.wav",
+      "minimum_velocity": 42,
+      "maximum_velocity": 42,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0535,
+      "attack_peak_seconds": 0.056896
+    },
+    {
+      "id": "evans-practice-pad-center-022",
+      "file": "samples/evans-practice-pad-center-022.wav",
+      "minimum_velocity": 44,
+      "maximum_velocity": 44,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053542,
+      "attack_peak_seconds": 0.058063
+    },
+    {
+      "id": "evans-practice-pad-center-023",
+      "file": "samples/evans-practice-pad-center-023.wav",
+      "minimum_velocity": 46,
+      "maximum_velocity": 46,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.017438,
+      "attack_peak_seconds": 0.020771
+    },
+    {
+      "id": "evans-practice-pad-center-024",
+      "file": "samples/evans-practice-pad-center-024.wav",
+      "minimum_velocity": 48,
+      "maximum_velocity": 48,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.082917,
+      "attack_peak_seconds": 0.087417
+    },
+    {
+      "id": "evans-practice-pad-center-025",
+      "file": "samples/evans-practice-pad-center-025.wav",
+      "minimum_velocity": 50,
+      "maximum_velocity": 50,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.016313
+    },
+    {
+      "id": "evans-practice-pad-center-026",
+      "file": "samples/evans-practice-pad-center-026.wav",
+      "minimum_velocity": 52,
+      "maximum_velocity": 52,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.021521,
+      "attack_peak_seconds": 0.024896
+    },
+    {
+      "id": "evans-practice-pad-center-027",
+      "file": "samples/evans-practice-pad-center-027.wav",
+      "minimum_velocity": 54,
+      "maximum_velocity": 54,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.020063,
+      "attack_peak_seconds": 0.023438
+    },
+    {
+      "id": "evans-practice-pad-center-028",
+      "file": "samples/evans-practice-pad-center-028.wav",
+      "minimum_velocity": 56,
+      "maximum_velocity": 56,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.055729,
+      "attack_peak_seconds": 0.059083
+    },
+    {
+      "id": "evans-practice-pad-center-029",
+      "file": "samples/evans-practice-pad-center-029.wav",
+      "minimum_velocity": 58,
+      "maximum_velocity": 58,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.045333,
+      "attack_peak_seconds": 0.048313
+    },
+    {
+      "id": "evans-practice-pad-center-030",
+      "file": "samples/evans-practice-pad-center-030.wav",
+      "minimum_velocity": 60,
+      "maximum_velocity": 60,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.049604,
+      "attack_peak_seconds": 0.052937
+    },
+    {
+      "id": "evans-practice-pad-center-031",
+      "file": "samples/evans-practice-pad-center-031.wav",
+      "minimum_velocity": 62,
+      "maximum_velocity": 62,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053542,
+      "attack_peak_seconds": 0.056896
+    },
+    {
+      "id": "evans-practice-pad-center-032",
+      "file": "samples/evans-practice-pad-center-032.wav",
+      "minimum_velocity": 64,
+      "maximum_velocity": 64,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053792,
+      "attack_peak_seconds": 0.057188
+    },
+    {
+      "id": "evans-practice-pad-center-033",
+      "file": "samples/evans-practice-pad-center-033.wav",
+      "minimum_velocity": 66,
+      "maximum_velocity": 66,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053729,
+      "attack_peak_seconds": 0.057146
+    },
+    {
+      "id": "evans-practice-pad-center-034",
+      "file": "samples/evans-practice-pad-center-034.wav",
+      "minimum_velocity": 68,
+      "maximum_velocity": 68,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.068271,
+      "attack_peak_seconds": 0.07125
+    },
+    {
+      "id": "evans-practice-pad-center-035",
+      "file": "samples/evans-practice-pad-center-035.wav",
+      "minimum_velocity": 70,
+      "maximum_velocity": 70,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.05375,
+      "attack_peak_seconds": 0.057188
+    },
+    {
+      "id": "evans-practice-pad-center-036",
+      "file": "samples/evans-practice-pad-center-036.wav",
+      "minimum_velocity": 72,
+      "maximum_velocity": 72,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.012771
+    },
+    {
+      "id": "evans-practice-pad-center-037",
+      "file": "samples/evans-practice-pad-center-037.wav",
+      "minimum_velocity": 74,
+      "maximum_velocity": 74,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.077438,
+      "attack_peak_seconds": 0.080833
+    },
+    {
+      "id": "evans-practice-pad-center-038",
+      "file": "samples/evans-practice-pad-center-038.wav",
+      "minimum_velocity": 76,
+      "maximum_velocity": 76,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.033354,
+      "attack_peak_seconds": 0.037896
+    },
+    {
+      "id": "evans-practice-pad-center-039",
+      "file": "samples/evans-practice-pad-center-039.wav",
+      "minimum_velocity": 78,
+      "maximum_velocity": 78,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.028479,
+      "attack_peak_seconds": 0.031896
+    },
+    {
+      "id": "evans-practice-pad-center-040",
+      "file": "samples/evans-practice-pad-center-040.wav",
+      "minimum_velocity": 80,
+      "maximum_velocity": 80,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053562,
+      "attack_peak_seconds": 0.056854
+    },
+    {
+      "id": "evans-practice-pad-center-041",
+      "file": "samples/evans-practice-pad-center-041.wav",
+      "minimum_velocity": 82,
+      "maximum_velocity": 82,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.035771,
+      "attack_peak_seconds": 0.039125
+    },
+    {
+      "id": "evans-practice-pad-center-042",
+      "file": "samples/evans-practice-pad-center-042.wav",
+      "minimum_velocity": 84,
+      "maximum_velocity": 84,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.040813,
+      "attack_peak_seconds": 0.044229
+    },
+    {
+      "id": "evans-practice-pad-center-043",
+      "file": "samples/evans-practice-pad-center-043.wav",
+      "minimum_velocity": 86,
+      "maximum_velocity": 86,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.033458,
+      "attack_peak_seconds": 0.036833
+    },
+    {
+      "id": "evans-practice-pad-center-044",
+      "file": "samples/evans-practice-pad-center-044.wav",
+      "minimum_velocity": 88,
+      "maximum_velocity": 88,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.093104,
+      "attack_peak_seconds": 0.096062
+    },
+    {
+      "id": "evans-practice-pad-center-045",
+      "file": "samples/evans-practice-pad-center-045.wav",
+      "minimum_velocity": 90,
+      "maximum_velocity": 90,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.015125,
+      "attack_peak_seconds": 0.0185
+    },
+    {
+      "id": "evans-practice-pad-center-046",
+      "file": "samples/evans-practice-pad-center-046.wav",
+      "minimum_velocity": 92,
+      "maximum_velocity": 92,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.083792,
+      "attack_peak_seconds": 0.08725
+    },
+    {
+      "id": "evans-practice-pad-center-047",
+      "file": "samples/evans-practice-pad-center-047.wav",
+      "minimum_velocity": 94,
+      "maximum_velocity": 94,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.018562,
+      "attack_peak_seconds": 0.021833
+    },
+    {
+      "id": "evans-practice-pad-center-048",
+      "file": "samples/evans-practice-pad-center-048.wav",
+      "minimum_velocity": 97,
+      "maximum_velocity": 97,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.017833
+    },
+    {
+      "id": "evans-practice-pad-center-049",
+      "file": "samples/evans-practice-pad-center-049.wav",
+      "minimum_velocity": 99,
+      "maximum_velocity": 99,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.056042,
+      "attack_peak_seconds": 0.059021
+    },
+    {
+      "id": "evans-practice-pad-center-050",
+      "file": "samples/evans-practice-pad-center-050.wav",
+      "minimum_velocity": 101,
+      "maximum_velocity": 101,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.027875,
+      "attack_peak_seconds": 0.031146
+    },
+    {
+      "id": "evans-practice-pad-center-051",
+      "file": "samples/evans-practice-pad-center-051.wav",
+      "minimum_velocity": 103,
+      "maximum_velocity": 103,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.053708,
+      "attack_peak_seconds": 0.05825
+    },
+    {
+      "id": "evans-practice-pad-center-052",
+      "file": "samples/evans-practice-pad-center-052.wav",
+      "minimum_velocity": 105,
+      "maximum_velocity": 105,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.069062,
+      "attack_peak_seconds": 0.072021
+    },
+    {
+      "id": "evans-practice-pad-center-053",
+      "file": "samples/evans-practice-pad-center-053.wav",
+      "minimum_velocity": 107,
+      "maximum_velocity": 107,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.009417
+    },
+    {
+      "id": "evans-practice-pad-center-054",
+      "file": "samples/evans-practice-pad-center-054.wav",
+      "minimum_velocity": 109,
+      "maximum_velocity": 109,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.008458
+    },
+    {
+      "id": "evans-practice-pad-center-055",
+      "file": "samples/evans-practice-pad-center-055.wav",
+      "minimum_velocity": 111,
+      "maximum_velocity": 111,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.055708,
+      "attack_peak_seconds": 0.059
+    },
+    {
+      "id": "evans-practice-pad-center-056",
+      "file": "samples/evans-practice-pad-center-056.wav",
+      "minimum_velocity": 113,
+      "maximum_velocity": 113,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.059312,
+      "attack_peak_seconds": 0.062271
+    },
+    {
+      "id": "evans-practice-pad-center-057",
+      "file": "samples/evans-practice-pad-center-057.wav",
+      "minimum_velocity": 115,
+      "maximum_velocity": 115,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.005167
+    },
+    {
+      "id": "evans-practice-pad-center-058",
+      "file": "samples/evans-practice-pad-center-058.wav",
+      "minimum_velocity": 117,
+      "maximum_velocity": 117,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.003333
+    },
+    {
+      "id": "evans-practice-pad-center-059",
+      "file": "samples/evans-practice-pad-center-059.wav",
+      "minimum_velocity": 119,
+      "maximum_velocity": 119,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.023146,
+      "attack_peak_seconds": 0.0265
+    },
+    {
+      "id": "evans-practice-pad-center-060",
+      "file": "samples/evans-practice-pad-center-060.wav",
+      "minimum_velocity": 121,
+      "maximum_velocity": 121,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.040167,
+      "attack_peak_seconds": 0.043458
+    },
+    {
+      "id": "evans-practice-pad-center-061",
+      "file": "samples/evans-practice-pad-center-061.wav",
+      "minimum_velocity": 123,
+      "maximum_velocity": 123,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.015688,
+      "attack_peak_seconds": 0.019104
+    },
+    {
+      "id": "evans-practice-pad-center-062",
+      "file": "samples/evans-practice-pad-center-062.wav",
+      "minimum_velocity": 125,
+      "maximum_velocity": 125,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.0,
+      "attack_peak_seconds": 0.007812
+    },
+    {
+      "id": "evans-practice-pad-center-063",
+      "file": "samples/evans-practice-pad-center-063.wav",
+      "minimum_velocity": 127,
+      "maximum_velocity": 127,
+      "channel_count": 1,
+      "channel_layout": "mono",
+      "playback_offset_seconds": 0.033563,
+      "attack_peak_seconds": 0.036542
+    }
+  ],
+  "velocities": [
+    {
+      "velocity": 1,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-001",
+          "gain_db": 0.0,
+          "gain_linear": 1.0,
+          "weight": 0.50925608,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-002",
+          "gain_db": -0.1913,
+          "gain_linear": 0.97821654,
+          "weight": 0.28849766,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-003",
+          "gain_db": -0.3795,
+          "gain_linear": 0.95724917,
+          "weight": 0.20224626,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 2,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-002",
+          "gain_db": -0.0519,
+          "gain_linear": 0.9940407,
+          "weight": 0.53579274,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-003",
+          "gain_db": -0.2401,
+          "gain_linear": 0.97273416,
+          "weight": 0.33005357,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.9558,
+          "gain_linear": 0.8957961,
+          "weight": 0.13415369,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 3,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-003",
+          "gain_db": -0.1007,
+          "gain_linear": 0.98846964,
+          "weight": 0.61093572,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.8164,
+          "gain_linear": 0.91028698,
+          "weight": 0.20092726,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.8889,
+          "gain_linear": 0.90272056,
+          "weight": 0.18813702,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 4,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.6771,
+          "gain_linear": 0.92501228,
+          "weight": 0.36128345,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.7496,
+          "gain_linear": 0.91732346,
+          "weight": 0.33507861,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.8531,
+          "gain_linear": 0.90645761,
+          "weight": 0.30363794,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 5,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.5377,
+          "gain_linear": 0.93997579,
+          "weight": 0.36588781,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.6102,
+          "gain_linear": 0.93216258,
+          "weight": 0.33504859,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.7137,
+          "gain_linear": 0.92112096,
+          "weight": 0.29906361,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 6,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.3983,
+          "gain_linear": 0.95518135,
+          "weight": 0.37231521,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.4708,
+          "gain_linear": 0.94724175,
+          "weight": 0.33486588,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.5743,
+          "gain_linear": 0.93602152,
+          "weight": 0.29281891,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 7,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.2589,
+          "gain_linear": 0.97063288,
+          "weight": 0.38192295,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.3314,
+          "gain_linear": 0.96256485,
+          "weight": 0.33429754,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.4349,
+          "gain_linear": 0.95116311,
+          "weight": 0.28377951,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 8,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-004",
+          "gain_db": -0.1195,
+          "gain_linear": 0.98633437,
+          "weight": 0.39787549,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.192,
+          "gain_linear": 0.97813583,
+          "weight": 0.33261557,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.2955,
+          "gain_linear": 0.96654965,
+          "weight": 0.26950895,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 9,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-005",
+          "gain_db": -0.0526,
+          "gain_linear": 0.99395869,
+          "weight": 0.42878205,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.1561,
+          "gain_linear": 0.98218508,
+          "weight": 0.31951019,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-007",
+          "gain_db": -0.2655,
+          "gain_linear": 0.9698919,
+          "weight": 0.25170776,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 10,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-006",
+          "gain_db": -0.0168,
+          "gain_linear": 0.99807344,
+          "weight": 0.50321772,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-007",
+          "gain_db": -0.1262,
+          "gain_linear": 0.9855814,
+          "weight": 0.35686116,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.7094,
+          "gain_linear": 0.92157885,
+          "weight": 0.13992112,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 11,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.57,
+          "gain_linear": 0.93648681,
+          "weight": 0.34557996,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-009",
+          "gain_db": -0.5854,
+          "gain_linear": 0.9348279,
+          "weight": 0.33920919,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-010",
+          "gain_db": -0.649,
+          "gain_linear": 0.92800789,
+          "weight": 0.31521085,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 12,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.4306,
+          "gain_linear": 0.95163594,
+          "weight": 0.34796302,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-009",
+          "gain_db": -0.446,
+          "gain_linear": 0.94995019,
+          "weight": 0.34026365,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-010",
+          "gain_db": -0.5096,
+          "gain_linear": 0.94301985,
+          "weight": 0.31177333,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 13,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.2912,
+          "gain_linear": 0.96703012,
+          "weight": 0.35149956,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-009",
+          "gain_db": -0.3066,
+          "gain_linear": 0.9653171,
+          "weight": 0.34177428,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-010",
+          "gain_db": -0.3702,
+          "gain_linear": 0.95827465,
+          "weight": 0.30672616,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 14,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.1518,
+          "gain_linear": 0.98267332,
+          "weight": 0.35729791,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-009",
+          "gain_db": -0.1672,
+          "gain_linear": 0.9809326,
+          "weight": 0.34410959,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-010",
+          "gain_db": -0.2308,
+          "gain_linear": 0.97377622,
+          "weight": 0.29859251,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 15,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-008",
+          "gain_db": -0.0124,
+          "gain_linear": 0.99856958,
+          "weight": 0.36856935,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-009",
+          "gain_db": -0.0278,
+          "gain_linear": 0.9968007,
+          "weight": 0.34813996,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-010",
+          "gain_db": -0.0914,
+          "gain_linear": 0.98952856,
+          "weight": 0.28329069,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 16,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -1.1361,
+          "gain_linear": 0.87739974,
+          "weight": 0.41001721,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -1.6577,
+          "gain_linear": 0.82626147,
+          "weight": 0.29790808,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -1.6958,
+          "gain_linear": 0.82264507,
+          "weight": 0.2920747,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 17,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.9967,
+          "gain_linear": 0.89159303,
+          "weight": 0.41750631,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -1.5183,
+          "gain_linear": 0.83962752,
+          "weight": 0.29435108,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -1.5564,
+          "gain_linear": 0.83595263,
+          "weight": 0.28814261,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 18,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.8573,
+          "gain_linear": 0.90601593,
+          "weight": 0.42661672,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -1.3789,
+          "gain_linear": 0.8532098,
+          "weight": 0.29000578,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -1.417,
+          "gain_linear": 0.84947545,
+          "weight": 0.28337751,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 19,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.7179,
+          "gain_linear": 0.92067214,
+          "weight": 0.43793888,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -1.2395,
+          "gain_linear": 0.86701178,
+          "weight": 0.28457942,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -1.2776,
+          "gain_linear": 0.86321703,
+          "weight": 0.2774817,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 20,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.5785,
+          "gain_linear": 0.93556543,
+          "weight": 0.45238964,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -1.1001,
+          "gain_linear": 0.88103704,
+          "weight": 0.27761479,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -1.1382,
+          "gain_linear": 0.8771809,
+          "weight": 0.26999557,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 21,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.4391,
+          "gain_linear": 0.95069965,
+          "weight": 0.47147385,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.9607,
+          "gain_linear": 0.89528917,
+          "weight": 0.26835665,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.9988,
+          "gain_linear": 0.89137066,
+          "weight": 0.2601695,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 22,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.2997,
+          "gain_linear": 0.96607868,
+          "weight": 0.49784596,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.8213,
+          "gain_linear": 0.90977186,
+          "weight": 0.2554635,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.8594,
+          "gain_linear": 0.90578995,
+          "weight": 0.24669054,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 23,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.1604,
+          "gain_linear": 0.9817065,
+          "weight": 0.53666706,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.682,
+          "gain_linear": 0.92448883,
+          "weight": 0.23630703,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.7201,
+          "gain_linear": 0.92044251,
+          "weight": 0.22702591,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 24,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-011",
+          "gain_db": -0.021,
+          "gain_linear": 0.99758712,
+          "weight": 0.59947861,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.5426,
+          "gain_linear": 0.93944386,
+          "weight": 0.20496105,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.5807,
+          "gain_linear": 0.93533209,
+          "weight": 0.19556034,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 25,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.4032,
+          "gain_linear": 0.95464082,
+          "weight": 0.36749582,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.4413,
+          "gain_linear": 0.95046253,
+          "weight": 0.34724182,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-014",
+          "gain_db": -0.5915,
+          "gain_linear": 0.93416803,
+          "weight": 0.28526235,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 26,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.2638,
+          "gain_linear": 0.97008361,
+          "weight": 0.37554753,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.3019,
+          "gain_linear": 0.96583773,
+          "weight": 0.34962267,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-014",
+          "gain_db": -0.4521,
+          "gain_linear": 0.94927964,
+          "weight": 0.2748298,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 27,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-012",
+          "gain_db": -0.1244,
+          "gain_linear": 0.98577621,
+          "weight": 0.38864729,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.1625,
+          "gain_linear": 0.98146165,
+          "weight": 0.35275331,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-014",
+          "gain_db": -0.3127,
+          "gain_linear": 0.96463571,
+          "weight": 0.2585994,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 28,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-013",
+          "gain_db": -0.0232,
+          "gain_linear": 0.99733831,
+          "weight": 0.46107644,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-014",
+          "gain_db": -0.1734,
+          "gain_linear": 0.98024018,
+          "weight": 0.29749151,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-015",
+          "gain_db": -0.2717,
+          "gain_linear": 0.96920914,
+          "weight": 0.24143205,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 29,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-014",
+          "gain_db": -0.034,
+          "gain_linear": 0.99609708,
+          "weight": 0.40724934,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-015",
+          "gain_db": -0.1323,
+          "gain_linear": 0.98488759,
+          "weight": 0.30252504,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-016",
+          "gain_db": -0.1485,
+          "gain_linear": 0.9830524,
+          "weight": 0.29022562,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 30,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-016",
+          "gain_db": -0.0091,
+          "gain_linear": 0.99895479,
+          "weight": 0.65771681,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-017",
+          "gain_db": -0.6677,
+          "gain_linear": 0.92601033,
+          "weight": 0.18568874,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.8382,
+          "gain_linear": 0.90801042,
+          "weight": 0.15659444,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 31,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-017",
+          "gain_db": -0.5283,
+          "gain_linear": 0.94098998,
+          "weight": 0.38904516,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.6988,
+          "gain_linear": 0.92269889,
+          "weight": 0.31913348,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.7876,
+          "gain_linear": 0.91331376,
+          "weight": 0.29182136,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 32,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-017",
+          "gain_db": -0.3889,
+          "gain_linear": 0.95621195,
+          "weight": 0.39989261,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.5594,
+          "gain_linear": 0.93762497,
+          "weight": 0.31565702,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.6482,
+          "gain_linear": 0.92808802,
+          "weight": 0.28445036,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 33,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-017",
+          "gain_db": -0.2495,
+          "gain_linear": 0.97168016,
+          "weight": 0.41600344,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.42,
+          "gain_linear": 0.95279251,
+          "weight": 0.31014514,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.5088,
+          "gain_linear": 0.94310128,
+          "weight": 0.27385142,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 34,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-017",
+          "gain_db": -0.1102,
+          "gain_linear": 0.98739858,
+          "weight": 0.44245853,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.2807,
+          "gain_linear": 0.9682054,
+          "weight": 0.30029481,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.3695,
+          "gain_linear": 0.9583574,
+          "weight": 0.25724666,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 35,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.1413,
+          "gain_linear": 0.98386762,
+          "weight": 0.47144433,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.2301,
+          "gain_linear": 0.97386031,
+          "weight": 0.38423924,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -1.0282,
+          "gain_linear": 0.88836546,
+          "weight": 0.14431643,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 36,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-018",
+          "gain_db": -0.0019,
+          "gain_linear": 0.9997832,
+          "weight": 0.51006518,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-019",
+          "gain_db": -0.0907,
+          "gain_linear": 0.98961401,
+          "weight": 0.37711536,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.8888,
+          "gain_linear": 0.90273615,
+          "weight": 0.11281946,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 37,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.7494,
+          "gain_linear": 0.9173393,
+          "weight": 0.42444338,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.8937,
+          "gain_linear": 0.9022253,
+          "weight": 0.3708916,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.8226,
+          "gain_linear": 0.81071834,
+          "weight": 0.20466502,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 38,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.61,
+          "gain_linear": 0.93217868,
+          "weight": 0.43455904,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.7543,
+          "gain_linear": 0.91682019,
+          "weight": 0.37212169,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.6832,
+          "gain_linear": 0.82383297,
+          "weight": 0.19331926,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 39,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.4706,
+          "gain_linear": 0.94725811,
+          "weight": 0.44744842,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.6149,
+          "gain_linear": 0.93165117,
+          "weight": 0.37279896,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.5438,
+          "gain_linear": 0.83715974,
+          "weight": 0.17975262,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 40,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.3313,
+          "gain_linear": 0.96258148,
+          "weight": 0.46458868,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.4756,
+          "gain_linear": 0.94672207,
+          "weight": 0.37218961,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.4045,
+          "gain_linear": 0.85070209,
+          "weight": 0.16322172,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 41,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.1919,
+          "gain_linear": 0.97815272,
+          "weight": 0.48888457,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.3362,
+          "gain_linear": 0.96203676,
+          "weight": 0.36853306,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.2651,
+          "gain_linear": 0.86446351,
+          "weight": 0.14258237,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 42,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-020",
+          "gain_db": -0.0525,
+          "gain_linear": 0.99397585,
+          "weight": 0.52717501,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.1968,
+          "gain_linear": 0.97759919,
+          "weight": 0.35691048,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -1.1257,
+          "gain_linear": 0.87844754,
+          "weight": 0.11591451,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 43,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-021",
+          "gain_db": -0.0574,
+          "gain_linear": 0.99341337,
+          "weight": 0.67051109,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.9863,
+          "gain_linear": 0.89265779,
+          "weight": 0.16671933,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -1.0163,
+          "gain_linear": 0.88957998,
+          "weight": 0.16276957,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 44,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.8469,
+          "gain_linear": 0.90709791,
+          "weight": 0.34672575,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.8769,
+          "gain_linear": 0.90397031,
+          "weight": 0.33749545,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.9544,
+          "gain_linear": 0.8959405,
+          "weight": 0.3157788,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 45,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.7075,
+          "gain_linear": 0.92177162,
+          "weight": 0.34859172,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.7375,
+          "gain_linear": 0.91859343,
+          "weight": 0.33800195,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.815,
+          "gain_linear": 0.91043372,
+          "weight": 0.31340633,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 46,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.5682,
+          "gain_linear": 0.9366827,
+          "weight": 0.35106267,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.5982,
+          "gain_linear": 0.93345309,
+          "weight": 0.33864519,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.6757,
+          "gain_linear": 0.92516139,
+          "weight": 0.31029214,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 47,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.4288,
+          "gain_linear": 0.95183499,
+          "weight": 0.3544904,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.4588,
+          "gain_linear": 0.94855314,
+          "weight": 0.33948586,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.5363,
+          "gain_linear": 0.94012731,
+          "weight": 0.30602374,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 48,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.2894,
+          "gain_linear": 0.96723239,
+          "weight": 0.35956608,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.3194,
+          "gain_linear": 0.96389745,
+          "weight": 0.34062105,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.3969,
+          "gain_linear": 0.95533532,
+          "weight": 0.29981287,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 49,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.15,
+          "gain_linear": 0.98287887,
+          "weight": 0.36786211,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.18,
+          "gain_linear": 0.97948999,
+          "weight": 0.34219731,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.2575,
+          "gain_linear": 0.97078934,
+          "weight": 0.28994058,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 50,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-022",
+          "gain_db": -0.0106,
+          "gain_linear": 0.99877846,
+          "weight": 0.38391485,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-023",
+          "gain_db": -0.0406,
+          "gain_linear": 0.99533475,
+          "weight": 0.34428379,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-024",
+          "gain_db": -0.1181,
+          "gain_linear": 0.98649336,
+          "weight": 0.27180135,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 51,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-025",
+          "gain_db": -0.0565,
+          "gain_linear": 0.99351249,
+          "weight": 0.40860994,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-026",
+          "gain_db": -0.144,
+          "gain_linear": 0.98355428,
+          "weight": 0.31787302,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-027",
+          "gain_db": -0.2079,
+          "gain_linear": 0.97634506,
+          "weight": 0.27351703,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 52,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-026",
+          "gain_db": -0.0047,
+          "gain_linear": 0.99946479,
+          "weight": 0.46060153,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-027",
+          "gain_db": -0.0686,
+          "gain_linear": 0.99213895,
+          "weight": 0.3682065,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-028",
+          "gain_db": -0.4352,
+          "gain_linear": 0.95113574,
+          "weight": 0.17119197,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 53,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-028",
+          "gain_db": -0.2958,
+          "gain_linear": 0.96652183,
+          "weight": 0.51887428,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-029",
+          "gain_db": -0.6097,
+          "gain_linear": 0.93221624,
+          "weight": 0.32941173,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -1.6166,
+          "gain_linear": 0.83017885,
+          "weight": 0.15171399,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 54,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-028",
+          "gain_db": -0.1564,
+          "gain_linear": 0.98215681,
+          "weight": 0.55571424,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-029",
+          "gain_db": -0.4703,
+          "gain_linear": 0.94729628,
+          "weight": 0.31353357,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -1.4772,
+          "gain_linear": 0.84360828,
+          "weight": 0.13075219,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 55,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-028",
+          "gain_db": -0.017,
+          "gain_linear": 0.99804472,
+          "weight": 0.61433031,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-029",
+          "gain_db": -0.3309,
+          "gain_linear": 0.96262026,
+          "weight": 0.28236563,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -1.3378,
+          "gain_linear": 0.85725495,
+          "weight": 0.10330406,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 56,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-029",
+          "gain_db": -0.1915,
+          "gain_linear": 0.97819214,
+          "weight": 0.64406796,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -1.1984,
+          "gain_linear": 0.87112237,
+          "weight": 0.19632937,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -1.5317,
+          "gain_linear": 0.83832838,
+          "weight": 0.15960267,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 57,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-029",
+          "gain_db": -0.0521,
+          "gain_linear": 0.9940159,
+          "weight": 0.7068275,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -1.059,
+          "gain_linear": 0.88521412,
+          "weight": 0.16314034,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -1.3923,
+          "gain_linear": 0.85188963,
+          "weight": 0.13003216,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 58,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.9196,
+          "gain_linear": 0.89953383,
+          "weight": 0.42043252,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -1.2529,
+          "gain_linear": 0.86567026,
+          "weight": 0.32719578,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.6985,
+          "gain_linear": 0.82237992,
+          "weight": 0.25237171,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 59,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.7803,
+          "gain_linear": 0.91408518,
+          "weight": 0.43010053,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -1.1136,
+          "gain_linear": 0.87967382,
+          "weight": 0.32496999,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.5592,
+          "gain_linear": 0.83568319,
+          "weight": 0.24492948,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 60,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.6409,
+          "gain_linear": 0.92887192,
+          "weight": 0.44222953,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.9742,
+          "gain_linear": 0.8939039,
+          "weight": 0.32182673,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.4198,
+          "gain_linear": 0.84920166,
+          "weight": 0.23594374,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 61,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.5015,
+          "gain_linear": 0.94389786,
+          "weight": 0.45791686,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.8348,
+          "gain_linear": 0.90836418,
+          "weight": 0.31722393,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.2804,
+          "gain_linear": 0.86293881,
+          "weight": 0.2248592,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 62,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.3621,
+          "gain_linear": 0.95916686,
+          "weight": 0.47904034,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.6954,
+          "gain_linear": 0.92305837,
+          "weight": 0.31015803,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.141,
+          "gain_linear": 0.87689818,
+          "weight": 0.21080163,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 63,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.2227,
+          "gain_linear": 0.97468287,
+          "weight": 0.50911658,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.556,
+          "gain_linear": 0.93799027,
+          "weight": 0.29859358,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -1.0016,
+          "gain_linear": 0.89108336,
+          "weight": 0.19228984,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 64,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-030",
+          "gain_db": -0.0833,
+          "gain_linear": 0.99044987,
+          "weight": 0.55563418,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.4167,
+          "gain_linear": 0.95316371,
+          "weight": 0.27783793,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.8622,
+          "gain_linear": 0.90549801,
+          "weight": 0.1665279,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 65,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.2773,
+          "gain_linear": 0.96858261,
+          "weight": 0.48905271,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.7229,
+          "gain_linear": 0.92014584,
+          "weight": 0.26505296,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.7987,
+          "gain_linear": 0.91215085,
+          "weight": 0.24589433,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 66,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-031",
+          "gain_db": -0.1379,
+          "gain_linear": 0.98425093,
+          "weight": 0.52855307,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.5835,
+          "gain_linear": 0.93503062,
+          "weight": 0.24597604,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.6593,
+          "gain_linear": 0.9269063,
+          "weight": 0.22547089,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 67,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.4441,
+          "gain_linear": 0.95015619,
+          "weight": 0.35769745,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.5199,
+          "gain_linear": 0.94190044,
+          "weight": 0.32248058,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-034",
+          "gain_db": -0.5263,
+          "gain_linear": 0.94120668,
+          "weight": 0.31982197,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 68,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.3047,
+          "gain_linear": 0.96552643,
+          "weight": 0.36354094,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.3805,
+          "gain_linear": 0.95713714,
+          "weight": 0.31983646,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-034",
+          "gain_db": -0.3869,
+          "gain_linear": 0.95643215,
+          "weight": 0.31662261,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 69,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.1653,
+          "gain_linear": 0.98114531,
+          "weight": 0.37307196,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.2411,
+          "gain_linear": 0.97262031,
+          "weight": 0.31549319,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-034",
+          "gain_db": -0.2475,
+          "gain_linear": 0.97190392,
+          "weight": 0.31143485,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 70,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-032",
+          "gain_db": -0.0259,
+          "gain_linear": 0.99701685,
+          "weight": 0.39139046,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-033",
+          "gain_db": -0.1017,
+          "gain_linear": 0.98835394,
+          "weight": 0.30704818,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-034",
+          "gain_db": -0.1081,
+          "gain_linear": 0.98762597,
+          "weight": 0.30156135,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 71,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-036",
+          "gain_db": -0.1201,
+          "gain_linear": 0.98627192,
+          "weight": 0.47642259,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-037",
+          "gain_db": -0.2865,
+          "gain_linear": 0.96755724,
+          "weight": 0.32864693,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-038",
+          "gain_db": -0.6545,
+          "gain_linear": 0.92742045,
+          "weight": 0.19493048,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 72,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-037",
+          "gain_db": -0.1471,
+          "gain_linear": 0.98320897,
+          "weight": 0.499684,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-038",
+          "gain_db": -0.5151,
+          "gain_linear": 0.94242291,
+          "weight": 0.25933932,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-039",
+          "gain_db": -0.5734,
+          "gain_linear": 0.93611851,
+          "weight": 0.24097669,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 73,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-037",
+          "gain_db": -0.0077,
+          "gain_linear": 0.9991139,
+          "weight": 0.5590924,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-038",
+          "gain_db": -0.3757,
+          "gain_linear": 0.95766805,
+          "weight": 0.23026708,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-039",
+          "gain_db": -0.434,
+          "gain_linear": 0.95126168,
+          "weight": 0.21064052,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 74,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-038",
+          "gain_db": -0.2363,
+          "gain_linear": 0.97315981,
+          "weight": 0.38182561,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-039",
+          "gain_db": -0.2946,
+          "gain_linear": 0.9666498,
+          "weight": 0.34095203,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-040",
+          "gain_db": -0.4198,
+          "gain_linear": 0.95281627,
+          "weight": 0.27722236,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 75,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-038",
+          "gain_db": -0.0969,
+          "gain_linear": 0.98890218,
+          "weight": 0.39837642,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-039",
+          "gain_db": -0.1552,
+          "gain_linear": 0.98228686,
+          "weight": 0.34106291,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-040",
+          "gain_db": -0.2804,
+          "gain_linear": 0.96822955,
+          "weight": 0.26056066,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 76,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-039",
+          "gain_db": -0.0159,
+          "gain_linear": 0.99817687,
+          "weight": 0.44988806,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-040",
+          "gain_db": -0.1411,
+          "gain_linear": 0.98389216,
+          "weight": 0.30585025,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-041",
+          "gain_db": -0.2397,
+          "gain_linear": 0.97278642,
+          "weight": 0.2442617,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 77,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-040",
+          "gain_db": -0.0017,
+          "gain_linear": 0.99980814,
+          "weight": 0.41309333,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-041",
+          "gain_db": -0.1003,
+          "gain_linear": 0.98852275,
+          "weight": 0.29680764,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-042",
+          "gain_db": -0.1084,
+          "gain_linear": 0.98760133,
+          "weight": 0.29009903,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 78,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-043",
+          "gain_db": -0.5864,
+          "gain_linear": 0.93471849,
+          "weight": 0.37847324,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.7462,
+          "gain_linear": 0.91767908,
+          "weight": 0.3177615,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.7921,
+          "gain_linear": 0.91284246,
+          "weight": 0.30376526,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 79,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-043",
+          "gain_db": -0.447,
+          "gain_linear": 0.94983901,
+          "weight": 0.38675442,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.6068,
+          "gain_linear": 0.93252396,
+          "weight": 0.31462165,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.6527,
+          "gain_linear": 0.9276091,
+          "weight": 0.29862394,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 80,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-043",
+          "gain_db": -0.3076,
+          "gain_linear": 0.96520412,
+          "weight": 0.39875994,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.4674,
+          "gain_linear": 0.94760898,
+          "weight": 0.3099387,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.5133,
+          "gain_linear": 0.94261461,
+          "weight": 0.29130137,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 81,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-043",
+          "gain_db": -0.1682,
+          "gain_linear": 0.98081779,
+          "weight": 0.4177349,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.328,
+          "gain_linear": 0.96293802,
+          "weight": 0.30225015,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.3739,
+          "gain_linear": 0.95786286,
+          "weight": 0.28001495,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 82,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-043",
+          "gain_db": -0.0289,
+          "gain_linear": 0.99668403,
+          "weight": 0.45224663,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.1886,
+          "gain_linear": 0.97851503,
+          "weight": 0.28749339,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.2345,
+          "gain_linear": 0.97335777,
+          "weight": 0.26025998,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 83,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-044",
+          "gain_db": -0.0493,
+          "gain_linear": 0.99434402,
+          "weight": 0.38532341,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-045",
+          "gain_db": -0.0952,
+          "gain_linear": 0.98910334,
+          "weight": 0.33408339,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-046",
+          "gain_db": -0.161,
+          "gain_linear": 0.98163869,
+          "weight": 0.2805932,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 84,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-046",
+          "gain_db": -0.0216,
+          "gain_linear": 0.99751821,
+          "weight": 0.41989215,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-047",
+          "gain_db": -0.1038,
+          "gain_linear": 0.9881226,
+          "weight": 0.32233206,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-048",
+          "gain_db": -0.1924,
+          "gain_linear": 0.97809454,
+          "weight": 0.25777578,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 85,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-048",
+          "gain_db": -0.053,
+          "gain_linear": 0.99391673,
+          "weight": 0.38476844,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-049",
+          "gain_db": -0.0602,
+          "gain_linear": 0.99309318,
+          "weight": 0.37583764,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-050",
+          "gain_db": -0.237,
+          "gain_linear": 0.97308326,
+          "weight": 0.23939392,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 86,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-050",
+          "gain_db": -0.0976,
+          "gain_linear": 0.98882438,
+          "weight": 0.59822543,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-051",
+          "gain_db": -0.605,
+          "gain_linear": 0.93271544,
+          "weight": 0.24321529,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -1.0615,
+          "gain_linear": 0.88496107,
+          "weight": 0.15855927,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 87,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-051",
+          "gain_db": -0.4656,
+          "gain_linear": 0.94780356,
+          "weight": 0.47821502,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.9221,
+          "gain_linear": 0.89927668,
+          "weight": 0.29196901,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -1.2391,
+          "gain_linear": 0.86704838,
+          "weight": 0.22981596,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 88,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-051",
+          "gain_db": -0.3262,
+          "gain_linear": 0.96313574,
+          "weight": 0.50380189,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.7828,
+          "gain_linear": 0.91382387,
+          "weight": 0.2811095,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -1.0998,
+          "gain_linear": 0.88107423,
+          "weight": 0.2150886,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 89,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-051",
+          "gain_db": -0.1869,
+          "gain_linear": 0.97871595,
+          "weight": 0.54055542,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.6434,
+          "gain_linear": 0.92860639,
+          "weight": 0.26433788,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.9604,
+          "gain_linear": 0.89532697,
+          "weight": 0.1951067,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 90,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-051",
+          "gain_db": -0.0475,
+          "gain_linear": 0.99454819,
+          "weight": 0.59797329,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.504,
+          "gain_linear": 0.94362803,
+          "weight": 0.23592974,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.821,
+          "gain_linear": 0.90981027,
+          "weight": 0.16609697,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 91,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.3646,
+          "gain_linear": 0.95889267,
+          "weight": 0.52822838,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.6816,
+          "gain_linear": 0.92452785,
+          "weight": 0.34848557,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -2.3833,
+          "gain_linear": 0.76003746,
+          "weight": 0.12328605,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 92,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.2252,
+          "gain_linear": 0.97440424,
+          "weight": 0.55853213,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.5422,
+          "gain_linear": 0.93948352,
+          "weight": 0.33503938,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -2.2439,
+          "gain_linear": 0.77233224,
+          "weight": 0.10642849,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 93,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-052",
+          "gain_db": -0.0858,
+          "gain_linear": 0.99016674,
+          "weight": 0.60347956,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.4028,
+          "gain_linear": 0.95468112,
+          "weight": 0.31044455,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -2.1045,
+          "gain_linear": 0.78482591,
+          "weight": 0.08607589,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 94,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.2634,
+          "gain_linear": 0.97012456,
+          "weight": 0.69522217,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.9651,
+          "gain_linear": 0.79752168,
+          "weight": 0.16114567,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -2.2352,
+          "gain_linear": 0.77310325,
+          "weight": 0.14363216,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 95,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-053",
+          "gain_db": -0.1241,
+          "gain_linear": 0.98581783,
+          "weight": 0.74645567,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.8258,
+          "gain_linear": 0.81042283,
+          "weight": 0.13451617,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -2.0959,
+          "gain_linear": 0.78560939,
+          "weight": 0.11902816,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 96,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.6864,
+          "gain_linear": 0.82353267,
+          "weight": 0.36806533,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.9565,
+          "gain_linear": 0.79831784,
+          "weight": 0.32300973,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -2.0571,
+          "gain_linear": 0.78912506,
+          "weight": 0.30892494,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 97,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.547,
+          "gain_linear": 0.83685459,
+          "weight": 0.37060054,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.8171,
+          "gain_linear": 0.81123186,
+          "weight": 0.32217559,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.9177,
+          "gain_linear": 0.80189037,
+          "weight": 0.30722386,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 98,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.4076,
+          "gain_linear": 0.850392,
+          "weight": 0.37353523,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.6777,
+          "gain_linear": 0.82435479,
+          "weight": 0.32119773,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.7783,
+          "gain_linear": 0.81486219,
+          "weight": 0.30526704,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 99,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.2682,
+          "gain_linear": 0.86414841,
+          "weight": 0.37697196,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.5383,
+          "gain_linear": 0.83769,
+          "weight": 0.3200362,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.6389,
+          "gain_linear": 0.82804385,
+          "weight": 0.30299184,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 100,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -1.1289,
+          "gain_linear": 0.87812734,
+          "weight": 0.38105171,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.399,
+          "gain_linear": 0.85124093,
+          "weight": 0.31863498,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.4996,
+          "gain_linear": 0.84143873,
+          "weight": 0.30031331,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 101,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.9895,
+          "gain_linear": 0.89233241,
+          "weight": 0.38597374,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.2596,
+          "gain_linear": 0.86501107,
+          "weight": 0.31691318,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.3602,
+          "gain_linear": 0.85505031,
+          "weight": 0.29711308,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 102,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.8501,
+          "gain_linear": 0.90676726,
+          "weight": 0.39202918,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -1.1202,
+          "gain_linear": 0.87900396,
+          "weight": 0.31474968,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.2208,
+          "gain_linear": 0.86888207,
+          "weight": 0.29322114,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 103,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.7107,
+          "gain_linear": 0.92143563,
+          "weight": 0.39966101,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.9808,
+          "gain_linear": 0.89322321,
+          "weight": 0.31195509,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -1.0814,
+          "gain_linear": 0.88293758,
+          "weight": 0.2883839,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 104,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.5713,
+          "gain_linear": 0.93634127,
+          "weight": 0.40957791,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.8414,
+          "gain_linear": 0.90767248,
+          "weight": 0.308217,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.942,
+          "gain_linear": 0.89722046,
+          "weight": 0.28220509,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 105,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.4319,
+          "gain_linear": 0.95148804,
+          "weight": 0.42298911,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.702,
+          "gain_linear": 0.92235548,
+          "weight": 0.30298348,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.8026,
+          "gain_linear": 0.91173438,
+          "weight": 0.2740274,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 106,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.2926,
+          "gain_linear": 0.96687983,
+          "weight": 0.44214184,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.5627,
+          "gain_linear": 0.93727601,
+          "weight": 0.29518742,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.6633,
+          "gain_linear": 0.9264831,
+          "weight": 0.26267074,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 107,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.1532,
+          "gain_linear": 0.9825206,
+          "weight": 0.47174293,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.4233,
+          "gain_linear": 0.9524379,
+          "weight": 0.28248989,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.5239,
+          "gain_linear": 0.94147039,
+          "weight": 0.24576718,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 108,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-054",
+          "gain_db": -0.0138,
+          "gain_linear": 0.99841439,
+          "weight": 0.523607,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.2839,
+          "gain_linear": 0.96784505,
+          "weight": 0.25870596,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.3845,
+          "gain_linear": 0.95670013,
+          "weight": 0.21768704,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 109,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.1445,
+          "gain_linear": 0.98350144,
+          "weight": 0.40117164,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.2451,
+          "gain_linear": 0.97217623,
+          "weight": 0.31965706,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-057",
+          "gain_db": -0.3169,
+          "gain_linear": 0.96417308,
+          "weight": 0.2791713,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 110,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-055",
+          "gain_db": -0.0051,
+          "gain_linear": 0.9994111,
+          "weight": 0.43216491,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-056",
+          "gain_db": -0.1057,
+          "gain_linear": 0.98790269,
+          "weight": 0.30994463,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-057",
+          "gain_db": -0.1775,
+          "gain_linear": 0.97977007,
+          "weight": 0.25789046,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 111,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-057",
+          "gain_db": -0.0381,
+          "gain_linear": 0.99561936,
+          "weight": 0.5134071,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-058",
+          "gain_db": -0.1623,
+          "gain_linear": 0.98148425,
+          "weight": 0.35876241,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.9072,
+          "gain_linear": 0.90082065,
+          "weight": 0.12783049,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 112,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-058",
+          "gain_db": -0.023,
+          "gain_linear": 0.99736127,
+          "weight": 0.6514702,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.7678,
+          "gain_linear": 0.91539282,
+          "weight": 0.17470039,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.773,
+          "gain_linear": 0.91485549,
+          "weight": 0.17382941,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 113,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.6285,
+          "gain_linear": 0.93020071,
+          "weight": 0.37716126,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.6336,
+          "gain_linear": 0.92965469,
+          "weight": 0.37498426,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -1.0868,
+          "gain_linear": 0.88239221,
+          "weight": 0.24785447,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 114,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.4891,
+          "gain_linear": 0.94524814,
+          "weight": 0.3830837,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.4942,
+          "gain_linear": 0.9446933,
+          "weight": 0.38045837,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.9474,
+          "gain_linear": 0.89666627,
+          "weight": 0.23645793,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 115,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.3497,
+          "gain_linear": 0.96053899,
+          "weight": 0.39087057,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.3548,
+          "gain_linear": 0.95997517,
+          "weight": 0.38757454,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.808,
+          "gain_linear": 0.91117123,
+          "weight": 0.2215549,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 116,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.2103,
+          "gain_linear": 0.9760772,
+          "weight": 0.40158389,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.2154,
+          "gain_linear": 0.97550425,
+          "weight": 0.39718336,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.6686,
+          "gain_linear": 0.92591084,
+          "weight": 0.20123275,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 117,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-059",
+          "gain_db": -0.0709,
+          "gain_linear": 0.99186675,
+          "weight": 0.41732478,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-060",
+          "gain_db": -0.076,
+          "gain_linear": 0.99128454,
+          "weight": 0.41079675,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.5292,
+          "gain_linear": 0.94088887,
+          "weight": 0.17187847,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 118,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.3898,
+          "gain_linear": 0.95610921,
+          "weight": 0.50891447,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.9356,
+          "gain_linear": 0.89787835,
+          "weight": 0.27464169,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -1.2544,
+          "gain_linear": 0.86552078,
+          "weight": 0.21644383,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 119,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.2505,
+          "gain_linear": 0.97157575,
+          "weight": 0.54201717,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.7963,
+          "gain_linear": 0.91240292,
+          "weight": 0.25926615,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -1.1151,
+          "gain_linear": 0.87952192,
+          "weight": 0.19871669,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 120,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-061",
+          "gain_db": -0.1111,
+          "gain_linear": 0.98729249,
+          "weight": 0.59075256,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.6569,
+          "gain_linear": 0.92716245,
+          "weight": 0.23521317,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.9757,
+          "gain_linear": 0.89374954,
+          "weight": 0.17403427,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 121,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.5175,
+          "gain_linear": 0.94216073,
+          "weight": 0.58598554,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.8363,
+          "gain_linear": 0.90820732,
+          "weight": 0.41401446,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 122,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.3781,
+          "gain_linear": 0.95740164,
+          "weight": 0.60120421,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.6969,
+          "gain_linear": 0.92289898,
+          "weight": 0.39879579,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 123,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.2387,
+          "gain_linear": 0.97288909,
+          "weight": 0.62296852,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.5575,
+          "gain_linear": 0.9378283,
+          "weight": 0.37703148,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 124,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-062",
+          "gain_db": -0.0994,
+          "gain_linear": 0.98862707,
+          "weight": 0.65665848,
+          "observations": 1
+        },
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.4182,
+          "gain_linear": 0.95299912,
+          "weight": 0.34334152,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 125,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.2788,
+          "gain_linear": 0.96841535,
+          "weight": 1.0,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 126,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": -0.1394,
+          "gain_linear": 0.98408097,
+          "weight": 1.0,
+          "observations": 1
+        }
+      ]
+    },
+    {
+      "velocity": 127,
+      "variants": [
+        {
+          "sample_id": "evans-practice-pad-center-063",
+          "gain_db": 0.0,
+          "gain_linear": 1.0,
+          "weight": 1.0,
+          "observations": 1
+        }
+      ]
+    }
+  ],
+  "timing": {
+    "alignment_point": "noise-aware 3 ms RMS attack onset",
+    "playback": "Align the musical event to playback_offset_seconds. In Web Audio, call source.start(beatTime, playback_offset_seconds).",
+    "file_start": "WAV files retain pre-attack audio; do not assume sample frame zero is the hit onset.",
+    "offset_range_seconds": [
+      0.0,
+      0.093979
+    ]
+  },
+  "audition": {
+    "file": "audition.wav",
+    "purpose": "Human reference; plays every distinct sample once in samples-array order.",
+    "interval_seconds": 1.0,
+    "sample_rate": 48000,
+    "sample_count": 63,
+    "applies_playback_offsets": true,
+    "order": [
+      {
+        "time_seconds": 0.0,
+        "sample_id": "evans-practice-pad-center-001"
+      },
+      {
+        "time_seconds": 1.0,
+        "sample_id": "evans-practice-pad-center-002"
+      },
+      {
+        "time_seconds": 2.0,
+        "sample_id": "evans-practice-pad-center-003"
+      },
+      {
+        "time_seconds": 3.0,
+        "sample_id": "evans-practice-pad-center-004"
+      },
+      {
+        "time_seconds": 4.0,
+        "sample_id": "evans-practice-pad-center-005"
+      },
+      {
+        "time_seconds": 5.0,
+        "sample_id": "evans-practice-pad-center-006"
+      },
+      {
+        "time_seconds": 6.0,
+        "sample_id": "evans-practice-pad-center-007"
+      },
+      {
+        "time_seconds": 7.0,
+        "sample_id": "evans-practice-pad-center-008"
+      },
+      {
+        "time_seconds": 8.0,
+        "sample_id": "evans-practice-pad-center-009"
+      },
+      {
+        "time_seconds": 9.0,
+        "sample_id": "evans-practice-pad-center-010"
+      },
+      {
+        "time_seconds": 10.0,
+        "sample_id": "evans-practice-pad-center-011"
+      },
+      {
+        "time_seconds": 11.0,
+        "sample_id": "evans-practice-pad-center-012"
+      },
+      {
+        "time_seconds": 12.0,
+        "sample_id": "evans-practice-pad-center-013"
+      },
+      {
+        "time_seconds": 13.0,
+        "sample_id": "evans-practice-pad-center-014"
+      },
+      {
+        "time_seconds": 14.0,
+        "sample_id": "evans-practice-pad-center-015"
+      },
+      {
+        "time_seconds": 15.0,
+        "sample_id": "evans-practice-pad-center-016"
+      },
+      {
+        "time_seconds": 16.0,
+        "sample_id": "evans-practice-pad-center-017"
+      },
+      {
+        "time_seconds": 17.0,
+        "sample_id": "evans-practice-pad-center-018"
+      },
+      {
+        "time_seconds": 18.0,
+        "sample_id": "evans-practice-pad-center-019"
+      },
+      {
+        "time_seconds": 19.0,
+        "sample_id": "evans-practice-pad-center-020"
+      },
+      {
+        "time_seconds": 20.0,
+        "sample_id": "evans-practice-pad-center-021"
+      },
+      {
+        "time_seconds": 21.0,
+        "sample_id": "evans-practice-pad-center-022"
+      },
+      {
+        "time_seconds": 22.0,
+        "sample_id": "evans-practice-pad-center-023"
+      },
+      {
+        "time_seconds": 23.0,
+        "sample_id": "evans-practice-pad-center-024"
+      },
+      {
+        "time_seconds": 24.0,
+        "sample_id": "evans-practice-pad-center-025"
+      },
+      {
+        "time_seconds": 25.0,
+        "sample_id": "evans-practice-pad-center-026"
+      },
+      {
+        "time_seconds": 26.0,
+        "sample_id": "evans-practice-pad-center-027"
+      },
+      {
+        "time_seconds": 27.0,
+        "sample_id": "evans-practice-pad-center-028"
+      },
+      {
+        "time_seconds": 28.0,
+        "sample_id": "evans-practice-pad-center-029"
+      },
+      {
+        "time_seconds": 29.0,
+        "sample_id": "evans-practice-pad-center-030"
+      },
+      {
+        "time_seconds": 30.0,
+        "sample_id": "evans-practice-pad-center-031"
+      },
+      {
+        "time_seconds": 31.0,
+        "sample_id": "evans-practice-pad-center-032"
+      },
+      {
+        "time_seconds": 32.0,
+        "sample_id": "evans-practice-pad-center-033"
+      },
+      {
+        "time_seconds": 33.0,
+        "sample_id": "evans-practice-pad-center-034"
+      },
+      {
+        "time_seconds": 34.0,
+        "sample_id": "evans-practice-pad-center-035"
+      },
+      {
+        "time_seconds": 35.0,
+        "sample_id": "evans-practice-pad-center-036"
+      },
+      {
+        "time_seconds": 36.0,
+        "sample_id": "evans-practice-pad-center-037"
+      },
+      {
+        "time_seconds": 37.0,
+        "sample_id": "evans-practice-pad-center-038"
+      },
+      {
+        "time_seconds": 38.0,
+        "sample_id": "evans-practice-pad-center-039"
+      },
+      {
+        "time_seconds": 39.0,
+        "sample_id": "evans-practice-pad-center-040"
+      },
+      {
+        "time_seconds": 40.0,
+        "sample_id": "evans-practice-pad-center-041"
+      },
+      {
+        "time_seconds": 41.0,
+        "sample_id": "evans-practice-pad-center-042"
+      },
+      {
+        "time_seconds": 42.0,
+        "sample_id": "evans-practice-pad-center-043"
+      },
+      {
+        "time_seconds": 43.0,
+        "sample_id": "evans-practice-pad-center-044"
+      },
+      {
+        "time_seconds": 44.0,
+        "sample_id": "evans-practice-pad-center-045"
+      },
+      {
+        "time_seconds": 45.0,
+        "sample_id": "evans-practice-pad-center-046"
+      },
+      {
+        "time_seconds": 46.0,
+        "sample_id": "evans-practice-pad-center-047"
+      },
+      {
+        "time_seconds": 47.0,
+        "sample_id": "evans-practice-pad-center-048"
+      },
+      {
+        "time_seconds": 48.0,
+        "sample_id": "evans-practice-pad-center-049"
+      },
+      {
+        "time_seconds": 49.0,
+        "sample_id": "evans-practice-pad-center-050"
+      },
+      {
+        "time_seconds": 50.0,
+        "sample_id": "evans-practice-pad-center-051"
+      },
+      {
+        "time_seconds": 51.0,
+        "sample_id": "evans-practice-pad-center-052"
+      },
+      {
+        "time_seconds": 52.0,
+        "sample_id": "evans-practice-pad-center-053"
+      },
+      {
+        "time_seconds": 53.0,
+        "sample_id": "evans-practice-pad-center-054"
+      },
+      {
+        "time_seconds": 54.0,
+        "sample_id": "evans-practice-pad-center-055"
+      },
+      {
+        "time_seconds": 55.0,
+        "sample_id": "evans-practice-pad-center-056"
+      },
+      {
+        "time_seconds": 56.0,
+        "sample_id": "evans-practice-pad-center-057"
+      },
+      {
+        "time_seconds": 57.0,
+        "sample_id": "evans-practice-pad-center-058"
+      },
+      {
+        "time_seconds": 58.0,
+        "sample_id": "evans-practice-pad-center-059"
+      },
+      {
+        "time_seconds": 59.0,
+        "sample_id": "evans-practice-pad-center-060"
+      },
+      {
+        "time_seconds": 60.0,
+        "sample_id": "evans-practice-pad-center-061"
+      },
+      {
+        "time_seconds": 61.0,
+        "sample_id": "evans-practice-pad-center-062"
+      },
+      {
+        "time_seconds": 62.0,
+        "sample_id": "evans-practice-pad-center-063"
+      }
+    ]
+  }
+}

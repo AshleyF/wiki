@@ -14,7 +14,7 @@
     1,
     127
   ],
-  "sample_count": 100,
+  "sample_count": 99,
   "selection": {
     "strategy": "weighted-random",
     "avoid_immediate_repeat": true,
@@ -30,601 +30,793 @@
       "id": "ludwig-black-beauty-snare-center-001",
       "file": "samples/ludwig-black-beauty-snare-center-001.wav",
       "minimum_velocity": 1,
-      "maximum_velocity": 4
+      "maximum_velocity": 4,
+      "playback_offset_seconds": 0.263833,
+      "attack_peak_seconds": 0.269313
     },
     {
       "id": "ludwig-black-beauty-snare-center-002",
       "file": "samples/ludwig-black-beauty-snare-center-002.wav",
       "minimum_velocity": 1,
-      "maximum_velocity": 4
+      "maximum_velocity": 4,
+      "playback_offset_seconds": 0.263917,
+      "attack_peak_seconds": 0.269417
     },
     {
       "id": "ludwig-black-beauty-snare-center-003",
       "file": "samples/ludwig-black-beauty-snare-center-003.wav",
       "minimum_velocity": 1,
-      "maximum_velocity": 4
+      "maximum_velocity": 4,
+      "playback_offset_seconds": 0.258729,
+      "attack_peak_seconds": 0.264313
     },
     {
       "id": "ludwig-black-beauty-snare-center-004",
       "file": "samples/ludwig-black-beauty-snare-center-004.wav",
       "minimum_velocity": 1,
-      "maximum_velocity": 4
+      "maximum_velocity": 4,
+      "playback_offset_seconds": 0.26625,
+      "attack_peak_seconds": 0.27175
     },
     {
       "id": "ludwig-black-beauty-snare-center-005",
       "file": "samples/ludwig-black-beauty-snare-center-005.wav",
       "minimum_velocity": 1,
-      "maximum_velocity": 4
+      "maximum_velocity": 4,
+      "playback_offset_seconds": 0.263792,
+      "attack_peak_seconds": 0.269292
     },
     {
       "id": "ludwig-black-beauty-snare-center-006",
       "file": "samples/ludwig-black-beauty-snare-center-006.wav",
       "minimum_velocity": 5,
-      "maximum_velocity": 10
+      "maximum_velocity": 10,
+      "playback_offset_seconds": 0.264125,
+      "attack_peak_seconds": 0.2705
     },
     {
       "id": "ludwig-black-beauty-snare-center-007",
       "file": "samples/ludwig-black-beauty-snare-center-007.wav",
       "minimum_velocity": 5,
-      "maximum_velocity": 10
+      "maximum_velocity": 10,
+      "playback_offset_seconds": 0.262917,
+      "attack_peak_seconds": 0.269229
     },
     {
       "id": "ludwig-black-beauty-snare-center-008",
       "file": "samples/ludwig-black-beauty-snare-center-008.wav",
       "minimum_velocity": 5,
-      "maximum_velocity": 10
+      "maximum_velocity": 10,
+      "playback_offset_seconds": 0.263937,
+      "attack_peak_seconds": 0.270292
     },
     {
       "id": "ludwig-black-beauty-snare-center-009",
       "file": "samples/ludwig-black-beauty-snare-center-009.wav",
       "minimum_velocity": 5,
-      "maximum_velocity": 10
+      "maximum_velocity": 10,
+      "playback_offset_seconds": 0.264146,
+      "attack_peak_seconds": 0.2705
     },
     {
       "id": "ludwig-black-beauty-snare-center-010",
       "file": "samples/ludwig-black-beauty-snare-center-010.wav",
       "minimum_velocity": 11,
-      "maximum_velocity": 16
+      "maximum_velocity": 16,
+      "playback_offset_seconds": 0.263188,
+      "attack_peak_seconds": 0.269646
     },
     {
       "id": "ludwig-black-beauty-snare-center-011",
       "file": "samples/ludwig-black-beauty-snare-center-011.wav",
       "minimum_velocity": 11,
-      "maximum_velocity": 16
+      "maximum_velocity": 16,
+      "playback_offset_seconds": 0.261667,
+      "attack_peak_seconds": 0.268167
     },
     {
       "id": "ludwig-black-beauty-snare-center-012",
       "file": "samples/ludwig-black-beauty-snare-center-012.wav",
       "minimum_velocity": 11,
-      "maximum_velocity": 16
+      "maximum_velocity": 16,
+      "playback_offset_seconds": 0.261583,
+      "attack_peak_seconds": 0.268
     },
     {
       "id": "ludwig-black-beauty-snare-center-013",
       "file": "samples/ludwig-black-beauty-snare-center-013.wav",
       "minimum_velocity": 11,
-      "maximum_velocity": 16
+      "maximum_velocity": 16,
+      "playback_offset_seconds": 0.259292,
+      "attack_peak_seconds": 0.265833
     },
     {
       "id": "ludwig-black-beauty-snare-center-014",
       "file": "samples/ludwig-black-beauty-snare-center-014.wav",
       "minimum_velocity": 11,
-      "maximum_velocity": 16
+      "maximum_velocity": 16,
+      "playback_offset_seconds": 0.260104,
+      "attack_peak_seconds": 0.266521
     },
     {
       "id": "ludwig-black-beauty-snare-center-015",
       "file": "samples/ludwig-black-beauty-snare-center-015.wav",
       "minimum_velocity": 17,
-      "maximum_velocity": 23
+      "maximum_velocity": 23,
+      "playback_offset_seconds": 0.263958,
+      "attack_peak_seconds": 0.275417
     },
     {
       "id": "ludwig-black-beauty-snare-center-016",
       "file": "samples/ludwig-black-beauty-snare-center-016.wav",
       "minimum_velocity": 17,
-      "maximum_velocity": 23
+      "maximum_velocity": 23,
+      "playback_offset_seconds": 0.263833,
+      "attack_peak_seconds": 0.275271
     },
     {
       "id": "ludwig-black-beauty-snare-center-017",
       "file": "samples/ludwig-black-beauty-snare-center-017.wav",
       "minimum_velocity": 17,
-      "maximum_velocity": 23
+      "maximum_velocity": 23,
+      "playback_offset_seconds": 0.263604,
+      "attack_peak_seconds": 0.275062
     },
     {
       "id": "ludwig-black-beauty-snare-center-018",
       "file": "samples/ludwig-black-beauty-snare-center-018.wav",
       "minimum_velocity": 17,
-      "maximum_velocity": 23
+      "maximum_velocity": 23,
+      "playback_offset_seconds": 0.263458,
+      "attack_peak_seconds": 0.270229
     },
     {
       "id": "ludwig-black-beauty-snare-center-019",
       "file": "samples/ludwig-black-beauty-snare-center-019.wav",
       "minimum_velocity": 24,
-      "maximum_velocity": 29
+      "maximum_velocity": 29,
+      "playback_offset_seconds": 0.26175,
+      "attack_peak_seconds": 0.274396
     },
     {
       "id": "ludwig-black-beauty-snare-center-020",
       "file": "samples/ludwig-black-beauty-snare-center-020.wav",
       "minimum_velocity": 24,
-      "maximum_velocity": 29
+      "maximum_velocity": 29,
+      "playback_offset_seconds": 0.259354,
+      "attack_peak_seconds": 0.271937
     },
     {
       "id": "ludwig-black-beauty-snare-center-021",
       "file": "samples/ludwig-black-beauty-snare-center-021.wav",
       "minimum_velocity": 24,
-      "maximum_velocity": 29
+      "maximum_velocity": 29,
+      "playback_offset_seconds": 0.257792,
+      "attack_peak_seconds": 0.270042
     },
     {
       "id": "ludwig-black-beauty-snare-center-022",
       "file": "samples/ludwig-black-beauty-snare-center-022.wav",
       "minimum_velocity": 24,
-      "maximum_velocity": 29
+      "maximum_velocity": 29,
+      "playback_offset_seconds": 0.263229,
+      "attack_peak_seconds": 0.275583
     },
     {
       "id": "ludwig-black-beauty-snare-center-023",
       "file": "samples/ludwig-black-beauty-snare-center-023.wav",
       "minimum_velocity": 24,
-      "maximum_velocity": 29
+      "maximum_velocity": 29,
+      "playback_offset_seconds": 0.261458,
+      "attack_peak_seconds": 0.274083
     },
     {
       "id": "ludwig-black-beauty-snare-center-024",
       "file": "samples/ludwig-black-beauty-snare-center-024.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 36
+      "maximum_velocity": 36,
+      "playback_offset_seconds": 0.257,
+      "attack_peak_seconds": 0.264813
     },
     {
       "id": "ludwig-black-beauty-snare-center-025",
       "file": "samples/ludwig-black-beauty-snare-center-025.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 36
+      "maximum_velocity": 36,
+      "playback_offset_seconds": 0.261646,
+      "attack_peak_seconds": 0.269188
     },
     {
       "id": "ludwig-black-beauty-snare-center-026",
       "file": "samples/ludwig-black-beauty-snare-center-026.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 35
+      "maximum_velocity": 35,
+      "playback_offset_seconds": 0.263188,
+      "attack_peak_seconds": 0.270958
     },
     {
       "id": "ludwig-black-beauty-snare-center-027",
       "file": "samples/ludwig-black-beauty-snare-center-027.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 36
+      "maximum_velocity": 36,
+      "playback_offset_seconds": 0.264437,
+      "attack_peak_seconds": 0.272229
     },
     {
       "id": "ludwig-black-beauty-snare-center-028",
       "file": "samples/ludwig-black-beauty-snare-center-028.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 36
+      "maximum_velocity": 36,
+      "playback_offset_seconds": 0.263604,
+      "attack_peak_seconds": 0.271354
     },
     {
       "id": "ludwig-black-beauty-snare-center-029",
       "file": "samples/ludwig-black-beauty-snare-center-029.wav",
       "minimum_velocity": 30,
-      "maximum_velocity": 36
+      "maximum_velocity": 36,
+      "playback_offset_seconds": 0.258104,
+      "attack_peak_seconds": 0.265833
     },
     {
       "id": "ludwig-black-beauty-snare-center-030",
       "file": "samples/ludwig-black-beauty-snare-center-030.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.260125,
+      "attack_peak_seconds": 0.268042
     },
     {
       "id": "ludwig-black-beauty-snare-center-031",
       "file": "samples/ludwig-black-beauty-snare-center-031.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.262896,
+      "attack_peak_seconds": 0.270833
     },
     {
       "id": "ludwig-black-beauty-snare-center-032",
       "file": "samples/ludwig-black-beauty-snare-center-032.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.262979,
+      "attack_peak_seconds": 0.270875
     },
     {
       "id": "ludwig-black-beauty-snare-center-033",
       "file": "samples/ludwig-black-beauty-snare-center-033.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.262042,
+      "attack_peak_seconds": 0.269979
     },
     {
       "id": "ludwig-black-beauty-snare-center-034",
       "file": "samples/ludwig-black-beauty-snare-center-034.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.261604,
+      "attack_peak_seconds": 0.269542
     },
     {
       "id": "ludwig-black-beauty-snare-center-035",
       "file": "samples/ludwig-black-beauty-snare-center-035.wav",
       "minimum_velocity": 37,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.260104,
+      "attack_peak_seconds": 0.267979
     },
     {
       "id": "ludwig-black-beauty-snare-center-036",
       "file": "samples/ludwig-black-beauty-snare-center-036.wav",
       "minimum_velocity": 38,
-      "maximum_velocity": 42
+      "maximum_velocity": 42,
+      "playback_offset_seconds": 0.262313,
+      "attack_peak_seconds": 0.270229
     },
     {
       "id": "ludwig-black-beauty-snare-center-037",
       "file": "samples/ludwig-black-beauty-snare-center-037.wav",
       "minimum_velocity": 43,
-      "maximum_velocity": 48
+      "maximum_velocity": 48,
+      "playback_offset_seconds": 0.267479,
+      "attack_peak_seconds": 0.27725
     },
     {
       "id": "ludwig-black-beauty-snare-center-038",
       "file": "samples/ludwig-black-beauty-snare-center-038.wav",
       "minimum_velocity": 43,
-      "maximum_velocity": 48
+      "maximum_velocity": 48,
+      "playback_offset_seconds": 0.266604,
+      "attack_peak_seconds": 0.276271
     },
     {
       "id": "ludwig-black-beauty-snare-center-039",
       "file": "samples/ludwig-black-beauty-snare-center-039.wav",
       "minimum_velocity": 43,
-      "maximum_velocity": 48
+      "maximum_velocity": 48,
+      "playback_offset_seconds": 0.257042,
+      "attack_peak_seconds": 0.266771
     },
     {
       "id": "ludwig-black-beauty-snare-center-040",
       "file": "samples/ludwig-black-beauty-snare-center-040.wav",
       "minimum_velocity": 43,
-      "maximum_velocity": 48
+      "maximum_velocity": 48,
+      "playback_offset_seconds": 0.267437,
+      "attack_peak_seconds": 0.277229
     },
     {
       "id": "ludwig-black-beauty-snare-center-041",
       "file": "samples/ludwig-black-beauty-snare-center-041.wav",
       "minimum_velocity": 49,
-      "maximum_velocity": 55
+      "maximum_velocity": 55,
+      "playback_offset_seconds": 0.258146,
+      "attack_peak_seconds": 0.267792
     },
     {
       "id": "ludwig-black-beauty-snare-center-042",
       "file": "samples/ludwig-black-beauty-snare-center-042.wav",
       "minimum_velocity": 49,
-      "maximum_velocity": 55
+      "maximum_velocity": 55,
+      "playback_offset_seconds": 0.268229,
+      "attack_peak_seconds": 0.277958
     },
     {
       "id": "ludwig-black-beauty-snare-center-043",
       "file": "samples/ludwig-black-beauty-snare-center-043.wav",
       "minimum_velocity": 49,
-      "maximum_velocity": 55
+      "maximum_velocity": 55,
+      "playback_offset_seconds": 0.267833,
+      "attack_peak_seconds": 0.277583
     },
     {
       "id": "ludwig-black-beauty-snare-center-044",
       "file": "samples/ludwig-black-beauty-snare-center-044.wav",
       "minimum_velocity": 56,
-      "maximum_velocity": 61
+      "maximum_velocity": 61,
+      "playback_offset_seconds": 0.267625,
+      "attack_peak_seconds": 0.277417
     },
     {
       "id": "ludwig-black-beauty-snare-center-045",
       "file": "samples/ludwig-black-beauty-snare-center-045.wav",
       "minimum_velocity": 56,
-      "maximum_velocity": 61
+      "maximum_velocity": 61,
+      "playback_offset_seconds": 0.25775,
+      "attack_peak_seconds": 0.267521
     },
     {
       "id": "ludwig-black-beauty-snare-center-046",
       "file": "samples/ludwig-black-beauty-snare-center-046.wav",
       "minimum_velocity": 56,
-      "maximum_velocity": 61
+      "maximum_velocity": 61,
+      "playback_offset_seconds": 0.268021,
+      "attack_peak_seconds": 0.27775
     },
     {
       "id": "ludwig-black-beauty-snare-center-047",
       "file": "samples/ludwig-black-beauty-snare-center-047.wav",
       "minimum_velocity": 62,
-      "maximum_velocity": 68
+      "maximum_velocity": 68,
+      "playback_offset_seconds": 0.256979,
+      "attack_peak_seconds": 0.266875
     },
     {
       "id": "ludwig-black-beauty-snare-center-048",
       "file": "samples/ludwig-black-beauty-snare-center-048.wav",
       "minimum_velocity": 62,
-      "maximum_velocity": 68
+      "maximum_velocity": 68,
+      "playback_offset_seconds": 0.267562,
+      "attack_peak_seconds": 0.277333
     },
     {
       "id": "ludwig-black-beauty-snare-center-049",
       "file": "samples/ludwig-black-beauty-snare-center-049.wav",
       "minimum_velocity": 62,
-      "maximum_velocity": 68
+      "maximum_velocity": 68,
+      "playback_offset_seconds": 0.257812,
+      "attack_peak_seconds": 0.267667
     },
     {
       "id": "ludwig-black-beauty-snare-center-050",
       "file": "samples/ludwig-black-beauty-snare-center-050.wav",
       "minimum_velocity": 62,
-      "maximum_velocity": 68
+      "maximum_velocity": 68,
+      "playback_offset_seconds": 0.266625,
+      "attack_peak_seconds": 0.276479
     },
     {
       "id": "ludwig-black-beauty-snare-center-051",
       "file": "samples/ludwig-black-beauty-snare-center-051.wav",
       "minimum_velocity": 69,
-      "maximum_velocity": 74
+      "maximum_velocity": 74,
+      "playback_offset_seconds": 0.266667,
+      "attack_peak_seconds": 0.273979
     },
     {
       "id": "ludwig-black-beauty-snare-center-052",
       "file": "samples/ludwig-black-beauty-snare-center-052.wav",
       "minimum_velocity": 69,
-      "maximum_velocity": 74
+      "maximum_velocity": 74,
+      "playback_offset_seconds": 0.267896,
+      "attack_peak_seconds": 0.275458
     },
     {
       "id": "ludwig-black-beauty-snare-center-053",
       "file": "samples/ludwig-black-beauty-snare-center-053.wav",
       "minimum_velocity": 69,
-      "maximum_velocity": 74
+      "maximum_velocity": 74,
+      "playback_offset_seconds": 0.25875,
+      "attack_peak_seconds": 0.268625
     },
     {
       "id": "ludwig-black-beauty-snare-center-054",
       "file": "samples/ludwig-black-beauty-snare-center-054.wav",
       "minimum_velocity": 69,
-      "maximum_velocity": 74
+      "maximum_velocity": 74,
+      "playback_offset_seconds": 0.266979,
+      "attack_peak_seconds": 0.276896
     },
     {
       "id": "ludwig-black-beauty-snare-center-055",
       "file": "samples/ludwig-black-beauty-snare-center-055.wav",
       "minimum_velocity": 69,
-      "maximum_velocity": 74
+      "maximum_velocity": 74,
+      "playback_offset_seconds": 0.258583,
+      "attack_peak_seconds": 0.268333
     },
     {
       "id": "ludwig-black-beauty-snare-center-056",
       "file": "samples/ludwig-black-beauty-snare-center-056.wav",
       "minimum_velocity": 75,
-      "maximum_velocity": 81
+      "maximum_velocity": 81,
+      "playback_offset_seconds": 0.266854,
+      "attack_peak_seconds": 0.274354
     },
     {
       "id": "ludwig-black-beauty-snare-center-057",
       "file": "samples/ludwig-black-beauty-snare-center-057.wav",
       "minimum_velocity": 75,
-      "maximum_velocity": 81
+      "maximum_velocity": 81,
+      "playback_offset_seconds": 0.26675,
+      "attack_peak_seconds": 0.274125
     },
     {
       "id": "ludwig-black-beauty-snare-center-058",
       "file": "samples/ludwig-black-beauty-snare-center-058.wav",
       "minimum_velocity": 75,
-      "maximum_velocity": 81
+      "maximum_velocity": 81,
+      "playback_offset_seconds": 0.258229,
+      "attack_peak_seconds": 0.265771
     },
     {
       "id": "ludwig-black-beauty-snare-center-059",
       "file": "samples/ludwig-black-beauty-snare-center-059.wav",
       "minimum_velocity": 75,
-      "maximum_velocity": 81
+      "maximum_velocity": 81,
+      "playback_offset_seconds": 0.267333,
+      "attack_peak_seconds": 0.274958
     },
     {
       "id": "ludwig-black-beauty-snare-center-060",
       "file": "samples/ludwig-black-beauty-snare-center-060.wav",
       "minimum_velocity": 75,
-      "maximum_velocity": 81
+      "maximum_velocity": 81,
+      "playback_offset_seconds": 0.257146,
+      "attack_peak_seconds": 0.26475
     },
     {
       "id": "ludwig-black-beauty-snare-center-061",
       "file": "samples/ludwig-black-beauty-snare-center-061.wav",
       "minimum_velocity": 82,
-      "maximum_velocity": 87
+      "maximum_velocity": 87,
+      "playback_offset_seconds": 0.261917,
+      "attack_peak_seconds": 0.269417
     },
     {
       "id": "ludwig-black-beauty-snare-center-062",
       "file": "samples/ludwig-black-beauty-snare-center-062.wav",
       "minimum_velocity": 82,
-      "maximum_velocity": 87
+      "maximum_velocity": 87,
+      "playback_offset_seconds": 0.261771,
+      "attack_peak_seconds": 0.269146
     },
     {
       "id": "ludwig-black-beauty-snare-center-063",
       "file": "samples/ludwig-black-beauty-snare-center-063.wav",
       "minimum_velocity": 82,
-      "maximum_velocity": 87
+      "maximum_velocity": 87,
+      "playback_offset_seconds": 0.259688,
+      "attack_peak_seconds": 0.267146
     },
     {
       "id": "ludwig-black-beauty-snare-center-064",
       "file": "samples/ludwig-black-beauty-snare-center-064.wav",
-      "minimum_velocity": 86,
-      "maximum_velocity": 86
+      "minimum_velocity": 88,
+      "maximum_velocity": 93,
+      "playback_offset_seconds": 0.262792,
+      "attack_peak_seconds": 0.270146
     },
     {
       "id": "ludwig-black-beauty-snare-center-065",
       "file": "samples/ludwig-black-beauty-snare-center-065.wav",
       "minimum_velocity": 88,
-      "maximum_velocity": 93
+      "maximum_velocity": 93,
+      "playback_offset_seconds": 0.262625,
+      "attack_peak_seconds": 0.269979
     },
     {
       "id": "ludwig-black-beauty-snare-center-066",
       "file": "samples/ludwig-black-beauty-snare-center-066.wav",
       "minimum_velocity": 88,
-      "maximum_velocity": 93
+      "maximum_velocity": 93,
+      "playback_offset_seconds": 0.257937,
+      "attack_peak_seconds": 0.265333
     },
     {
       "id": "ludwig-black-beauty-snare-center-067",
       "file": "samples/ludwig-black-beauty-snare-center-067.wav",
       "minimum_velocity": 88,
-      "maximum_velocity": 93
+      "maximum_velocity": 93,
+      "playback_offset_seconds": 0.263937,
+      "attack_peak_seconds": 0.271292
     },
     {
       "id": "ludwig-black-beauty-snare-center-068",
       "file": "samples/ludwig-black-beauty-snare-center-068.wav",
-      "minimum_velocity": 88,
-      "maximum_velocity": 93
+      "minimum_velocity": 94,
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.258083,
+      "attack_peak_seconds": 0.270583
     },
     {
       "id": "ludwig-black-beauty-snare-center-069",
       "file": "samples/ludwig-black-beauty-snare-center-069.wav",
       "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.257979,
+      "attack_peak_seconds": 0.265354
     },
     {
       "id": "ludwig-black-beauty-snare-center-070",
       "file": "samples/ludwig-black-beauty-snare-center-070.wav",
       "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.261833,
+      "attack_peak_seconds": 0.27425
     },
     {
       "id": "ludwig-black-beauty-snare-center-071",
       "file": "samples/ludwig-black-beauty-snare-center-071.wav",
       "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.26075,
+      "attack_peak_seconds": 0.268021
     },
     {
       "id": "ludwig-black-beauty-snare-center-072",
       "file": "samples/ludwig-black-beauty-snare-center-072.wav",
       "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.264958,
+      "attack_peak_seconds": 0.272208
     },
     {
       "id": "ludwig-black-beauty-snare-center-073",
       "file": "samples/ludwig-black-beauty-snare-center-073.wav",
       "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "maximum_velocity": 100,
+      "playback_offset_seconds": 0.267479,
+      "attack_peak_seconds": 0.274771
     },
     {
       "id": "ludwig-black-beauty-snare-center-074",
       "file": "samples/ludwig-black-beauty-snare-center-074.wav",
-      "minimum_velocity": 94,
-      "maximum_velocity": 100
+      "minimum_velocity": 101,
+      "maximum_velocity": 105,
+      "playback_offset_seconds": 0.261937,
+      "attack_peak_seconds": 0.274438
     },
     {
       "id": "ludwig-black-beauty-snare-center-075",
       "file": "samples/ludwig-black-beauty-snare-center-075.wav",
       "minimum_velocity": 101,
-      "maximum_velocity": 105
+      "maximum_velocity": 106,
+      "playback_offset_seconds": 0.26175,
+      "attack_peak_seconds": 0.274104
     },
     {
       "id": "ludwig-black-beauty-snare-center-076",
       "file": "samples/ludwig-black-beauty-snare-center-076.wav",
       "minimum_velocity": 101,
-      "maximum_velocity": 106
+      "maximum_velocity": 106,
+      "playback_offset_seconds": 0.256979,
+      "attack_peak_seconds": 0.269417
     },
     {
       "id": "ludwig-black-beauty-snare-center-077",
       "file": "samples/ludwig-black-beauty-snare-center-077.wav",
       "minimum_velocity": 101,
-      "maximum_velocity": 106
+      "maximum_velocity": 106,
+      "playback_offset_seconds": 0.262333,
+      "attack_peak_seconds": 0.274625
     },
     {
       "id": "ludwig-black-beauty-snare-center-078",
       "file": "samples/ludwig-black-beauty-snare-center-078.wav",
       "minimum_velocity": 101,
-      "maximum_velocity": 106
+      "maximum_velocity": 106,
+      "playback_offset_seconds": 0.262875,
+      "attack_peak_seconds": 0.27525
     },
     {
       "id": "ludwig-black-beauty-snare-center-079",
       "file": "samples/ludwig-black-beauty-snare-center-079.wav",
       "minimum_velocity": 101,
-      "maximum_velocity": 106
+      "maximum_velocity": 106,
+      "playback_offset_seconds": 0.261833,
+      "attack_peak_seconds": 0.274292
     },
     {
       "id": "ludwig-black-beauty-snare-center-080",
       "file": "samples/ludwig-black-beauty-snare-center-080.wav",
-      "minimum_velocity": 101,
-      "maximum_velocity": 106
+      "minimum_velocity": 107,
+      "maximum_velocity": 113,
+      "playback_offset_seconds": 0.261917,
+      "attack_peak_seconds": 0.274271
     },
     {
       "id": "ludwig-black-beauty-snare-center-081",
       "file": "samples/ludwig-black-beauty-snare-center-081.wav",
       "minimum_velocity": 107,
-      "maximum_velocity": 113
+      "maximum_velocity": 113,
+      "playback_offset_seconds": 0.2625,
+      "attack_peak_seconds": 0.274854
     },
     {
       "id": "ludwig-black-beauty-snare-center-082",
       "file": "samples/ludwig-black-beauty-snare-center-082.wav",
       "minimum_velocity": 107,
-      "maximum_velocity": 113
+      "maximum_velocity": 113,
+      "playback_offset_seconds": 0.261375,
+      "attack_peak_seconds": 0.271417
     },
     {
       "id": "ludwig-black-beauty-snare-center-083",
       "file": "samples/ludwig-black-beauty-snare-center-083.wav",
       "minimum_velocity": 107,
-      "maximum_velocity": 113
+      "maximum_velocity": 113,
+      "playback_offset_seconds": 0.2605,
+      "attack_peak_seconds": 0.272875
     },
     {
       "id": "ludwig-black-beauty-snare-center-084",
       "file": "samples/ludwig-black-beauty-snare-center-084.wav",
       "minimum_velocity": 107,
-      "maximum_velocity": 113
+      "maximum_velocity": 113,
+      "playback_offset_seconds": 0.260479,
+      "attack_peak_seconds": 0.272896
     },
     {
       "id": "ludwig-black-beauty-snare-center-085",
       "file": "samples/ludwig-black-beauty-snare-center-085.wav",
-      "minimum_velocity": 107,
-      "maximum_velocity": 113
+      "minimum_velocity": 114,
+      "maximum_velocity": 119,
+      "playback_offset_seconds": 0.262375,
+      "attack_peak_seconds": 0.272313
     },
     {
       "id": "ludwig-black-beauty-snare-center-086",
       "file": "samples/ludwig-black-beauty-snare-center-086.wav",
       "minimum_velocity": 114,
-      "maximum_velocity": 119
+      "maximum_velocity": 119,
+      "playback_offset_seconds": 0.261875,
+      "attack_peak_seconds": 0.271833
     },
     {
       "id": "ludwig-black-beauty-snare-center-087",
       "file": "samples/ludwig-black-beauty-snare-center-087.wav",
       "minimum_velocity": 114,
-      "maximum_velocity": 119
+      "maximum_velocity": 119,
+      "playback_offset_seconds": 0.261667,
+      "attack_peak_seconds": 0.271604
     },
     {
       "id": "ludwig-black-beauty-snare-center-088",
       "file": "samples/ludwig-black-beauty-snare-center-088.wav",
-      "minimum_velocity": 114,
-      "maximum_velocity": 119
+      "minimum_velocity": 120,
+      "maximum_velocity": 126,
+      "playback_offset_seconds": 0.256063,
+      "attack_peak_seconds": 0.265958
     },
     {
       "id": "ludwig-black-beauty-snare-center-089",
       "file": "samples/ludwig-black-beauty-snare-center-089.wav",
       "minimum_velocity": 120,
-      "maximum_velocity": 126
+      "maximum_velocity": 126,
+      "playback_offset_seconds": 0.261521,
+      "attack_peak_seconds": 0.271583
     },
     {
       "id": "ludwig-black-beauty-snare-center-090",
       "file": "samples/ludwig-black-beauty-snare-center-090.wav",
       "minimum_velocity": 120,
-      "maximum_velocity": 126
+      "maximum_velocity": 126,
+      "playback_offset_seconds": 0.262313,
+      "attack_peak_seconds": 0.272083
     },
     {
       "id": "ludwig-black-beauty-snare-center-091",
       "file": "samples/ludwig-black-beauty-snare-center-091.wav",
       "minimum_velocity": 120,
-      "maximum_velocity": 126
+      "maximum_velocity": 126,
+      "playback_offset_seconds": 0.257583,
+      "attack_peak_seconds": 0.267396
     },
     {
       "id": "ludwig-black-beauty-snare-center-092",
       "file": "samples/ludwig-black-beauty-snare-center-092.wav",
-      "minimum_velocity": 120,
-      "maximum_velocity": 126
+      "minimum_velocity": 127,
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.257729,
+      "attack_peak_seconds": 0.267583
     },
     {
       "id": "ludwig-black-beauty-snare-center-093",
       "file": "samples/ludwig-black-beauty-snare-center-093.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.261667,
+      "attack_peak_seconds": 0.271625
     },
     {
       "id": "ludwig-black-beauty-snare-center-094",
       "file": "samples/ludwig-black-beauty-snare-center-094.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.262688,
+      "attack_peak_seconds": 0.272667
     },
     {
       "id": "ludwig-black-beauty-snare-center-095",
       "file": "samples/ludwig-black-beauty-snare-center-095.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.262417,
+      "attack_peak_seconds": 0.272188
     },
     {
       "id": "ludwig-black-beauty-snare-center-096",
       "file": "samples/ludwig-black-beauty-snare-center-096.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.261833,
+      "attack_peak_seconds": 0.271625
     },
     {
       "id": "ludwig-black-beauty-snare-center-097",
       "file": "samples/ludwig-black-beauty-snare-center-097.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.262083,
+      "attack_peak_seconds": 0.271875
     },
     {
       "id": "ludwig-black-beauty-snare-center-098",
       "file": "samples/ludwig-black-beauty-snare-center-098.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.261375,
+      "attack_peak_seconds": 0.271333
     },
     {
       "id": "ludwig-black-beauty-snare-center-099",
       "file": "samples/ludwig-black-beauty-snare-center-099.wav",
       "minimum_velocity": 127,
-      "maximum_velocity": 127
-    },
-    {
-      "id": "ludwig-black-beauty-snare-center-100",
-      "file": "samples/ludwig-black-beauty-snare-center-100.wav",
-      "minimum_velocity": 127,
-      "maximum_velocity": 127
+      "maximum_velocity": 127,
+      "playback_offset_seconds": 0.263104,
+      "attack_peak_seconds": 0.272979
     }
   ],
   "velocities": [
@@ -5229,7 +5421,7 @@
           "sample_id": "ludwig-black-beauty-snare-center-061",
           "gain_db": -0.336,
           "gain_linear": 0.96205522,
-          "weight": 0.38,
+          "weight": 0.3877551,
           "observations": 19,
           "observed_gain_db_range": [
             -0.361,
@@ -5240,7 +5432,7 @@
           "sample_id": "ludwig-black-beauty-snare-center-062",
           "gain_db": -0.343,
           "gain_linear": 0.96128021,
-          "weight": 0.32,
+          "weight": 0.32653061,
           "observations": 16,
           "observed_gain_db_range": [
             -0.408,
@@ -5251,22 +5443,11 @@
           "sample_id": "ludwig-black-beauty-snare-center-063",
           "gain_db": -0.335,
           "gain_linear": 0.96216599,
-          "weight": 0.28,
+          "weight": 0.28571429,
           "observations": 14,
           "observed_gain_db_range": [
             -0.356,
             -0.325
-          ]
-        },
-        {
-          "sample_id": "ludwig-black-beauty-snare-center-064",
-          "gain_db": 0.0,
-          "gain_linear": 1.0,
-          "weight": 0.02,
-          "observations": 1,
-          "observed_gain_db_range": [
-            0.0,
-            0.0
           ]
         }
       ]
@@ -5313,7 +5494,7 @@
       "velocity": 88,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -1.466,
           "gain_linear": 0.84469515,
           "weight": 0.15,
@@ -5324,7 +5505,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -1.444,
           "gain_linear": 0.84683734,
           "weight": 0.25,
@@ -5335,7 +5516,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -1.448,
           "gain_linear": 0.84644745,
           "weight": 0.3,
@@ -5346,7 +5527,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -1.445,
           "gain_linear": 0.84673985,
           "weight": 0.3,
@@ -5362,7 +5543,7 @@
       "velocity": 89,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -1.131,
           "gain_linear": 0.87791001,
           "weight": 0.2,
@@ -5373,7 +5554,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -1.117,
           "gain_linear": 0.87932617,
           "weight": 0.35,
@@ -5384,7 +5565,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -1.112,
           "gain_linear": 0.8798325,
           "weight": 0.2,
@@ -5395,7 +5576,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -1.128,
           "gain_linear": 0.87821328,
           "weight": 0.25,
@@ -5411,7 +5592,7 @@
       "velocity": 90,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -0.827,
           "gain_linear": 0.90918026,
           "weight": 0.15,
@@ -5422,7 +5603,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -0.809,
           "gain_linear": 0.91106634,
           "weight": 0.25,
@@ -5433,7 +5614,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -0.791,
           "gain_linear": 0.91295632,
           "weight": 0.3,
@@ -5444,7 +5625,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -0.793,
           "gain_linear": 0.91274613,
           "weight": 0.3,
@@ -5460,7 +5641,7 @@
       "velocity": 91,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -0.464,
           "gain_linear": 0.9479818,
           "weight": 0.3,
@@ -5471,7 +5652,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -0.459,
           "gain_linear": 0.94852766,
           "weight": 0.2,
@@ -5482,7 +5663,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -0.478,
           "gain_linear": 0.94645507,
           "weight": 0.3,
@@ -5493,7 +5674,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -0.481,
           "gain_linear": 0.94612823,
           "weight": 0.2,
@@ -5509,7 +5690,7 @@
       "velocity": 92,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -0.232,
           "gain_linear": 0.97364357,
           "weight": 0.15,
@@ -5520,7 +5701,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -0.236,
           "gain_linear": 0.97319529,
           "weight": 0.2,
@@ -5531,7 +5712,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -0.235,
           "gain_linear": 0.97330734,
           "weight": 0.3,
@@ -5542,7 +5723,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -0.265,
           "gain_linear": 0.96995146,
           "weight": 0.35,
@@ -5558,7 +5739,7 @@
       "velocity": 93,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-065",
+          "sample_id": "ludwig-black-beauty-snare-center-064",
           "gain_db": -0.004,
           "gain_linear": 0.99953959,
           "weight": 0.3,
@@ -5569,7 +5750,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-066",
+          "sample_id": "ludwig-black-beauty-snare-center-065",
           "gain_db": -0.022,
           "gain_linear": 0.99747036,
           "weight": 0.15,
@@ -5580,7 +5761,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-067",
+          "sample_id": "ludwig-black-beauty-snare-center-066",
           "gain_db": -0.001,
           "gain_linear": 0.99988488,
           "weight": 0.3,
@@ -5591,7 +5772,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-068",
+          "sample_id": "ludwig-black-beauty-snare-center-067",
           "gain_db": -0.04,
           "gain_linear": 0.99540542,
           "weight": 0.25,
@@ -5607,7 +5788,7 @@
       "velocity": 94,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -1.443,
           "gain_linear": 0.84693484,
           "weight": 0.15,
@@ -5618,7 +5799,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -1.464,
           "gain_linear": 0.84488967,
           "weight": 0.15,
@@ -5629,7 +5810,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -1.423,
           "gain_linear": 0.84888723,
           "weight": 0.1,
@@ -5640,7 +5821,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -1.446,
           "gain_linear": 0.84664237,
           "weight": 0.25,
@@ -5651,7 +5832,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -1.43,
           "gain_linear": 0.84820338,
           "weight": 0.15,
@@ -5662,7 +5843,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -1.43,
           "gain_linear": 0.84820338,
           "weight": 0.2,
@@ -5678,7 +5859,7 @@
       "velocity": 95,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -1.205,
           "gain_linear": 0.87046237,
           "weight": 0.15,
@@ -5689,7 +5870,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -1.209,
           "gain_linear": 0.8700616,
           "weight": 0.2,
@@ -5700,7 +5881,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -1.238,
           "gain_linear": 0.86716152,
           "weight": 0.15,
@@ -5711,7 +5892,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -1.197,
           "gain_linear": 0.87126446,
           "weight": 0.1,
@@ -5722,7 +5903,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -1.219,
           "gain_linear": 0.86906048,
           "weight": 0.15,
@@ -5733,7 +5914,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -1.228,
           "gain_linear": 0.86816046,
           "weight": 0.25,
@@ -5749,7 +5930,7 @@
       "velocity": 96,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -0.964,
           "gain_linear": 0.89495253,
           "weight": 0.2,
@@ -5760,7 +5941,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -0.965,
           "gain_linear": 0.8948495,
           "weight": 0.2,
@@ -5771,7 +5952,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -0.972,
           "gain_linear": 0.89412863,
           "weight": 0.2,
@@ -5782,7 +5963,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -0.957,
           "gain_linear": 0.89567407,
           "weight": 0.1,
@@ -5793,7 +5974,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -0.963,
           "gain_linear": 0.89505557,
           "weight": 0.2,
@@ -5804,7 +5985,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -0.954,
           "gain_linear": 0.89598348,
           "weight": 0.1,
@@ -5820,7 +6001,7 @@
       "velocity": 97,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -0.712,
           "gain_linear": 0.92129773,
           "weight": 0.15,
@@ -5831,7 +6012,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -0.73,
           "gain_linear": 0.91939047,
           "weight": 0.2,
@@ -5842,7 +6023,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -0.72,
           "gain_linear": 0.92044957,
           "weight": 0.1,
@@ -5853,7 +6034,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -0.747,
           "gain_linear": 0.91759281,
           "weight": 0.15,
@@ -5864,7 +6045,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -0.776,
           "gain_linear": 0.9145343,
           "weight": 0.25,
@@ -5875,7 +6056,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -0.728,
           "gain_linear": 0.9196022,
           "weight": 0.15,
@@ -5891,7 +6072,7 @@
       "velocity": 98,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -0.505,
           "gain_linear": 0.94351759,
           "weight": 0.18,
@@ -5902,7 +6083,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -0.504,
           "gain_linear": 0.94362622,
           "weight": 0.18,
@@ -5913,7 +6094,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -0.52,
           "gain_linear": 0.9418896,
           "weight": 0.16,
@@ -5924,7 +6105,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -0.523,
           "gain_linear": 0.94156434,
           "weight": 0.14,
@@ -5935,7 +6116,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -0.509,
           "gain_linear": 0.94308318,
           "weight": 0.24,
@@ -5946,7 +6127,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -0.499,
           "gain_linear": 0.94416957,
           "weight": 0.1,
@@ -5962,7 +6143,7 @@
       "velocity": 99,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -0.248,
           "gain_linear": 0.9718517,
           "weight": 0.2,
@@ -5973,7 +6154,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -0.258,
           "gain_linear": 0.97073346,
           "weight": 0.1,
@@ -5984,7 +6165,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -0.239,
           "gain_linear": 0.97285922,
           "weight": 0.2,
@@ -5995,7 +6176,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -0.319,
           "gain_linear": 0.96393999,
           "weight": 0.25,
@@ -6006,7 +6187,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -0.246,
           "gain_linear": 0.97207551,
           "weight": 0.1,
@@ -6017,7 +6198,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": -0.296,
           "gain_linear": 0.96649586,
           "weight": 0.15,
@@ -6033,7 +6214,7 @@
       "velocity": 100,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-069",
+          "sample_id": "ludwig-black-beauty-snare-center-068",
           "gain_db": -0.026,
           "gain_linear": 0.99701112,
           "weight": 0.15,
@@ -6044,7 +6225,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-070",
+          "sample_id": "ludwig-black-beauty-snare-center-069",
           "gain_db": -0.019,
           "gain_linear": 0.99781493,
           "weight": 0.15,
@@ -6055,7 +6236,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-071",
+          "sample_id": "ludwig-black-beauty-snare-center-070",
           "gain_db": -0.002,
           "gain_linear": 0.99976977,
           "weight": 0.2,
@@ -6066,7 +6247,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-072",
+          "sample_id": "ludwig-black-beauty-snare-center-071",
           "gain_db": -0.007,
           "gain_linear": 0.99919442,
           "weight": 0.25,
@@ -6077,7 +6258,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-073",
+          "sample_id": "ludwig-black-beauty-snare-center-072",
           "gain_db": -0.003,
           "gain_linear": 0.99965467,
           "weight": 0.2,
@@ -6088,7 +6269,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-074",
+          "sample_id": "ludwig-black-beauty-snare-center-073",
           "gain_db": 0.0,
           "gain_linear": 1.0,
           "weight": 0.05,
@@ -6104,7 +6285,7 @@
       "velocity": 101,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-075",
+          "sample_id": "ludwig-black-beauty-snare-center-074",
           "gain_db": -0.995,
           "gain_linear": 0.89176413,
           "weight": 0.25,
@@ -6115,7 +6296,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -1.178,
           "gain_linear": 0.8731724,
           "weight": 0.3,
@@ -6126,7 +6307,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -1.193,
           "gain_linear": 0.87166579,
           "weight": 0.15,
@@ -6137,7 +6318,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -1.227,
           "gain_linear": 0.86826041,
           "weight": 0.15,
@@ -6148,7 +6329,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -1.179,
           "gain_linear": 0.87307188,
           "weight": 0.1,
@@ -6159,7 +6340,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -1.188,
           "gain_linear": 0.8721677,
           "weight": 0.05,
@@ -6175,7 +6356,7 @@
       "velocity": 102,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-075",
+          "sample_id": "ludwig-black-beauty-snare-center-074",
           "gain_db": -0.717,
           "gain_linear": 0.92076754,
           "weight": 0.2,
@@ -6186,7 +6367,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -0.941,
           "gain_linear": 0.89732548,
           "weight": 0.22,
@@ -6197,7 +6378,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -0.943,
           "gain_linear": 0.89711889,
           "weight": 0.2,
@@ -6208,7 +6389,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -0.95,
           "gain_linear": 0.89639619,
           "weight": 0.1,
@@ -6219,7 +6400,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -0.937,
           "gain_linear": 0.89773881,
           "weight": 0.14,
@@ -6230,7 +6411,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -0.951,
           "gain_linear": 0.89629299,
           "weight": 0.14,
@@ -6246,7 +6427,7 @@
       "velocity": 103,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-075",
+          "sample_id": "ludwig-black-beauty-snare-center-074",
           "gain_db": -0.477,
           "gain_linear": 0.94656404,
           "weight": 0.16,
@@ -6257,7 +6438,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -0.697,
           "gain_linear": 0.92289013,
           "weight": 0.18,
@@ -6268,7 +6449,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -0.693,
           "gain_linear": 0.92331523,
           "weight": 0.2,
@@ -6279,7 +6460,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -0.689,
           "gain_linear": 0.92374053,
           "weight": 0.16,
@@ -6290,7 +6471,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -0.693,
           "gain_linear": 0.92331523,
           "weight": 0.16,
@@ -6301,7 +6482,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -0.685,
           "gain_linear": 0.92416603,
           "weight": 0.14,
@@ -6317,7 +6498,7 @@
       "velocity": 104,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-075",
+          "sample_id": "ludwig-black-beauty-snare-center-074",
           "gain_db": -0.216,
           "gain_linear": 0.97543874,
           "weight": 0.1,
@@ -6328,7 +6509,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -0.432,
           "gain_linear": 0.95148074,
           "weight": 0.25,
@@ -6339,7 +6520,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -0.453,
           "gain_linear": 0.94918311,
           "weight": 0.15,
@@ -6350,7 +6531,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -0.456,
           "gain_linear": 0.94885533,
           "weight": 0.1,
@@ -6361,7 +6542,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -0.437,
           "gain_linear": 0.95093318,
           "weight": 0.3,
@@ -6372,7 +6553,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -0.428,
           "gain_linear": 0.95191901,
           "weight": 0.1,
@@ -6388,7 +6569,7 @@
       "velocity": 105,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-075",
+          "sample_id": "ludwig-black-beauty-snare-center-074",
           "gain_db": -0.036,
           "gain_linear": 0.99586392,
           "weight": 0.15,
@@ -6399,7 +6580,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -0.238,
           "gain_linear": 0.97297123,
           "weight": 0.1,
@@ -6410,7 +6591,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -0.271,
           "gain_linear": 0.96928167,
           "weight": 0.1,
@@ -6421,7 +6602,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -0.244,
           "gain_linear": 0.97229936,
           "weight": 0.25,
@@ -6432,7 +6613,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -0.217,
           "gain_linear": 0.97532645,
           "weight": 0.2,
@@ -6443,7 +6624,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -0.23,
           "gain_linear": 0.97386779,
           "weight": 0.2,
@@ -6459,7 +6640,7 @@
       "velocity": 106,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-076",
+          "sample_id": "ludwig-black-beauty-snare-center-075",
           "gain_db": -0.023,
           "gain_linear": 0.99735553,
           "weight": 0.15,
@@ -6470,7 +6651,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-077",
+          "sample_id": "ludwig-black-beauty-snare-center-076",
           "gain_db": -0.006,
           "gain_linear": 0.99930946,
           "weight": 0.2,
@@ -6481,7 +6662,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-078",
+          "sample_id": "ludwig-black-beauty-snare-center-077",
           "gain_db": -0.016,
           "gain_linear": 0.99815963,
           "weight": 0.3,
@@ -6492,7 +6673,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-079",
+          "sample_id": "ludwig-black-beauty-snare-center-078",
           "gain_db": -0.001,
           "gain_linear": 0.99988488,
           "weight": 0.15,
@@ -6503,7 +6684,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-080",
+          "sample_id": "ludwig-black-beauty-snare-center-079",
           "gain_db": -0.015,
           "gain_linear": 0.99827455,
           "weight": 0.2,
@@ -6519,7 +6700,7 @@
       "velocity": 107,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -1.055,
           "gain_linear": 0.88562527,
           "weight": 0.2,
@@ -6530,7 +6711,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -1.079,
           "gain_linear": 0.88318157,
           "weight": 0.3,
@@ -6541,7 +6722,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -1.03,
           "gain_linear": 0.88817798,
           "weight": 0.1,
@@ -6552,7 +6733,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -1.073,
           "gain_linear": 0.88379187,
           "weight": 0.2,
@@ -6563,7 +6744,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -1.056,
           "gain_linear": 0.88552331,
           "weight": 0.2,
@@ -6579,7 +6760,7 @@
       "velocity": 108,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.849,
           "gain_linear": 0.90688037,
           "weight": 0.15,
@@ -6590,7 +6771,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.838,
           "gain_linear": 0.90802959,
           "weight": 0.3,
@@ -6601,7 +6782,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -0.836,
           "gain_linear": 0.90823869,
           "weight": 0.05,
@@ -6612,7 +6793,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.9,
           "gain_linear": 0.90157114,
           "weight": 0.25,
@@ -6623,7 +6804,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.846,
           "gain_linear": 0.90719365,
           "weight": 0.25,
@@ -6639,7 +6820,7 @@
       "velocity": 109,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.616,
           "gain_linear": 0.93153677,
           "weight": 0.1,
@@ -6650,7 +6831,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.645,
           "gain_linear": 0.92843178,
           "weight": 0.3,
@@ -6661,7 +6842,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -0.619,
           "gain_linear": 0.93121508,
           "weight": 0.15,
@@ -6672,7 +6853,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.692,
           "gain_linear": 0.92342154,
           "weight": 0.2,
@@ -6683,7 +6864,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.632,
           "gain_linear": 0.92982239,
           "weight": 0.25,
@@ -6699,7 +6880,7 @@
       "velocity": 110,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.407,
           "gain_linear": 0.95422326,
           "weight": 0.25,
@@ -6710,7 +6891,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.429,
           "gain_linear": 0.95180942,
           "weight": 0.2,
@@ -6721,7 +6902,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -0.386,
           "gain_linear": 0.95653309,
           "weight": 0.2,
@@ -6732,7 +6913,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.432,
           "gain_linear": 0.95148074,
           "weight": 0.1,
@@ -6743,7 +6924,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.417,
           "gain_linear": 0.9531253,
           "weight": 0.25,
@@ -6759,7 +6940,7 @@
       "velocity": 111,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.304,
           "gain_linear": 0.9656061,
           "weight": 0.15,
@@ -6770,7 +6951,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.274,
           "gain_linear": 0.96894695,
           "weight": 0.2,
@@ -6781,7 +6962,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -0.265,
           "gain_linear": 0.96995146,
           "weight": 0.25,
@@ -6792,7 +6973,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.317,
           "gain_linear": 0.96416198,
           "weight": 0.1,
@@ -6803,7 +6984,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.278,
           "gain_linear": 0.96850084,
           "weight": 0.3,
@@ -6819,7 +7000,7 @@
       "velocity": 112,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.179,
           "gain_linear": 0.97960276,
           "weight": 0.14,
@@ -6830,7 +7011,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.164,
           "gain_linear": 0.98129594,
           "weight": 0.2,
@@ -6841,7 +7022,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": -0.12,
           "gain_linear": 0.98627949,
           "weight": 0.14,
@@ -6852,7 +7033,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.154,
           "gain_linear": 0.98242634,
           "weight": 0.26,
@@ -6863,7 +7044,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.144,
           "gain_linear": 0.98355806,
           "weight": 0.26,
@@ -6879,7 +7060,7 @@
       "velocity": 113,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-081",
+          "sample_id": "ludwig-black-beauty-snare-center-080",
           "gain_db": -0.002,
           "gain_linear": 0.99976977,
           "weight": 0.2,
@@ -6890,7 +7071,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-082",
+          "sample_id": "ludwig-black-beauty-snare-center-081",
           "gain_db": -0.028,
           "gain_linear": 0.99678157,
           "weight": 0.3,
@@ -6901,7 +7082,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-083",
+          "sample_id": "ludwig-black-beauty-snare-center-082",
           "gain_db": 0.0,
           "gain_linear": 1.0,
           "weight": 0.1,
@@ -6912,7 +7093,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-084",
+          "sample_id": "ludwig-black-beauty-snare-center-083",
           "gain_db": -0.018,
           "gain_linear": 0.99792982,
           "weight": 0.2,
@@ -6923,7 +7104,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-085",
+          "sample_id": "ludwig-black-beauty-snare-center-084",
           "gain_db": -0.019,
           "gain_linear": 0.99781493,
           "weight": 0.2,
@@ -6939,7 +7120,7 @@
       "velocity": 114,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -1.028,
           "gain_linear": 0.88838251,
           "weight": 0.4,
@@ -6950,7 +7131,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -1.054,
           "gain_linear": 0.88572724,
           "weight": 0.35,
@@ -6961,7 +7142,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -1.081,
           "gain_linear": 0.88297824,
           "weight": 0.25,
@@ -6977,7 +7158,7 @@
       "velocity": 115,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -0.869,
           "gain_linear": 0.9047946,
           "weight": 0.35,
@@ -6988,7 +7169,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -0.89,
           "gain_linear": 0.90260971,
           "weight": 0.3,
@@ -6999,7 +7180,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -0.825,
           "gain_linear": 0.90938964,
           "weight": 0.35,
@@ -7015,7 +7196,7 @@
       "velocity": 116,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -0.71,
           "gain_linear": 0.92150989,
           "weight": 0.3,
@@ -7026,7 +7207,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -0.605,
           "gain_linear": 0.93271723,
           "weight": 0.3,
@@ -7037,7 +7218,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -0.544,
           "gain_linear": 0.93929065,
           "weight": 0.4,
@@ -7053,7 +7234,7 @@
       "velocity": 117,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -0.592,
           "gain_linear": 0.93411426,
           "weight": 0.4,
@@ -7064,7 +7245,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -0.387,
           "gain_linear": 0.95642297,
           "weight": 0.2,
@@ -7075,7 +7256,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -0.282,
           "gain_linear": 0.96805493,
           "weight": 0.4,
@@ -7091,7 +7272,7 @@
       "velocity": 118,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -0.295,
           "gain_linear": 0.96660714,
           "weight": 0.35,
@@ -7102,7 +7283,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -0.218,
           "gain_linear": 0.97521416,
           "weight": 0.3,
@@ -7113,7 +7294,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -0.156,
           "gain_linear": 0.98220016,
           "weight": 0.35,
@@ -7129,7 +7310,7 @@
       "velocity": 119,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-086",
+          "sample_id": "ludwig-black-beauty-snare-center-085",
           "gain_db": -0.029,
           "gain_linear": 0.99666682,
           "weight": 0.35,
@@ -7140,7 +7321,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-087",
+          "sample_id": "ludwig-black-beauty-snare-center-086",
           "gain_db": -0.022,
           "gain_linear": 0.99747036,
           "weight": 0.4,
@@ -7151,7 +7332,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-088",
+          "sample_id": "ludwig-black-beauty-snare-center-087",
           "gain_db": -0.003,
           "gain_linear": 0.99965467,
           "weight": 0.25,
@@ -7167,7 +7348,7 @@
       "velocity": 120,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -1.517,
           "gain_linear": 0.83974998,
           "weight": 0.35,
@@ -7178,7 +7359,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -1.506,
           "gain_linear": 0.84081413,
           "weight": 0.2,
@@ -7189,7 +7370,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -1.712,
           "gain_linear": 0.82110746,
           "weight": 0.25,
@@ -7200,7 +7381,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -1.502,
           "gain_linear": 0.84120143,
           "weight": 0.2,
@@ -7216,7 +7397,7 @@
       "velocity": 121,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -1.216,
           "gain_linear": 0.86936069,
           "weight": 0.25,
@@ -7227,7 +7408,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -1.209,
           "gain_linear": 0.8700616,
           "weight": 0.25,
@@ -7238,7 +7419,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -1.313,
           "gain_linear": 0.85970608,
           "weight": 0.25,
@@ -7249,7 +7430,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -1.321,
           "gain_linear": 0.85891463,
           "weight": 0.25,
@@ -7265,7 +7446,7 @@
       "velocity": 122,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -0.936,
           "gain_linear": 0.89784217,
           "weight": 0.25,
@@ -7276,7 +7457,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -0.937,
           "gain_linear": 0.89773881,
           "weight": 0.1,
@@ -7287,7 +7468,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -0.994,
           "gain_linear": 0.89186681,
           "weight": 0.4,
@@ -7298,7 +7479,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -0.965,
           "gain_linear": 0.8948495,
           "weight": 0.25,
@@ -7314,7 +7495,7 @@
       "velocity": 123,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -0.642,
           "gain_linear": 0.92875251,
           "weight": 0.25,
@@ -7325,7 +7506,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -0.636,
           "gain_linear": 0.92939429,
           "weight": 0.3,
@@ -7336,7 +7517,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -0.655,
           "gain_linear": 0.9273635,
           "weight": 0.25,
@@ -7347,7 +7528,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -0.684,
           "gain_linear": 0.92427243,
           "weight": 0.2,
@@ -7363,7 +7544,7 @@
       "velocity": 124,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -0.459,
           "gain_linear": 0.94852766,
           "weight": 0.35,
@@ -7374,7 +7555,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -0.431,
           "gain_linear": 0.95159029,
           "weight": 0.25,
@@ -7385,7 +7566,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -0.527,
           "gain_linear": 0.94113083,
           "weight": 0.3,
@@ -7396,7 +7577,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -0.453,
           "gain_linear": 0.94918311,
           "weight": 0.1,
@@ -7412,7 +7593,7 @@
       "velocity": 125,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -0.254,
           "gain_linear": 0.9711806,
           "weight": 0.15,
@@ -7423,7 +7604,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -0.21,
           "gain_linear": 0.97611278,
           "weight": 0.2,
@@ -7434,7 +7615,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -0.259,
           "gain_linear": 0.97062171,
           "weight": 0.4,
@@ -7445,7 +7626,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -0.246,
           "gain_linear": 0.97207551,
           "weight": 0.25,
@@ -7461,7 +7642,7 @@
       "velocity": 126,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-089",
+          "sample_id": "ludwig-black-beauty-snare-center-088",
           "gain_db": -0.017,
           "gain_linear": 0.99804472,
           "weight": 0.15,
@@ -7472,7 +7653,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-090",
+          "sample_id": "ludwig-black-beauty-snare-center-089",
           "gain_db": -0.041,
           "gain_linear": 0.99529082,
           "weight": 0.35,
@@ -7483,7 +7664,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-091",
+          "sample_id": "ludwig-black-beauty-snare-center-090",
           "gain_db": -0.042,
           "gain_linear": 0.99517624,
           "weight": 0.3,
@@ -7494,7 +7675,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-092",
+          "sample_id": "ludwig-black-beauty-snare-center-091",
           "gain_db": -0.024,
           "gain_linear": 0.99724071,
           "weight": 0.2,
@@ -7510,7 +7691,7 @@
       "velocity": 127,
       "variants": [
         {
-          "sample_id": "ludwig-black-beauty-snare-center-093",
+          "sample_id": "ludwig-black-beauty-snare-center-092",
           "gain_db": -0.035,
           "gain_linear": 0.99597858,
           "weight": 0.28,
@@ -7521,7 +7702,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-094",
+          "sample_id": "ludwig-black-beauty-snare-center-093",
           "gain_db": -0.048,
           "gain_linear": 0.99448904,
           "weight": 0.08,
@@ -7532,7 +7713,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-095",
+          "sample_id": "ludwig-black-beauty-snare-center-094",
           "gain_db": -0.064,
           "gain_linear": 0.99265881,
           "weight": 0.18,
@@ -7543,7 +7724,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-096",
+          "sample_id": "ludwig-black-beauty-snare-center-095",
           "gain_db": 0.0,
           "gain_linear": 1.0,
           "weight": 0.04,
@@ -7554,7 +7735,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-097",
+          "sample_id": "ludwig-black-beauty-snare-center-096",
           "gain_db": -0.019,
           "gain_linear": 0.99781493,
           "weight": 0.18,
@@ -7565,7 +7746,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-098",
+          "sample_id": "ludwig-black-beauty-snare-center-097",
           "gain_db": -0.018,
           "gain_linear": 0.99792982,
           "weight": 0.12,
@@ -7576,7 +7757,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-099",
+          "sample_id": "ludwig-black-beauty-snare-center-098",
           "gain_db": 0.0,
           "gain_linear": 1.0,
           "weight": 0.02,
@@ -7587,7 +7768,7 @@
           ]
         },
         {
-          "sample_id": "ludwig-black-beauty-snare-center-100",
+          "sample_id": "ludwig-black-beauty-snare-center-099",
           "gain_db": -0.021,
           "gain_linear": 0.99758521,
           "weight": 0.1,
@@ -7599,5 +7780,420 @@
         }
       ]
     }
-  ]
+  ],
+  "audition": {
+    "file": "audition.wav",
+    "purpose": "Human reference; plays every distinct sample once in samples-array order.",
+    "interval_seconds": 1.0,
+    "sample_rate": 48000,
+    "sample_count": 99,
+    "applies_playback_offsets": true,
+    "order": [
+      {
+        "time_seconds": 0.0,
+        "sample_id": "ludwig-black-beauty-snare-center-001"
+      },
+      {
+        "time_seconds": 1.0,
+        "sample_id": "ludwig-black-beauty-snare-center-002"
+      },
+      {
+        "time_seconds": 2.0,
+        "sample_id": "ludwig-black-beauty-snare-center-003"
+      },
+      {
+        "time_seconds": 3.0,
+        "sample_id": "ludwig-black-beauty-snare-center-004"
+      },
+      {
+        "time_seconds": 4.0,
+        "sample_id": "ludwig-black-beauty-snare-center-005"
+      },
+      {
+        "time_seconds": 5.0,
+        "sample_id": "ludwig-black-beauty-snare-center-006"
+      },
+      {
+        "time_seconds": 6.0,
+        "sample_id": "ludwig-black-beauty-snare-center-007"
+      },
+      {
+        "time_seconds": 7.0,
+        "sample_id": "ludwig-black-beauty-snare-center-008"
+      },
+      {
+        "time_seconds": 8.0,
+        "sample_id": "ludwig-black-beauty-snare-center-009"
+      },
+      {
+        "time_seconds": 9.0,
+        "sample_id": "ludwig-black-beauty-snare-center-010"
+      },
+      {
+        "time_seconds": 10.0,
+        "sample_id": "ludwig-black-beauty-snare-center-011"
+      },
+      {
+        "time_seconds": 11.0,
+        "sample_id": "ludwig-black-beauty-snare-center-012"
+      },
+      {
+        "time_seconds": 12.0,
+        "sample_id": "ludwig-black-beauty-snare-center-013"
+      },
+      {
+        "time_seconds": 13.0,
+        "sample_id": "ludwig-black-beauty-snare-center-014"
+      },
+      {
+        "time_seconds": 14.0,
+        "sample_id": "ludwig-black-beauty-snare-center-015"
+      },
+      {
+        "time_seconds": 15.0,
+        "sample_id": "ludwig-black-beauty-snare-center-016"
+      },
+      {
+        "time_seconds": 16.0,
+        "sample_id": "ludwig-black-beauty-snare-center-017"
+      },
+      {
+        "time_seconds": 17.0,
+        "sample_id": "ludwig-black-beauty-snare-center-018"
+      },
+      {
+        "time_seconds": 18.0,
+        "sample_id": "ludwig-black-beauty-snare-center-019"
+      },
+      {
+        "time_seconds": 19.0,
+        "sample_id": "ludwig-black-beauty-snare-center-020"
+      },
+      {
+        "time_seconds": 20.0,
+        "sample_id": "ludwig-black-beauty-snare-center-021"
+      },
+      {
+        "time_seconds": 21.0,
+        "sample_id": "ludwig-black-beauty-snare-center-022"
+      },
+      {
+        "time_seconds": 22.0,
+        "sample_id": "ludwig-black-beauty-snare-center-023"
+      },
+      {
+        "time_seconds": 23.0,
+        "sample_id": "ludwig-black-beauty-snare-center-024"
+      },
+      {
+        "time_seconds": 24.0,
+        "sample_id": "ludwig-black-beauty-snare-center-025"
+      },
+      {
+        "time_seconds": 25.0,
+        "sample_id": "ludwig-black-beauty-snare-center-026"
+      },
+      {
+        "time_seconds": 26.0,
+        "sample_id": "ludwig-black-beauty-snare-center-027"
+      },
+      {
+        "time_seconds": 27.0,
+        "sample_id": "ludwig-black-beauty-snare-center-028"
+      },
+      {
+        "time_seconds": 28.0,
+        "sample_id": "ludwig-black-beauty-snare-center-029"
+      },
+      {
+        "time_seconds": 29.0,
+        "sample_id": "ludwig-black-beauty-snare-center-030"
+      },
+      {
+        "time_seconds": 30.0,
+        "sample_id": "ludwig-black-beauty-snare-center-031"
+      },
+      {
+        "time_seconds": 31.0,
+        "sample_id": "ludwig-black-beauty-snare-center-032"
+      },
+      {
+        "time_seconds": 32.0,
+        "sample_id": "ludwig-black-beauty-snare-center-033"
+      },
+      {
+        "time_seconds": 33.0,
+        "sample_id": "ludwig-black-beauty-snare-center-034"
+      },
+      {
+        "time_seconds": 34.0,
+        "sample_id": "ludwig-black-beauty-snare-center-035"
+      },
+      {
+        "time_seconds": 35.0,
+        "sample_id": "ludwig-black-beauty-snare-center-036"
+      },
+      {
+        "time_seconds": 36.0,
+        "sample_id": "ludwig-black-beauty-snare-center-037"
+      },
+      {
+        "time_seconds": 37.0,
+        "sample_id": "ludwig-black-beauty-snare-center-038"
+      },
+      {
+        "time_seconds": 38.0,
+        "sample_id": "ludwig-black-beauty-snare-center-039"
+      },
+      {
+        "time_seconds": 39.0,
+        "sample_id": "ludwig-black-beauty-snare-center-040"
+      },
+      {
+        "time_seconds": 40.0,
+        "sample_id": "ludwig-black-beauty-snare-center-041"
+      },
+      {
+        "time_seconds": 41.0,
+        "sample_id": "ludwig-black-beauty-snare-center-042"
+      },
+      {
+        "time_seconds": 42.0,
+        "sample_id": "ludwig-black-beauty-snare-center-043"
+      },
+      {
+        "time_seconds": 43.0,
+        "sample_id": "ludwig-black-beauty-snare-center-044"
+      },
+      {
+        "time_seconds": 44.0,
+        "sample_id": "ludwig-black-beauty-snare-center-045"
+      },
+      {
+        "time_seconds": 45.0,
+        "sample_id": "ludwig-black-beauty-snare-center-046"
+      },
+      {
+        "time_seconds": 46.0,
+        "sample_id": "ludwig-black-beauty-snare-center-047"
+      },
+      {
+        "time_seconds": 47.0,
+        "sample_id": "ludwig-black-beauty-snare-center-048"
+      },
+      {
+        "time_seconds": 48.0,
+        "sample_id": "ludwig-black-beauty-snare-center-049"
+      },
+      {
+        "time_seconds": 49.0,
+        "sample_id": "ludwig-black-beauty-snare-center-050"
+      },
+      {
+        "time_seconds": 50.0,
+        "sample_id": "ludwig-black-beauty-snare-center-051"
+      },
+      {
+        "time_seconds": 51.0,
+        "sample_id": "ludwig-black-beauty-snare-center-052"
+      },
+      {
+        "time_seconds": 52.0,
+        "sample_id": "ludwig-black-beauty-snare-center-053"
+      },
+      {
+        "time_seconds": 53.0,
+        "sample_id": "ludwig-black-beauty-snare-center-054"
+      },
+      {
+        "time_seconds": 54.0,
+        "sample_id": "ludwig-black-beauty-snare-center-055"
+      },
+      {
+        "time_seconds": 55.0,
+        "sample_id": "ludwig-black-beauty-snare-center-056"
+      },
+      {
+        "time_seconds": 56.0,
+        "sample_id": "ludwig-black-beauty-snare-center-057"
+      },
+      {
+        "time_seconds": 57.0,
+        "sample_id": "ludwig-black-beauty-snare-center-058"
+      },
+      {
+        "time_seconds": 58.0,
+        "sample_id": "ludwig-black-beauty-snare-center-059"
+      },
+      {
+        "time_seconds": 59.0,
+        "sample_id": "ludwig-black-beauty-snare-center-060"
+      },
+      {
+        "time_seconds": 60.0,
+        "sample_id": "ludwig-black-beauty-snare-center-061"
+      },
+      {
+        "time_seconds": 61.0,
+        "sample_id": "ludwig-black-beauty-snare-center-062"
+      },
+      {
+        "time_seconds": 62.0,
+        "sample_id": "ludwig-black-beauty-snare-center-063"
+      },
+      {
+        "time_seconds": 63.0,
+        "sample_id": "ludwig-black-beauty-snare-center-064"
+      },
+      {
+        "time_seconds": 64.0,
+        "sample_id": "ludwig-black-beauty-snare-center-065"
+      },
+      {
+        "time_seconds": 65.0,
+        "sample_id": "ludwig-black-beauty-snare-center-066"
+      },
+      {
+        "time_seconds": 66.0,
+        "sample_id": "ludwig-black-beauty-snare-center-067"
+      },
+      {
+        "time_seconds": 67.0,
+        "sample_id": "ludwig-black-beauty-snare-center-068"
+      },
+      {
+        "time_seconds": 68.0,
+        "sample_id": "ludwig-black-beauty-snare-center-069"
+      },
+      {
+        "time_seconds": 69.0,
+        "sample_id": "ludwig-black-beauty-snare-center-070"
+      },
+      {
+        "time_seconds": 70.0,
+        "sample_id": "ludwig-black-beauty-snare-center-071"
+      },
+      {
+        "time_seconds": 71.0,
+        "sample_id": "ludwig-black-beauty-snare-center-072"
+      },
+      {
+        "time_seconds": 72.0,
+        "sample_id": "ludwig-black-beauty-snare-center-073"
+      },
+      {
+        "time_seconds": 73.0,
+        "sample_id": "ludwig-black-beauty-snare-center-074"
+      },
+      {
+        "time_seconds": 74.0,
+        "sample_id": "ludwig-black-beauty-snare-center-075"
+      },
+      {
+        "time_seconds": 75.0,
+        "sample_id": "ludwig-black-beauty-snare-center-076"
+      },
+      {
+        "time_seconds": 76.0,
+        "sample_id": "ludwig-black-beauty-snare-center-077"
+      },
+      {
+        "time_seconds": 77.0,
+        "sample_id": "ludwig-black-beauty-snare-center-078"
+      },
+      {
+        "time_seconds": 78.0,
+        "sample_id": "ludwig-black-beauty-snare-center-079"
+      },
+      {
+        "time_seconds": 79.0,
+        "sample_id": "ludwig-black-beauty-snare-center-080"
+      },
+      {
+        "time_seconds": 80.0,
+        "sample_id": "ludwig-black-beauty-snare-center-081"
+      },
+      {
+        "time_seconds": 81.0,
+        "sample_id": "ludwig-black-beauty-snare-center-082"
+      },
+      {
+        "time_seconds": 82.0,
+        "sample_id": "ludwig-black-beauty-snare-center-083"
+      },
+      {
+        "time_seconds": 83.0,
+        "sample_id": "ludwig-black-beauty-snare-center-084"
+      },
+      {
+        "time_seconds": 84.0,
+        "sample_id": "ludwig-black-beauty-snare-center-085"
+      },
+      {
+        "time_seconds": 85.0,
+        "sample_id": "ludwig-black-beauty-snare-center-086"
+      },
+      {
+        "time_seconds": 86.0,
+        "sample_id": "ludwig-black-beauty-snare-center-087"
+      },
+      {
+        "time_seconds": 87.0,
+        "sample_id": "ludwig-black-beauty-snare-center-088"
+      },
+      {
+        "time_seconds": 88.0,
+        "sample_id": "ludwig-black-beauty-snare-center-089"
+      },
+      {
+        "time_seconds": 89.0,
+        "sample_id": "ludwig-black-beauty-snare-center-090"
+      },
+      {
+        "time_seconds": 90.0,
+        "sample_id": "ludwig-black-beauty-snare-center-091"
+      },
+      {
+        "time_seconds": 91.0,
+        "sample_id": "ludwig-black-beauty-snare-center-092"
+      },
+      {
+        "time_seconds": 92.0,
+        "sample_id": "ludwig-black-beauty-snare-center-093"
+      },
+      {
+        "time_seconds": 93.0,
+        "sample_id": "ludwig-black-beauty-snare-center-094"
+      },
+      {
+        "time_seconds": 94.0,
+        "sample_id": "ludwig-black-beauty-snare-center-095"
+      },
+      {
+        "time_seconds": 95.0,
+        "sample_id": "ludwig-black-beauty-snare-center-096"
+      },
+      {
+        "time_seconds": 96.0,
+        "sample_id": "ludwig-black-beauty-snare-center-097"
+      },
+      {
+        "time_seconds": 97.0,
+        "sample_id": "ludwig-black-beauty-snare-center-098"
+      },
+      {
+        "time_seconds": 98.0,
+        "sample_id": "ludwig-black-beauty-snare-center-099"
+      }
+    ]
+  },
+  "timing": {
+    "alignment_point": "noise-aware 3 ms RMS attack onset",
+    "playback": "Align the musical event to playback_offset_seconds. In Web Audio, call source.start(beatTime, playback_offset_seconds).",
+    "file_start": "WAV files retain pre-attack audio; do not assume sample frame zero is the hit onset.",
+    "offset_range_seconds": [
+      0.256063,
+      0.268229
+    ]
+  }
 }
