@@ -32,7 +32,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 4,
       "playback_offset_seconds": 0.263833,
-      "attack_peak_seconds": 0.269313
+      "attack_peak_seconds": 0.269313,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-002",
@@ -40,7 +42,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 4,
       "playback_offset_seconds": 0.263917,
-      "attack_peak_seconds": 0.269417
+      "attack_peak_seconds": 0.269417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-003",
@@ -48,7 +52,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 4,
       "playback_offset_seconds": 0.258729,
-      "attack_peak_seconds": 0.264313
+      "attack_peak_seconds": 0.264313,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-004",
@@ -56,7 +62,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 4,
       "playback_offset_seconds": 0.26625,
-      "attack_peak_seconds": 0.27175
+      "attack_peak_seconds": 0.27175,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-005",
@@ -64,7 +72,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 4,
       "playback_offset_seconds": 0.263792,
-      "attack_peak_seconds": 0.269292
+      "attack_peak_seconds": 0.269292,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-006",
@@ -72,7 +82,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 10,
       "playback_offset_seconds": 0.264125,
-      "attack_peak_seconds": 0.2705
+      "attack_peak_seconds": 0.2705,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-007",
@@ -80,7 +92,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 10,
       "playback_offset_seconds": 0.262917,
-      "attack_peak_seconds": 0.269229
+      "attack_peak_seconds": 0.269229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-008",
@@ -88,7 +102,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 10,
       "playback_offset_seconds": 0.263937,
-      "attack_peak_seconds": 0.270292
+      "attack_peak_seconds": 0.270292,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-009",
@@ -96,7 +112,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 10,
       "playback_offset_seconds": 0.264146,
-      "attack_peak_seconds": 0.2705
+      "attack_peak_seconds": 0.2705,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-010",
@@ -104,7 +122,9 @@
       "minimum_velocity": 11,
       "maximum_velocity": 16,
       "playback_offset_seconds": 0.263188,
-      "attack_peak_seconds": 0.269646
+      "attack_peak_seconds": 0.269646,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-011",
@@ -112,7 +132,9 @@
       "minimum_velocity": 11,
       "maximum_velocity": 16,
       "playback_offset_seconds": 0.261667,
-      "attack_peak_seconds": 0.268167
+      "attack_peak_seconds": 0.268167,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-012",
@@ -120,7 +142,9 @@
       "minimum_velocity": 11,
       "maximum_velocity": 16,
       "playback_offset_seconds": 0.261583,
-      "attack_peak_seconds": 0.268
+      "attack_peak_seconds": 0.268,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-013",
@@ -128,7 +152,9 @@
       "minimum_velocity": 11,
       "maximum_velocity": 16,
       "playback_offset_seconds": 0.259292,
-      "attack_peak_seconds": 0.265833
+      "attack_peak_seconds": 0.265833,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-014",
@@ -136,7 +162,9 @@
       "minimum_velocity": 11,
       "maximum_velocity": 16,
       "playback_offset_seconds": 0.260104,
-      "attack_peak_seconds": 0.266521
+      "attack_peak_seconds": 0.266521,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-015",
@@ -144,7 +172,9 @@
       "minimum_velocity": 17,
       "maximum_velocity": 23,
       "playback_offset_seconds": 0.263958,
-      "attack_peak_seconds": 0.275417
+      "attack_peak_seconds": 0.275417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-016",
@@ -152,7 +182,9 @@
       "minimum_velocity": 17,
       "maximum_velocity": 23,
       "playback_offset_seconds": 0.263833,
-      "attack_peak_seconds": 0.275271
+      "attack_peak_seconds": 0.275271,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-017",
@@ -160,7 +192,9 @@
       "minimum_velocity": 17,
       "maximum_velocity": 23,
       "playback_offset_seconds": 0.263604,
-      "attack_peak_seconds": 0.275062
+      "attack_peak_seconds": 0.275062,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-018",
@@ -168,7 +202,9 @@
       "minimum_velocity": 17,
       "maximum_velocity": 23,
       "playback_offset_seconds": 0.263458,
-      "attack_peak_seconds": 0.270229
+      "attack_peak_seconds": 0.270229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-019",
@@ -176,7 +212,9 @@
       "minimum_velocity": 24,
       "maximum_velocity": 29,
       "playback_offset_seconds": 0.26175,
-      "attack_peak_seconds": 0.274396
+      "attack_peak_seconds": 0.274396,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-020",
@@ -184,7 +222,9 @@
       "minimum_velocity": 24,
       "maximum_velocity": 29,
       "playback_offset_seconds": 0.259354,
-      "attack_peak_seconds": 0.271937
+      "attack_peak_seconds": 0.271937,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-021",
@@ -192,7 +232,9 @@
       "minimum_velocity": 24,
       "maximum_velocity": 29,
       "playback_offset_seconds": 0.257792,
-      "attack_peak_seconds": 0.270042
+      "attack_peak_seconds": 0.270042,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-022",
@@ -200,7 +242,9 @@
       "minimum_velocity": 24,
       "maximum_velocity": 29,
       "playback_offset_seconds": 0.263229,
-      "attack_peak_seconds": 0.275583
+      "attack_peak_seconds": 0.275583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-023",
@@ -208,7 +252,9 @@
       "minimum_velocity": 24,
       "maximum_velocity": 29,
       "playback_offset_seconds": 0.261458,
-      "attack_peak_seconds": 0.274083
+      "attack_peak_seconds": 0.274083,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-024",
@@ -216,7 +262,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 36,
       "playback_offset_seconds": 0.257,
-      "attack_peak_seconds": 0.264813
+      "attack_peak_seconds": 0.264813,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-025",
@@ -224,7 +272,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 36,
       "playback_offset_seconds": 0.261646,
-      "attack_peak_seconds": 0.269188
+      "attack_peak_seconds": 0.269188,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-026",
@@ -232,7 +282,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 35,
       "playback_offset_seconds": 0.263188,
-      "attack_peak_seconds": 0.270958
+      "attack_peak_seconds": 0.270958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-027",
@@ -240,7 +292,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 36,
       "playback_offset_seconds": 0.264437,
-      "attack_peak_seconds": 0.272229
+      "attack_peak_seconds": 0.272229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-028",
@@ -248,7 +302,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 36,
       "playback_offset_seconds": 0.263604,
-      "attack_peak_seconds": 0.271354
+      "attack_peak_seconds": 0.271354,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-029",
@@ -256,7 +312,9 @@
       "minimum_velocity": 30,
       "maximum_velocity": 36,
       "playback_offset_seconds": 0.258104,
-      "attack_peak_seconds": 0.265833
+      "attack_peak_seconds": 0.265833,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-030",
@@ -264,7 +322,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.260125,
-      "attack_peak_seconds": 0.268042
+      "attack_peak_seconds": 0.268042,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-031",
@@ -272,7 +332,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.262896,
-      "attack_peak_seconds": 0.270833
+      "attack_peak_seconds": 0.270833,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-032",
@@ -280,7 +342,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.262979,
-      "attack_peak_seconds": 0.270875
+      "attack_peak_seconds": 0.270875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-033",
@@ -288,7 +352,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.262042,
-      "attack_peak_seconds": 0.269979
+      "attack_peak_seconds": 0.269979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-034",
@@ -296,7 +362,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.261604,
-      "attack_peak_seconds": 0.269542
+      "attack_peak_seconds": 0.269542,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-035",
@@ -304,7 +372,9 @@
       "minimum_velocity": 37,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.260104,
-      "attack_peak_seconds": 0.267979
+      "attack_peak_seconds": 0.267979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-036",
@@ -312,7 +382,9 @@
       "minimum_velocity": 38,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.262313,
-      "attack_peak_seconds": 0.270229
+      "attack_peak_seconds": 0.270229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-037",
@@ -320,7 +392,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.267479,
-      "attack_peak_seconds": 0.27725
+      "attack_peak_seconds": 0.27725,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-038",
@@ -328,7 +402,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.266604,
-      "attack_peak_seconds": 0.276271
+      "attack_peak_seconds": 0.276271,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-039",
@@ -336,7 +412,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.257042,
-      "attack_peak_seconds": 0.266771
+      "attack_peak_seconds": 0.266771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-040",
@@ -344,7 +422,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.267437,
-      "attack_peak_seconds": 0.277229
+      "attack_peak_seconds": 0.277229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-041",
@@ -352,7 +432,9 @@
       "minimum_velocity": 49,
       "maximum_velocity": 55,
       "playback_offset_seconds": 0.258146,
-      "attack_peak_seconds": 0.267792
+      "attack_peak_seconds": 0.267792,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-042",
@@ -360,7 +442,9 @@
       "minimum_velocity": 49,
       "maximum_velocity": 55,
       "playback_offset_seconds": 0.268229,
-      "attack_peak_seconds": 0.277958
+      "attack_peak_seconds": 0.277958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-043",
@@ -368,7 +452,9 @@
       "minimum_velocity": 49,
       "maximum_velocity": 55,
       "playback_offset_seconds": 0.267833,
-      "attack_peak_seconds": 0.277583
+      "attack_peak_seconds": 0.277583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-044",
@@ -376,7 +462,9 @@
       "minimum_velocity": 56,
       "maximum_velocity": 61,
       "playback_offset_seconds": 0.267625,
-      "attack_peak_seconds": 0.277417
+      "attack_peak_seconds": 0.277417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-045",
@@ -384,7 +472,9 @@
       "minimum_velocity": 56,
       "maximum_velocity": 61,
       "playback_offset_seconds": 0.25775,
-      "attack_peak_seconds": 0.267521
+      "attack_peak_seconds": 0.267521,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-046",
@@ -392,7 +482,9 @@
       "minimum_velocity": 56,
       "maximum_velocity": 61,
       "playback_offset_seconds": 0.268021,
-      "attack_peak_seconds": 0.27775
+      "attack_peak_seconds": 0.27775,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-047",
@@ -400,7 +492,9 @@
       "minimum_velocity": 62,
       "maximum_velocity": 68,
       "playback_offset_seconds": 0.256979,
-      "attack_peak_seconds": 0.266875
+      "attack_peak_seconds": 0.266875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-048",
@@ -408,7 +502,9 @@
       "minimum_velocity": 62,
       "maximum_velocity": 68,
       "playback_offset_seconds": 0.267562,
-      "attack_peak_seconds": 0.277333
+      "attack_peak_seconds": 0.277333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-049",
@@ -416,7 +512,9 @@
       "minimum_velocity": 62,
       "maximum_velocity": 68,
       "playback_offset_seconds": 0.257812,
-      "attack_peak_seconds": 0.267667
+      "attack_peak_seconds": 0.267667,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-050",
@@ -424,7 +522,9 @@
       "minimum_velocity": 62,
       "maximum_velocity": 68,
       "playback_offset_seconds": 0.266625,
-      "attack_peak_seconds": 0.276479
+      "attack_peak_seconds": 0.276479,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-051",
@@ -432,7 +532,9 @@
       "minimum_velocity": 69,
       "maximum_velocity": 74,
       "playback_offset_seconds": 0.266667,
-      "attack_peak_seconds": 0.273979
+      "attack_peak_seconds": 0.273979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-052",
@@ -440,7 +542,9 @@
       "minimum_velocity": 69,
       "maximum_velocity": 74,
       "playback_offset_seconds": 0.267896,
-      "attack_peak_seconds": 0.275458
+      "attack_peak_seconds": 0.275458,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-053",
@@ -448,7 +552,9 @@
       "minimum_velocity": 69,
       "maximum_velocity": 74,
       "playback_offset_seconds": 0.25875,
-      "attack_peak_seconds": 0.268625
+      "attack_peak_seconds": 0.268625,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-054",
@@ -456,7 +562,9 @@
       "minimum_velocity": 69,
       "maximum_velocity": 74,
       "playback_offset_seconds": 0.266979,
-      "attack_peak_seconds": 0.276896
+      "attack_peak_seconds": 0.276896,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-055",
@@ -464,7 +572,9 @@
       "minimum_velocity": 69,
       "maximum_velocity": 74,
       "playback_offset_seconds": 0.258583,
-      "attack_peak_seconds": 0.268333
+      "attack_peak_seconds": 0.268333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-056",
@@ -472,7 +582,9 @@
       "minimum_velocity": 75,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.266854,
-      "attack_peak_seconds": 0.274354
+      "attack_peak_seconds": 0.274354,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-057",
@@ -480,7 +592,9 @@
       "minimum_velocity": 75,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.26675,
-      "attack_peak_seconds": 0.274125
+      "attack_peak_seconds": 0.274125,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-058",
@@ -488,7 +602,9 @@
       "minimum_velocity": 75,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.258229,
-      "attack_peak_seconds": 0.265771
+      "attack_peak_seconds": 0.265771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-059",
@@ -496,7 +612,9 @@
       "minimum_velocity": 75,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.267333,
-      "attack_peak_seconds": 0.274958
+      "attack_peak_seconds": 0.274958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-060",
@@ -504,7 +622,9 @@
       "minimum_velocity": 75,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.257146,
-      "attack_peak_seconds": 0.26475
+      "attack_peak_seconds": 0.26475,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-061",
@@ -512,7 +632,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.261917,
-      "attack_peak_seconds": 0.269417
+      "attack_peak_seconds": 0.269417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-062",
@@ -520,7 +642,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.261771,
-      "attack_peak_seconds": 0.269146
+      "attack_peak_seconds": 0.269146,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-063",
@@ -528,7 +652,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.259688,
-      "attack_peak_seconds": 0.267146
+      "attack_peak_seconds": 0.267146,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-064",
@@ -536,7 +662,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 93,
       "playback_offset_seconds": 0.262792,
-      "attack_peak_seconds": 0.270146
+      "attack_peak_seconds": 0.270146,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-065",
@@ -544,7 +672,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 93,
       "playback_offset_seconds": 0.262625,
-      "attack_peak_seconds": 0.269979
+      "attack_peak_seconds": 0.269979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-066",
@@ -552,7 +682,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 93,
       "playback_offset_seconds": 0.257937,
-      "attack_peak_seconds": 0.265333
+      "attack_peak_seconds": 0.265333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-067",
@@ -560,7 +692,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 93,
       "playback_offset_seconds": 0.263937,
-      "attack_peak_seconds": 0.271292
+      "attack_peak_seconds": 0.271292,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-068",
@@ -568,7 +702,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.258083,
-      "attack_peak_seconds": 0.270583
+      "attack_peak_seconds": 0.270583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-069",
@@ -576,7 +712,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.257979,
-      "attack_peak_seconds": 0.265354
+      "attack_peak_seconds": 0.265354,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-070",
@@ -584,7 +722,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.261833,
-      "attack_peak_seconds": 0.27425
+      "attack_peak_seconds": 0.27425,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-071",
@@ -592,7 +732,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.26075,
-      "attack_peak_seconds": 0.268021
+      "attack_peak_seconds": 0.268021,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-072",
@@ -600,7 +742,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.264958,
-      "attack_peak_seconds": 0.272208
+      "attack_peak_seconds": 0.272208,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-073",
@@ -608,7 +752,9 @@
       "minimum_velocity": 94,
       "maximum_velocity": 100,
       "playback_offset_seconds": 0.267479,
-      "attack_peak_seconds": 0.274771
+      "attack_peak_seconds": 0.274771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-074",
@@ -616,7 +762,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 105,
       "playback_offset_seconds": 0.261937,
-      "attack_peak_seconds": 0.274438
+      "attack_peak_seconds": 0.274438,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-075",
@@ -624,7 +772,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 106,
       "playback_offset_seconds": 0.26175,
-      "attack_peak_seconds": 0.274104
+      "attack_peak_seconds": 0.274104,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-076",
@@ -632,7 +782,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 106,
       "playback_offset_seconds": 0.256979,
-      "attack_peak_seconds": 0.269417
+      "attack_peak_seconds": 0.269417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-077",
@@ -640,7 +792,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 106,
       "playback_offset_seconds": 0.262333,
-      "attack_peak_seconds": 0.274625
+      "attack_peak_seconds": 0.274625,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-078",
@@ -648,7 +802,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 106,
       "playback_offset_seconds": 0.262875,
-      "attack_peak_seconds": 0.27525
+      "attack_peak_seconds": 0.27525,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-079",
@@ -656,7 +812,9 @@
       "minimum_velocity": 101,
       "maximum_velocity": 106,
       "playback_offset_seconds": 0.261833,
-      "attack_peak_seconds": 0.274292
+      "attack_peak_seconds": 0.274292,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-080",
@@ -664,7 +822,9 @@
       "minimum_velocity": 107,
       "maximum_velocity": 113,
       "playback_offset_seconds": 0.261917,
-      "attack_peak_seconds": 0.274271
+      "attack_peak_seconds": 0.274271,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-081",
@@ -672,7 +832,9 @@
       "minimum_velocity": 107,
       "maximum_velocity": 113,
       "playback_offset_seconds": 0.2625,
-      "attack_peak_seconds": 0.274854
+      "attack_peak_seconds": 0.274854,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-082",
@@ -680,7 +842,9 @@
       "minimum_velocity": 107,
       "maximum_velocity": 113,
       "playback_offset_seconds": 0.261375,
-      "attack_peak_seconds": 0.271417
+      "attack_peak_seconds": 0.271417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-083",
@@ -688,7 +852,9 @@
       "minimum_velocity": 107,
       "maximum_velocity": 113,
       "playback_offset_seconds": 0.2605,
-      "attack_peak_seconds": 0.272875
+      "attack_peak_seconds": 0.272875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-084",
@@ -696,7 +862,9 @@
       "minimum_velocity": 107,
       "maximum_velocity": 113,
       "playback_offset_seconds": 0.260479,
-      "attack_peak_seconds": 0.272896
+      "attack_peak_seconds": 0.272896,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-085",
@@ -704,7 +872,9 @@
       "minimum_velocity": 114,
       "maximum_velocity": 119,
       "playback_offset_seconds": 0.262375,
-      "attack_peak_seconds": 0.272313
+      "attack_peak_seconds": 0.272313,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-086",
@@ -712,7 +882,9 @@
       "minimum_velocity": 114,
       "maximum_velocity": 119,
       "playback_offset_seconds": 0.261875,
-      "attack_peak_seconds": 0.271833
+      "attack_peak_seconds": 0.271833,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-087",
@@ -720,7 +892,9 @@
       "minimum_velocity": 114,
       "maximum_velocity": 119,
       "playback_offset_seconds": 0.261667,
-      "attack_peak_seconds": 0.271604
+      "attack_peak_seconds": 0.271604,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-088",
@@ -728,7 +902,9 @@
       "minimum_velocity": 120,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.256063,
-      "attack_peak_seconds": 0.265958
+      "attack_peak_seconds": 0.265958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-089",
@@ -736,7 +912,9 @@
       "minimum_velocity": 120,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.261521,
-      "attack_peak_seconds": 0.271583
+      "attack_peak_seconds": 0.271583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-090",
@@ -744,7 +922,9 @@
       "minimum_velocity": 120,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.262313,
-      "attack_peak_seconds": 0.272083
+      "attack_peak_seconds": 0.272083,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-091",
@@ -752,7 +932,9 @@
       "minimum_velocity": 120,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.257583,
-      "attack_peak_seconds": 0.267396
+      "attack_peak_seconds": 0.267396,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-092",
@@ -760,7 +942,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.257729,
-      "attack_peak_seconds": 0.267583
+      "attack_peak_seconds": 0.267583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-093",
@@ -768,7 +952,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.261667,
-      "attack_peak_seconds": 0.271625
+      "attack_peak_seconds": 0.271625,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-094",
@@ -776,7 +962,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.262688,
-      "attack_peak_seconds": 0.272667
+      "attack_peak_seconds": 0.272667,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-095",
@@ -784,7 +972,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.262417,
-      "attack_peak_seconds": 0.272188
+      "attack_peak_seconds": 0.272188,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-096",
@@ -792,7 +982,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.261833,
-      "attack_peak_seconds": 0.271625
+      "attack_peak_seconds": 0.271625,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-097",
@@ -800,7 +992,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.262083,
-      "attack_peak_seconds": 0.271875
+      "attack_peak_seconds": 0.271875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-098",
@@ -808,7 +1002,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.261375,
-      "attack_peak_seconds": 0.271333
+      "attack_peak_seconds": 0.271333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "ludwig-black-beauty-snare-center-099",
@@ -816,7 +1012,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.263104,
-      "attack_peak_seconds": 0.272979
+      "attack_peak_seconds": 0.272979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     }
   ],
   "velocities": [
@@ -8195,5 +8393,10 @@
       0.256063,
       0.268229
     ]
+  },
+  "audio": {
+    "channel_count": 2,
+    "channel_layout": "stereo",
+    "classification": "Measured from runtime WAV channel content."
   }
 }

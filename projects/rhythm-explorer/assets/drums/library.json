@@ -17,6 +17,19 @@
     },
     {
       "instrument": "snare",
+      "manufacturer": "Gretsch",
+      "model": "Solid Aluminum",
+      "articulations": [
+        {
+          "name": "center",
+          "midi_note": 38,
+          "kit_id": "gretsch-solid-aluminum-snare-center",
+          "manifest": "snares/gretsch-solid-aluminum/center/kit.json"
+        }
+      ]
+    },
+    {
+      "instrument": "snare",
       "manufacturer": "Ludwig",
       "model": "Black Beauty",
       "articulations": [

@@ -1,6 +1,10 @@
 # Books
 
-## On Drumming, JP Bouvet (10 AUG 2026 -)
+## Surrender, Bono (01 JUL 2026 - )
+
+Tracey and I started this together some time ago, but she's lost interest and I'm finishing it on my own. The audio book is a must. There are songs for each chapter and little bits of sound effects and voices along the way. Bono reads it himself. It goes through the whole history of the band and some of Bono's personal history, but mostly intertwined with the band. They've been going for so many decades, it spans their whole lives. There's lots of politics, which is why Tracey lost interest, but it's pretty interesting to see to politics and religious conflict in Ireland. We watch The Wind that Blows the Barley recently too. And I'm drawn to the Sunday Bloody Sunday song. Bono is a real poet and a romantic. He romanticises *everything* that happens to them. He's been a rare (for a rock star) extreemely devoted husband and father. I really enjoyed the book and will add the physical book to the library too.
+
+## On Drumming, JP Bouvet (10 AUG 2026 - 16 AUG 2026)
 
 - "Focal distance" (zooming/wide angle) -> "focus distance" "focal length" "depth of field"
 - "Automaticity" is that a word?

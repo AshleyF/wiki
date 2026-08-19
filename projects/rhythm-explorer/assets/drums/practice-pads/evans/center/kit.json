@@ -39,7 +39,8 @@
   "audio": {
     "channel_count": 1,
     "channel_layout": "mono",
-    "channel_policy": "Highest-energy source channel selected per hit; silent interface channels discarded."
+    "channel_policy": "Highest-energy source channel selected per hit; silent interface channels discarded.",
+    "classification": "Measured from runtime WAV channel content."
   },
   "samples": [
     {

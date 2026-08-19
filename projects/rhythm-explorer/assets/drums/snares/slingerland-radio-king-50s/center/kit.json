@@ -32,7 +32,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 9,
       "playback_offset_seconds": 0.262667,
-      "attack_peak_seconds": 0.27475
+      "attack_peak_seconds": 0.27475,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-002",
@@ -40,7 +42,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 9,
       "playback_offset_seconds": 0.265688,
-      "attack_peak_seconds": 0.275562
+      "attack_peak_seconds": 0.275562,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-003",
@@ -48,7 +52,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 9,
       "playback_offset_seconds": 0.266729,
-      "attack_peak_seconds": 0.278917
+      "attack_peak_seconds": 0.278917,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-004",
@@ -56,7 +62,9 @@
       "minimum_velocity": 1,
       "maximum_velocity": 9,
       "playback_offset_seconds": 0.25975,
-      "attack_peak_seconds": 0.272375
+      "attack_peak_seconds": 0.272375,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-005",
@@ -64,7 +72,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 15,
       "playback_offset_seconds": 0.263708,
-      "attack_peak_seconds": 0.277104
+      "attack_peak_seconds": 0.277104,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-006",
@@ -72,7 +82,9 @@
       "minimum_velocity": 5,
       "maximum_velocity": 15,
       "playback_offset_seconds": 0.262521,
-      "attack_peak_seconds": 0.275646
+      "attack_peak_seconds": 0.275646,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-007",
@@ -80,7 +92,9 @@
       "minimum_velocity": 16,
       "maximum_velocity": 20,
       "playback_offset_seconds": 0.261271,
-      "attack_peak_seconds": 0.266667
+      "attack_peak_seconds": 0.266667,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-008",
@@ -88,7 +102,9 @@
       "minimum_velocity": 16,
       "maximum_velocity": 20,
       "playback_offset_seconds": 0.268333,
-      "attack_peak_seconds": 0.273792
+      "attack_peak_seconds": 0.273792,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-009",
@@ -96,7 +112,9 @@
       "minimum_velocity": 21,
       "maximum_velocity": 26,
       "playback_offset_seconds": 0.259375,
-      "attack_peak_seconds": 0.265188
+      "attack_peak_seconds": 0.265188,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-010",
@@ -104,7 +122,9 @@
       "minimum_velocity": 21,
       "maximum_velocity": 26,
       "playback_offset_seconds": 0.263437,
-      "attack_peak_seconds": 0.269417
+      "attack_peak_seconds": 0.269417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-011",
@@ -112,7 +132,9 @@
       "minimum_velocity": 21,
       "maximum_velocity": 26,
       "playback_offset_seconds": 0.265083,
-      "attack_peak_seconds": 0.271083
+      "attack_peak_seconds": 0.271083,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-012",
@@ -120,7 +142,9 @@
       "minimum_velocity": 27,
       "maximum_velocity": 31,
       "playback_offset_seconds": 0.268875,
-      "attack_peak_seconds": 0.275187
+      "attack_peak_seconds": 0.275187,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-013",
@@ -128,7 +152,9 @@
       "minimum_velocity": 27,
       "maximum_velocity": 31,
       "playback_offset_seconds": 0.260604,
-      "attack_peak_seconds": 0.266854
+      "attack_peak_seconds": 0.266854,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-014",
@@ -136,7 +162,9 @@
       "minimum_velocity": 27,
       "maximum_velocity": 31,
       "playback_offset_seconds": 0.263104,
-      "attack_peak_seconds": 0.269271
+      "attack_peak_seconds": 0.269271,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-015",
@@ -144,7 +172,9 @@
       "minimum_velocity": 32,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.267667,
-      "attack_peak_seconds": 0.27475
+      "attack_peak_seconds": 0.27475,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-016",
@@ -152,7 +182,9 @@
       "minimum_velocity": 32,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.261562,
-      "attack_peak_seconds": 0.268167
+      "attack_peak_seconds": 0.268167,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-017",
@@ -160,7 +192,9 @@
       "minimum_velocity": 32,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.267458,
-      "attack_peak_seconds": 0.274083
+      "attack_peak_seconds": 0.274083,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-018",
@@ -168,7 +202,9 @@
       "minimum_velocity": 32,
       "maximum_velocity": 42,
       "playback_offset_seconds": 0.265854,
-      "attack_peak_seconds": 0.272562
+      "attack_peak_seconds": 0.272562,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-019",
@@ -176,7 +212,9 @@
       "minimum_velocity": 38,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.261625,
-      "attack_peak_seconds": 0.268562
+      "attack_peak_seconds": 0.268562,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-020",
@@ -184,7 +222,9 @@
       "minimum_velocity": 38,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.264021,
-      "attack_peak_seconds": 0.272583
+      "attack_peak_seconds": 0.272583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-021",
@@ -192,7 +232,9 @@
       "minimum_velocity": 38,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.267625,
-      "attack_peak_seconds": 0.276896
+      "attack_peak_seconds": 0.276896,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-022",
@@ -200,7 +242,9 @@
       "minimum_velocity": 38,
       "maximum_velocity": 48,
       "playback_offset_seconds": 0.26775,
-      "attack_peak_seconds": 0.275646
+      "attack_peak_seconds": 0.275646,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-023",
@@ -208,7 +252,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 53,
       "playback_offset_seconds": 0.263062,
-      "attack_peak_seconds": 0.271646
+      "attack_peak_seconds": 0.271646,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-024",
@@ -216,7 +262,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 53,
       "playback_offset_seconds": 0.260208,
-      "attack_peak_seconds": 0.269562
+      "attack_peak_seconds": 0.269562,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-025",
@@ -224,7 +272,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 53,
       "playback_offset_seconds": 0.264667,
-      "attack_peak_seconds": 0.27325
+      "attack_peak_seconds": 0.27325,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-026",
@@ -232,7 +282,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 53,
       "playback_offset_seconds": 0.267521,
-      "attack_peak_seconds": 0.276854
+      "attack_peak_seconds": 0.276854,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-027",
@@ -240,7 +292,9 @@
       "minimum_velocity": 43,
       "maximum_velocity": 53,
       "playback_offset_seconds": 0.257875,
-      "attack_peak_seconds": 0.266396
+      "attack_peak_seconds": 0.266396,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-028",
@@ -248,7 +302,9 @@
       "minimum_velocity": 54,
       "maximum_velocity": 59,
       "playback_offset_seconds": 0.266271,
-      "attack_peak_seconds": 0.27575
+      "attack_peak_seconds": 0.27575,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-029",
@@ -256,7 +312,9 @@
       "minimum_velocity": 54,
       "maximum_velocity": 59,
       "playback_offset_seconds": 0.267208,
-      "attack_peak_seconds": 0.275729
+      "attack_peak_seconds": 0.275729,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-030",
@@ -264,7 +322,9 @@
       "minimum_velocity": 54,
       "maximum_velocity": 59,
       "playback_offset_seconds": 0.257312,
-      "attack_peak_seconds": 0.266729
+      "attack_peak_seconds": 0.266729,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-031",
@@ -272,7 +332,9 @@
       "minimum_velocity": 54,
       "maximum_velocity": 59,
       "playback_offset_seconds": 0.267521,
-      "attack_peak_seconds": 0.276042
+      "attack_peak_seconds": 0.276042,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-032",
@@ -280,7 +342,9 @@
       "minimum_velocity": 60,
       "maximum_velocity": 65,
       "playback_offset_seconds": 0.257958,
-      "attack_peak_seconds": 0.267375
+      "attack_peak_seconds": 0.267375,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-033",
@@ -288,7 +352,9 @@
       "minimum_velocity": 60,
       "maximum_velocity": 65,
       "playback_offset_seconds": 0.267458,
-      "attack_peak_seconds": 0.276042
+      "attack_peak_seconds": 0.276042,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-034",
@@ -296,7 +362,9 @@
       "minimum_velocity": 60,
       "maximum_velocity": 65,
       "playback_offset_seconds": 0.266125,
-      "attack_peak_seconds": 0.284417
+      "attack_peak_seconds": 0.284417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-035",
@@ -304,7 +372,9 @@
       "minimum_velocity": 60,
       "maximum_velocity": 65,
       "playback_offset_seconds": 0.268271,
-      "attack_peak_seconds": 0.277687
+      "attack_peak_seconds": 0.277687,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-036",
@@ -312,7 +382,9 @@
       "minimum_velocity": 60,
       "maximum_velocity": 65,
       "playback_offset_seconds": 0.267083,
-      "attack_peak_seconds": 0.276479
+      "attack_peak_seconds": 0.276479,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-037",
@@ -320,7 +392,9 @@
       "minimum_velocity": 66,
       "maximum_velocity": 70,
       "playback_offset_seconds": 0.262979,
-      "attack_peak_seconds": 0.271604
+      "attack_peak_seconds": 0.271604,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-038",
@@ -328,7 +402,9 @@
       "minimum_velocity": 66,
       "maximum_velocity": 70,
       "playback_offset_seconds": 0.262729,
-      "attack_peak_seconds": 0.271333
+      "attack_peak_seconds": 0.271333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-039",
@@ -336,7 +412,9 @@
       "minimum_velocity": 66,
       "maximum_velocity": 70,
       "playback_offset_seconds": 0.257104,
-      "attack_peak_seconds": 0.261542
+      "attack_peak_seconds": 0.261542,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-040",
@@ -344,7 +422,9 @@
       "minimum_velocity": 71,
       "maximum_velocity": 76,
       "playback_offset_seconds": 0.260292,
-      "attack_peak_seconds": 0.268958
+      "attack_peak_seconds": 0.268958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-041",
@@ -352,7 +432,9 @@
       "minimum_velocity": 71,
       "maximum_velocity": 76,
       "playback_offset_seconds": 0.261688,
-      "attack_peak_seconds": 0.266104
+      "attack_peak_seconds": 0.266104,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-042",
@@ -360,7 +442,9 @@
       "minimum_velocity": 71,
       "maximum_velocity": 76,
       "playback_offset_seconds": 0.261667,
-      "attack_peak_seconds": 0.270333
+      "attack_peak_seconds": 0.270333,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-043",
@@ -368,7 +452,9 @@
       "minimum_velocity": 71,
       "maximum_velocity": 76,
       "playback_offset_seconds": 0.26325,
-      "attack_peak_seconds": 0.271958
+      "attack_peak_seconds": 0.271958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-044",
@@ -376,7 +462,9 @@
       "minimum_velocity": 77,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.262125,
-      "attack_peak_seconds": 0.270917
+      "attack_peak_seconds": 0.270917,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-045",
@@ -384,7 +472,9 @@
       "minimum_velocity": 77,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.261583,
-      "attack_peak_seconds": 0.270896
+      "attack_peak_seconds": 0.270896,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-046",
@@ -392,7 +482,9 @@
       "minimum_velocity": 77,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.261792,
-      "attack_peak_seconds": 0.266125
+      "attack_peak_seconds": 0.266125,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-047",
@@ -400,7 +492,9 @@
       "minimum_velocity": 77,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.265792,
-      "attack_peak_seconds": 0.275104
+      "attack_peak_seconds": 0.275104,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-048",
@@ -408,7 +502,9 @@
       "minimum_velocity": 77,
       "maximum_velocity": 81,
       "playback_offset_seconds": 0.260771,
-      "attack_peak_seconds": 0.269562
+      "attack_peak_seconds": 0.269562,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-049",
@@ -416,7 +512,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.264562,
-      "attack_peak_seconds": 0.274167
+      "attack_peak_seconds": 0.274167,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-050",
@@ -424,7 +522,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.258937,
-      "attack_peak_seconds": 0.263229
+      "attack_peak_seconds": 0.263229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-051",
@@ -432,7 +532,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.260396,
-      "attack_peak_seconds": 0.264771
+      "attack_peak_seconds": 0.264771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-052",
@@ -440,7 +542,9 @@
       "minimum_velocity": 82,
       "maximum_velocity": 87,
       "playback_offset_seconds": 0.267813,
-      "attack_peak_seconds": 0.277396
+      "attack_peak_seconds": 0.277396,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-053",
@@ -448,7 +552,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 92,
       "playback_offset_seconds": 0.262583,
-      "attack_peak_seconds": 0.271979
+      "attack_peak_seconds": 0.271979,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-054",
@@ -456,7 +562,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 92,
       "playback_offset_seconds": 0.262729,
-      "attack_peak_seconds": 0.267
+      "attack_peak_seconds": 0.267,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-055",
@@ -464,7 +572,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 92,
       "playback_offset_seconds": 0.260104,
-      "attack_peak_seconds": 0.269708
+      "attack_peak_seconds": 0.269708,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-056",
@@ -472,7 +582,9 @@
       "minimum_velocity": 88,
       "maximum_velocity": 92,
       "playback_offset_seconds": 0.261792,
-      "attack_peak_seconds": 0.271417
+      "attack_peak_seconds": 0.271417,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-057",
@@ -480,7 +592,9 @@
       "minimum_velocity": 93,
       "maximum_velocity": 98,
       "playback_offset_seconds": 0.256792,
-      "attack_peak_seconds": 0.261042
+      "attack_peak_seconds": 0.261042,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-058",
@@ -488,7 +602,9 @@
       "minimum_velocity": 93,
       "maximum_velocity": 98,
       "playback_offset_seconds": 0.258458,
-      "attack_peak_seconds": 0.262729
+      "attack_peak_seconds": 0.262729,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-059",
@@ -496,7 +612,9 @@
       "minimum_velocity": 93,
       "maximum_velocity": 98,
       "playback_offset_seconds": 0.258979,
-      "attack_peak_seconds": 0.268354
+      "attack_peak_seconds": 0.268354,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-060",
@@ -504,7 +622,9 @@
       "minimum_velocity": 93,
       "maximum_velocity": 98,
       "playback_offset_seconds": 0.262458,
-      "attack_peak_seconds": 0.271813
+      "attack_peak_seconds": 0.271813,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-061",
@@ -512,7 +632,9 @@
       "minimum_velocity": 99,
       "maximum_velocity": 103,
       "playback_offset_seconds": 0.261646,
-      "attack_peak_seconds": 0.271062
+      "attack_peak_seconds": 0.271062,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-062",
@@ -520,7 +642,9 @@
       "minimum_velocity": 99,
       "maximum_velocity": 103,
       "playback_offset_seconds": 0.266646,
-      "attack_peak_seconds": 0.270875
+      "attack_peak_seconds": 0.270875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-063",
@@ -528,7 +652,9 @@
       "minimum_velocity": 99,
       "maximum_velocity": 103,
       "playback_offset_seconds": 0.261271,
-      "attack_peak_seconds": 0.270854
+      "attack_peak_seconds": 0.270854,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-064",
@@ -536,7 +662,9 @@
       "minimum_velocity": 104,
       "maximum_velocity": 109,
       "playback_offset_seconds": 0.257625,
-      "attack_peak_seconds": 0.261875
+      "attack_peak_seconds": 0.261875,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-065",
@@ -544,7 +672,9 @@
       "minimum_velocity": 104,
       "maximum_velocity": 109,
       "playback_offset_seconds": 0.265833,
-      "attack_peak_seconds": 0.27
+      "attack_peak_seconds": 0.27,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-066",
@@ -552,7 +682,9 @@
       "minimum_velocity": 104,
       "maximum_velocity": 109,
       "playback_offset_seconds": 0.267125,
-      "attack_peak_seconds": 0.276771
+      "attack_peak_seconds": 0.276771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-067",
@@ -560,7 +692,9 @@
       "minimum_velocity": 110,
       "maximum_velocity": 114,
       "playback_offset_seconds": 0.260688,
-      "attack_peak_seconds": 0.270062
+      "attack_peak_seconds": 0.270062,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-068",
@@ -568,7 +702,9 @@
       "minimum_velocity": 110,
       "maximum_velocity": 114,
       "playback_offset_seconds": 0.25725,
-      "attack_peak_seconds": 0.261437
+      "attack_peak_seconds": 0.261437,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-069",
@@ -576,7 +712,9 @@
       "minimum_velocity": 110,
       "maximum_velocity": 114,
       "playback_offset_seconds": 0.260521,
-      "attack_peak_seconds": 0.270146
+      "attack_peak_seconds": 0.270146,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-070",
@@ -584,7 +722,9 @@
       "minimum_velocity": 110,
       "maximum_velocity": 114,
       "playback_offset_seconds": 0.262146,
-      "attack_peak_seconds": 0.271813
+      "attack_peak_seconds": 0.271813,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-071",
@@ -592,7 +732,9 @@
       "minimum_velocity": 115,
       "maximum_velocity": 120,
       "playback_offset_seconds": 0.255646,
-      "attack_peak_seconds": 0.270271
+      "attack_peak_seconds": 0.270271,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-072",
@@ -600,7 +742,9 @@
       "minimum_velocity": 115,
       "maximum_velocity": 120,
       "playback_offset_seconds": 0.262875,
-      "attack_peak_seconds": 0.277583
+      "attack_peak_seconds": 0.277583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-073",
@@ -608,7 +752,9 @@
       "minimum_velocity": 115,
       "maximum_velocity": 120,
       "playback_offset_seconds": 0.261979,
-      "attack_peak_seconds": 0.271458
+      "attack_peak_seconds": 0.271458,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-074",
@@ -616,7 +762,9 @@
       "minimum_velocity": 116,
       "maximum_velocity": 119,
       "playback_offset_seconds": 0.261021,
-      "attack_peak_seconds": 0.275729
+      "attack_peak_seconds": 0.275729,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-075",
@@ -624,7 +772,9 @@
       "minimum_velocity": 121,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.2655,
-      "attack_peak_seconds": 0.274958
+      "attack_peak_seconds": 0.274958,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-076",
@@ -632,7 +782,9 @@
       "minimum_velocity": 121,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.263417,
-      "attack_peak_seconds": 0.277896
+      "attack_peak_seconds": 0.277896,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-077",
@@ -640,7 +792,9 @@
       "minimum_velocity": 121,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.262542,
-      "attack_peak_seconds": 0.277021
+      "attack_peak_seconds": 0.277021,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-078",
@@ -648,7 +802,9 @@
       "minimum_velocity": 121,
       "maximum_velocity": 126,
       "playback_offset_seconds": 0.260104,
-      "attack_peak_seconds": 0.269583
+      "attack_peak_seconds": 0.269583,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-079",
@@ -656,7 +812,9 @@
       "minimum_velocity": 121,
       "maximum_velocity": 124,
       "playback_offset_seconds": 0.261271,
-      "attack_peak_seconds": 0.275771
+      "attack_peak_seconds": 0.275771,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-080",
@@ -664,7 +822,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.265125,
-      "attack_peak_seconds": 0.279479
+      "attack_peak_seconds": 0.279479,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-081",
@@ -672,7 +832,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.266021,
-      "attack_peak_seconds": 0.275438
+      "attack_peak_seconds": 0.275438,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-082",
@@ -680,7 +842,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.263062,
-      "attack_peak_seconds": 0.2725
+      "attack_peak_seconds": 0.2725,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-083",
@@ -688,7 +852,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.259542,
-      "attack_peak_seconds": 0.269
+      "attack_peak_seconds": 0.269,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-084",
@@ -696,7 +862,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.266792,
-      "attack_peak_seconds": 0.276187
+      "attack_peak_seconds": 0.276187,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-085",
@@ -704,7 +872,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.267479,
-      "attack_peak_seconds": 0.279229
+      "attack_peak_seconds": 0.279229,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     },
     {
       "id": "slingerland-radio-king-50s-snare-center-086",
@@ -712,7 +882,9 @@
       "minimum_velocity": 127,
       "maximum_velocity": 127,
       "playback_offset_seconds": 0.267083,
-      "attack_peak_seconds": 0.276542
+      "attack_peak_seconds": 0.276542,
+      "channel_count": 2,
+      "channel_layout": "stereo"
     }
   ],
   "velocities": [
@@ -7621,5 +7793,10 @@
       0.255646,
       0.268875
     ]
+  },
+  "audio": {
+    "channel_count": 2,
+    "channel_layout": "stereo",
+    "classification": "Measured from runtime WAV channel content."
   }
 }
