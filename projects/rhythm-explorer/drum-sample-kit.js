@@ -4,6 +4,52 @@ export function velocityFromStrength(strength, referenceVelocity = 82) {
   return clampVelocity(referenceVelocity * Math.max(0, Number(strength) || 0));
 }
 
+export function velocityFromStrengthProfile(strength, {
+  ghost = 29,
+  normal = 82,
+  accent = 127
+} = {}) {
+  const amount = Math.max(0, Number(strength) || 0);
+  const low = clampVelocity(ghost);
+  const middle = Math.max(low, clampVelocity(normal));
+  const high = Math.max(middle, clampVelocity(accent));
+  if (amount <= 0.35) return clampVelocity(low * amount / 0.35);
+  if (amount <= 1) return clampVelocity(low + ((middle - low) * (amount - 0.35) / 0.65));
+  if (amount <= 3) return clampVelocity(middle + ((high - middle) * (amount - 1) / 2));
+  return high;
+}
+
+export function pushOrderedVelocities(values, changedIndex, requested, {
+  minimum = 1,
+  maximum = 127,
+  gap = 1
+} = {}) {
+  const result = values.map(value => Math.round(Number(value) || minimum));
+  const index = Math.max(0, Math.min(result.length - 1, Math.round(changedIndex)));
+  const clamp = value => Math.max(minimum, Math.min(maximum, Math.round(Number(value) || minimum)));
+  result[index] = clamp(requested);
+
+  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+    if (result[cursor] >= result[cursor + 1]) result[cursor] = result[cursor + 1] - gap;
+  }
+  for (let cursor = index + 1; cursor < result.length; cursor += 1) {
+    if (result[cursor] <= result[cursor - 1]) result[cursor] = result[cursor - 1] + gap;
+  }
+  if (result[0] < minimum) {
+    result[0] = minimum;
+    for (let cursor = 1; cursor < result.length; cursor += 1) {
+      result[cursor] = Math.max(result[cursor], result[cursor - 1] + gap);
+    }
+  }
+  if (result[result.length - 1] > maximum) {
+    result[result.length - 1] = maximum;
+    for (let cursor = result.length - 2; cursor >= 0; cursor -= 1) {
+      result[cursor] = Math.min(result[cursor], result[cursor + 1] - gap);
+    }
+  }
+  return result.map(clamp);
+}
+
 export function chooseWeightedVariant(variants, previousSampleId = '', random = Math.random) {
   if (!Array.isArray(variants) || variants.length === 0) return null;
   const choices = variants.length > 1

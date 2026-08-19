@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
-import { chooseWeightedVariant, conformSampleBufferChannels, DrumSampleKit, findKitDefinition, listKitDefinitions, velocityFromStrength } from './drum-sample-kit.js';
+import { chooseWeightedVariant, conformSampleBufferChannels, DrumSampleKit, findKitDefinition, listKitDefinitions, pushOrderedVelocities, velocityFromStrength, velocityFromStrengthProfile } from './drum-sample-kit.js';
 
 assert.equal(velocityFromStrength(1), 82);
 assert.equal(velocityFromStrength(0.35), 29);
 assert.equal(velocityFromStrength(3), 127);
 assert.equal(velocityFromStrength(0), 1);
+assert.equal(velocityFromStrengthProfile(0.35), 29);
+assert.equal(velocityFromStrengthProfile(1), 82);
+assert.equal(velocityFromStrengthProfile(3), 127);
+assert.equal(velocityFromStrengthProfile(0.55), 45);
+assert.deepEqual(pushOrderedVelocities([29, 82, 127], 1, 20), [19, 20, 127]);
+assert.deepEqual(pushOrderedVelocities([29, 82, 127], 1, 120), [29, 120, 127]);
+assert.deepEqual(pushOrderedVelocities([29, 82, 127], 0, 127), [125, 126, 127]);
+assert.deepEqual(pushOrderedVelocities([29, 82, 127], 2, 1), [1, 2, 3]);
 
 const variants = [
   { sample_id: 'a', weight: 0.9 },
@@ -76,8 +84,8 @@ assert.equal(blackBeauty.drum.model, 'Black Beauty');
 assert.equal(blackBeauty.name, 'center');
 assert.equal(findKitDefinition(library, { kitId: 'missing-kit' }), null);
 const centerSnareKits = listKitDefinitions(library, { instrument: 'snare', articulation: 'center' });
-assert.equal(centerSnareKits.length, 2);
 assert.ok(centerSnareKits.some(entry => entry.kit_id === 'ludwig-black-beauty-snare-center'));
+assert.ok(centerSnareKits.some(entry => entry.kit_id === 'gretsch-solid-aluminum-snare-center'));
 const selectableSnareSounds = listKitDefinitions(library, { midiNote: 38 });
 assert.ok(selectableSnareSounds.some(entry => entry.kit_id === 'evans-practice-pad-center'));
 

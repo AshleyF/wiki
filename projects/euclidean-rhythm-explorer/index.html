@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Build drum tracks by combining Euclidean rhythms with Boolean operations.">
+    <title>Euclidean Rhythm Explorer</title>
+    <script>
+      (() => {
+        let theme = 'dark';
+        try { theme = localStorage.getItem('personal-wiki-theme') === 'light' ? 'light' : 'dark'; } catch (error) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="project-header">
+      <h1>Euclidean Rhythm Explorer</h1>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="transport panel" aria-label="Playback and phrase controls">
+        <button id="play-toggle" class="primary-button" type="button">▶ Play</button>
+        <button id="mute-toggle" class="quiet-button icon-button" type="button" aria-label="Mute audio" title="Mute audio">🔊</button>
+        <label><span>Tempo</span><input id="tempo" type="number" min="30" max="300" step="1" value="108"><small>BPM</small></label>
+        <label><span>Meter</span><select id="meter"><option>4/4</option><option>3/4</option><option>5/4</option><option>6/8</option><option>7/8</option></select></label>
+        <label><span>Grid</span><select id="subdivision"><option value="2">2 slots / beat</option><option value="3">3 slots / beat</option><option value="4" selected>4 slots / beat</option></select></label>
+        <label><span>Length</span><select id="bars"><option value="1">1 bar</option><option value="2" selected>2 bars</option><option value="4">4 bars</option><option value="8">8 bars</option></select></label>
+        <details class="midi-controls">
+          <summary>MIDI</summary>
+          <div class="midi-controls-menu">
+            <button id="enable-midi" class="quiet-button" type="button">Enable MIDI</button>
+            <label><span>MIDI out</span><select id="midi-output" disabled title="Choosing an output sends the tracks to MIDI and silences built-in sounds"><option value="">Off</option></select></label>
+            <label><span>Channel</span><select id="midi-channel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10" selected>10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option></select></label>
+            <label class="midi-clock-label" title="Send standard MIDI clock, Start, and Stop messages"><input id="midi-clock" type="checkbox"> <span>Clock</span></label>
+          </div>
+        </details>
+        <button id="reset-all" class="quiet-button" type="button">Clear</button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </section>
+
+      <section class="track-workbench panel" aria-labelledby="tracks-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Loop</p><h2 id="tracks-title">Tracks</h2></div>
+          <button id="add-track" class="primary-button" type="button">+ Add track</button>
+        </div>
+        <div id="phrase-summary" class="phrase-summary"></div>
+        <div id="change-legend" class="change-legend" hidden aria-label="Operation change colors">
+          <span><i class="legend-retained"></i> Retained</span>
+          <span><i class="legend-added"></i> Added</span>
+          <span><i class="legend-removed"></i> Removed</span>
+        </div>
+        <div id="empty-state" class="empty-state">
+          <strong>No tracks yet</strong>
+          <span>Add a blank track, then choose its instrument.</span>
+        </div>
+        <div id="track-bank" class="track-bank"></div>
+      </section>
+    </main>
+
+    <template id="track-template">
+      <article class="track-card">
+        <header class="track-summary">
+          <button class="track-disclosure icon-button" type="button" aria-expanded="true" title="Collapse track">⌄</button>
+          <div class="track-identity">
+            <label><span class="visually-hidden">Track instrument</span><select class="track-instrument"></select></label>
+            <code class="track-expression"></code>
+          </div>
+          <div class="track-preview" aria-hidden="true"></div>
+          <label class="level-compact" title="Playback velocity"><span>Level</span><input class="track-level" type="range" min="20" max="127"><output class="track-level-output"></output></label>
+          <button class="track-mute icon-button" type="button" aria-pressed="false" title="Mute track">🔊</button>
+          <button class="remove-track icon-button" type="button" title="Remove track" aria-label="Remove track">×</button>
+        </header>
+        <div class="track-details">
+          <div class="pattern-list"></div>
+          <button class="add-operation quiet-button" type="button">+ Add operation</button>
+        </div>
+      </article>
+    </template>
+
+    <template id="pattern-template">
+      <section class="pattern-clause">
+        <div class="operation-row">
+          <span class="start-label">Start with</span>
+          <label class="operation-control"><span class="visually-hidden">Operation</span><select class="pattern-operation"><option value="union">∪ Union</option><option value="difference">− Subtract</option><option value="intersection">∩ Intersect</option><option value="xor">⊕ XOR</option></select></label>
+          <button class="pattern-disclosure icon-button" type="button" aria-expanded="true" title="Collapse pattern">⌄</button>
+          <code class="collapsed-result-formula"></code>
+          <div class="collapsed-result-preview" aria-hidden="true"></div>
+          <button class="remove-pattern icon-button" type="button" title="Remove pattern" aria-label="Remove pattern">×</button>
+        </div>
+        <div class="pattern-controls">
+          <label><span>Hits <output data-output="pulses"></output></span><input data-field="pulses" type="range" min="0" max="16" step="1"></label>
+          <label><span>Cycle <output data-output="steps"></output></span><input data-field="steps" type="range" min="1" max="32" step="1"></label>
+          <label><span>Rotate <output data-output="rotation"></output></span><input data-field="rotation" type="range" min="0" max="15" step="1"></label>
+          <div class="source-pattern">
+            <span>Pattern</span>
+            <code class="source-formula"></code>
+            <div class="source-preview" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="operation-result">
+          <span>Result</span>
+          <code class="result-formula"></code>
+          <div class="result-preview" aria-hidden="true"></div>
+        </div>
+      </section>
+    </template>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

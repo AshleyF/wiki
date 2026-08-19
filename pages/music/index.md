@@ -1,6 +1,6 @@
 # Music
 
-My [drum rudiments page](#/music/rudiments), [grooves page](#/music/grooves), [rhythm study map](#/music/rhythm), and [Euclidean rhythms page](#/music/euclidean-rhythms) cover drum technique, playable beats, rhythm theory, percussion sounds, and related ideas.
+My [drum rudiments page](#/music/rudiments), [grooves page](#/music/grooves), [rhythm study map](#/music/rhythm), and [Euclidean rhythms page](#/music/euclidean-rhythms) cover drum technique, playable beats, rhythm theory, percussion sounds, and related ideas. The standalone [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) turns the Euclidean and Boolean-combination ideas into a live instrument.
 
 ## Strudel
 
