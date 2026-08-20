@@ -3,12 +3,21 @@ import {
   evaluatePatternClauses,
   formatPatternExpression,
   patternExpressionPeriod,
-  renderPatternTrack
+  renderPatternTrack,
+  snapRangeValue,
+  trackTimingOffsetSeconds
 } from './euclidean-core.js';
 import { INSTRUMENTS, instrumentGroups } from './instrument-catalog.js';
 
 const STORAGE_KEY = 'euclidean-rhythm-explorer-state-v2';
 const OPERATIONS = ['union', 'difference', 'intersection', 'xor'];
+const STRAIGHT_SWING = 50;
+const TRIPLET_SWING = 66.667;
+const MAX_SWING = 83.333;
+const SWING_SNAP_THRESHOLD = 0.6;
+const TIMING_SNAP_THRESHOLD_MS = 2;
+const clampSwing = value => Math.max(STRAIGHT_SWING, Math.min(MAX_SWING, Number(value) || STRAIGHT_SWING));
+const clampTrackTiming = value => Math.max(-80, Math.min(80, Math.round(Number(value) || 0)));
 const makeId = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const makePattern = ([pulses = 1, steps = 8, rotation = 0] = []) => ({ pulses, steps, rotation });
 const makeClause = (pattern = makePattern(), operation = null) => ({ ...(operation ? { operation } : {}), pattern, collapsed: false });
@@ -18,6 +27,8 @@ const freshState = () => ({
   meter: '4/4',
   subdivision: 4,
   bars: 2,
+  swing: STRAIGHT_SWING,
+  swingUnit: 8,
   muted: false,
   midiOutputId: '',
   midiChannel: 10,
@@ -41,6 +52,8 @@ function sanitizeState(candidate) {
   result.meter = ['4/4', '3/4', '5/4', '6/8', '7/8'].includes(candidate.meter) ? candidate.meter : result.meter;
   result.subdivision = [2, 3, 4].includes(Number(candidate.subdivision)) ? Number(candidate.subdivision) : result.subdivision;
   result.bars = [1, 2, 4, 8].includes(Number(candidate.bars)) ? Number(candidate.bars) : result.bars;
+  result.swing = clampSwing(candidate.swing);
+  result.swingUnit = [8, 16].includes(Number(candidate.swingUnit)) ? Number(candidate.swingUnit) : result.swingUnit;
   result.muted = Boolean(candidate.muted);
   result.midiOutputId = typeof candidate.midiOutputId === 'string' ? candidate.midiOutputId : '';
   result.midiChannel = Math.max(1, Math.min(16, Math.round(Number(candidate.midiChannel) || 10)));
@@ -58,6 +71,8 @@ function sanitizeState(candidate) {
       clauses: clauses.length ? clauses : [makeClause(makePattern(instrument?.pattern || [3, 8, 0]))],
       muted: Boolean(source.muted),
       level: Math.max(20, Math.min(127, Math.round(Number(source.level) || instrument?.level || 82))),
+      swing: source.swing === null || source.swing === undefined ? null : clampSwing(source.swing),
+      timingOffsetMs: clampTrackTiming(source.timingOffsetMs),
       collapsed: Boolean(source.collapsed)
     };
   });
@@ -72,6 +87,7 @@ let state = loadState();
 let saveTimer = 0;
 let audioContext = null;
 let masterGain = null;
+let activeAudioNodes = new Set();
 let schedulerTimer = 0;
 let playing = false;
 let nextStep = 0;
@@ -81,6 +97,7 @@ let midiAccess = null;
 let midiOutput = null;
 let pendingMidiOutputId = state.midiOutputId;
 let midiClockRunning = false;
+let activeFeelRange = null;
 
 const elements = {
   play: document.querySelector('#play-toggle'),
@@ -89,6 +106,9 @@ const elements = {
   meter: document.querySelector('#meter'),
   subdivision: document.querySelector('#subdivision'),
   bars: document.querySelector('#bars'),
+  swingUnit: document.querySelector('#swing-unit'),
+  globalSwing: document.querySelector('#global-swing'),
+  globalSwingOutput: document.querySelector('#global-swing-output'),
   status: document.querySelector('#status'),
   midiEnable: document.querySelector('#enable-midi'),
   midiOutput: document.querySelector('#midi-output'),
@@ -111,6 +131,54 @@ function totalSlots() { return slotsPerBar() * state.bars; }
 function secondsPerSlot() {
   const { denominator } = meterParts();
   return (60 / state.tempo) * (4 / denominator) / state.subdivision;
+}
+
+function slotsPerSwingUnit() {
+  const { denominator } = meterParts();
+  return denominator * state.subdivision / state.swingUnit;
+}
+
+function swingLabel(value) {
+  const amount = clampSwing(value);
+  if (Math.abs(amount - STRAIGHT_SWING) < 0.05) return '50%';
+  if (Math.abs(amount - TRIPLET_SWING) < 0.11) return '66.7%';
+  return `${amount.toFixed(1)}%`;
+}
+
+function swingAriaLabel(value) {
+  const amount = clampSwing(value);
+  if (Math.abs(amount - STRAIGHT_SWING) < 0.05) return '50%, straight';
+  if (Math.abs(amount - TRIPLET_SWING) < 0.11) return '66.7%, triplet swing';
+  return `${amount.toFixed(1)}% swing`;
+}
+
+function timingLabel(value) {
+  const amount = clampTrackTiming(value);
+  if (!amount) return '0 ms · On beat';
+  return `${amount > 0 ? '+' : '−'}${Math.abs(amount)} ms · ${amount < 0 ? 'Ahead' : 'Behind'}`;
+}
+
+function snapFeelRangeInput(input) {
+  if (!input || input !== activeFeelRange) return false;
+  const timing = input.matches('.track-timing');
+  const center = timing ? 0 : TRIPLET_SWING;
+  const threshold = timing ? TIMING_SNAP_THRESHOLD_MS : SWING_SNAP_THRESHOLD;
+  const value = Number(input.value);
+  const snapped = snapRangeValue(value, center, threshold);
+  if (snapped === value) return false;
+  input.value = String(snapped);
+  return true;
+}
+
+function effectiveTrackSwing(track) {
+  return track.swing === null ? state.swing : track.swing;
+}
+
+function updateGlobalSwingControl() {
+  const value = clampSwing(state.swing);
+  elements.globalSwing.value = value;
+  elements.globalSwingOutput.textContent = swingLabel(value);
+  elements.globalSwing.setAttribute('aria-valuetext', swingAriaLabel(value));
 }
 
 function saveSoon() {
@@ -192,6 +260,24 @@ function populateInstrumentSelect(select, selected = '') {
   select.value = findInstrument(selected) ? selected : '';
 }
 
+function updateTrackFeelControls(track, card) {
+  const overridden = track.swing !== null;
+  const swing = effectiveTrackSwing(track);
+  const overrideInput = card.querySelector('.track-swing-override');
+  const swingInput = card.querySelector('.track-swing');
+  const swingOutput = card.querySelector('.track-swing-output');
+  const timingInput = card.querySelector('.track-timing');
+  const timingOutput = card.querySelector('.track-timing-output');
+  overrideInput.checked = overridden;
+  swingInput.disabled = !overridden;
+  swingInput.value = swing;
+  swingInput.setAttribute('aria-valuetext', `${swingAriaLabel(swing)}${overridden ? '' : ', following global swing'}`);
+  swingOutput.textContent = swingLabel(swing);
+  timingInput.value = track.timingOffsetMs;
+  timingInput.setAttribute('aria-valuetext', timingLabel(track.timingOffsetMs));
+  timingOutput.textContent = timingLabel(track.timingOffsetMs);
+}
+
 function updateTrackCard(track, card) {
   const instrument = findInstrument(track.instrument);
   card.classList.toggle('is-collapsed', track.collapsed);
@@ -204,6 +290,7 @@ function updateTrackCard(track, card) {
   card.querySelector('.track-expression').textContent = formatPatternExpression(track.clauses);
   card.querySelector('.track-level').value = track.level;
   card.querySelector('.track-level-output').textContent = track.level;
+  updateTrackFeelControls(track, card);
   const mute = card.querySelector('.track-mute');
   mute.textContent = track.muted ? '🔇' : '🔊';
   mute.title = track.muted ? 'Unmute track' : 'Mute track';
@@ -235,6 +322,8 @@ function initializeControls() {
   elements.meter.value = state.meter;
   elements.subdivision.value = state.subdivision;
   elements.bars.value = state.bars;
+  elements.swingUnit.value = state.swingUnit;
+  updateGlobalSwingControl();
   elements.mute.textContent = state.muted ? '🔇' : '🔊';
   elements.mute.title = state.muted ? 'Unmute audio' : 'Mute audio';
   elements.midiChannel.value = state.midiChannel;
@@ -248,6 +337,8 @@ function addTrack() {
     clauses: [makeClause(makePattern([3, 8, 0]))],
     muted: false,
     level: 82,
+    swing: null,
+    timingOffsetMs: 0,
     collapsed: false
   });
   renderTracks();
@@ -301,6 +392,10 @@ elements.trackBank.addEventListener('change', event => {
     track.instrument = findInstrument(event.target.value)?.id || '';
     updateTrackCard(track, card);
     saveSoon();
+  } else if (event.target.matches('.track-swing-override')) {
+    track.swing = event.target.checked ? effectiveTrackSwing(track) : null;
+    updateTrackFeelControls(track, card);
+    saveSoon();
   } else if (event.target.matches('.pattern-operation')) {
     const index = Number(event.target.closest('.pattern-clause').dataset.clause);
     if (index > 0) track.clauses[index].operation = event.target.value;
@@ -317,6 +412,14 @@ elements.trackBank.addEventListener('input', event => {
   if (event.target.matches('.track-level')) {
     track.level = Number(event.target.value);
     card.querySelector('.track-level-output').textContent = track.level;
+  } else if (event.target.matches('.track-swing')) {
+    snapFeelRangeInput(event.target);
+    track.swing = clampSwing(event.target.value);
+    updateTrackFeelControls(track, card);
+  } else if (event.target.matches('.track-timing')) {
+    snapFeelRangeInput(event.target);
+    track.timingOffsetMs = clampTrackTiming(event.target.value);
+    updateTrackFeelControls(track, card);
   } else if (event.target.matches('[data-field]')) {
     const index = Number(event.target.closest('.pattern-clause').dataset.clause);
     const pattern = track.clauses[index].pattern;
@@ -337,7 +440,8 @@ for (const [element, key, numeric] of [
   [elements.tempo, 'tempo', true],
   [elements.meter, 'meter', false],
   [elements.subdivision, 'subdivision', true],
-  [elements.bars, 'bars', true]
+  [elements.bars, 'bars', true],
+  [elements.swingUnit, 'swingUnit', true]
 ]) {
   element.addEventListener('change', () => {
     state[key] = numeric ? Number(element.value) : element.value;
@@ -345,6 +449,31 @@ for (const [element, key, numeric] of [
     saveSoon();
   });
 }
+
+elements.globalSwing.addEventListener('input', () => {
+  snapFeelRangeInput(elements.globalSwing);
+  state.swing = clampSwing(elements.globalSwing.value);
+  updateGlobalSwingControl();
+  state.tracks.forEach(track => {
+    if (track.swing !== null) return;
+    const card = [...elements.trackBank.querySelectorAll('.track-card')].find(candidate => candidate.dataset.trackId === track.id);
+    if (card) updateTrackFeelControls(track, card);
+  });
+  saveSoon();
+});
+
+document.addEventListener('pointerdown', event => {
+  const input = event.target.closest('.feel-range input');
+  if (input && !input.disabled) activeFeelRange = input;
+});
+
+window.addEventListener('pointerup', () => {
+  const input = activeFeelRange;
+  if (input && snapFeelRangeInput(input)) input.dispatchEvent(new Event('input', { bubbles: true }));
+  activeFeelRange = null;
+});
+
+window.addEventListener('pointercancel', () => { activeFeelRange = null; });
 
 document.querySelector('#reset-all').addEventListener('click', () => {
   stop();
@@ -506,6 +635,8 @@ function oscillatorHit(time, frequency, level, duration, type = 'sine', fall = .
   oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, frequency * fall), time + duration);
   envelope(gain, time, level, duration);
   oscillator.connect(gain).connect(masterGain);
+  activeAudioNodes.add(oscillator);
+  oscillator.addEventListener('ended', () => activeAudioNodes.delete(oscillator), { once: true });
   oscillator.start(time);
   oscillator.stop(time + duration + .02);
 }
@@ -520,6 +651,8 @@ function noiseHit(time, level, duration, highpass, lowpass = 18000) {
   low.type = 'lowpass'; low.frequency.value = lowpass;
   envelope(gain, time, level, duration);
   source.connect(high).connect(low).connect(gain).connect(masterGain);
+  activeAudioNodes.add(source);
+  source.addEventListener('ended', () => activeAudioNodes.delete(source), { once: true });
   source.start(time);
 }
 
@@ -547,27 +680,34 @@ function clearHighlight() {
   document.querySelectorAll('.preview-slot.is-current').forEach(cell => cell.classList.remove('is-current'));
 }
 
-function highlightStep(slot) {
-  clearHighlight();
-  document.querySelectorAll(`.preview-slot[data-slot="${slot}"]`).forEach(cell => cell.classList.add('is-current'));
+function trackCardById(trackId) {
+  return [...elements.trackBank.querySelectorAll('.track-card')].find(card => card.dataset.trackId === trackId) || null;
 }
 
-function scheduleVisual(slot, time) {
+function highlightTrackStep(trackId, slot) {
+  const card = trackCardById(trackId);
+  if (!card) return;
+  card.querySelectorAll('.preview-slot.is-current').forEach(cell => cell.classList.remove('is-current'));
+  card.querySelectorAll(`.preview-slot[data-slot="${slot}"]`).forEach(cell => cell.classList.add('is-current'));
+}
+
+function scheduleTrackVisual(trackId, slot, time) {
   const delay = Math.max(0, (time - audioContext.currentTime) * 1000);
-  const timer = setTimeout(() => { visualTimers.delete(timer); if (playing) highlightStep(slot); }, delay);
+  const timer = setTimeout(() => { visualTimers.delete(timer); if (playing) highlightTrackStep(trackId, slot); }, delay);
   visualTimers.add(timer);
 }
 
 function scheduleStep(slot, time) {
   scheduleMidiClock(time);
   for (const track of state.tracks) {
+    const eventTime = time + trackTimingOffsetSeconds(slot, secondsPerSlot(), effectiveTrackSwing(track), track.timingOffsetMs, slotsPerSwingUnit());
+    scheduleTrackVisual(track.id, slot, eventTime);
     if (track.muted || !evaluatePatternClauses(track.clauses, slot)) continue;
     const instrument = findInstrument(track.instrument);
     if (!instrument) continue;
-    if (midiOutput) scheduleMidiInstrument(instrument, time, track.level);
-    else scheduleSound(instrument, time, track.level);
+    if (midiOutput) scheduleMidiInstrument(instrument, eventTime, track.level);
+    else scheduleSound(instrument, eventTime, track.level);
   }
-  scheduleVisual(slot, time);
 }
 
 function scheduler() {
@@ -605,6 +745,8 @@ function stop() {
   schedulerTimer = 0;
   visualTimers.forEach(clearTimeout);
   visualTimers.clear();
+  activeAudioNodes.forEach(node => { try { node.stop(); } catch (error) {} });
+  activeAudioNodes.clear();
   clearMidiOutput();
   clearHighlight();
   elements.play.textContent = '▶ Play';

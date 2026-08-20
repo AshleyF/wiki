@@ -1273,6 +1273,8 @@ function stopDrumBlocks() {
   document.querySelectorAll('.drum-block').forEach((block) => {
     if (block.drumVelocityPrepareTimer) clearTimeout(block.drumVelocityPrepareTimer);
     block.drumVelocityPrepareTimer = null;
+    block.drumVelocityPrepareVersion = (block.drumVelocityPrepareVersion || 0) + 1;
+    block.drumActiveVelocityProfile = null;
     if (block.drumMidiOutput) {
       const handoffGap = Math.max(DRUM_MIDI_MIN_SWITCH_GAP_MS, block.drumMidiTailMs || 0);
       midiHandoffGap = Math.max(midiHandoffGap, handoffGap);
@@ -1488,20 +1490,39 @@ async function prepareWikiSnareSamples(context, pattern, block) {
   }
 }
 
+function sameDrumVelocityProfile(left, right) {
+  return DRUM_VELOCITY_ROLES.every(role => Number(left?.[role]) === Number(right?.[role]));
+}
+
 function prepareLiveDrumVelocitySamples(block) {
   if (block.drumVelocityPrepareTimer) clearTimeout(block.drumVelocityPrepareTimer);
   block.drumVelocityPrepareTimer = null;
   if (block.dataset.playing !== 'true' || block.drumMidiOutput || !drumAudioContext || !wikiSnareSampleKit) return;
+  const requestedProfile = drumVelocityProfile(block);
+  const prepareVersion = (block.drumVelocityPrepareVersion || 0) + 1;
+  block.drumVelocityPrepareVersion = prepareVersion;
   block.drumVelocityPrepareTimer = setTimeout(async () => {
     block.drumVelocityPrepareTimer = null;
     if (block.dataset.playing !== 'true' || block.drumMidiOutput || !document.body.contains(block)) return;
     try {
       const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
-      await wikiSnareSampleKit.prepare(drumAudioContext, drumSnareVelocities(pattern, block));
+      const velocities = (pattern.rows.sn || [])
+        .flatMap(drumStrengthsForToken)
+        .map(strength => velocityFromStrengthProfile(strength, requestedProfile));
+      await wikiSnareSampleKit.prepare(drumAudioContext, velocities);
+      if (
+        block.dataset.playing === 'true'
+        && !block.drumMidiOutput
+        && document.body.contains(block)
+        && block.drumVelocityPrepareVersion === prepareVersion
+        && sameDrumVelocityProfile(drumVelocityProfile(block), requestedProfile)
+      ) {
+        block.drumActiveVelocityProfile = requestedProfile;
+      }
     } catch (error) {
       console.warn('Updated drum velocities could not be prepared.', error);
     }
-  }, 100);
+  }, 0);
 }
 
 function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile) {
@@ -1631,7 +1652,7 @@ function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
       // to take effect at the next pair rather than restarting the sequence.
       if (step % 2 === 0) block.drumAudioSwingRatio = drumSwingRatio(block);
       const swungDuration = drumSwungStepDuration(step, stepDuration, block.drumAudioSwingRatio);
-      const velocityProfile = drumVelocityProfile(block);
+      const velocityProfile = block.drumActiveVelocityProfile || drumVelocityProfile(block);
       Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
         const token = tokens[step];
         if (parseDrumToken(token).hit) {
@@ -1659,7 +1680,10 @@ async function playDrumBlock(block) {
   block.drumMidiOutput = drumMidiEnabled ? await prepareDrumMidi() : null;
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
-  if (!block.drumMidiOutput) await prepareWikiSnareSamples(drumAudioContext, pattern, block);
+  if (!block.drumMidiOutput) {
+    await prepareWikiSnareSamples(drumAudioContext, pattern, block);
+    block.drumActiveVelocityProfile = drumVelocityProfile(block);
+  }
   const tempoInput = block.querySelector('.drum-tempo');
   const tempo = Number(tempoInput?.value) || Number(pattern.tempo) || 120;
   const stepDuration = drumStepDuration(pattern, tempo);
@@ -1823,7 +1847,6 @@ content.addEventListener('input', (event) => {
   const velocityInput = event.target.closest('.drum-velocity');
   if (velocityInput) {
     setDrumVelocityFromInput(velocityInput);
-    prepareLiveDrumVelocitySamples(velocityInput.closest('.drum-block'));
     return;
   }
   const swingInput = event.target.closest('.drum-swing');
@@ -1834,6 +1857,12 @@ content.addEventListener('input', (event) => {
 });
 
 content.addEventListener('change', async (event) => {
+  const velocityInput = event.target.closest('.drum-velocity');
+  if (velocityInput) {
+    prepareLiveDrumVelocitySamples(velocityInput.closest('.drum-block'));
+    return;
+  }
+
   const kitSelect = event.target.closest('.drum-kit-select');
   if (kitSelect) {
     const block = kitSelect.closest('.drum-block');

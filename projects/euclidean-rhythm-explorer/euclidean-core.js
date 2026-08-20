@@ -42,6 +42,26 @@ export function renderPatternTrack(clauses, totalSlots) {
   ));
 }
 
+export function trackTimingOffsetSeconds(slot, secondsPerSlot, swingPercent = 50, timingOffsetMs = 0, slotsPerSwingUnit = 1) {
+  const step = Math.max(0, Number(secondsPerSlot) || 0);
+  const swing = Math.max(50, Math.min(83.333, Number(swingPercent) || 50)) / 100;
+  const unitSlots = Math.max(Number.EPSILON, Number(slotsPerSwingUnit) || 1);
+  const unitIndex = (Number(slot) || 0) / unitSlots;
+  const wholeUnitIndex = Math.round(unitIndex);
+  const isUnitBoundary = Math.abs(unitIndex - wholeUnitIndex) < 0.000001;
+  const isOffbeat = isUnitBoundary && Math.abs(wholeUnitIndex) % 2 === 1;
+  const swingDelay = isOffbeat ? step * unitSlots * 2 * (swing - 0.5) : 0;
+  const placement = Math.max(-80, Math.min(80, Number(timingOffsetMs) || 0)) / 1000;
+  return swingDelay + placement;
+}
+
+export function snapRangeValue(value, center, threshold) {
+  const amount = Number(value) || 0;
+  const midpoint = Number(center) || 0;
+  const radius = Math.max(0, Number(threshold) || 0);
+  return Math.abs(amount - midpoint) <= radius ? midpoint : amount;
+}
+
 export function evaluateClauses(clauses, generators, slot) {
   if (!Array.isArray(clauses) || clauses.length === 0) return false;
   let value = generatorValue(generators[clauses[0].generator], slot);

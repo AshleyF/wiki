@@ -8,6 +8,9 @@ export const INSTRUMENTS = Object.freeze([
   { id: 'snare-rimshot', name: 'Snare rimshot / alternate', group: 'Snare', midi: 40, sound: 'rimshot', level: 108, pattern: [2, 8, 2] },
   { id: 'snare-off-center', name: 'Snare off-center (Toontrack)', group: 'Snare', midi: 125, sound: 'snare', level: 88, pattern: [2, 8, 2], mapping: 'toontrack' },
 
+  { id: 'brush-swirl-backward', name: 'Brush swirl, backward (Toontrack)', group: 'Brushes', midi: 66, sound: 'shaker', level: 72, pattern: [1, 8, 4], mapping: 'toontrack' },
+  { id: 'brush-swirl-forward', name: 'Brush swirl, forward (Toontrack)', group: 'Brushes', midi: 67, sound: 'shaker', level: 72, pattern: [1, 8, 0], mapping: 'toontrack' },
+
   { id: 'floor-tom-low', name: 'Floor tom, low', group: 'Toms', midi: 41, sound: 'tom', frequency: 74, level: 86, pattern: [2, 9, 4] },
   { id: 'floor-tom-high', name: 'Floor tom, high', group: 'Toms', midi: 43, sound: 'tom', frequency: 88, level: 86, pattern: [2, 9, 4] },
   { id: 'tom-low', name: 'Low tom', group: 'Toms', midi: 45, sound: 'tom', frequency: 108, level: 84, pattern: [2, 9, 3] },

@@ -28,6 +28,8 @@
         <label><span>Meter</span><select id="meter"><option>4/4</option><option>3/4</option><option>5/4</option><option>6/8</option><option>7/8</option></select></label>
         <label><span>Grid</span><select id="subdivision"><option value="2">2 slots / beat</option><option value="3">3 slots / beat</option><option value="4" selected>4 slots / beat</option></select></label>
         <label><span>Length</span><select id="bars"><option value="1">1 bar</option><option value="2" selected>2 bars</option><option value="4">4 bars</option><option value="8">8 bars</option></select></label>
+        <label><span>Swing unit</span><select id="swing-unit" title="Eighth-note swing delays the &amp; after each numbered beat; numbered beats remain fixed"><option value="8" selected>Eighth notes</option><option value="16">Sixteenth notes</option></select></label>
+        <label class="global-swing-control" title="Delays alternating offbeats of the selected swing unit. Tracks without an override follow this value."><span class="global-swing-heading">Swing <output id="global-swing-output">50%</output></span><span class="feel-range"><input id="global-swing" type="range" min="50" max="83.333" step="0.001" value="50"><i class="feel-range-mark" aria-hidden="true" title="Triplet swing: 66.7%"></i></span></label>
         <details class="midi-controls">
           <summary>MIDI</summary>
           <div class="midi-controls-menu">
@@ -74,6 +76,18 @@
           <button class="remove-track icon-button" type="button" title="Remove track" aria-label="Remove track">×</button>
         </header>
         <div class="track-details">
+          <div class="track-feel-controls">
+            <div class="track-feel-control track-swing-control" role="group" aria-label="Track swing override" title="Unchecked follows the global swing; checked gives this track its own swing value.">
+              <label class="track-swing-override-control"><input class="track-swing-override" type="checkbox"> <span>Swing override</span></label>
+              <span class="feel-range"><input class="track-swing" type="range" min="50" max="83.333" step="0.001" value="50" aria-label="Track swing"><i class="feel-range-mark" aria-hidden="true" title="Triplet swing: 66.7%"></i></span>
+              <output class="track-swing-output">50%</output>
+            </div>
+            <label class="track-feel-control track-timing-control" title="Shift this entire track slightly ahead of or behind the shared grid.">
+              <span>Timing</span>
+              <span class="feel-range"><input class="track-timing" type="range" min="-80" max="80" step="1" value="0" aria-label="Track timing placement"><i class="feel-range-mark" aria-hidden="true" title="On the beat: 0 ms"></i></span>
+              <output class="track-timing-output">0 ms · On beat</output>
+            </label>
+          </div>
           <div class="pattern-list"></div>
           <button class="add-operation quiet-button" type="button">+ Add operation</button>
         </div>

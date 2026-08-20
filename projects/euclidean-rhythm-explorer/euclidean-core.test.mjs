@@ -7,7 +7,9 @@ import {
   formatPatternExpression,
   patternExpressionPeriod,
   renderPatternTrack,
-  renderTrack
+  renderTrack,
+  snapRangeValue,
+  trackTimingOffsetSeconds
 } from './euclidean-core.js';
 
 const bits = pattern => pattern.map(value => value ? 'x' : '.').join('');
@@ -48,5 +50,23 @@ const inlineClauses = [
 assert.equal(bits(renderPatternTrack(inlineClauses, 8)), 'x..x....');
 assert.equal(patternExpressionPeriod(inlineClauses), 8);
 assert.equal(formatPatternExpression(inlineClauses), 'E(3,8) − E(2,8) r2');
+
+assert.equal(trackTimingOffsetSeconds(0, 0.125, 66.667, 0), 0);
+assert.ok(Math.abs(trackTimingOffsetSeconds(1, 0.125, 66.667, 0) - (1 / 24)) < 0.00001);
+assert.ok(Math.abs(trackTimingOffsetSeconds(1, 0.125, 50, -20) + 0.02) < 0.00001);
+assert.ok(Math.abs(trackTimingOffsetSeconds(2, 0.125, 83.333, 80) - 0.08) < 0.00001);
+assert.equal(trackTimingOffsetSeconds(1, 0.125, 66.667, 0, 2), 0);
+assert.ok(Math.abs(trackTimingOffsetSeconds(2, 0.125, 66.667, 0, 2) - (1 / 12)) < 0.00001);
+assert.equal(trackTimingOffsetSeconds(3, 0.125, 66.667, 0, 2), 0);
+const eighthSwingAcrossSixteenthGrid = Array.from({ length: 16 }, (_, slot) => (
+  trackTimingOffsetSeconds(slot, 0.125, 66.667, 0, 2)
+));
+for (const beatSlot of [0, 4, 8, 12]) assert.equal(eighthSwingAcrossSixteenthGrid[beatSlot], 0);
+for (const andSlot of [2, 6, 10, 14]) assert.ok(Math.abs(eighthSwingAcrossSixteenthGrid[andSlot] - (1 / 12)) < 0.00001);
+for (const innerSixteenth of [1, 3, 5, 7, 9, 11, 13, 15]) assert.equal(eighthSwingAcrossSixteenthGrid[innerSixteenth], 0);
+assert.equal(snapRangeValue(66.2, 66.667, 0.6), 66.667);
+assert.equal(snapRangeValue(65.9, 66.667, 0.6), 65.9);
+assert.equal(snapRangeValue(-2, 0, 2), 0);
+assert.equal(snapRangeValue(-3, 0, 2), -3);
 
 console.log('euclidean-core tests passed');
