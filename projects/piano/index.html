@@ -12,7 +12,7 @@
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260822-iphone14-2">
+    <link rel="stylesheet" href="styles.css?v=20260822-landscape-density-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -24,9 +24,9 @@
     <main>
       <section class="controls panel" aria-label="Trainer controls">
         <button id="start" class="primary-button" type="button">Start</button>
-        <label class="control-field"><span class="control-label">Drill</span><select id="drill"></select></label>
-        <label class="control-field"><span class="control-label">Tempo <small>BPM</small></span><input id="tempo" type="number" min="30" max="180" step="1" value="72"></label>
-        <label class="control-field timing-field" title="How early or late a correct note may be"><span class="control-label">Timing window <output id="tolerance-output">±160 ms</output></span><input id="tolerance" type="range" min="40" max="350" step="10" value="160"></label>
+        <label class="control-field"><span class="control-label">Drill</span><select id="drill" aria-label="Drill"></select></label>
+        <label class="control-field"><span class="control-label">Tempo <small>BPM</small></span><input id="tempo" aria-label="Tempo in beats per minute" title="Tempo in beats per minute" type="number" min="30" max="180" step="1" value="72"></label>
+        <label class="control-field timing-field" title="How early or late a correct note may be"><span class="control-label">Timing window <output id="tolerance-output">±160 ms</output></span><input id="tolerance" aria-label="Timing window" type="range" min="40" max="350" step="10" value="160"></label>
         <details class="midi-controls">
           <summary>MIDI</summary>
           <div class="midi-menu">
@@ -49,17 +49,16 @@
         </div>
       </section>
 
-      <details class="keyboard-panel panel">
-        <summary>Keyboard</summary>
-        <div class="keyboard-toolbar">
+      <section class="keyboard-panel panel" aria-label="Keyboard">
+        <div class="keyboard-toolbar" hidden>
           <button id="chord-hold" type="button" aria-pressed="false" title="Select several keys, then submit them together with Play chord">Chord hold</button>
           <button id="play-chord" class="primary-button" type="button" disabled>Play chord</button>
           <button id="clear-chord" type="button" disabled>Clear</button>
         </div>
         <div class="test-keyboard-scroll"><div id="test-keyboard" class="test-keyboard" aria-label="On-screen piano keyboard"></div></div>
-      </details>
+      </section>
     </main>
 
-    <script type="module" src="app.js?v=20260822-held-midi-1"></script>
+    <script type="module" src="app.js?v=20260822-landscape-density-1"></script>
   </body>
 </html>

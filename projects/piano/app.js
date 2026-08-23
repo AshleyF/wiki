@@ -139,6 +139,7 @@ const elements = {
   midiInput: document.querySelector('#midi-input'),
   theme: document.querySelector('#theme-toggle'),
   keyboardPanel: document.querySelector('.keyboard-panel'),
+  keyboardToolbar: document.querySelector('.keyboard-toolbar'),
   keyboard: document.querySelector('#test-keyboard'),
   chordHold: document.querySelector('#chord-hold'),
   playChord: document.querySelector('#play-chord'),
@@ -234,7 +235,6 @@ function setChordHold(enabled) {
 
 function showExpectedKey() {
   clearKeyboardHint();
-  elements.keyboardPanel.open = true;
   const keys = expectedNotes().map(midi => elements.keyboard.querySelector(`[data-midi="${midi}"]`)).filter(Boolean);
   keys.forEach(key => key.classList.add('is-hint'));
   const scroller = elements.keyboard.parentElement;
@@ -508,11 +508,16 @@ function renderScore() {
   if (!measures.length) throw new Error(`The drill “${drill.title}” has no complete measures.`);
   const compactLandscape = window.matchMedia('(max-width: 900px) and (orientation: landscape)').matches;
   const availableWidth = Math.floor(elements.scoreScroll.clientWidth || 0);
-  const width = Math.max(compactLandscape ? 800 : 900, availableWidth, measures.length * (compactLandscape ? 200 : 225));
+  const width = Math.max(compactLandscape ? 760 : 900, availableWidth, measures.length * (compactLandscape ? 190 : 225));
   const measureWidth = (width - 18) / measures.length;
-  const height = compactLandscape ? 190 : 235;
+  const height = compactLandscape
+    ? Math.max(96, Math.min(126, Math.floor(window.innerHeight * 0.32)))
+    : 235;
+  const staveY = compactLandscape ? Math.max(0, Math.round((height - 104) / 2)) : 56;
   elements.score.style.width = `${width}px`;
   elements.scoreStage.style.width = `${width}px`;
+  elements.cursor.style.top = compactLandscape ? `${staveY}px` : '';
+  elements.cursor.style.height = compactLandscape ? `${Math.max(76, height - staveY - 10)}px` : '';
   const renderer = new Flow.Renderer(elements.score, Flow.Renderer.Backends.SVG);
   renderer.resize(width, height);
   const context = renderer.getContext();
@@ -520,7 +525,7 @@ function renderScore() {
 
   for (let measure = 0; measure < measures.length; measure += 1) {
     const x = 8 + measure * measureWidth;
-    const stave = new Flow.Stave(x, compactLandscape ? 38 : 56, measureWidth);
+    const stave = new Flow.Stave(x, staveY, measureWidth);
     if (measure === 0) stave.addClef(drill.clef).addTimeSignature('4/4');
     stave.setContext(context).draw();
     const source = measures[measure];
@@ -548,7 +553,7 @@ function chooseDrill() {
     clearKeyboardChord();
     const chordDrill = events.some(event => event.notes.length > 1);
     setChordHold(chordDrill);
-    if (chordDrill) elements.keyboardPanel.open = true;
+    elements.keyboardToolbar.hidden = !chordDrill;
     renderScore();
   } catch (error) {
     console.error('Unable to load piano drill:', error);
@@ -631,8 +636,8 @@ async function enableMidi() {
 function renderKeyboard() {
   elements.keyboard.replaceChildren();
   const compactLandscape = window.matchMedia('(max-width: 900px) and (orientation: landscape)').matches;
-  const whiteKeyWidth = compactLandscape ? 46 : 52;
-  const blackKeyWidth = compactLandscape ? 30 : 34;
+  const whiteKeyWidth = compactLandscape ? 38 : 52;
+  const blackKeyWidth = compactLandscape ? 25 : 34;
   let whiteIndex = 0;
   for (let midi = 48; midi <= 72; midi += 1) {
     const black = [1, 3, 6, 8, 10].includes(midi % 12);
