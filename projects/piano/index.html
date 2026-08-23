@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Practice reading music with a MIDI piano and a moving notation cursor.">
+    <title>Piano Reading Trainer</title>
+    <script>
+      (() => {
+        let theme = 'dark';
+        try { theme = localStorage.getItem('personal-wiki-theme') === 'light' ? 'light' : 'dark'; } catch (error) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+  </head>
+  <body>
+    <header class="project-header">
+      <h1>Piano Reading Trainer</h1>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="controls panel" aria-label="Trainer controls">
+        <button id="start" class="primary-button" type="button">Start</button>
+        <label><span>Drill</span><select id="drill"></select></label>
+        <label><span>Tempo</span><input id="tempo" type="number" min="30" max="180" step="1" value="72"><small>BPM</small></label>
+        <label title="How early or late a correct note may be"><span>Timing window</span><input id="tolerance" type="range" min="40" max="350" step="10" value="160"><output id="tolerance-output">±160 ms</output></label>
+        <details class="midi-controls">
+          <summary>MIDI</summary>
+          <div class="midi-menu">
+            <button id="enable-midi" type="button">Enable MIDI</button>
+            <label><span>Input</span><select id="midi-input" disabled><option value="">No input</option></select></label>
+          </div>
+        </details>
+      </section>
+
+      <section class="score-panel panel" aria-labelledby="drill-title">
+        <div class="score-heading">
+          <div><p class="eyebrow">Reading drill</p><h2 id="drill-title"></h2></div>
+          <div class="progress"><strong id="progress">0 / 0</strong><span id="status" role="status" aria-live="polite">Choose Start when ready.</span></div>
+        </div>
+        <div id="score-scroll" class="score-scroll">
+          <div id="score-stage" class="score-stage">
+            <div id="score" class="score" aria-label="Music notation"></div>
+            <div id="cursor" class="cursor" hidden aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <details class="keyboard-panel panel">
+        <summary>Test keyboard</summary>
+        <p>Use these keys when a MIDI piano is not connected.</p>
+        <div class="test-keyboard-scroll"><div id="test-keyboard" class="test-keyboard" aria-label="On-screen piano keyboard"></div></div>
+      </details>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
