@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { classifyAttempt, cursorXAt, cursorXAtTimeline, midiName, midiToVexKey, samePitchSet } from './trainer-core.js';
+import { classifyAttempt, classifyMidiPress, cursorXAt, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet } from './trainer-core.js';
 
 assert.equal(midiName(60), 'C4');
 assert.equal(midiName(70), 'B♭4');
@@ -10,6 +10,13 @@ assert.equal(classifyAttempt({ played: 61, expected: 60, now: 1000, due: 1000, t
 assert.equal(classifyAttempt({ played: 60, expected: 60, now: 1101, due: 1000, tolerance: 100 }).result, 'late');
 assert.equal(classifyAttempt({ played: [67, 60, 64], expected: [60, 64, 67], now: 1000, due: 1000, tolerance: 100 }).result, 'correct');
 assert.equal(classifyAttempt({ played: [60, 64], expected: [60, 64, 67], now: 1000, due: 1000, tolerance: 100 }).result, 'wrong');
+assert.equal(classifyMidiPress({ played: 60, expected: 60, now: 820, due: 1000, tolerance: 100, holdAllowance: 400 }).result, 'held');
+assert.equal(classifyMidiPress({ played: 61, expected: 60, now: 820, due: 1000, tolerance: 100, holdAllowance: 400 }).result, 'early');
+assert.equal(classifyMidiPress({ played: 60, expected: 60, now: 400, due: 1000, tolerance: 100, holdAllowance: 400 }).result, 'early');
+assert.equal(classifyMidiPress({ played: 60, expected: 60, now: 910, due: 1000, tolerance: 100, holdAllowance: 400 }).result, 'correct');
+assert.equal(heldPressReady({ candidateIndex: 0, currentIndex: 0, candidateNotes: [60], heldNotes: [60], now: 900, due: 1000, tolerance: 100 }), true);
+assert.equal(heldPressReady({ candidateIndex: 0, currentIndex: 0, candidateNotes: [60], heldNotes: [], now: 900, due: 1000, tolerance: 100 }), false);
+assert.equal(heldPressReady({ candidateIndex: 0, currentIndex: 1, candidateNotes: [60], heldNotes: [60], now: 1900, due: 2000, tolerance: 100 }), false);
 assert.equal(samePitchSet([60, 64, 67, 60], [67, 64, 60]), true);
 assert.equal(cursorXAt(1000, 1000, 500, [100, 200]), 100);
 assert.equal(cursorXAt(1250, 1000, 500, [100, 200]), 150);

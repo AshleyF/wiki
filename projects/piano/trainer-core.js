@@ -28,6 +28,27 @@ export function classifyAttempt({ played, expected, now, due, tolerance }) {
   return { result: 'correct', difference: now - due };
 }
 
+export function classifyMidiPress({ played, expected, now, due, tolerance, holdAllowance }) {
+  const attempt = classifyAttempt({ played, expected, now, due, tolerance });
+  const allowance = clamp(holdAllowance, 0, 1000);
+  const window = clamp(tolerance, 20, 500);
+  if (
+    attempt.result === 'early'
+    && samePitchSet(played, expected)
+    && now >= due - window - allowance
+  ) return { ...attempt, result: 'held' };
+  return attempt;
+}
+
+export function heldPressReady({ candidateIndex, currentIndex, candidateNotes, heldNotes, now, due, tolerance }) {
+  const notes = Array.isArray(candidateNotes) ? candidateNotes : [candidateNotes];
+  const held = new Set(Array.isArray(heldNotes) ? heldNotes : [...heldNotes]);
+  return candidateIndex === currentIndex
+    && notes.length > 0
+    && notes.every(note => held.has(note))
+    && now >= due - clamp(tolerance, 20, 500);
+}
+
 export function cursorXAt(time, startTime, beatMs, noteXs) {
   if (!noteXs.length) return 0;
   const firstApproach = noteXs[0] - 54;

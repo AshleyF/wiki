@@ -1,4 +1,4 @@
-import { classifyAttempt, cursorXAtTimeline, midiName, midiToVexKey, samePitchSet } from './trainer-core.js?v=20260822-drill-events-2';
+import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet } from './trainer-core.js?v=20260822-held-midi-1';
 
 const DRILLS = [
   {
@@ -160,6 +160,9 @@ let selectedMidiInput = null;
 let keyboardAudioContext = null;
 let pendingMidiChord = new Set();
 let pendingMidiChordTimer = 0;
+let heldMidiNotes = new Set();
+let heldAttemptIndex = -1;
+let heldAttemptNotes = [];
 let keyboardChord = new Set();
 let chordHold = false;
 
@@ -200,6 +203,7 @@ function expectedLabel(index = currentIndex) { return expectedNotes(index).map(m
 
 function beatMs() { return 60000 / Math.max(30, Math.min(180, Number(elements.tempo.value) || 72)); }
 function toleranceMs() { return Math.max(40, Math.min(350, Number(elements.tolerance.value) || 160)); }
+function earlyHoldAllowanceMs() { return Math.min(500, beatMs() / 2); }
 function dueTime(index) { return startTime + (beatOffsets[index] || 0) * beatMs(); }
 
 function setStatus(message) { elements.status.textContent = message; }
@@ -248,11 +252,29 @@ function markCurrent() {
   noteElements.forEach((element, index) => element?.classList.toggle('is-current', (running || paused) && index === currentIndex));
 }
 
+function clearHeldAttempt() {
+  heldAttemptIndex = -1;
+  heldAttemptNotes = [];
+}
+
+function heldAttemptIsDown() {
+  return heldAttemptIndex === currentIndex && heldAttemptNotes.every(note => heldMidiNotes.has(note));
+}
+
+function markCurrentCorrect() {
+  clearHeldAttempt();
+  noteElements[currentIndex]?.classList.remove('is-current', 'is-wrong');
+  noteElements[currentIndex]?.classList.add('is-correct');
+  currentIndex += 1;
+  updateProgress();
+}
+
 function stop(message = 'Stopped.') {
   running = false;
   paused = false;
   clearKeyboardHint();
   cancelAnimationFrame(animationFrame);
+  clearHeldAttempt();
   elements.start.textContent = currentIndex ? 'Try again' : 'Start';
   elements.cursor.hidden = currentIndex === 0;
   markCurrent();
@@ -270,6 +292,7 @@ function fail(kind, played = null) {
   };
   running = false;
   paused = true;
+  clearHeldAttempt();
   cancelAnimationFrame(animationFrame);
   elements.cursor.hidden = false;
   elements.cursor.style.left = `${noteXs[currentIndex]}px`;
@@ -284,6 +307,7 @@ function complete() {
   paused = false;
   clearKeyboardHint();
   cancelAnimationFrame(animationFrame);
+  clearHeldAttempt();
   elements.cursor.hidden = false;
   elements.start.textContent = 'Again';
   markCurrent();
@@ -300,6 +324,26 @@ function positionCursor(now) {
 function tick(now) {
   if (!running) return;
   positionCursor(now);
+  if (heldPressReady({
+    candidateIndex: heldAttemptIndex,
+    currentIndex,
+    candidateNotes: heldAttemptNotes,
+    heldNotes: heldMidiNotes,
+    now,
+    due: dueTime(currentIndex),
+    tolerance: toleranceMs()
+  })) {
+    const difference = now - dueTime(currentIndex);
+    markCurrentCorrect();
+    if (currentIndex >= events.length) {
+      complete();
+      return;
+    }
+    markCurrent();
+    setStatus(`${difference >= 0 ? '+' : '−'}${Math.abs(Math.round(difference))} ms · next ${expectedLabel()}`);
+  } else if (heldAttemptIndex === currentIndex && !heldAttemptIsDown()) {
+    clearHeldAttempt();
+  }
   if (now > dueTime(currentIndex) + toleranceMs()) {
     fail('late');
     return;
@@ -313,6 +357,8 @@ function start() {
     return;
   }
   currentIndex = 0;
+  clearHeldAttempt();
+  heldMidiNotes.clear();
   clearKeyboardHint();
   clearKeyboardChord();
   noteElements.forEach(element => element?.classList.remove('is-correct', 'is-wrong', 'is-current'));
@@ -329,7 +375,7 @@ function start() {
   window.setTimeout(() => { if (running && currentIndex === 0) setStatus(`Play ${expectedLabel(0)}.`); }, beatMs());
 }
 
-function handleInput(played, velocity = 100) {
+function handleInput(played, velocity = 100, { midi = false } = {}) {
   const playedNotes = Array.isArray(played) ? played : [played];
   if (velocity <= 0 || currentIndex >= events.length || (!running && !paused)) return;
   const now = performance.now();
@@ -339,38 +385,46 @@ function handleInput(played, velocity = 100) {
       return;
     }
     clearKeyboardHint();
-    noteElements[currentIndex]?.classList.remove('is-current', 'is-wrong');
-    noteElements[currentIndex]?.classList.add('is-correct');
-    currentIndex += 1;
-    updateProgress();
+    const recoveredIndex = currentIndex;
+    markCurrentCorrect();
     if (currentIndex >= events.length) {
       complete();
       return;
     }
     paused = false;
     running = true;
-    startTime = now - beatOffsets[currentIndex - 1] * beatMs();
+    startTime = now - beatOffsets[recoveredIndex] * beatMs();
     elements.start.textContent = 'Stop';
     markCurrent();
     setStatus(`Continue · next ${expectedLabel()}`);
     animationFrame = requestAnimationFrame(tick);
     return;
   }
-  const result = classifyAttempt({
+  const result = midi ? classifyMidiPress({
+    played: playedNotes,
+    expected: expectedNotes(),
+    now,
+    due: dueTime(currentIndex),
+    tolerance: toleranceMs(),
+    holdAllowance: earlyHoldAllowanceMs()
+  }) : classifyAttempt({
     played: playedNotes,
     expected: expectedNotes(),
     now,
     due: dueTime(currentIndex),
     tolerance: toleranceMs()
   });
+  if (result.result === 'held') {
+    heldAttemptIndex = currentIndex;
+    heldAttemptNotes = [...playedNotes];
+    setStatus(`Hold ${expectedLabel()} · a little early`);
+    return;
+  }
   if (result.result !== 'correct') {
     fail(result.result, playedNotes);
     return;
   }
-  noteElements[currentIndex]?.classList.remove('is-current');
-  noteElements[currentIndex]?.classList.add('is-correct');
-  currentIndex += 1;
-  updateProgress();
+  markCurrentCorrect();
   if (currentIndex >= events.length) {
     complete();
     return;
@@ -511,15 +565,24 @@ function submitPendingMidiChord(velocity = 100) {
   if (!pendingMidiChord.size) return;
   const notes = [...pendingMidiChord];
   pendingMidiChord.clear();
-  handleInput(notes, velocity);
+  handleInput(notes, velocity, { midi: true });
 }
 
 function onMidiMessage(event) {
   const [status, note, velocity = 0] = event.data;
-  if ((status & 0xf0) !== 0x90 || velocity <= 0) return;
+  const command = status & 0xf0;
+  const noteOff = command === 0x80 || (command === 0x90 && velocity <= 0);
+  if (noteOff) {
+    heldMidiNotes.delete(note);
+    pendingMidiChord.delete(note);
+    if (heldAttemptNotes.includes(note)) clearHeldAttempt();
+    return;
+  }
+  if (command !== 0x90) return;
+  heldMidiNotes.add(note);
   if (expectedNotes().length <= 1) {
     pendingMidiChord.clear();
-    handleInput([note], velocity);
+    handleInput([note], velocity, { midi: true });
     return;
   }
   pendingMidiChord.add(note);
