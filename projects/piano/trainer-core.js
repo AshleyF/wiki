@@ -14,11 +14,17 @@ export function midiToVexKey(midi) {
   return `${names[((note % 12) + 12) % 12]}/${Math.floor(note / 12) - 1}`;
 }
 
+export function samePitchSet(played, expected) {
+  const left = [...new Set(Array.isArray(played) ? played : [played])].map(Number).sort((a, b) => a - b);
+  const right = [...new Set(Array.isArray(expected) ? expected : [expected])].map(Number).sort((a, b) => a - b);
+  return left.length === right.length && left.every((note, index) => note === right[index]);
+}
+
 export function classifyAttempt({ played, expected, now, due, tolerance }) {
   const window = clamp(tolerance, 20, 500);
   if (now < due - window) return { result: 'early', difference: now - due };
   if (now > due + window) return { result: 'late', difference: now - due };
-  if (Number(played) !== Number(expected)) return { result: 'wrong', difference: now - due };
+  if (!samePitchSet(played, expected)) return { result: 'wrong', difference: now - due };
   return { result: 'correct', difference: now - due };
 }
 
@@ -33,5 +39,18 @@ export function cursorXAt(time, startTime, beatMs, noteXs) {
   const index = Math.floor(position);
   if (index >= noteXs.length - 1) return noteXs[noteXs.length - 1];
   const phase = clamp(position - index, 0, 1);
+  return noteXs[index] + (noteXs[index + 1] - noteXs[index]) * phase;
+}
+
+export function cursorXAtTimeline(time, startTime, beatMs, beatOffsets, noteXs) {
+  if (!noteXs.length) return 0;
+  if (time <= startTime) return cursorXAt(time, startTime, beatMs, noteXs.slice(0, 2));
+  const beat = (time - startTime) / beatMs;
+  let index = beatOffsets.findIndex((offset, candidate) => candidate > 0 && offset > beat);
+  if (index === -1) return noteXs[noteXs.length - 1];
+  index -= 1;
+  const fromBeat = beatOffsets[index];
+  const toBeat = beatOffsets[index + 1];
+  const phase = clamp((beat - fromBeat) / Math.max(Number.EPSILON, toBeat - fromBeat), 0, 1);
   return noteXs[index] + (noteXs[index + 1] - noteXs[index]) * phase;
 }

@@ -1,4 +1,4 @@
-import { classifyAttempt, cursorXAt, midiName, midiToVexKey } from './trainer-core.js';
+import { classifyAttempt, cursorXAtTimeline, midiName, midiToVexKey, samePitchSet } from './trainer-core.js?v=20260822-drill-events-2';
 
 const DRILLS = [
   {
@@ -49,6 +49,76 @@ const DRILLS = [
     title: 'Bass clef · C through middle C',
     clef: 'bass',
     notes: [48, 50, 52, 53, 55, 57, 59, 60, 59, 57, 55, 53, 52, 50, 48, 48]
+  },
+  {
+    id: 'mary-little-lamb',
+    level: 'Songs · Public domain',
+    title: 'Mary Had a Little Lamb',
+    clef: 'treble',
+    events: [
+      [64, 1], [62, 1], [60, 1], [62, 1], [64, 1], [64, 1], [64, 2],
+      [62, 1], [62, 1], [62, 2], [64, 1], [67, 1], [67, 2],
+      [64, 1], [62, 1], [60, 1], [62, 1], [64, 1], [64, 1], [64, 1], [64, 1],
+      [62, 1], [62, 1], [64, 1], [62, 1], [60, 4]
+    ]
+  },
+  {
+    id: 'three-blind-mice',
+    level: 'Songs · Public domain',
+    title: 'Three Blind Mice',
+    clef: 'treble',
+    events: [
+      [64, 1], [62, 1], [60, 2], [64, 1], [62, 1], [60, 2],
+      [67, 1], [65, 1], [64, 2], [67, 1], [65, 1], [64, 2],
+      [60, 1], [62, 1], [64, 1], [65, 1], [67, 2], [67, 2],
+      [60, 1], [62, 1], [64, 1], [65, 1], [67, 4]
+    ]
+  },
+  {
+    id: 'twinkle',
+    level: 'Songs · Public domain',
+    title: 'Twinkle, Twinkle, Little Star',
+    clef: 'treble',
+    events: [
+      [60, 1], [60, 1], [67, 1], [67, 1], [69, 1], [69, 1], [67, 2],
+      [65, 1], [65, 1], [64, 1], [64, 1], [62, 1], [62, 1], [60, 2],
+      [67, 1], [67, 1], [65, 1], [65, 1], [64, 1], [64, 1], [62, 2],
+      [67, 1], [67, 1], [65, 1], [65, 1], [64, 1], [64, 1], [62, 2],
+      [60, 1], [60, 1], [67, 1], [67, 1], [69, 1], [69, 1], [67, 2],
+      [65, 1], [65, 1], [64, 1], [64, 1], [62, 1], [62, 1], [60, 2]
+    ]
+  },
+  {
+    id: 'ode-to-joy',
+    level: 'Songs · Public domain',
+    title: 'Ode to Joy',
+    clef: 'treble',
+    events: [
+      [64, 1], [64, 1], [65, 1], [67, 1], [67, 1], [65, 1], [64, 1], [62, 1],
+      [60, 1], [60, 1], [62, 1], [64, 1], [64, 2], [62, 1], [62, 1],
+      [64, 1], [64, 1], [65, 1], [67, 1], [67, 1], [65, 1], [64, 1], [62, 1],
+      [60, 1], [60, 1], [62, 1], [64, 1], [62, 2], [60, 2]
+    ]
+  },
+  {
+    id: 'thirds',
+    level: 'Chords · Introduction',
+    title: 'Two-note chords · thirds',
+    clef: 'treble',
+    events: [
+      [[60, 64], 2], [[62, 65], 2], [[64, 67], 2], [[65, 69], 2],
+      [[67, 71], 2], [[65, 69], 2], [[64, 67], 2], [[60, 64], 2]
+    ]
+  },
+  {
+    id: 'primary-triads',
+    level: 'Chords · Introduction',
+    title: 'C, F, and G major triads',
+    clef: 'treble',
+    events: [
+      [[60, 64, 67], 2], [[60, 65, 69], 2], [[59, 62, 67], 2], [[60, 64, 67], 2],
+      [[60, 65, 69], 2], [[60, 64, 67], 2], [[59, 62, 67], 2], [[60, 64, 67], 2]
+    ]
   }
 ];
 
@@ -68,10 +138,16 @@ const elements = {
   enableMidi: document.querySelector('#enable-midi'),
   midiInput: document.querySelector('#midi-input'),
   theme: document.querySelector('#theme-toggle'),
-  keyboard: document.querySelector('#test-keyboard')
+  keyboardPanel: document.querySelector('.keyboard-panel'),
+  keyboard: document.querySelector('#test-keyboard'),
+  chordHold: document.querySelector('#chord-hold'),
+  playChord: document.querySelector('#play-chord'),
+  clearChord: document.querySelector('#clear-chord')
 };
 
 let drill = DRILLS[0];
+let events = normalizeEvents(drill);
+let beatOffsets = eventBeatOffsets(events);
 let noteXs = [];
 let noteElements = [];
 let running = false;
@@ -81,15 +157,91 @@ let startTime = 0;
 let animationFrame = 0;
 let midiAccess = null;
 let selectedMidiInput = null;
+let keyboardAudioContext = null;
+let pendingMidiChord = new Set();
+let pendingMidiChordTimer = 0;
+let keyboardChord = new Set();
+let chordHold = false;
+
+function normalizeEvents(source) {
+  const rawEvents = Array.isArray(source?.events)
+    ? source.events
+    : Array.isArray(source?.notes)
+      ? source.notes.map(note => [note, 1])
+      : null;
+  if (!rawEvents?.length) throw new Error(`The drill “${source?.title || 'Untitled'}” has no playable notes.`);
+
+  return rawEvents.map((entry, index) => {
+    if (!Array.isArray(entry)) throw new Error(`Event ${index + 1} in “${source.title}” is malformed.`);
+    const [pitchOrChord, duration = 1] = entry;
+    const notes = Array.isArray(pitchOrChord) ? pitchOrChord : [pitchOrChord];
+    const beats = Number(duration);
+    if (!notes.length || notes.some(note => !Number.isInteger(note) || note < 0 || note > 127)) {
+      throw new Error(`Event ${index + 1} in “${source.title}” has an invalid MIDI note.`);
+    }
+    if (!Number.isFinite(beats) || beats <= 0) {
+      throw new Error(`Event ${index + 1} in “${source.title}” has an invalid duration.`);
+    }
+    return { notes, beats };
+  });
+}
+
+function eventBeatOffsets(source) {
+  let beat = 0;
+  return source.map(event => {
+    const offset = beat;
+    beat += event.beats;
+    return offset;
+  });
+}
+
+function expectedNotes(index = currentIndex) { return events[index]?.notes || []; }
+function expectedLabel(index = currentIndex) { return expectedNotes(index).map(midiName).join(' + '); }
 
 function beatMs() { return 60000 / Math.max(30, Math.min(180, Number(elements.tempo.value) || 72)); }
 function toleranceMs() { return Math.max(40, Math.min(350, Number(elements.tolerance.value) || 160)); }
-function dueTime(index) { return startTime + index * beatMs(); }
+function dueTime(index) { return startTime + (beatOffsets[index] || 0) * beatMs(); }
 
 function setStatus(message) { elements.status.textContent = message; }
 
+function clearKeyboardHint() {
+  elements.keyboard.querySelectorAll('.piano-key.is-hint').forEach(key => key.classList.remove('is-hint'));
+}
+
+function updateChordControls() {
+  elements.chordHold.setAttribute('aria-pressed', String(chordHold));
+  elements.playChord.disabled = keyboardChord.size === 0;
+  elements.clearChord.disabled = keyboardChord.size === 0;
+  elements.keyboard.querySelectorAll('.piano-key').forEach(key => {
+    key.classList.toggle('is-selected', keyboardChord.has(Number(key.dataset.midi)));
+  });
+}
+
+function clearKeyboardChord() {
+  keyboardChord.clear();
+  updateChordControls();
+}
+
+function setChordHold(enabled) {
+  chordHold = Boolean(enabled);
+  if (!chordHold) clearKeyboardChord();
+  else updateChordControls();
+}
+
+function showExpectedKey() {
+  clearKeyboardHint();
+  elements.keyboardPanel.open = true;
+  const keys = expectedNotes().map(midi => elements.keyboard.querySelector(`[data-midi="${midi}"]`)).filter(Boolean);
+  keys.forEach(key => key.classList.add('is-hint'));
+  const scroller = elements.keyboard.parentElement;
+  if (keys.length && scroller) {
+    const center = (keys[0].offsetLeft + keys.at(-1).offsetLeft + keys.at(-1).offsetWidth) / 2;
+    scroller.scrollLeft = Math.max(0, center - scroller.clientWidth / 2);
+  }
+}
+
 function updateProgress() {
-  elements.progress.textContent = `${Math.min(currentIndex, drill.notes.length)} / ${drill.notes.length}`;
+  elements.progress.textContent = `${Math.min(currentIndex, events.length)} / ${events.length}`;
 }
 
 function markCurrent() {
@@ -99,6 +251,7 @@ function markCurrent() {
 function stop(message = 'Stopped.') {
   running = false;
   paused = false;
+  clearKeyboardHint();
   cancelAnimationFrame(animationFrame);
   elements.start.textContent = currentIndex ? 'Try again' : 'Start';
   elements.cursor.hidden = currentIndex === 0;
@@ -107,12 +260,13 @@ function stop(message = 'Stopped.') {
 }
 
 function fail(kind, played = null) {
-  const expected = drill.notes[currentIndex];
+  const expected = expectedNotes();
+  const expectedName = expectedLabel();
   noteElements[currentIndex]?.classList.add('is-wrong');
   const messages = {
-    early: `${played === null ? 'Note' : midiName(played)} was early. Play ${midiName(expected)} again to continue.`,
-    late: `Missed ${midiName(expected)}. Play ${midiName(expected)} to continue.`,
-    wrong: `Expected ${midiName(expected)}, heard ${midiName(played)}. Play ${midiName(expected)} to continue.`
+    early: `${played === null ? 'Note' : played.map(midiName).join(' + ')} was early. Play ${expectedName} again to continue.`,
+    late: `Missed ${expectedName}. Play ${expectedName} to continue.`,
+    wrong: `Expected ${expectedName}, heard ${played.map(midiName).join(' + ')}. Play ${expectedName} to continue.`
   };
   running = false;
   paused = true;
@@ -121,12 +275,14 @@ function fail(kind, played = null) {
   elements.cursor.style.left = `${noteXs[currentIndex]}px`;
   elements.start.textContent = 'Restart';
   markCurrent();
+  showExpectedKey();
   setStatus(messages[kind]);
 }
 
 function complete() {
   running = false;
   paused = false;
+  clearKeyboardHint();
   cancelAnimationFrame(animationFrame);
   elements.cursor.hidden = false;
   elements.start.textContent = 'Again';
@@ -135,7 +291,7 @@ function complete() {
 }
 
 function positionCursor(now) {
-  const x = cursorXAt(now, startTime, beatMs(), noteXs);
+  const x = cursorXAtTimeline(now, startTime, beatMs(), beatOffsets, noteXs);
   elements.cursor.style.left = `${x}px`;
   const desired = Math.max(0, x - elements.scoreScroll.clientWidth / 2);
   elements.scoreScroll.scrollLeft = Math.min(desired, elements.scoreScroll.scrollWidth - elements.scoreScroll.clientWidth);
@@ -157,6 +313,8 @@ function start() {
     return;
   }
   currentIndex = 0;
+  clearKeyboardHint();
+  clearKeyboardChord();
   noteElements.forEach(element => element?.classList.remove('is-correct', 'is-wrong', 'is-current'));
   updateProgress();
   elements.scoreScroll.scrollLeft = 0;
@@ -168,64 +326,114 @@ function start() {
   setStatus('Count in…');
   markCurrent();
   animationFrame = requestAnimationFrame(tick);
-  window.setTimeout(() => { if (running && currentIndex === 0) setStatus(`Play ${midiName(drill.notes[0])}.`); }, beatMs());
+  window.setTimeout(() => { if (running && currentIndex === 0) setStatus(`Play ${expectedLabel(0)}.`); }, beatMs());
 }
 
-function handleNote(midi, velocity = 100) {
-  if (velocity <= 0 || currentIndex >= drill.notes.length || (!running && !paused)) return;
+function handleInput(played, velocity = 100) {
+  const playedNotes = Array.isArray(played) ? played : [played];
+  if (velocity <= 0 || currentIndex >= events.length || (!running && !paused)) return;
   const now = performance.now();
   if (paused) {
-    const expected = drill.notes[currentIndex];
-    if (Number(midi) !== expected) {
-      fail('wrong', midi);
+    if (!samePitchSet(playedNotes, expectedNotes())) {
+      fail('wrong', playedNotes);
       return;
     }
+    clearKeyboardHint();
     noteElements[currentIndex]?.classList.remove('is-current', 'is-wrong');
     noteElements[currentIndex]?.classList.add('is-correct');
     currentIndex += 1;
     updateProgress();
-    if (currentIndex >= drill.notes.length) {
+    if (currentIndex >= events.length) {
       complete();
       return;
     }
     paused = false;
     running = true;
-    startTime = now - (currentIndex - 1) * beatMs();
+    startTime = now - beatOffsets[currentIndex - 1] * beatMs();
     elements.start.textContent = 'Stop';
     markCurrent();
-    setStatus(`Continue · next ${midiName(drill.notes[currentIndex])}`);
+    setStatus(`Continue · next ${expectedLabel()}`);
     animationFrame = requestAnimationFrame(tick);
     return;
   }
   const result = classifyAttempt({
-    played: midi,
-    expected: drill.notes[currentIndex],
+    played: playedNotes,
+    expected: expectedNotes(),
     now,
     due: dueTime(currentIndex),
     tolerance: toleranceMs()
   });
   if (result.result !== 'correct') {
-    fail(result.result, midi);
+    fail(result.result, playedNotes);
     return;
   }
   noteElements[currentIndex]?.classList.remove('is-current');
   noteElements[currentIndex]?.classList.add('is-correct');
   currentIndex += 1;
   updateProgress();
-  if (currentIndex >= drill.notes.length) {
+  if (currentIndex >= events.length) {
     complete();
     return;
   }
   markCurrent();
-  setStatus(`${result.difference >= 0 ? '+' : '−'}${Math.abs(Math.round(result.difference))} ms · next ${midiName(drill.notes[currentIndex])}`);
+  setStatus(`${result.difference >= 0 ? '+' : '−'}${Math.abs(Math.round(result.difference))} ms · next ${expectedLabel()}`);
 }
 
-function makeVexNote(Flow, midi, clef) {
-  const key = midiToVexKey(midi);
-  const note = new Flow.StaveNote({ clef, keys: [key], duration: 'q' });
-  if (key.includes('#')) note.addModifier(new Flow.Accidental('#'), 0);
-  else if (key.includes('b')) note.addModifier(new Flow.Accidental('b'), 0);
+async function playKeyboardNote(midi) {
+  keyboardAudioContext ||= new AudioContext();
+  await keyboardAudioContext.resume();
+  const now = keyboardAudioContext.currentTime;
+  const frequency = 440 * 2 ** ((midi - 69) / 12);
+  const envelope = keyboardAudioContext.createGain();
+  envelope.gain.setValueAtTime(0.0001, now);
+  envelope.gain.exponentialRampToValueAtTime(0.22, now + 0.008);
+  envelope.gain.exponentialRampToValueAtTime(0.075, now + 0.16);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, now + 1.15);
+  envelope.connect(keyboardAudioContext.destination);
+
+  [
+    ['triangle', 1, 0.68],
+    ['sine', 2, 0.22],
+    ['sine', 3, 0.10]
+  ].forEach(([type, multiple, level]) => {
+    const oscillator = keyboardAudioContext.createOscillator();
+    const partial = keyboardAudioContext.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency * multiple, now);
+    partial.gain.setValueAtTime(level, now);
+    oscillator.connect(partial).connect(envelope);
+    oscillator.start(now);
+    oscillator.stop(now + 1.16);
+  });
+}
+
+function makeVexNote(Flow, event, clef) {
+  const keys = event.notes.map(midiToVexKey);
+  const durations = { 1: 'q', 2: 'h', 4: 'w' };
+  const note = new Flow.StaveNote({ clef, keys, duration: durations[event.beats] || 'q' });
+  keys.forEach((key, index) => {
+    if (key.includes('#')) note.addModifier(new Flow.Accidental('#'), index);
+    else if (key.includes('b')) note.addModifier(new Flow.Accidental('b'), index);
+  });
   return note;
+}
+
+function eventsByMeasure() {
+  const measures = [];
+  let measure = [];
+  let beats = 0;
+  events.forEach(event => {
+    if (beats + event.beats > 4) throw new Error(`An event crosses a barline in ${drill.title}.`);
+    measure.push(event);
+    beats += event.beats;
+    if (beats === 4) {
+      measures.push(measure);
+      measure = [];
+      beats = 0;
+    }
+  });
+  if (measure.length) throw new Error(`The final measure is incomplete in ${drill.title}.`);
+  return measures;
 }
 
 function renderScore() {
@@ -242,10 +450,13 @@ function renderScore() {
     return;
   }
 
-  const measureWidth = 285;
-  const measures = Math.ceil(drill.notes.length / 4);
-  const width = measures * measureWidth + 18;
-  const height = 235;
+  const measures = eventsByMeasure();
+  if (!measures.length) throw new Error(`The drill “${drill.title}” has no complete measures.`);
+  const compactLandscape = window.matchMedia('(max-width: 900px) and (orientation: landscape)').matches;
+  const availableWidth = Math.floor(elements.scoreScroll.clientWidth || 0);
+  const width = Math.max(compactLandscape ? 800 : 900, availableWidth, measures.length * (compactLandscape ? 200 : 225));
+  const measureWidth = (width - 18) / measures.length;
+  const height = compactLandscape ? 190 : 235;
   elements.score.style.width = `${width}px`;
   elements.scoreStage.style.width = `${width}px`;
   const renderer = new Flow.Renderer(elements.score, Flow.Renderer.Backends.SVG);
@@ -253,14 +464,14 @@ function renderScore() {
   const context = renderer.getContext();
   context.setFont('Arial', 10);
 
-  for (let measure = 0; measure < measures; measure += 1) {
+  for (let measure = 0; measure < measures.length; measure += 1) {
     const x = 8 + measure * measureWidth;
-    const stave = new Flow.Stave(x, 56, measureWidth);
+    const stave = new Flow.Stave(x, compactLandscape ? 38 : 56, measureWidth);
     if (measure === 0) stave.addClef(drill.clef).addTimeSignature('4/4');
     stave.setContext(context).draw();
-    const source = drill.notes.slice(measure * 4, measure * 4 + 4);
-    const notes = source.map(midi => makeVexNote(Flow, midi, drill.clef));
-    const voice = new Flow.Voice({ num_beats: source.length, beat_value: 4 });
+    const source = measures[measure];
+    const notes = source.map(event => makeVexNote(Flow, event, drill.clef));
+    const voice = new Flow.Voice({ num_beats: 4, beat_value: 4 });
     voice.addTickables(notes);
     new Flow.Formatter().joinVoices([voice]).format([voice], measureWidth - (measure === 0 ? 105 : 48));
     voice.draw(context, stave);
@@ -274,13 +485,47 @@ function renderScore() {
 }
 
 function chooseDrill() {
-  drill = DRILLS.find(candidate => candidate.id === elements.drill.value) || DRILLS[0];
-  renderScore();
+  try {
+    drill = DRILLS.find(candidate => candidate.id === elements.drill.value) || DRILLS[0];
+    events = normalizeEvents(drill);
+    beatOffsets = eventBeatOffsets(events);
+    clearTimeout(pendingMidiChordTimer);
+    pendingMidiChord.clear();
+    clearKeyboardChord();
+    const chordDrill = events.some(event => event.notes.length > 1);
+    setChordHold(chordDrill);
+    if (chordDrill) elements.keyboardPanel.open = true;
+    renderScore();
+  } catch (error) {
+    console.error('Unable to load piano drill:', error);
+    stop('This drill could not be loaded.');
+    elements.score.replaceChildren();
+    elements.drillTitle.textContent = drill?.title || 'Unavailable drill';
+    elements.progress.textContent = '0 / 0';
+    setStatus(error instanceof Error ? error.message : 'This drill could not be loaded.');
+  }
+}
+
+function submitPendingMidiChord(velocity = 100) {
+  clearTimeout(pendingMidiChordTimer);
+  if (!pendingMidiChord.size) return;
+  const notes = [...pendingMidiChord];
+  pendingMidiChord.clear();
+  handleInput(notes, velocity);
 }
 
 function onMidiMessage(event) {
   const [status, note, velocity = 0] = event.data;
-  if ((status & 0xf0) === 0x90 && velocity > 0) handleNote(note, velocity);
+  if ((status & 0xf0) !== 0x90 || velocity <= 0) return;
+  if (expectedNotes().length <= 1) {
+    pendingMidiChord.clear();
+    handleInput([note], velocity);
+    return;
+  }
+  pendingMidiChord.add(note);
+  clearTimeout(pendingMidiChordTimer);
+  if (pendingMidiChord.size >= expectedNotes().length) submitPendingMidiChord(velocity);
+  else pendingMidiChordTimer = window.setTimeout(() => submitPendingMidiChord(velocity), 70);
 }
 
 function selectMidiInput() {
@@ -321,22 +566,33 @@ async function enableMidi() {
 }
 
 function renderKeyboard() {
-  const whiteKeyWidth = 52;
-  const blackKeyWidth = 34;
+  elements.keyboard.replaceChildren();
+  const compactLandscape = window.matchMedia('(max-width: 900px) and (orientation: landscape)').matches;
+  const whiteKeyWidth = compactLandscape ? 46 : 52;
+  const blackKeyWidth = compactLandscape ? 30 : 34;
   let whiteIndex = 0;
   for (let midi = 48; midi <= 72; midi += 1) {
     const black = [1, 3, 6, 8, 10].includes(midi % 12);
     const button = document.createElement('button');
     button.className = `piano-key${black ? ' is-black' : ''}`;
     button.type = 'button';
+    button.style.width = `${black ? blackKeyWidth : whiteKeyWidth}px`;
     button.textContent = midiName(midi);
+    button.dataset.midi = String(midi);
     button.setAttribute('aria-label', midiName(midi));
     if (black) button.style.left = `${whiteIndex * whiteKeyWidth - blackKeyWidth / 2}px`;
     else {
       button.style.left = `${whiteIndex * whiteKeyWidth}px`;
       whiteIndex += 1;
     }
-    button.addEventListener('click', () => handleNote(midi));
+    button.addEventListener('click', () => {
+      playKeyboardNote(midi).catch(error => console.warn('Could not play keyboard note.', error));
+      if (chordHold) {
+        if (keyboardChord.has(midi)) keyboardChord.delete(midi);
+        else keyboardChord.add(midi);
+        updateChordControls();
+      } else handleInput([midi]);
+    });
     elements.keyboard.append(button);
   }
   elements.keyboard.style.width = `${whiteIndex * whiteKeyWidth}px`;
@@ -355,6 +611,15 @@ elements.tempo.addEventListener('change', () => { if (running) stop('Tempo chang
 elements.tolerance.addEventListener('input', () => { elements.toleranceOutput.textContent = `±${toleranceMs()} ms`; });
 elements.enableMidi.addEventListener('click', enableMidi);
 elements.midiInput.addEventListener('change', selectMidiInput);
+elements.chordHold.addEventListener('click', () => setChordHold(!chordHold));
+elements.clearChord.addEventListener('click', clearKeyboardChord);
+elements.playChord.addEventListener('click', () => {
+  if (!keyboardChord.size) return;
+  const notes = [...keyboardChord];
+  clearKeyboardChord();
+  notes.forEach(note => playKeyboardNote(note).catch(error => console.warn('Could not play keyboard note.', error)));
+  handleInput(notes);
+});
 elements.theme.addEventListener('click', () => {
   const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
   document.documentElement.dataset.theme = next;
