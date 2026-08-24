@@ -168,6 +168,8 @@ stick: R  L  R  L  R  L  R  L  R  . . . . . . .
 
 ## Paradiddles
 
+See [Paradiddles](#/music/paradiddles) for all four single-paradiddle inversions and every ordered two-inversion sequence.
+
 ### Single Paradiddle
 
 ```drums

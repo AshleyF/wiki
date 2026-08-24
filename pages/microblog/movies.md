@@ -1,5 +1,9 @@
 # Movies
 
+## Eva (23 AUG 2026)
+
+A La Femm Nakita kind of thing with our favorite red-head actress. Lots of action and blood. Pretty predictible and we actually spent it only half-watching while in our phones and me giving Tracey a food massage.
+
 ## The Queen of Chess - Judit Polgar (05 AUG 2026)
 
 This was an hour and a half documentary on Judit Polgar who was an upcoming female player in the eighties and nineties. She even beat Kasparov once. She was ranked twenty-something in the world, but by far the highest ranked female and broke barriers for women players. Just social ones. Obviously there's no reason that women couldn't play as well as men, except that it's a smaller tallent pool simply because there are fewer women into it. That part is partially social, but also it seems universal that women are as into these weird things that guys get into; cubing, chess, etc. It was a pretty good show, with a nice build up to her finally beating Kasparov. There was apparently an earlier game in which it would have been a draw, but Kasparov moved and piece and then changed his mind. I mean he let go of a knight after moving and then regripped and moved it somewhere else. It would be legal if he hadn't let go. Nobody noticed, except Polgar and the camera caught it. But she let it slide at the time and signed the game sheet at then end, making it irriversible. A big scandal back then. But later she beat him with exceptionally briliant play.
