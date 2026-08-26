@@ -806,6 +806,7 @@ function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern)) 
   if (isAccented && typeof Flow.Articulation === 'function') {
     const accent = new Flow.Articulation('a>')
       .setPosition(Flow.Modifier.Position.ABOVE);
+    note.wikiAccent = accent;
     note.addModifier(accent, 0);
   }
 
@@ -866,6 +867,7 @@ function makeDrumVoice(pattern) {
       if (shouldCollapseToBeat) {
         const note = makeDrumHit(drumActiveRowsAt(pattern, groupStart), groupStart, pattern, 4);
         note.wikiCollapsedToBeat = true;
+        note.wikiConsumedSlots = tupletSpec.size;
         notes.push(note);
         continue;
       }
@@ -911,16 +913,20 @@ function makeDrumVoice(pattern) {
     const activeRows = drumActiveRowsAt(pattern, index);
     let note;
     if (activeRows.length) {
-      let consumedSlots = 1;
+      let availableSlots = 1;
       while (
-        index + consumedSlots < pattern.steps
-        && drumStepIsSilent(pattern, index + consumedSlots)
-        && drumDurationForSlots(pattern, consumedSlots + 1)
+        index + availableSlots < pattern.steps
+        && drumStepIsSilent(pattern, index + availableSlots)
       ) {
-        consumedSlots += 1;
+        availableSlots += 1;
+      }
+      let consumedSlots = 1;
+      for (let candidateSlots = 2; candidateSlots <= availableSlots; candidateSlots += 1) {
+        if (drumDurationForSlots(pattern, candidateSlots)) consumedSlots = candidateSlots;
       }
       const collapsedDuration = drumDurationForSlots(pattern, consumedSlots) || duration;
       note = makeDrumHit(activeRows, index, pattern, collapsedDuration);
+      note.wikiConsumedSlots = consumedSlots;
       if (consumedSlots > 1 && collapsedDuration < 8) note.wikiCollapsedToBeat = true;
       index += consumedSlots - 1;
     } else {
@@ -996,6 +1002,67 @@ function setDrumRepeatBarlines(stave, Flow) {
   if (repeatEnd && typeof stave.setEndBarType === 'function') stave.setEndBarType(repeatEnd);
 }
 
+function drumBeamTopAtX(element, x, fallbackBox) {
+  const pathData = element.querySelector('path')?.getAttribute('d') || '';
+  const coordinates = pathData.match(/-?\d+(?:\.\d+)?/g)?.map(Number) || [];
+  if (coordinates.length < 8) return fallbackBox.y;
+
+  const leftX = coordinates[0];
+  const leftTop = Math.min(coordinates[1], coordinates[3]);
+  const rightX = coordinates[4];
+  const rightTop = Math.min(coordinates[5], coordinates[7]);
+  if (rightX === leftX) return Math.min(leftTop, rightTop);
+  const ratio = Math.max(0, Math.min(1, (x - leftX) / (rightX - leftX)));
+  return leftTop + ((rightTop - leftTop) * ratio);
+}
+
+function positionDrumAccents(target, notes) {
+  const beamBoxes = Array.from(target.querySelectorAll('.vf-beam')).map((element) => ({
+    element,
+    box: element.getBBox()
+  }));
+  if (!beamBoxes.length) return;
+
+  notes.forEach((note) => {
+    if (!note.wikiAccent) return;
+    const noteGroup = note.getSVGElement?.();
+    const firstNotehead = noteGroup?.querySelector('.vf-notehead');
+    const noteheadPaths = firstNotehead
+      ? Array.from(firstNotehead.children).filter(
+        (child) => child.tagName.toLowerCase() === 'path'
+      )
+      : [];
+    // VexFlow 4.2.2 draws an Articulation into the first notehead group but
+    // does not retain an SVG element on the Articulation object. The notehead
+    // glyph is the first path and the accent glyph is the second. Flam grace
+    // notes may append their slash as a later path in this same outer group.
+    const accentElement = noteheadPaths.length > 1 ? noteheadPaths[1] : null;
+    if (!accentElement) return;
+    const accentBox = accentElement.getBBox();
+    const overlappingBeams = beamBoxes.filter(({ box }) => (
+      accentBox.x + accentBox.width >= box.x
+      && accentBox.x <= box.x + box.width
+    ));
+    if (!overlappingBeams.length) return;
+
+    const accentCenterX = accentBox.x + (accentBox.width / 2);
+    const beamTop = Math.min(...overlappingBeams.map(({ element, box }) => (
+      drumBeamTopAtX(element, accentCenterX, box)
+    )));
+    const desiredAccentBottom = beamTop - 6;
+    const shift = Math.min(0, desiredAccentBottom - (accentBox.y + accentBox.height));
+    accentElement.classList.add('drum-accent');
+    accentElement.dataset.drumAccentShift = String(shift);
+    if (shift) {
+      const existingTransform = accentElement.getAttribute('transform');
+      accentElement.setAttribute(
+        'transform',
+        `${existingTransform ? `${existingTransform} ` : ''}translate(0 ${shift})`
+      );
+    }
+  });
+}
+
 function renderDrumNotation(target, pattern) {
   const Flow = window.Vex.Flow;
   target.innerHTML = '';
@@ -1022,6 +1089,7 @@ function renderDrumNotation(target, pattern) {
 
   drums.voice.draw(context, stave);
   beams.forEach((beam) => beam.setContext(context).draw());
+  positionDrumAccents(target, drums.notes);
   drums.tuplets.filter((tuplet) => tuplet.isWikiVisible).forEach((tuplet) => {
     if (typeof context.openGroup === 'function') context.openGroup('tuplet');
     tuplet.setContext(context).draw();
@@ -1034,6 +1102,10 @@ function renderDrumNotation(target, pattern) {
     if (note.isWikiGhostNote) return;
     const step = note.wikiStep;
     if (!Number.isInteger(step)) return;
+    const coveredSteps = Array.from(
+      { length: Math.max(1, Number(note.wikiConsumedSlots) || 1) },
+      (_, offset) => step + offset
+    ).filter((coveredStep) => coveredStep < stepElements.length);
     const group = note.getSVGElement?.();
     if (!group) return;
     group.classList.add('drum-step');
@@ -1051,17 +1123,17 @@ function renderDrumNotation(target, pattern) {
         group.append(marker);
       }
     }
-    addDrumStepElement(stepElements, step, group);
+    coveredSteps.forEach((coveredStep) => addDrumStepElement(stepElements, coveredStep, group));
     group.querySelectorAll('.vf-stavenote .vf-stem, .vf-stavenote path[fill="none"], :scope > path[fill="none"]').forEach((element) => {
       element.classList.add('drum-step-grace');
       element.dataset.drumStep = String(step);
-      addDrumStepElement(stepElements, step, element);
+      coveredSteps.forEach((coveredStep) => addDrumStepElement(stepElements, coveredStep, element));
     });
     const stem = renderedStemForNote(stems, note);
     if (stem) {
       stem.classList.add('drum-step-stem');
       stem.dataset.drumStep = String(step);
-      addDrumStepElement(stepElements, step, stem);
+      coveredSteps.forEach((coveredStep) => addDrumStepElement(stepElements, coveredStep, stem));
     }
   });
 
@@ -1421,7 +1493,9 @@ function drumMidiNote(instrument, token, sticking = '.') {
     ph: 44,
     ft: 43,
     mt: 47,
-    ht: 50,
+    // Toontrack Standard uses note 50 for a muted crash, even though General
+    // MIDI calls it a high tom. Racktom 1 center is note 48 in Superior Drummer.
+    ht: 48,
     cr: 49,
     rd: 51,
     wb: 76
@@ -1684,6 +1758,9 @@ async function playDrumBlock(block) {
     await prepareWikiSnareSamples(drumAudioContext, pattern, block);
     block.drumActiveVelocityProfile = drumVelocityProfile(block);
   }
+  // Sample and MIDI setup can finish after the user has switched tabs. Do not
+  // let that stale async work restart playback after visibility handling stops it.
+  if (document.hidden || block.dataset.loading !== 'true') return;
   const tempoInput = block.querySelector('.drum-tempo');
   const tempo = Number(tempoInput?.value) || Number(pattern.tempo) || 120;
   const stepDuration = drumStepDuration(pattern, tempo);
@@ -1987,5 +2064,14 @@ themeToggle?.addEventListener('click', () => {
   setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
 });
 window.addEventListener('hashchange', loadPage);
+function stopPlaybackForInactivePage() {
+  stopStrudelBlocks();
+  stopAbcBlocks();
+  stopDrumBlocks();
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopPlaybackForInactivePage();
+});
+window.addEventListener('blur', stopPlaybackForInactivePage);
 if (!location.hash) location.replace('#/home');
 else loadPage();

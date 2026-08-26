@@ -1,6 +1,20 @@
 # Music
 
-My [drum rudiments page](#/music/rudiments), [paradiddle-inversions page](#/music/paradiddles), [grooves page](#/music/grooves), [rhythm study map](#/music/rhythm), and [Euclidean rhythms page](#/music/euclidean-rhythms) cover drum technique, playable beats, rhythm theory, percussion sounds, and related ideas. The standalone [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) turns the Euclidean and Boolean-combination ideas into a live instrument. The [Piano Reading Trainer](projects/piano/) uses a MIDI keyboard and moving staff cursor for beginner sight-reading drills.
+Wiki notes:
+
+- [Drum rudiments](#/music/rudiments) — sticking, rolls, paradiddles, flams, drags, and hybrid rudiments
+- [Paradiddle inversions](#/music/paradiddles) — the four PAS inversions and every ordered pair
+- [Drum fills](#/music/fills) — fill rhythms organized by length and subdivision, with orchestration variants
+- [Grooves](#/music/grooves) — playable beats and groove theory
+- [Rhythm](#/music/rhythm) — a study map of rhythmic concepts, percussion, and technique
+- [Euclidean rhythms](#/music/euclidean-rhythms) — even-distribution rhythms and Boolean combinations
+
+Standalone tools:
+
+- [Rhythm Explorer](projects/rhythm-explorer/) — generate, edit, orchestrate, and perform layered drum parts
+- [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) — combine Euclidean generators into playable tracks
+- [Piano Reading Trainer](projects/piano/) — beginner sight-reading drills with MIDI input and a moving cursor
+- [Piano Flashcards](projects/piano-flashcards/) — endless letter, grand-staff, and ear-training note drills with on-screen or MIDI input
 
 ## Strudel
 

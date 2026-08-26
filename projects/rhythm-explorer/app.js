@@ -17,7 +17,7 @@ const instruments = [
   { id: 'cowbell', label: 'Cowbell', key: 'f/5/X2', family: 'cowbell', midi: 56, pan: .2, states: ['off', 'hit', 'accent'] },
   { id: 'hh', label: 'Hi-hat', key: 'f/5/X2', family: 'hat', midi: 42, pan: -.35, states: ['off', 'closed', 'open', 'bark', 'accent'] },
   { id: 'ph', label: 'Pedal hi-hat', key: 'd/4/X2', family: 'pedal-hat', midi: 44, pan: -.35, states: ['off', 'chick', 'splash', 'accent'] },
-  { id: 'ht', label: 'High tom', key: 'e/5', family: 'tom', midi: 50, pitch: 190, pan: -.35, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
+  { id: 'ht', label: 'High tom', key: 'e/5', family: 'tom', midi: 48, pitch: 190, pan: -.35, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
   { id: 'mt', label: 'Mid tom', key: 'd/5', family: 'tom', midi: 47, pitch: 145, pan: .05, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
   { id: 'lt', label: 'Low tom', key: 'b/4', family: 'tom', midi: 45, pitch: 112, pan: .28, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },
   { id: 'ft', label: 'Floor tom', key: 'a/4', family: 'tom', midi: 43, pitch: 82, pan: .48, states: ['off', 'hit', 'ghost', 'flam', 'drag', 'accent'] },

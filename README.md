@@ -12,6 +12,8 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+Standalone tools live under `projects/`. The piano tools include the timed reading trainer at `projects/piano/` and the endless letter, grand-staff, and ear-training flashcards at `projects/piano-flashcards/`.
+
 ## Add a page
 
 1. Add `pages/my-page.md`.

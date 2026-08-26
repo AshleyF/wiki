@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Endless piano note flashcards using letters, grand-staff notation, or ear training, with on-screen and MIDI keyboards.">
+    <title>Piano Flashcards</title>
+    <script>
+      (() => {
+        let theme = 'dark';
+        try { theme = localStorage.getItem('personal-wiki-theme') === 'light' ? 'light' : 'dark'; } catch (error) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260826-1">
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+  </head>
+  <body>
+    <header class="project-header">
+      <h1>Piano Flashcards</h1>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="toolbar panel" aria-label="Flashcard controls">
+        <div class="mode-switch" role="group" aria-label="Question mode">
+          <button type="button" data-mode="letter" aria-pressed="true" title="See a note name and find its key in the middle-C octave">Letter</button>
+          <button type="button" data-mode="staff" aria-pressed="false" title="Read one note from the grand staff">Staff</button>
+          <button type="button" data-mode="ear" aria-pressed="false" title="Hear a note and find it by ear">Ear</button>
+        </div>
+        <button id="replay" type="button" hidden title="Play the current ear-training note again">↻ Hear again</button>
+        <details class="midi-controls">
+          <summary>MIDI</summary>
+          <div class="midi-menu">
+            <button id="enable-midi" type="button">Enable MIDI</button>
+            <label><span>Input</span><select id="midi-input" disabled><option value="">No input</option></select></label>
+            <label><span>Output</span><select id="midi-output" disabled><option value="">Browser sound</option></select></label>
+          </div>
+        </details>
+      </section>
+
+      <section class="prompt-panel panel" aria-label="Current flashcard">
+        <div class="prompt-heading">
+          <span id="mode-label">Letter</span>
+          <span id="status" role="status" aria-live="polite">Play the matching key.</span>
+        </div>
+        <div id="prompt" class="prompt">
+          <div id="letter-prompt" class="letter-prompt" aria-label="Note letter"></div>
+          <div id="staff-prompt" class="staff-prompt" aria-label="Grand staff notation" hidden></div>
+          <div id="ear-prompt" class="ear-prompt" aria-label="Listen for the note" hidden>
+            <span aria-hidden="true">♫</span><strong>Listen</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats panel" aria-label="Session statistics">
+        <div><span>Correct</span><strong id="correct-count">0</strong></div>
+        <div><span>Missed</span><strong id="miss-count">0</strong></div>
+        <div><span>Streak</span><strong id="streak-count">0</strong></div>
+        <div><span>Accuracy</span><strong id="accuracy">—</strong></div>
+        <button id="reset-stats" type="button">Reset</button>
+      </section>
+
+      <section class="keyboard-panel panel" aria-label="Piano keyboard">
+        <div id="keyboard" class="keyboard" aria-label="On-screen piano keyboard"></div>
+      </section>
+    </main>
+
+    <script type="module" src="app.js?v=20260826-2"></script>
+  </body>
+</html>
