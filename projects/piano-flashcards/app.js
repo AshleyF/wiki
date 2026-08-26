@@ -1,14 +1,10 @@
-import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-2';
+import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-3';
 import { midiName, midiToVexKey } from '../piano/trainer-core.js?v=20260822-held-midi-1';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;
 const MODE_LABELS = { letter: 'Letter', staff: 'Grand staff', ear: 'Ear' };
-const DEFAULT_MODE_SETTINGS = Object.freeze({
-  letter: Object.freeze({ range: 'middle', includeAccidentals: false }),
-  staff: Object.freeze({ range: 'grand', includeAccidentals: true }),
-  ear: Object.freeze({ range: 'grand', includeAccidentals: true })
-});
+const DEFAULT_SETTINGS = Object.freeze({ range: 'middle', includeAccidentals: false });
 const SETTINGS_KEY = 'piano-flashcard-settings';
 
 const elements = {
@@ -46,27 +42,28 @@ let midiAccess = null;
 let selectedMidiInput = null;
 let selectedMidiOutput = null;
 let questionLocked = false;
-let modeSettings = loadModeSettings();
+let settings = loadSettings();
 
-function loadModeSettings() {
+function loadSettings() {
   let stored = {};
   try { stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch (error) {}
-  return Object.fromEntries(Object.entries(DEFAULT_MODE_SETTINGS).map(([name, defaults]) => {
-    const candidate = stored?.[name] || {};
-    const range = ['middle', 'two', 'grand'].includes(candidate.range) ? candidate.range : defaults.range;
-    const includeAccidentals = typeof candidate.includeAccidentals === 'boolean'
+  // Older builds stored one setting per mode. Prefer the staff setting during
+  // migration because that is where range and accidental selection matter most.
+  const candidate = stored?.global || stored?.staff || stored;
+  return {
+    range: ['middle', 'two', 'grand'].includes(candidate?.range) ? candidate.range : DEFAULT_SETTINGS.range,
+    includeAccidentals: typeof candidate?.includeAccidentals === 'boolean'
       ? candidate.includeAccidentals
-      : defaults.includeAccidentals;
-    return [name, { range, includeAccidentals }];
-  }));
+      : DEFAULT_SETTINGS.includeAccidentals
+  };
 }
 
-function saveModeSettings() {
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(modeSettings)); } catch (error) {}
+function saveSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (error) {}
 }
 
 function currentSettings() {
-  return modeSettings[mode] || DEFAULT_MODE_SETTINGS[mode];
+  return settings;
 }
 
 function syncSettingsControls() {
@@ -358,16 +355,15 @@ async function enableMidi() {
 function setMode(nextMode) {
   if (!MODE_LABELS[nextMode] || nextMode === mode) return;
   mode = nextMode;
-  syncSettingsControls();
   nextQuestion({ playEar: mode === 'ear' });
 }
 
-function updateCurrentModeSettings() {
-  modeSettings[mode] = {
+function updateSettings() {
+  settings = {
     range: elements.noteRange.value,
     includeAccidentals: elements.includeAccidentals.checked
   };
-  saveModeSettings();
+  saveSettings();
   nextQuestion({ playEar: mode === 'ear' });
 }
 
@@ -389,8 +385,8 @@ function syncThemeButton() {
 elements.modeButtons.forEach(button => button.addEventListener('click', () => setMode(button.dataset.mode)));
 elements.replay.addEventListener('click', () => playQuestion().catch(error => console.warn('Could not replay note.', error)));
 elements.resetStats.addEventListener('click', resetStats);
-elements.noteRange.addEventListener('change', updateCurrentModeSettings);
-elements.includeAccidentals.addEventListener('change', updateCurrentModeSettings);
+elements.noteRange.addEventListener('change', updateSettings);
+elements.includeAccidentals.addEventListener('change', updateSettings);
 elements.enableMidi.addEventListener('click', enableMidi);
 elements.midiInput.addEventListener('change', selectMidiPorts);
 elements.midiOutput.addEventListener('change', selectMidiPorts);

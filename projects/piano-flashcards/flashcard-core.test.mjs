@@ -7,6 +7,8 @@ assert.equal(GRAND_STAFF_NOTES[0], 36);
 assert.equal(GRAND_STAFF_NOTES.at(-1), 84);
 assert.deepEqual(notesForSettings({ mode: 'staff', range: 'middle', includeAccidentals: false }), LETTER_NOTES);
 assert.deepEqual(notesForSettings({ mode: 'staff', range: 'middle', includeAccidentals: true }), Array.from({ length: 12 }, (_, index) => 60 + index));
+assert.ok(notesForSettings({ mode: 'staff', range: 'grand', includeAccidentals: false }).every(note => [0, 2, 4, 5, 7, 9, 11].includes(note % 12)));
+assert.ok(notesForSettings({ mode: 'staff', range: 'middle', includeAccidentals: false }).every(note => note >= 60 && note <= 71));
 assert.equal(notesForSettings({ mode: 'ear', range: 'two', includeAccidentals: false })[0], 48);
 assert.equal(notesForSettings({ mode: 'ear', range: 'two', includeAccidentals: false }).at(-1), 72);
 assert.equal(chooseNextNote([60, 62], 60, () => 0), 62);
