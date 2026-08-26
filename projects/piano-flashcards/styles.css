@@ -47,16 +47,27 @@ main { display: grid; grid-template-rows: auto minmax(230px, 1fr) auto auto; gap
 .mode-switch button { min-width: 5rem; border: 0; background: transparent; }
 .mode-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 800; }
 #replay { font-weight: 750; }
-.midi-controls { position: relative; margin-left: auto; }
-.midi-controls summary { display: flex; align-items: center; min-height: 2.45rem; border: 1px solid var(--line); border-radius: 9px; padding: .42rem .75rem; cursor: pointer; list-style: none; }
-.midi-controls summary::-webkit-details-marker { display: none; }
+.settings-controls { position: relative; margin-left: auto; }
+.midi-controls { position: relative; }
+.settings-controls summary, .midi-controls summary { display: flex; align-items: center; min-height: 2.45rem; border: 1px solid var(--line); border-radius: 9px; padding: .42rem .75rem; cursor: pointer; list-style: none; }
+.settings-controls summary::-webkit-details-marker, .midi-controls summary::-webkit-details-marker { display: none; }
+.settings-menu,
 .midi-menu { position: absolute; top: calc(100% + .4rem); right: 0; z-index: 10; display: grid; grid-template-columns: auto minmax(10rem, auto) minmax(10rem, auto); align-items: end; gap: .55rem; width: max-content; max-width: calc(100vw - 1.4rem); border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); padding: .65rem; }
+.settings-menu { grid-template-columns: minmax(13rem, auto) auto; }
+.settings-menu label,
 .midi-menu label { display: grid; gap: .2rem; color: var(--muted); font-size: .7rem; font-weight: 800; }
+.settings-menu .checkbox-label { display: flex; align-items: center; gap: .4rem; min-height: 2.25rem; white-space: nowrap; }
+.settings-menu input { width: 1.05rem; height: 1.05rem; accent-color: var(--accent); }
 .prompt-panel { display: grid; grid-template-rows: auto 1fr; min-height: 0; overflow: hidden; }
 .prompt-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .6rem .85rem 0; color: var(--muted); font-size: .75rem; }
 .prompt-heading > :first-child { color: var(--accent); font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 .prompt-heading #status { overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
 .prompt { position: relative; display: grid; place-items: center; min-height: 0; }
+.prompt-panel { transition: border-color 100ms ease, box-shadow 100ms ease; }
+.prompt-panel.is-wrong { border-color: var(--danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 38%, transparent); }
+.prompt-panel.is-correct { border-color: var(--success); box-shadow: 0 0 0 2px color-mix(in srgb, var(--success) 34%, transparent); }
+.prompt-panel.is-wrong #status, .prompt-panel.is-wrong .letter-prompt, .prompt-panel.is-wrong .ear-prompt, .prompt-panel.is-wrong .ear-prompt span { color: var(--danger); }
+.prompt-panel.is-correct #status, .prompt-panel.is-correct .letter-prompt, .prompt-panel.is-correct .ear-prompt, .prompt-panel.is-correct .ear-prompt span { color: var(--success); }
 .letter-prompt { font-size: clamp(6rem, 20vh, 12rem); font-weight: 850; line-height: .85; letter-spacing: -.08em; }
 .ear-prompt { display: grid; place-items: center; color: var(--muted); }
 .ear-prompt span { color: var(--accent); font-size: clamp(5rem, 16vh, 9rem); line-height: .9; }
@@ -64,6 +75,8 @@ main { display: grid; grid-template-rows: auto minmax(230px, 1fr) auto auto; gap
 .staff-prompt { width: 100%; min-height: 218px; }
 .staff-prompt svg { display: block; margin: 0 auto; }
 .staff-prompt svg * { stroke: var(--ink); fill: var(--ink); }
+.prompt-panel.is-wrong .staff-prompt .flashcard-note * { stroke: var(--danger); fill: var(--danger); }
+.prompt-panel.is-correct .staff-prompt .flashcard-note * { stroke: var(--success); fill: var(--success); }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(4rem, 1fr)) auto; align-items: center; padding: .45rem .6rem; }
 .stats div { display: flex; align-items: baseline; justify-content: center; gap: .4rem; border-right: 1px solid var(--line); }
 .stats span { color: var(--muted); font-size: .68rem; font-weight: 700; text-transform: uppercase; }
@@ -85,36 +98,36 @@ main { display: grid; grid-template-rows: auto minmax(230px, 1fr) auto auto; gap
   body { height: 100dvh; overflow: hidden; }
   .project-header { display: none; }
   main {
-    grid-template-rows: 40px minmax(132px, 1fr) 32px 94px;
-    gap: 4px;
+    grid-template-rows: 36px minmax(143px, 1fr) 28px 72px;
+    gap: 3px;
     height: 100dvh;
     min-height: 0;
     padding: max(2px, env(safe-area-inset-top)) max(.55rem, env(safe-area-inset-right)) max(3px, env(safe-area-inset-bottom)) max(.55rem, env(safe-area-inset-left));
   }
   .panel { border-radius: 9px; box-shadow: none; }
-  button, .midi-controls summary { min-height: 34px; height: 34px; padding: .22rem .55rem; font-size: .78rem; }
+  button, .settings-controls summary, .midi-controls summary { min-height: 32px; height: 32px; padding: .18rem .5rem; font-size: .76rem; }
   .toolbar { gap: 4px; padding: 2px 4px; }
   .mode-switch button { min-width: 4.2rem; }
-  .midi-controls summary { padding-inline: .55rem; }
+  .settings-controls summary, .midi-controls summary { padding-inline: .5rem; }
   .prompt-heading { padding: 3px .55rem 0; font-size: .62rem; }
   .letter-prompt { font-size: min(24vh, 7rem); }
   .ear-prompt span { font-size: min(18vh, 5rem); }
-  .staff-prompt { min-height: 146px; }
+  .staff-prompt { height: 100%; min-height: 0; }
   .stats { padding: 1px 3px; }
   .stats div { gap: .25rem; }
   .stats span { font-size: .56rem; }
   .stats strong { font-size: .76rem; }
   .stats button { min-height: 27px; height: 27px; margin-left: 3px; padding: 1px .45rem; font-size: .66rem; }
   .keyboard-panel { padding: 2px; }
-  .keyboard { height: 89px; }
-  .piano-key { height: 87px; padding-bottom: .15rem; font-size: .5rem; }
-  .piano-key.is-black { height: 54px; padding-bottom: .1rem; }
+  .keyboard { height: 67px; }
+  .piano-key { height: 65px; padding-bottom: .12rem; font-size: .48rem; }
+  .piano-key.is-black { height: 41px; padding-bottom: .08rem; }
 }
 
 @media (max-width: 620px) and (orientation: portrait) {
   .toolbar { flex-wrap: wrap; }
-  .midi-controls { margin-left: 0; }
-  .midi-menu { left: 0; right: auto; grid-template-columns: 1fr; width: min(20rem, calc(100vw - 2rem)); }
+  .settings-controls { margin-left: 0; }
+  .settings-menu, .midi-menu { left: 0; right: auto; grid-template-columns: 1fr; width: min(20rem, calc(100vw - 2rem)); }
   .stats { grid-template-columns: repeat(2, 1fr) auto; row-gap: .45rem; }
   .stats div:nth-child(2) { border-right: 0; }
   .stats button { grid-column: 3; grid-row: 1 / span 2; }

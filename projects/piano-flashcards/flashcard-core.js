@@ -5,8 +5,24 @@ export const GRAND_STAFF_NOTES = Object.freeze(
   Array.from({ length: 49 }, (_, index) => 36 + index)
 );
 
+export const NOTE_RANGES = Object.freeze({
+  middle: Object.freeze({ minimum: 60, maximum: 71 }),
+  two: Object.freeze({ minimum: 48, maximum: 72 }),
+  grand: Object.freeze({ minimum: 36, maximum: 84 })
+});
+
+export function notesForSettings({ mode = 'letter', range = null, includeAccidentals = false } = {}) {
+  const defaultRange = mode === 'letter' ? 'middle' : 'grand';
+  const selected = NOTE_RANGES[range] || NOTE_RANGES[defaultRange];
+  return GRAND_STAFF_NOTES.filter(note => (
+    note >= selected.minimum
+    && note <= selected.maximum
+    && (includeAccidentals || isNaturalNote(note))
+  ));
+}
+
 export function notesForMode(mode) {
-  return mode === 'letter' ? [...LETTER_NOTES] : [...GRAND_STAFF_NOTES];
+  return notesForSettings({ mode, includeAccidentals: mode !== 'letter' });
 }
 
 export function chooseNextNote(pool, previous = null, random = Math.random) {

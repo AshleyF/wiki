@@ -1,13 +1,20 @@
-import { accuracy, chooseNextNote, letterPrompt, notesForMode } from './flashcard-core.js?v=20260826-1';
+import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-2';
 import { midiName, midiToVexKey } from '../piano/trainer-core.js?v=20260822-held-midi-1';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;
 const MODE_LABELS = { letter: 'Letter', staff: 'Grand staff', ear: 'Ear' };
+const DEFAULT_MODE_SETTINGS = Object.freeze({
+  letter: Object.freeze({ range: 'middle', includeAccidentals: false }),
+  staff: Object.freeze({ range: 'grand', includeAccidentals: true }),
+  ear: Object.freeze({ range: 'grand', includeAccidentals: true })
+});
+const SETTINGS_KEY = 'piano-flashcard-settings';
 
 const elements = {
   modeButtons: [...document.querySelectorAll('[data-mode]')],
   replay: document.querySelector('#replay'),
+  promptPanel: document.querySelector('.prompt-panel'),
   modeLabel: document.querySelector('#mode-label'),
   status: document.querySelector('#status'),
   letterPrompt: document.querySelector('#letter-prompt'),
@@ -19,6 +26,8 @@ const elements = {
   streak: document.querySelector('#streak-count'),
   accuracy: document.querySelector('#accuracy'),
   resetStats: document.querySelector('#reset-stats'),
+  noteRange: document.querySelector('#note-range'),
+  includeAccidentals: document.querySelector('#include-accidentals'),
   enableMidi: document.querySelector('#enable-midi'),
   midiInput: document.querySelector('#midi-input'),
   midiOutput: document.querySelector('#midi-output'),
@@ -37,12 +46,41 @@ let midiAccess = null;
 let selectedMidiInput = null;
 let selectedMidiOutput = null;
 let questionLocked = false;
+let modeSettings = loadModeSettings();
+
+function loadModeSettings() {
+  let stored = {};
+  try { stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch (error) {}
+  return Object.fromEntries(Object.entries(DEFAULT_MODE_SETTINGS).map(([name, defaults]) => {
+    const candidate = stored?.[name] || {};
+    const range = ['middle', 'two', 'grand'].includes(candidate.range) ? candidate.range : defaults.range;
+    const includeAccidentals = typeof candidate.includeAccidentals === 'boolean'
+      ? candidate.includeAccidentals
+      : defaults.includeAccidentals;
+    return [name, { range, includeAccidentals }];
+  }));
+}
+
+function saveModeSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(modeSettings)); } catch (error) {}
+}
+
+function currentSettings() {
+  return modeSettings[mode] || DEFAULT_MODE_SETTINGS[mode];
+}
+
+function syncSettingsControls() {
+  const settings = currentSettings();
+  elements.noteRange.value = settings.range;
+  elements.includeAccidentals.checked = settings.includeAccidentals;
+}
 
 function setStatus(message) {
   elements.status.textContent = message;
 }
 
 function clearKeyFeedback() {
+  elements.promptPanel.classList.remove('is-correct', 'is-wrong');
   elements.keyboard.querySelectorAll('.is-correct, .is-wrong, .is-answer').forEach(key => {
     key.classList.remove('is-correct', 'is-wrong', 'is-answer');
   });
@@ -66,11 +104,12 @@ function renderGrandStaff(note) {
 
   const compact = window.matchMedia('(max-width: 900px) and (orientation: landscape)').matches;
   const width = Math.max(320, Math.floor(elements.staffPrompt.clientWidth || 620));
-  const height = compact ? 146 : 218;
+  const availableHeight = Math.floor(elements.staffPrompt.clientHeight || (compact ? 126 : 218));
+  const height = compact ? Math.max(112, Math.min(132, availableHeight)) : 218;
   const staveWidth = Math.min(width - 24, compact ? 520 : 640);
   const x = Math.max(8, Math.round((width - staveWidth) / 2));
-  const trebleY = compact ? 0 : 18;
-  const bassY = compact ? 68 : 108;
+  const trebleY = compact ? -8 : 18;
+  const bassY = compact ? Math.max(44, height - 81) : 108;
   const renderer = new Flow.Renderer(elements.staffPrompt, Flow.Renderer.Backends.SVG);
   renderer.resize(width, height);
   const context = renderer.getContext();
@@ -109,6 +148,25 @@ function renderGrandStaff(note) {
     const existingTransform = noteGroup.getAttribute('transform');
     noteGroup.setAttribute('transform', `${existingTransform ? `${existingTransform} ` : ''}translate(${shiftX} 0)`);
   }
+  noteGroup?.classList.add('flashcard-note');
+}
+
+function ensureTargetVisible(note = currentNote) {
+  const key = elements.keyboard.querySelector(`[data-midi="${note}"]`);
+  const scroller = elements.keyboard.parentElement;
+  if (!key || !scroller || scroller.scrollWidth <= scroller.clientWidth) return;
+  const margin = Math.min(42, scroller.clientWidth * 0.12);
+  const left = key.offsetLeft;
+  const right = left + key.offsetWidth;
+  const visibleLeft = scroller.scrollLeft + margin;
+  const visibleRight = scroller.scrollLeft + scroller.clientWidth - margin;
+  if (left < visibleLeft) scroller.scrollLeft = Math.max(0, left - margin);
+  else if (right > visibleRight) {
+    scroller.scrollLeft = Math.min(
+      scroller.scrollWidth - scroller.clientWidth,
+      right - scroller.clientWidth + margin
+    );
+  }
 }
 
 function renderPrompt({ playEar = false } = {}) {
@@ -119,7 +177,11 @@ function renderPrompt({ playEar = false } = {}) {
   elements.staffPrompt.hidden = mode !== 'staff';
   elements.earPrompt.hidden = mode !== 'ear';
 
-  if (mode === 'letter') elements.letterPrompt.textContent = letterPrompt(currentNote);
+  if (mode === 'letter') {
+    elements.letterPrompt.textContent = currentSettings().range === 'middle'
+      ? letterPrompt(currentNote)
+      : midiName(currentNote);
+  }
   if (mode === 'staff') renderGrandStaff(currentNote);
   if (mode === 'ear' && playEar) playQuestion().catch(error => {
     console.warn('Could not play the ear-training question.', error);
@@ -132,9 +194,10 @@ function nextQuestion({ playEar = mode === 'ear' } = {}) {
   questionLocked = false;
   clearKeyFeedback();
   previousNote = currentNote;
-  currentNote = chooseNextNote(notesForMode(mode), previousNote);
+  currentNote = chooseNextNote(notesForSettings({ mode, ...currentSettings() }), previousNote);
   setStatus(mode === 'ear' ? 'Play the note you hear.' : 'Play the matching key.');
   renderPrompt({ playEar });
+  ensureTargetVisible();
 }
 
 function midiOutputNote(note, velocity = 92, duration = 650) {
@@ -193,6 +256,7 @@ function answer(note, { sound = true } = {}) {
     correctCount += 1;
     streakCount += 1;
     key?.classList.add('is-correct');
+    elements.promptPanel.classList.add('is-correct');
     setStatus(`${midiName(note)} · correct`);
     updateStats();
     advanceTimer = window.setTimeout(() => nextQuestion(), 380);
@@ -203,6 +267,9 @@ function answer(note, { sound = true } = {}) {
   streakCount = 0;
   key?.classList.add('is-wrong');
   elements.keyboard.querySelector(`[data-midi="${currentNote}"]`)?.classList.add('is-answer');
+  elements.promptPanel.classList.remove('is-correct');
+  elements.promptPanel.classList.add('is-wrong');
+  ensureTargetVisible();
   setStatus(`${midiName(note)} is not it. Try the highlighted key.`);
   updateStats();
 }
@@ -291,6 +358,16 @@ async function enableMidi() {
 function setMode(nextMode) {
   if (!MODE_LABELS[nextMode] || nextMode === mode) return;
   mode = nextMode;
+  syncSettingsControls();
+  nextQuestion({ playEar: mode === 'ear' });
+}
+
+function updateCurrentModeSettings() {
+  modeSettings[mode] = {
+    range: elements.noteRange.value,
+    includeAccidentals: elements.includeAccidentals.checked
+  };
+  saveModeSettings();
   nextQuestion({ playEar: mode === 'ear' });
 }
 
@@ -312,6 +389,8 @@ function syncThemeButton() {
 elements.modeButtons.forEach(button => button.addEventListener('click', () => setMode(button.dataset.mode)));
 elements.replay.addEventListener('click', () => playQuestion().catch(error => console.warn('Could not replay note.', error)));
 elements.resetStats.addEventListener('click', resetStats);
+elements.noteRange.addEventListener('change', updateCurrentModeSettings);
+elements.includeAccidentals.addEventListener('change', updateCurrentModeSettings);
 elements.enableMidi.addEventListener('click', enableMidi);
 elements.midiInput.addEventListener('change', selectMidiPorts);
 elements.midiOutput.addEventListener('change', selectMidiPorts);
@@ -328,9 +407,11 @@ window.addEventListener('resize', () => {
   resizeTimer = window.setTimeout(() => {
     renderKeyboard();
     if (mode === 'staff') renderGrandStaff(currentNote);
+    ensureTargetVisible();
   }, 100);
 });
 
 renderKeyboard();
 syncThemeButton();
+syncSettingsControls();
 nextQuestion({ playEar: false });

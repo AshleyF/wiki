@@ -12,7 +12,7 @@
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260826-1">
+    <link rel="stylesheet" href="styles.css?v=20260826-2">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -29,6 +29,22 @@
           <button type="button" data-mode="ear" aria-pressed="false" title="Hear a note and find it by ear">Ear</button>
         </div>
         <button id="replay" type="button" hidden title="Play the current ear-training note again">↻ Hear again</button>
+        <details class="settings-controls">
+          <summary>Settings</summary>
+          <div class="settings-menu">
+            <label><span>Range</span>
+              <select id="note-range" title="Set the note range for the current question mode">
+                <option value="middle">Middle C octave · C4–B4</option>
+                <option value="two">Two octaves · C3–C5</option>
+                <option value="grand">Grand staff · C2–C6</option>
+              </select>
+            </label>
+            <label class="checkbox-label" title="Include the black-key notes between the natural notes">
+              <input id="include-accidentals" type="checkbox">
+              <span>Sharps and flats</span>
+            </label>
+          </div>
+        </details>
         <details class="midi-controls">
           <summary>MIDI</summary>
           <div class="midi-menu">
@@ -66,6 +82,6 @@
       </section>
     </main>
 
-    <script type="module" src="app.js?v=20260826-2"></script>
+    <script type="module" src="app.js?v=20260826-4"></script>
   </body>
 </html>
