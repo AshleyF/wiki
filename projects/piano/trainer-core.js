@@ -14,6 +14,13 @@ export function midiToVexKey(midi) {
   return `${names[((note % 12) + 12) % 12]}/${Math.floor(note / 12) - 1}`;
 }
 
+export function vexAccidentalForKey(key) {
+  const pitch = String(key).split('/')[0];
+  if (pitch.endsWith('#')) return '#';
+  if (pitch.length > 1 && pitch.endsWith('b')) return 'b';
+  return null;
+}
+
 export function samePitchSet(played, expected) {
   const left = [...new Set(Array.isArray(played) ? played : [played])].map(Number).sort((a, b) => a - b);
   const right = [...new Set(Array.isArray(expected) ? expected : [expected])].map(Number).sort((a, b) => a - b);

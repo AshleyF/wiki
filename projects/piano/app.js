@@ -1,4 +1,6 @@
-import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet } from './trainer-core.js?v=20260822-held-midi-1';
+import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './trainer-core.js?v=20260827-accidentals-1';
+
+const MIDI_INPUT_KEY = 'piano-reading-trainer-midi-input';
 
 const DRILLS = [
   {
@@ -136,6 +138,7 @@ const elements = {
   scoreScroll: document.querySelector('#score-scroll'),
   cursor: document.querySelector('#cursor'),
   enableMidi: document.querySelector('#enable-midi'),
+  midiControls: document.querySelector('.midi-controls'),
   midiInput: document.querySelector('#midi-input'),
   theme: document.querySelector('#theme-toggle'),
   keyboardPanel: document.querySelector('.keyboard-panel'),
@@ -158,6 +161,8 @@ let startTime = 0;
 let animationFrame = 0;
 let midiAccess = null;
 let selectedMidiInput = null;
+let preferredMidiInputId = '';
+try { preferredMidiInputId = localStorage.getItem(MIDI_INPUT_KEY) || ''; } catch (error) {}
 let keyboardAudioContext = null;
 let pendingMidiChord = new Set();
 let pendingMidiChordTimer = 0;
@@ -466,8 +471,8 @@ function makeVexNote(Flow, event, clef) {
   const durations = { 1: 'q', 2: 'h', 4: 'w' };
   const note = new Flow.StaveNote({ clef, keys, duration: durations[event.beats] || 'q' });
   keys.forEach((key, index) => {
-    if (key.includes('#')) note.addModifier(new Flow.Accidental('#'), index);
-    else if (key.includes('b')) note.addModifier(new Flow.Accidental('b'), index);
+    const accidental = vexAccidentalForKey(key);
+    if (accidental) note.addModifier(new Flow.Accidental(accidental), index);
   });
   return note;
 }
@@ -596,12 +601,16 @@ function onMidiMessage(event) {
   else pendingMidiChordTimer = window.setTimeout(() => submitPendingMidiChord(velocity), 70);
 }
 
-function selectMidiInput() {
+function selectMidiInput({ persist = true } = {}) {
   if (selectedMidiInput) selectedMidiInput.onmidimessage = null;
   selectedMidiInput = midiAccess?.inputs.get(elements.midiInput.value) || null;
   if (selectedMidiInput) {
     selectedMidiInput.onmidimessage = onMidiMessage;
     setStatus(`MIDI input: ${selectedMidiInput.name}`);
+  }
+  if (persist) {
+    preferredMidiInputId = elements.midiInput.value;
+    try { localStorage.setItem(MIDI_INPUT_KEY, preferredMidiInputId); } catch (error) {}
   }
 }
 
@@ -610,11 +619,14 @@ function refreshMidiInputs() {
   const previous = elements.midiInput.value;
   elements.midiInput.replaceChildren(new Option(inputs.length ? 'Choose input' : 'No input found', ''), ...inputs.map(input => new Option(input.name || 'MIDI input', input.id)));
   elements.midiInput.disabled = inputs.length === 0;
-  elements.midiInput.value = inputs.some(input => input.id === previous) ? previous : (inputs[0]?.id || '');
-  selectMidiInput();
+  elements.midiInput.value = inputs.some(input => input.id === preferredMidiInputId)
+    ? preferredMidiInputId
+    : (inputs.some(input => input.id === previous) ? previous : (inputs[0]?.id || ''));
+  selectMidiInput({ persist: false });
 }
 
 async function enableMidi() {
+  if (midiAccess) return;
   if (!navigator.requestMIDIAccess) {
     setStatus('Web MIDI is not available in this browser.');
     return;
@@ -625,12 +637,32 @@ async function enableMidi() {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiInputs;
     refreshMidiInputs();
-    elements.enableMidi.textContent = 'MIDI enabled';
+    elements.enableMidi.disabled = false;
+    elements.enableMidi.textContent = 'Disable MIDI';
   } catch (error) {
+    midiAccess = null;
+    selectedMidiInput = null;
     elements.enableMidi.disabled = false;
     elements.enableMidi.textContent = 'Enable MIDI';
     setStatus(`Could not enable MIDI: ${error.message || error}`);
   }
+}
+
+function disableMidi() {
+  if (selectedMidiInput) selectedMidiInput.onmidimessage = null;
+  midiAccess?.inputs.forEach(port => port.close?.());
+  if (midiAccess) midiAccess.onstatechange = null;
+  midiAccess = null;
+  selectedMidiInput = null;
+  elements.midiInput.disabled = true;
+  elements.enableMidi.disabled = false;
+  elements.enableMidi.textContent = 'Enable MIDI';
+  setStatus('MIDI disabled.');
+}
+
+function toggleMidi() {
+  if (midiAccess) disableMidi();
+  else enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
 }
 
 function renderKeyboard() {
@@ -677,7 +709,12 @@ elements.start.addEventListener('click', start);
 elements.drill.addEventListener('change', chooseDrill);
 elements.tempo.addEventListener('change', () => { if (running) stop('Tempo changed. Start again.'); });
 elements.tolerance.addEventListener('input', () => { elements.toleranceOutput.textContent = `±${toleranceMs()} ms`; });
-elements.enableMidi.addEventListener('click', enableMidi);
+elements.midiControls.addEventListener('toggle', () => {
+  if (elements.midiControls.open && !midiAccess) {
+    enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
+  }
+});
+elements.enableMidi.addEventListener('click', toggleMidi);
 elements.midiInput.addEventListener('change', selectMidiInput);
 elements.chordHold.addEventListener('click', () => setChordHold(!chordHold));
 elements.clearChord.addEventListener('click', clearKeyboardChord);

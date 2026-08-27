@@ -1,11 +1,13 @@
 import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-3';
-import { midiName, midiToVexKey } from '../piano/trainer-core.js?v=20260822-held-midi-1';
+import { midiName, midiToVexKey, vexAccidentalForKey } from '../piano/trainer-core.js?v=20260827-accidentals-1';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;
 const MODE_LABELS = { letter: 'Letter', staff: 'Grand staff', ear: 'Ear' };
 const DEFAULT_SETTINGS = Object.freeze({ range: 'middle', includeAccidentals: false });
 const SETTINGS_KEY = 'piano-flashcard-settings';
+const MIDI_SETTINGS_KEY = 'piano-flashcard-midi-settings';
+const CORRECT_FEEDBACK_DELAY_MS = 650;
 
 const elements = {
   modeButtons: [...document.querySelectorAll('[data-mode]')],
@@ -25,6 +27,7 @@ const elements = {
   noteRange: document.querySelector('#note-range'),
   includeAccidentals: document.querySelector('#include-accidentals'),
   enableMidi: document.querySelector('#enable-midi'),
+  midiControls: document.querySelector('.midi-controls'),
   midiInput: document.querySelector('#midi-input'),
   midiOutput: document.querySelector('#midi-output'),
   theme: document.querySelector('#theme-toggle')
@@ -41,8 +44,16 @@ let audioContext = null;
 let midiAccess = null;
 let selectedMidiInput = null;
 let selectedMidiOutput = null;
+let preferredMidiInputId = '';
+let preferredMidiOutputId = '';
 let questionLocked = false;
 let settings = loadSettings();
+
+try {
+  const midiSettings = JSON.parse(localStorage.getItem(MIDI_SETTINGS_KEY) || '{}');
+  preferredMidiInputId = typeof midiSettings.inputId === 'string' ? midiSettings.inputId : '';
+  preferredMidiOutputId = typeof midiSettings.outputId === 'string' ? midiSettings.outputId : '';
+} catch (error) {}
 
 function loadSettings() {
   let stored = {};
@@ -133,8 +144,8 @@ function renderGrandStaff(note) {
   const stave = clef === 'treble' ? treble : bass;
   const key = midiToVexKey(note);
   const vexNote = new Flow.StaveNote({ clef, keys: [key], duration: 'w' });
-  if (key.includes('#')) vexNote.addModifier(new Flow.Accidental('#'), 0);
-  else if (key.includes('b')) vexNote.addModifier(new Flow.Accidental('b'), 0);
+  const accidental = vexAccidentalForKey(key);
+  if (accidental) vexNote.addModifier(new Flow.Accidental(accidental), 0);
   const voice = new Flow.Voice({ num_beats: 4, beat_value: 4 }).addTickables([vexNote]);
   new Flow.Formatter().joinVoices([voice]).formatToStave([voice], stave);
   voice.draw(context, stave);
@@ -256,7 +267,7 @@ function answer(note, { sound = true } = {}) {
     elements.promptPanel.classList.add('is-correct');
     setStatus(`${midiName(note)} · correct`);
     updateStats();
-    advanceTimer = window.setTimeout(() => nextQuestion(), 380);
+    advanceTimer = window.setTimeout(() => nextQuestion(), CORRECT_FEEDBACK_DELAY_MS);
     return;
   }
 
@@ -311,11 +322,25 @@ function onMidiMessage(event) {
   answer(note, { sound: false });
 }
 
-function selectMidiPorts() {
+function saveMidiSettings() {
+  try {
+    localStorage.setItem(MIDI_SETTINGS_KEY, JSON.stringify({
+      inputId: preferredMidiInputId,
+      outputId: preferredMidiOutputId
+    }));
+  } catch (error) {}
+}
+
+function selectMidiPorts({ persist = true } = {}) {
   if (selectedMidiInput) selectedMidiInput.onmidimessage = null;
   selectedMidiInput = midiAccess?.inputs.get(elements.midiInput.value) || null;
   selectedMidiOutput = midiAccess?.outputs.get(elements.midiOutput.value) || null;
   if (selectedMidiInput) selectedMidiInput.onmidimessage = onMidiMessage;
+  if (persist) {
+    preferredMidiInputId = elements.midiInput.value;
+    preferredMidiOutputId = elements.midiOutput.value;
+    saveMidiSettings();
+  }
 }
 
 function refreshMidiPorts() {
@@ -327,12 +352,17 @@ function refreshMidiPorts() {
   elements.midiOutput.replaceChildren(new Option('Browser sound', ''), ...outputs.map(port => new Option(port.name || 'MIDI output', port.id)));
   elements.midiInput.disabled = inputs.length === 0;
   elements.midiOutput.disabled = outputs.length === 0;
-  elements.midiInput.value = inputs.some(port => port.id === previousInput) ? previousInput : (inputs[0]?.id || '');
-  elements.midiOutput.value = outputs.some(port => port.id === previousOutput) ? previousOutput : '';
-  selectMidiPorts();
+  elements.midiInput.value = inputs.some(port => port.id === preferredMidiInputId)
+    ? preferredMidiInputId
+    : (inputs.some(port => port.id === previousInput) ? previousInput : (inputs[0]?.id || ''));
+  elements.midiOutput.value = outputs.some(port => port.id === preferredMidiOutputId)
+    ? preferredMidiOutputId
+    : (outputs.some(port => port.id === previousOutput) ? previousOutput : '');
+  selectMidiPorts({ persist: false });
 }
 
 async function enableMidi() {
+  if (midiAccess) return;
   if (!navigator.requestMIDIAccess) {
     setStatus('Web MIDI is unavailable in this browser.');
     return;
@@ -343,13 +373,37 @@ async function enableMidi() {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiPorts;
     refreshMidiPorts();
-    elements.enableMidi.textContent = 'MIDI enabled';
+    elements.enableMidi.disabled = false;
+    elements.enableMidi.textContent = 'Disable MIDI';
     setStatus(selectedMidiInput ? `MIDI input: ${selectedMidiInput.name}` : 'MIDI enabled.');
   } catch (error) {
+    midiAccess = null;
+    selectedMidiInput = null;
+    selectedMidiOutput = null;
     elements.enableMidi.disabled = false;
     elements.enableMidi.textContent = 'Enable MIDI';
     setStatus(`Could not enable MIDI: ${error.message || error}`);
   }
+}
+
+function disableMidi() {
+  if (selectedMidiInput) selectedMidiInput.onmidimessage = null;
+  midiAccess?.inputs.forEach(port => port.close?.());
+  midiAccess?.outputs.forEach(port => port.close?.());
+  if (midiAccess) midiAccess.onstatechange = null;
+  midiAccess = null;
+  selectedMidiInput = null;
+  selectedMidiOutput = null;
+  elements.midiInput.disabled = true;
+  elements.midiOutput.disabled = true;
+  elements.enableMidi.disabled = false;
+  elements.enableMidi.textContent = 'Enable MIDI';
+  setStatus('MIDI disabled.');
+}
+
+function toggleMidi() {
+  if (midiAccess) disableMidi();
+  else enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
 }
 
 function setMode(nextMode) {
@@ -387,7 +441,12 @@ elements.replay.addEventListener('click', () => playQuestion().catch(error => co
 elements.resetStats.addEventListener('click', resetStats);
 elements.noteRange.addEventListener('change', updateSettings);
 elements.includeAccidentals.addEventListener('change', updateSettings);
-elements.enableMidi.addEventListener('click', enableMidi);
+elements.midiControls.addEventListener('toggle', () => {
+  if (elements.midiControls.open && !midiAccess) {
+    enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
+  }
+});
+elements.enableMidi.addEventListener('click', toggleMidi);
 elements.midiInput.addEventListener('change', selectMidiPorts);
 elements.midiOutput.addEventListener('change', selectMidiPorts);
 elements.theme.addEventListener('click', () => {

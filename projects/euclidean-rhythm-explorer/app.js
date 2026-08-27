@@ -110,6 +110,7 @@ const elements = {
   globalSwing: document.querySelector('#global-swing'),
   globalSwingOutput: document.querySelector('#global-swing-output'),
   status: document.querySelector('#status'),
+  midiControls: document.querySelector('.midi-controls'),
   midiEnable: document.querySelector('#enable-midi'),
   midiOutput: document.querySelector('#midi-output'),
   midiChannel: document.querySelector('#midi-channel'),
@@ -499,12 +500,13 @@ function refreshMidiOutputs() {
   elements.midiOutput.disabled = false;
   elements.midiOutput.value = outputs.some(output => output.id === preferredId) ? preferredId : '';
   midiOutput = elements.midiOutput.value ? midiAccess.outputs.get(elements.midiOutput.value) : null;
-  pendingMidiOutputId = elements.midiOutput.value;
+  if (midiOutput) pendingMidiOutputId = elements.midiOutput.value;
   state.midiOutputId = pendingMidiOutputId;
   if (midiOutput) elements.status.textContent = `MIDI: ${midiOutput.name}`;
 }
 
 async function enableMidi() {
+  if (midiAccess) return;
   if (!navigator.requestMIDIAccess) throw new Error('Web MIDI is not supported by this browser');
   elements.midiEnable.disabled = true;
   elements.midiEnable.textContent = 'Connecting…';
@@ -512,14 +514,34 @@ async function enableMidi() {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiOutputs;
     refreshMidiOutputs();
-    elements.midiEnable.textContent = 'MIDI enabled';
+    elements.midiEnable.disabled = false;
+    elements.midiEnable.textContent = 'Disable MIDI';
     elements.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI enabled; no output found';
     saveSoon();
   } catch (error) {
+    midiAccess = null;
+    midiOutput = null;
     elements.midiEnable.disabled = false;
     elements.midiEnable.textContent = 'Enable MIDI';
     throw error;
   }
+}
+
+function disableMidi() {
+  clearMidiOutput();
+  midiAccess?.outputs.forEach(output => output.close?.());
+  if (midiAccess) midiAccess.onstatechange = null;
+  midiAccess = null;
+  midiOutput = null;
+  elements.midiOutput.disabled = true;
+  elements.midiEnable.disabled = false;
+  elements.midiEnable.textContent = 'Enable MIDI';
+  elements.status.textContent = 'MIDI disabled';
+}
+
+function toggleMidi() {
+  if (midiAccess) disableMidi();
+  else enableMidi().catch(error => { elements.status.textContent = `MIDI unavailable: ${error.message || error}`; });
 }
 
 function midiTimestamp(time) {
@@ -576,9 +598,12 @@ function clearMidiOutput() {
   midiClockRunning = false;
 }
 
-elements.midiEnable.addEventListener('click', () => enableMidi().catch(error => {
-  elements.status.textContent = `MIDI unavailable: ${error.message || error}`;
-}));
+elements.midiControls.addEventListener('toggle', () => {
+  if (elements.midiControls.open && !midiAccess) {
+    enableMidi().catch(error => { elements.status.textContent = `MIDI unavailable: ${error.message || error}`; });
+  }
+});
+elements.midiEnable.addEventListener('click', toggleMidi);
 
 elements.midiOutput.addEventListener('change', () => {
   const restart = playing;

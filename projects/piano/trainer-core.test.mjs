@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
-import { classifyAttempt, classifyMidiPress, cursorXAt, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet } from './trainer-core.js';
+import { classifyAttempt, classifyMidiPress, cursorXAt, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './trainer-core.js';
 
 assert.equal(midiName(60), 'C4');
 assert.equal(midiName(70), 'B♭4');
 assert.equal(midiToVexKey(61), 'c#/4');
+assert.equal(vexAccidentalForKey('c#/4'), '#');
+assert.equal(vexAccidentalForKey('bb/4'), 'b');
+assert.equal(vexAccidentalForKey('b/4'), null);
 assert.equal(classifyAttempt({ played: 60, expected: 60, now: 1000, due: 1000, tolerance: 100 }).result, 'correct');
 assert.equal(classifyAttempt({ played: 60, expected: 60, now: 899, due: 1000, tolerance: 100 }).result, 'early');
 assert.equal(classifyAttempt({ played: 61, expected: 60, now: 1000, due: 1000, tolerance: 100 }).result, 'wrong');

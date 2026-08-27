@@ -1471,11 +1471,12 @@ function refreshMidiOutputs() {
   refs.midiOutput.disabled = false;
   refs.midiOutput.value = outputs.some(output => output.id === preferredId) ? preferredId : '';
   midiOutput = refs.midiOutput.value ? midiAccess.outputs.get(refs.midiOutput.value) : null;
-  pendingMidiOutputId = refs.midiOutput.value;
+  if (midiOutput) pendingMidiOutputId = refs.midiOutput.value;
   if (midiOutput) refs.status.textContent = `MIDI: ${midiOutput.name}`;
 }
 
 async function enableMidi() {
+  if (midiAccess) return;
   if (!navigator.requestMIDIAccess) throw new Error('Web MIDI is not supported by this browser');
   const restartForClock = playing && refs.midiClock.checked;
   refs.midiEnable.disabled = true;
@@ -1484,7 +1485,8 @@ async function enableMidi() {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiOutputs;
     refreshMidiOutputs();
-    refs.midiEnable.textContent = 'MIDI enabled';
+    refs.midiEnable.disabled = false;
+    refs.midiEnable.textContent = 'Disable MIDI';
     refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI enabled; no output found';
     saveState();
     if (restartForClock && midiOutput) {
@@ -1492,10 +1494,38 @@ async function enableMidi() {
       startPlayback();
     }
   } catch (error) {
+    midiAccess = null;
+    midiOutput = null;
     refs.midiEnable.disabled = false;
     refs.midiEnable.textContent = 'Enable MIDI';
     throw error;
   }
+}
+
+function disableMidi() {
+  if (midiOutput) {
+    try {
+      midiOutput.clear?.();
+      if (midiClockRunning) midiOutput.send([0xFC]);
+      const channel = Math.max(0, Math.min(15, Number(refs.midiChannel.value) - 1));
+      midiOutput.send([0xB0 | channel, 120, 0]);
+      midiOutput.send([0xB0 | channel, 123, 0]);
+    } catch (error) { /* The port may already be disconnected. */ }
+  }
+  midiClockRunning = false;
+  midiAccess?.outputs.forEach(output => output.close?.());
+  if (midiAccess) midiAccess.onstatechange = null;
+  midiAccess = null;
+  midiOutput = null;
+  refs.midiOutput.disabled = true;
+  refs.midiEnable.disabled = false;
+  refs.midiEnable.textContent = 'Enable MIDI';
+  refs.status.textContent = 'MIDI disabled';
+}
+
+function toggleMidi() {
+  if (midiAccess) disableMidi();
+  else enableMidi().catch(error => { refs.status.textContent = `MIDI unavailable: ${error.message || error}`; });
 }
 
 function ensureAudio() {
@@ -1817,9 +1847,7 @@ refs.volume.addEventListener('input', () => {
   syncAudioControls();
   saveState();
 });
-refs.midiEnable.addEventListener('click', () => enableMidi().catch(error => {
-  refs.status.textContent = `MIDI unavailable: ${error.message || error}`;
-}));
+refs.midiEnable.addEventListener('click', toggleMidi);
 refs.midiOutput.addEventListener('change', () => {
   const restart = playing;
   if (restart) stopPlayback();
