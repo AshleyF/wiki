@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Draw rough shapes, train a tiny neural network, and inspect its learned weights live.">
+    <title>Neural Net Playground</title>
+    <script>
+      (() => {
+        let theme = 'dark';
+        try { theme = localStorage.getItem('personal-wiki-theme') === 'light' ? 'light' : 'dark'; } catch (error) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260830-2">
+  </head>
+  <body>
+    <header class="project-header">
+      <h1>Neural Net Playground</h1>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light mode" title="Switch to light mode">☀</button>
+    </header>
+
+    <main>
+      <section class="workbench panel" aria-label="Shape drawing and classification">
+        <div class="drawing-column">
+          <div class="section-heading">
+            <div><p class="eyebrow">Input · 25 neurons</p><h2>Draw a shape</h2></div>
+            <button id="clear-grid" class="quiet-button" type="button">Clear</button>
+          </div>
+          <div id="pixel-grid" class="pixel-grid" role="grid" aria-label="Five by five drawing grid"></div>
+          <p class="hint">Drag to paint or erase. Rough is fine.</p>
+        </div>
+
+        <div class="prediction-column">
+          <p class="eyebrow">Output · 3 neurons</p>
+          <h2>Prediction</h2>
+          <div id="prediction" class="prediction" aria-live="polite">
+            <strong id="prediction-label">—</strong>
+            <span id="prediction-confidence">Draw something</span>
+          </div>
+          <div id="output-bars" class="output-bars"></div>
+          <div class="label-actions" aria-label="Label this drawing">
+            <span>Teach it:</span>
+            <button type="button" data-label="square">Square</button>
+            <button type="button" data-label="circle">Circle</button>
+            <button type="button" data-label="triangle">Triangle</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="training panel" aria-labelledby="training-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Backpropagation</p><h2 id="training-title">Training</h2></div>
+          <span id="train-status" class="status" role="status" aria-live="polite">Ready</span>
+        </div>
+        <div class="training-controls">
+          <label><span>Epochs</span><input id="epochs" type="number" min="1" max="5000" step="50" value="600"></label>
+          <label><span>Learning rate</span><input id="learning-rate" type="number" min="0.001" max="1" step="0.01" value="0.08"></label>
+          <button id="train" class="primary-button" type="button">Train network</button>
+          <button id="reset-network" class="quiet-button" type="button">Reset weights</button>
+          <button id="reset-all" class="quiet-button danger-button" type="button">Reset examples</button>
+        </div>
+        <div class="stats" aria-label="Training statistics">
+          <div><span>Examples</span><strong id="example-count">0</strong></div>
+          <div><span>Accuracy</span><strong id="accuracy">—</strong></div>
+          <div><span>Loss</span><strong id="loss">—</strong></div>
+          <div><span>Last run</span><strong id="last-epochs">—</strong></div>
+        </div>
+        <div id="class-counts" class="class-counts"></div>
+      </section>
+
+      <section class="network-panel panel" aria-labelledby="network-title">
+        <div class="section-heading network-heading">
+          <div><p class="eyebrow">25 → 12 → 3</p><h2 id="network-title">Network</h2></div>
+          <label><span>Connections</span>
+            <select id="connection-view">
+              <option value="strong" selected>Strongest</option>
+              <option value="all">All</option>
+              <option value="input">Input → hidden</option>
+              <option value="output">Hidden → output</option>
+            </select>
+          </label>
+        </div>
+        <div class="network-legend" aria-label="Network visualization legend">
+          <span><i class="positive"></i> Positive weight</span>
+          <span><i class="negative"></i> Negative weight</span>
+          <span>Thicker = stronger · brighter neuron = higher activation</span>
+        </div>
+        <div class="network-scroll">
+          <svg id="network" class="network" viewBox="0 0 1000 600" role="img" aria-label="Neural network weights and current activations"></svg>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="app.js?v=20260830-2"></script>
+  </body>
+</html>

@@ -170,6 +170,8 @@ stick: R  L  R  L  R  L  R  L  R  . . . . . . .
 
 See [Paradiddles](#/music/paradiddles) for all four single-paradiddle inversions and every ordered two-inversion sequence.
 
+The double and triple examples below accent the first stroke of every `para` pair: strokes 1 and 3 of each double-paradiddle grouping, and 1, 3, and 5 of each triple-paradiddle grouping.
+
 ### Single Paradiddle
 
 ```drums
@@ -186,7 +188,7 @@ stick: R  L R R L  R L L
 tempo 133.333
 meter 4/4
 division 12
-sn:    x> x x x x x x> x x x x x
+sn:    x> x x> x x x x> x x> x x x
 stick: R  L R L R R L  R L R L L
 ```
 
@@ -196,7 +198,7 @@ stick: R  L R L R R L  R L R L L
 tempo 100
 meter 4/4
 division 16
-sn:    x> x x x x x x x x> x x x x x x x
+sn:    x> x x> x x> x x x x> x x> x x> x x x
 stick: R  L R L R L R R L  R L R L R L L
 ```
 

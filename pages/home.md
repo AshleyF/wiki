@@ -8,6 +8,7 @@ This is a small wiki whose source material is ordinary text. The browser fetches
 
 - Open the [music](#/music) to see a fenced Strudel block.
 - Check out the [cubing algs](#/cubing) to see alg rendering.
+- Train and inspect a tiny [Neural Net Playground](projects/neural-net-playground/).
 - Read this page's source at `pages/home.md`.
 
 ## What this first version understands

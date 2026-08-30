@@ -5,9 +5,9 @@ export function velocityFromStrength(strength, referenceVelocity = 82) {
 }
 
 export function velocityFromStrengthProfile(strength, {
-  ghost = 29,
-  normal = 82,
-  accent = 127
+  ghost = 16,
+  normal = 64,
+  accent = 111
 } = {}) {
   const amount = Math.max(0, Number(strength) || 0);
   const low = clampVelocity(ghost);

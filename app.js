@@ -143,11 +143,11 @@ const fenceRenderers = {
           <span>Velocity</span>
           <span class="drum-velocity-track">
             <span class="drum-velocity-rail" aria-hidden="true"></span>
-            <input class="drum-velocity drum-velocity-ghost" data-velocity-role="ghost" type="range" min="1" max="127" step="1" value="29" aria-label="Ghost-note velocity" aria-valuetext="29, ghost note">
-            <input class="drum-velocity drum-velocity-normal" data-velocity-role="normal" type="range" min="1" max="127" step="1" value="82" aria-label="Normal-note velocity" aria-valuetext="82, normal note">
-            <input class="drum-velocity drum-velocity-accent" data-velocity-role="accent" type="range" min="1" max="127" step="1" value="127" aria-label="Accent velocity" aria-valuetext="127, accent">
+            <input class="drum-velocity drum-velocity-ghost" data-velocity-role="ghost" type="range" min="1" max="127" step="1" value="16" aria-label="Ghost-note velocity" aria-valuetext="16, ghost note">
+            <input class="drum-velocity drum-velocity-normal" data-velocity-role="normal" type="range" min="1" max="127" step="1" value="64" aria-label="Normal-note velocity" aria-valuetext="64, normal note">
+            <input class="drum-velocity drum-velocity-accent" data-velocity-role="accent" type="range" min="1" max="127" step="1" value="111" aria-label="Accent velocity" aria-valuetext="111, accent">
           </span>
-          <output class="drum-velocity-output" title="Ghost · Normal · Accent">G29 N82 A127</output>
+          <output class="drum-velocity-output" title="Ghost · Normal · Accent">G16 N64 A111</output>
         </div>
         <label class="drum-midi-control" title="Send drums on MIDI channel 10 and mute the built-in sounds. Snare sticking uses Superior Drummer center (R) and off-center (L) articulations.">
           <input class="drum-midi-enabled" type="checkbox"${drumMidiEnabled ? ' checked' : ''}>
@@ -716,9 +716,9 @@ function drumVelocityInputs(block) {
 function drumVelocityProfile(block) {
   const inputs = drumVelocityInputs(block);
   return {
-    ghost: Number(inputs[0]?.value) || 29,
-    normal: Number(inputs[1]?.value) || 82,
-    accent: Number(inputs[2]?.value) || 127
+    ghost: Number(inputs[0]?.value) || 16,
+    normal: Number(inputs[1]?.value) || 64,
+    accent: Number(inputs[2]?.value) || 111
   };
 }
 
