@@ -1,19 +1,21 @@
 const SHAPES = ['square', 'circle', 'triangle'];
 const INPUTS = 25;
 const HIDDEN = 12;
-const STORAGE_KEY = 'neural-net-playground-v1';
+const STORAGE_KEY = 'neural-net-playground-v2';
 
-const gridElement = document.querySelector('#pixel-grid');
 const predictionLabel = document.querySelector('#prediction-label');
 const predictionConfidence = document.querySelector('#prediction-confidence');
 const outputBars = document.querySelector('#output-bars');
 const statusElement = document.querySelector('#train-status');
 const networkSvg = document.querySelector('#network');
+const trainingSetElement = document.querySelector('#training-set');
+const weightTooltip = document.querySelector('#weight-tooltip');
 const values = new Array(INPUTS).fill(0);
 let examples = [];
 let model;
 let painting = false;
 let paintValue = 1;
+let recentWeightChanges = null;
 
 function seededRandom(seed = 0x51a9e) {
   let state = seed >>> 0;
@@ -35,43 +37,106 @@ function freshModel() {
   };
 }
 
-function pattern(lines) {
-  return lines.join('').split('').map(value => Number(value));
+function snapshotWeights() {
+  return [...model.w1.flat(), ...model.w2.flat()];
 }
 
-const BASE_PATTERNS = {
-  square: [
-    pattern(['11111', '10001', '10001', '10001', '11111']),
-    pattern(['00000', '01110', '01010', '01110', '00000']),
-    pattern(['11110', '10010', '10010', '11110', '00000'])
-  ],
-  circle: [
-    pattern(['01110', '10001', '10001', '10001', '01110']),
-    pattern(['00100', '01010', '01010', '00100', '00000']),
-    pattern(['01100', '10010', '10010', '01100', '00000'])
-  ],
-  triangle: [
-    pattern(['00100', '01010', '10001', '11111', '00000']),
-    pattern(['00000', '00100', '01010', '11111', '00000']),
-    pattern(['10000', '11000', '10100', '11110', '00000'])
-  ]
-};
+function recordWeightChanges(before) {
+  const after = snapshotWeights();
+  const deltas = after.map((weight, index) => Math.abs(weight - before[index]));
+  const maximum = Math.max(1e-9, ...deltas);
+  recentWeightChanges = deltas.map(delta => ({ delta, normalized: delta / maximum }));
+}
+
+function template(lines) {
+  return lines.map(line => [...line].map(Number));
+}
+
+function placeTemplate(source, top, left) {
+  const result = new Array(INPUTS).fill(0);
+  source.forEach((row, rowIndex) => row.forEach((value, columnIndex) => {
+    if (value) result[(top + rowIndex) * 5 + left + columnIndex] = 1;
+  }));
+  return result;
+}
+
+function rotateTemplate(source) {
+  return source[0].map((_, column) => source.map(row => row[column]).reverse());
+}
+
+function placements(source) {
+  const results = [];
+  for (let top = 0; top <= 5 - source.length; top += 1) {
+    for (let left = 0; left <= 5 - source[0].length; left += 1) results.push(placeTemplate(source, top, left));
+  }
+  return results;
+}
+
+function squarePatterns() {
+  const results = [];
+  for (let size = 3; size <= 5; size += 1) {
+    const outline = Array.from({ length: size }, (_, row) => Array.from({ length: size }, (_, column) => Number(row === 0 || column === 0 || row === size - 1 || column === size - 1)));
+    const filled = Array.from({ length: size }, () => new Array(size).fill(1));
+    results.push(...placements(outline), ...placements(filled));
+  }
+  return results;
+}
+
+function circlePatterns() {
+  const forms = [
+    [template(['010', '101', '010']), template(['010', '111', '010'])],
+    [template(['0110', '1001', '1001', '0110']), template(['0110', '1111', '1111', '0110'])],
+    [template(['01110', '10001', '10001', '10001', '01110']), template(['01110', '11111', '11111', '11111', '01110'])]
+  ];
+  return forms.flatMap(([outline, filled]) => [...placements(outline), ...placements(filled)]);
+}
+
+function trianglePatterns() {
+  const forms = [
+    [template(['010', '101', '111']), template(['010', '111', '111'])],
+    [template(['0010', '0101', '1001', '1111']), template(['0010', '0111', '1111', '1111'])],
+    [template(['00100', '01010', '10001', '11111', '00000']), template(['00100', '01110', '11111', '11111', '00000'])]
+  ];
+  const results = [];
+  forms.forEach(pair => pair.forEach(original => {
+    let rotated = original;
+    for (let turn = 0; turn < 4; turn += 1) {
+      results.push(...placements(rotated));
+      rotated = rotateTemplate(rotated);
+    }
+  }));
+  return results;
+}
+
+function shuffleWith(items, generator) {
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const other = Math.floor(generator() * (index + 1));
+    [items[index], items[other]] = [items[other], items[index]];
+  }
+  return items;
+}
 
 function starterExamples() {
   const seeded = seededRandom(0xc1a551f1);
+  const patternSets = [squarePatterns(), circlePatterns(), trianglePatterns()];
+  const perClass = 96;
   const result = [];
-  SHAPES.forEach((label, classIndex) => {
-    BASE_PATTERNS[label].forEach(base => {
-      result.push({ x: [...base], y: classIndex, source: 'starter' });
-      for (let copy = 0; copy < 7; copy += 1) {
-        const perturbed = base.map(pixel => {
-          if (pixel && seeded() < .045) return 0;
-          if (!pixel && seeded() < .018) return 1;
-          return pixel;
-        });
-        result.push({ x: perturbed, y: classIndex, source: 'starter' });
+  patternSets.forEach((patterns, classIndex) => {
+    const unique = [...new Map(patterns.map(pattern => [pattern.join(''), pattern])).values()];
+    shuffleWith(unique, seeded);
+    const classExamples = unique.map(x => ({ x, y: classIndex, source: 'starter' }));
+    let cursor = 0;
+    while (classExamples.length < perClass) {
+      const x = [...unique[cursor % unique.length]];
+      const flips = seeded() < .7 ? 1 : 2;
+      for (let flip = 0; flip < flips; flip += 1) {
+        const index = Math.floor(seeded() * INPUTS);
+        x[index] = x[index] ? 0 : 1;
       }
-    });
+      classExamples.push({ x, y: classIndex, source: 'starter' });
+      cursor += 1;
+    }
+    result.push(...classExamples.slice(0, perClass));
   });
   return result;
 }
@@ -152,34 +217,23 @@ function load() {
   } catch (error) {}
   model = freshModel();
   examples = starterExamples();
-  train(450, .08);
-  save();
   return false;
-}
-
-function createGrid() {
-  for (let index = 0; index < INPUTS; index += 1) {
-    const cell = document.createElement('button');
-    cell.className = 'pixel';
-    cell.type = 'button';
-    cell.dataset.index = String(index);
-    cell.dataset.on = 'false';
-    cell.setAttribute('role', 'gridcell');
-    cell.setAttribute('aria-label', `Row ${Math.floor(index / 5) + 1}, column ${(index % 5) + 1}`);
-    gridElement.append(cell);
-  }
 }
 
 function setPixel(index, value) {
   values[index] = value;
-  const cell = gridElement.children[index];
-  cell.dataset.on = String(Boolean(value));
-  cell.setAttribute('aria-pressed', String(Boolean(value)));
 }
 
 function setGrid(next) {
   next.forEach((value, index) => setPixel(index, value));
   renderPrediction();
+}
+
+function formatProbability(value) {
+  const percent = value * 100;
+  if (percent > 0 && percent < .1) return '<0.1%';
+  if (percent < 10) return `${percent.toFixed(1)}%`;
+  return `${Math.round(percent)}%`;
 }
 
 function renderBars(output) {
@@ -188,7 +242,8 @@ function renderBars(output) {
   SHAPES.forEach((shape, index) => {
     const row = document.createElement('div');
     row.className = `output-row${index === winner ? ' winner' : ''}`;
-    row.innerHTML = `<span>${shape}</span><span class="bar-track"><i class="bar-fill" style="width:${(output[index] * 100).toFixed(2)}%"></i></span><output>${Math.round(output[index] * 100)}%</output>`;
+    row.setAttribute('aria-label', `${shape}: ${formatProbability(output[index])}`);
+    row.innerHTML = `<span>${shape}</span><span class="bar-track"><i class="bar-fill" style="width:${(output[index] * 100).toFixed(2)}%"></i></span><output>${formatProbability(output[index])}</output>`;
     outputBars.append(row);
   });
 }
@@ -198,6 +253,7 @@ function renderPrediction() {
   const result = forward(values);
   const winner = result.output.indexOf(Math.max(...result.output));
   predictionLabel.textContent = active ? SHAPES[winner] : '—';
+  predictionLabel.setAttribute('aria-label', active ? SHAPES[winner] : 'No prediction');
   predictionConfidence.textContent = active ? `${Math.round(result.output[winner] * 100)}% confidence` : 'Draw something';
   renderBars(result.output);
   renderNetwork(result);
@@ -210,64 +266,101 @@ const svgElement = (name, attributes = {}) => {
 };
 
 function neuronPositions() {
-  const inputs = Array.from({ length: INPUTS }, (_, index) => ({ x: 80 + (index % 5) * 34, y: 105 + Math.floor(index / 5) * 82 }));
-  const hidden = Array.from({ length: HIDDEN }, (_, index) => ({ x: 545, y: 75 + index * 42 }));
-  const output = Array.from({ length: 3 }, (_, index) => ({ x: 880, y: 195 + index * 105 }));
+  const inputs = Array.from({ length: INPUTS }, (_, index) => ({ x: 55 + (index % 5) * 62, y: 65 + Math.floor(index / 5) * 65 }));
+  const hidden = Array.from({ length: HIDDEN }, (_, index) => ({ x: 500, y: 45 + index * 29 }));
+  const output = Array.from({ length: 3 }, (_, index) => ({ x: 700, y: 125 + index * 95 }));
   return { inputs, hidden, output };
 }
 
-function activationColor(value) {
+function activationColor(value, output = false) {
   const amount = Math.min(1, Math.abs(value));
-  return `color-mix(in srgb, var(--accent) ${Math.round(amount * 85)}%, var(--panel-2))`;
+  const color = output || value >= 0 ? 'var(--positive)' : 'var(--negative)';
+  return `color-mix(in srgb, ${color} ${Math.round(amount * 88)}%, var(--panel-2))`;
 }
 
 function renderNetwork(result = forward(values)) {
   networkSvg.innerHTML = '';
   const positions = neuronPositions();
-  const view = document.querySelector('#connection-view').value;
   const allWeights = [...model.w1.flat(), ...model.w2.flat()].map(Math.abs);
   const scale = Math.max(.001, ...allWeights);
   const connectionGroup = svgElement('g');
+  let connectionIndex = 0;
 
-  const addConnection = (from, to, weight, label, layer) => {
+  const addConnection = (from, to, weight, label, activity = 0) => {
+    const change = recentWeightChanges?.[connectionIndex] || null;
+    connectionIndex += 1;
     const strength = Math.abs(weight) / scale;
-    if (view === 'strong' && strength < .42) return;
-    if (view === 'input' && layer !== 'input') return;
-    if (view === 'output' && layer !== 'output') return;
     const line = svgElement('line', {
       x1: from.x, y1: from.y, x2: to.x, y2: to.y,
-      class: 'connection',
+      class: `connection${change?.normalized > .16 ? ' learned' : ''}`,
       stroke: weight >= 0 ? 'var(--positive)' : 'var(--negative)',
       'stroke-width': (.35 + strength * 4.3).toFixed(2),
-      opacity: (.08 + strength * .65).toFixed(2)
+      opacity: (.055 + strength * .38 + Math.min(1, Math.abs(activity)) * .28).toFixed(2),
+      'data-connection-label': label,
+      'data-weight': weight.toFixed(6),
+      'data-delta': change ? change.delta.toFixed(6) : ''
     });
     const title = svgElement('title');
-    title.textContent = `${label}: ${weight >= 0 ? '+' : ''}${weight.toFixed(4)}`;
+    title.textContent = `${label}: ${weight >= 0 ? '+' : ''}${weight.toFixed(4)}${change ? ` · Δ ${change.delta.toFixed(4)}` : ''}`;
     line.append(title);
     connectionGroup.append(line);
   };
 
-  model.w1.forEach((row, hiddenIndex) => row.forEach((weight, inputIndex) => addConnection(positions.inputs[inputIndex], positions.hidden[hiddenIndex], weight, `Pixel ${Math.floor(inputIndex / 5) + 1},${(inputIndex % 5) + 1} → Hidden ${hiddenIndex + 1}`, 'input')));
-  model.w2.forEach((row, outputIndex) => row.forEach((weight, hiddenIndex) => addConnection(positions.hidden[hiddenIndex], positions.output[outputIndex], weight, `Hidden ${hiddenIndex + 1} → ${SHAPES[outputIndex]}`, 'output')));
+  model.w1.forEach((row, hiddenIndex) => row.forEach((weight, inputIndex) => addConnection(positions.inputs[inputIndex], positions.hidden[hiddenIndex], weight, `Pixel ${Math.floor(inputIndex / 5) + 1},${(inputIndex % 5) + 1} → Hidden ${hiddenIndex + 1}`, values[inputIndex])));
+  model.w2.forEach((row, outputIndex) => row.forEach((weight, hiddenIndex) => addConnection(positions.hidden[hiddenIndex], positions.output[outputIndex], weight, `Hidden ${hiddenIndex + 1} → ${SHAPES[outputIndex]}`, result.hidden[hiddenIndex])));
   networkSvg.append(connectionGroup);
 
-  const addNeuron = (position, activation, label, radius = 13) => {
-    const circle = svgElement('circle', { cx: position.x, cy: position.y, r: radius, class: 'neuron', fill: activationColor(activation) });
+  const addNeuron = (position, activation, label, radius = 13, isOutput = false) => {
+    const circle = svgElement('circle', { cx: position.x, cy: position.y, r: radius, class: 'neuron', fill: activationColor(activation, isOutput) });
     const title = svgElement('title');
     title.textContent = `${label} activation: ${activation.toFixed(4)}`;
     circle.append(title);
     networkSvg.append(circle);
   };
-  positions.inputs.forEach((position, index) => addNeuron(position, values[index], `Input ${index + 1}`, 12));
-  positions.hidden.forEach((position, index) => addNeuron(position, result.hidden[index], `Hidden ${index + 1}`, 13));
+  positions.inputs.forEach((position, index) => {
+    const size = 42;
+    const pixel = svgElement('rect', {
+      x: position.x - size / 2,
+      y: position.y - size / 2,
+      width: size,
+      height: size,
+      rx: 5,
+      class: 'input-pixel',
+      fill: values[index] ? 'var(--text)' : 'var(--panel-2)',
+      'data-input-index': index,
+      'data-on': String(Boolean(values[index])),
+      role: 'checkbox',
+      tabindex: 0,
+      'aria-checked': String(Boolean(values[index])),
+      'aria-label': `Input row ${Math.floor(index / 5) + 1}, column ${(index % 5) + 1}`
+    });
+    const title = svgElement('title');
+    title.textContent = `Input ${index + 1}: ${values[index] ? 'on' : 'off'}`;
+    pixel.append(title);
+    networkSvg.append(pixel);
+  });
+  positions.hidden.forEach((position, index) => {
+    const activation = result.hidden[index];
+    addNeuron(position, activation, `Hidden ${index + 1}`, 13);
+    const value = svgElement('text', {
+      x: position.x + 19,
+      y: position.y,
+      class: `hidden-activation ${activation >= 0 ? 'positive' : 'negative'}`
+    });
+    value.textContent = `${activation >= 0 ? '+' : '−'}${Math.abs(activation).toFixed(2)}`;
+    networkSvg.append(value);
+  });
   positions.output.forEach((position, index) => {
-    addNeuron(position, result.output[index], SHAPES[index], 21);
-    const text = svgElement('text', { x: position.x + 34, y: position.y, class: 'neuron-label' });
-    text.textContent = `${SHAPES[index]} ${Math.round(result.output[index] * 100)}%`;
+    addNeuron(position, result.output[index], SHAPES[index], 21, true);
+    const symbol = svgElement('text', { x: position.x + 31, y: position.y, class: 'output-symbol' });
+    symbol.textContent = { square: '□', circle: '○', triangle: '△' }[SHAPES[index]];
+    networkSvg.append(symbol);
+    const text = svgElement('text', { x: position.x + 54, y: position.y, class: 'neuron-label' });
+    text.textContent = formatProbability(result.output[index]);
     networkSvg.append(text);
   });
-  [['5×5 input', 148], ['12 hidden', 545], ['3 output', 880]].forEach(([label, x]) => {
-    const text = svgElement('text', { x, y: 35, class: 'layer-label' });
+  [['DRAW HERE · 5×5 INPUT', 179], ['12 HIDDEN', 500], ['3 OUTPUT', 700]].forEach(([label, x]) => {
+    const text = svgElement('text', { x, y: 27, class: 'layer-label' });
     text.textContent = label;
     networkSvg.append(text);
   });
@@ -283,24 +376,83 @@ function updateStats(lastEpochs = null) {
   document.querySelector('#class-counts').textContent = counts.join(' · ');
 }
 
-gridElement.addEventListener('pointerdown', event => {
-  const cell = event.target.closest('.pixel');
+function renderTrainingSet() {
+  const filter = document.querySelector('#example-filter').value;
+  const visible = examples
+    .map((example, index) => ({ example, index }))
+    .filter(({ example }) => filter === 'all' || (filter === 'user' ? example.source === 'user' : SHAPES[example.y] === filter));
+  trainingSetElement.innerHTML = '';
+  if (!visible.length) {
+    const empty = document.createElement('p');
+    empty.className = 'empty-examples';
+    empty.textContent = 'No examples in this group yet.';
+    trainingSetElement.append(empty);
+    return;
+  }
+  visible.forEach(({ example, index }) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'example-card';
+    card.dataset.exampleIndex = String(index);
+    card.setAttribute('aria-label', `Load ${SHAPES[example.y]} training example ${index + 1}`);
+    const miniGrid = document.createElement('span');
+    miniGrid.className = 'mini-grid';
+    example.x.forEach(value => {
+      const pixel = document.createElement('i');
+      if (value) pixel.className = 'on';
+      miniGrid.append(pixel);
+    });
+    const meta = document.createElement('span');
+    meta.className = 'example-meta';
+    meta.innerHTML = `<strong>${SHAPES[example.y]}</strong><small>${example.source === 'user' ? 'mine' : 'starter'}</small>`;
+    card.append(miniGrid, meta);
+    trainingSetElement.append(card);
+  });
+}
+
+networkSvg.addEventListener('pointerdown', event => {
+  const cell = event.target.closest('.input-pixel');
   if (!cell) return;
   event.preventDefault();
   painting = true;
-  paintValue = values[Number(cell.dataset.index)] ? 0 : 1;
-  setPixel(Number(cell.dataset.index), paintValue);
+  paintValue = values[Number(cell.dataset.inputIndex)] ? 0 : 1;
+  setPixel(Number(cell.dataset.inputIndex), paintValue);
   renderPrediction();
 });
-gridElement.addEventListener('pointermove', event => {
+networkSvg.addEventListener('pointermove', event => {
   if (!painting) return;
   event.preventDefault();
   const target = document.elementFromPoint(event.clientX, event.clientY);
-  const cell = target?.closest?.('.pixel');
-  if (!cell || !gridElement.contains(cell)) return;
-  setPixel(Number(cell.dataset.index), paintValue);
+  const cell = target?.closest?.('.input-pixel');
+  if (!cell || !networkSvg.contains(cell)) return;
+  setPixel(Number(cell.dataset.inputIndex), paintValue);
   renderPrediction();
 });
+networkSvg.addEventListener('keydown', event => {
+  if (!['Enter', ' '].includes(event.key)) return;
+  const cell = event.target.closest('.input-pixel');
+  if (!cell) return;
+  event.preventDefault();
+  const index = Number(cell.dataset.inputIndex);
+  setPixel(index, values[index] ? 0 : 1);
+  renderPrediction();
+});
+networkSvg.addEventListener('pointermove', event => {
+  const connection = event.target.closest('.connection');
+  if (!connection) {
+    weightTooltip.hidden = true;
+    return;
+  }
+  const weight = Number(connection.dataset.weight);
+  const delta = Number(connection.dataset.delta);
+  const sign = weight >= 0 ? 'Positive contribution' : 'Negative contribution';
+  weightTooltip.textContent = `${connection.dataset.connectionLabel}\nWeight ${weight >= 0 ? '+' : ''}${weight.toFixed(4)} · ${sign}${delta ? `\nLast training change Δ ${delta.toFixed(4)}` : ''}`;
+  weightTooltip.hidden = false;
+  const bounds = weightTooltip.getBoundingClientRect();
+  weightTooltip.style.left = `${Math.max(8, Math.min(window.innerWidth - bounds.width - 8, event.clientX + 14))}px`;
+  weightTooltip.style.top = `${Math.max(8, Math.min(window.innerHeight - bounds.height - 8, event.clientY + 14))}px`;
+});
+networkSvg.addEventListener('pointerleave', () => { weightTooltip.hidden = true; });
 window.addEventListener('pointerup', () => { painting = false; });
 window.addEventListener('pointercancel', () => { painting = false; });
 
@@ -312,9 +464,10 @@ document.querySelectorAll('[data-label]').forEach(button => button.addEventListe
   }
   const label = button.dataset.label;
   examples.push({ x: [...values], y: SHAPES.indexOf(label), source: 'user' });
-  train(180, Number(document.querySelector('#learning-rate').value) || .08);
+  train(80, Number(document.querySelector('#learning-rate').value) || .08);
   save();
-  updateStats(180);
+  updateStats(80);
+  renderTrainingSet();
   renderPrediction();
   statusElement.textContent = `Added and learned one ${label}.`;
 }));
@@ -325,35 +478,48 @@ document.querySelector('#train').addEventListener('click', () => {
   statusElement.textContent = 'Training…';
   requestAnimationFrame(() => {
     const started = performance.now();
+    const beforeAccuracy = metrics().accuracy;
+    const beforeWeights = snapshotWeights();
     train(epochs, rate);
+    recordWeightChanges(beforeWeights);
+    const afterAccuracy = metrics().accuracy;
     save();
     updateStats(epochs);
     renderPrediction();
-    statusElement.textContent = `Trained in ${Math.round(performance.now() - started)} ms.`;
+    recentWeightChanges = null;
+    statusElement.textContent = `Trained ${epochs} epochs · ${Math.round(beforeAccuracy * 100)}% → ${Math.round(afterAccuracy * 100)}% · ${Math.round(performance.now() - started)} ms`;
   });
 });
 
-document.querySelector('#reset-network').addEventListener('click', () => {
+document.querySelector('#randomize-weights').addEventListener('click', () => {
   model = freshModel();
-  train(450, .08);
+  recentWeightChanges = null;
   save();
-  updateStats(450);
+  updateStats();
+  document.querySelector('#last-epochs').textContent = '—';
   renderPrediction();
-  statusElement.textContent = 'Weights reset and retrained.';
+  statusElement.textContent = 'Weights randomized · ready to train.';
 });
 
 document.querySelector('#reset-all').addEventListener('click', () => {
   if (!window.confirm('Remove your examples and restore the starter training set?')) return;
   examples = starterExamples();
   model = freshModel();
-  train(450, .08);
+  train(600, .08);
   save();
-  updateStats(450);
+  updateStats(600);
+  renderTrainingSet();
   setGrid(new Array(INPUTS).fill(0));
   statusElement.textContent = 'Starter examples restored.';
 });
 
-document.querySelector('#connection-view').addEventListener('change', () => renderPrediction());
+document.querySelector('#example-filter').addEventListener('change', renderTrainingSet);
+trainingSetElement.addEventListener('click', event => {
+  const card = event.target.closest('.example-card');
+  if (!card) return;
+  const example = examples[Number(card.dataset.exampleIndex)];
+  if (example) setGrid([...example.x]);
+});
 document.querySelector('#theme-toggle').addEventListener('click', event => {
   const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
   document.documentElement.dataset.theme = next;
@@ -363,12 +529,25 @@ document.querySelector('#theme-toggle').addEventListener('click', event => {
   renderPrediction();
 });
 
-createGrid();
-const restored = load();
+load();
 const themeToggle = document.querySelector('#theme-toggle');
 const initialTheme = document.documentElement.dataset.theme;
 themeToggle.textContent = initialTheme === 'dark' ? '☀' : '☾';
 themeToggle.setAttribute('aria-label', `Switch to ${initialTheme === 'dark' ? 'light' : 'dark'} mode`);
 themeToggle.title = themeToggle.getAttribute('aria-label');
-updateStats(restored ? null : 450);
+updateStats();
 renderPrediction();
+renderTrainingSet();
+
+const automaticEpochs = 600;
+statusElement.textContent = `Auto-training ${automaticEpochs} epochs…`;
+requestAnimationFrame(() => {
+  const started = performance.now();
+  const beforeAccuracy = metrics().accuracy;
+  train(automaticEpochs, .08);
+  const afterAccuracy = metrics().accuracy;
+  save();
+  updateStats(automaticEpochs);
+  renderPrediction();
+  statusElement.textContent = `Auto-trained ${automaticEpochs} epochs · ${Math.round(beforeAccuracy * 100)}% → ${Math.round(afterAccuracy * 100)}% · ${Math.round(performance.now() - started)} ms`;
+});
