@@ -1,5 +1,5 @@
 const INPUTS = 25;
-const STORAGE_VERSION = 4;
+const STORAGE_VERSION = 7;
 const MODE_KEY = 'neural-net-playground-mode';
 const SHAPE_LABELS = ['square', 'circle', 'triangle'];
 const GLYPH_LINES = {
@@ -39,6 +39,45 @@ const GLYPH_LINES = {
   X: ['10001', '01010', '00100', '01010', '10001'],
   Y: ['10001', '01010', '00100', '00100', '00100'],
   Z: ['11111', '00010', '00100', '01000', '11111']
+};
+
+const COMPACT_GLYPH_LINES = {
+  '0': ['111', '101', '101', '101', '111'],
+  '1': ['010', '110', '010', '010', '111'],
+  '2': ['110', '001', '010', '100', '111'],
+  '3': ['110', '001', '010', '001', '110'],
+  '4': ['101', '101', '111', '001', '001'],
+  '5': ['111', '100', '110', '001', '110'],
+  '6': ['011', '100', '110', '101', '010'],
+  '7': ['111', '001', '010', '010', '010'],
+  '8': ['111', '101', '111', '101', '111'],
+  '9': ['010', '101', '011', '001', '110'],
+  A: ['010', '101', '111', '101', '101'],
+  B: ['110', '101', '110', '101', '110'],
+  C: ['011', '100', '100', '100', '011'],
+  D: ['110', '101', '101', '101', '110'],
+  E: ['111', '100', '110', '100', '111'],
+  F: ['111', '100', '110', '100', '100'],
+  G: ['011', '100', '101', '101', '011'],
+  H: ['101', '101', '111', '101', '101'],
+  I: ['111', '010', '010', '010', '111'],
+  J: ['001', '001', '001', '101', '010'],
+  K: ['101', '101', '110', '101', '101'],
+  L: ['100', '100', '100', '100', '111'],
+  M: ['101', '111', '111', '101', '101'],
+  N: ['101', '111', '111', '111', '101'],
+  O: ['010', '101', '101', '101', '010'],
+  P: ['110', '101', '110', '100', '100'],
+  Q: ['010', '101', '101', '111', '011'],
+  R: ['110', '101', '110', '101', '101'],
+  S: ['011', '100', '010', '001', '110'],
+  T: ['111', '010', '010', '010', '010'],
+  U: ['101', '101', '101', '101', '111'],
+  V: ['101', '101', '101', '101', '010'],
+  W: ['101', '101', '111', '111', '101'],
+  X: ['101', '101', '010', '101', '101'],
+  Y: ['101', '101', '010', '010', '010'],
+  Z: ['111', '001', '010', '100', '111']
 };
 
 const gridValues = new Array(INPUTS).fill(0);
@@ -132,17 +171,6 @@ function trianglePatterns() {
   return results;
 }
 
-function shiftPattern(source, horizontal, vertical) {
-  const result = new Array(INPUTS).fill(0);
-  source.forEach((value, index) => {
-    if (!value) return;
-    const row = Math.floor(index / 5) + vertical;
-    const column = index % 5 + horizontal;
-    if (row >= 0 && row < 5 && column >= 0 && column < 5) result[row * 5 + column] = 1;
-  });
-  return result;
-}
-
 function shuffleWith(items, generator) {
   for (let index = items.length - 1; index > 0; index -= 1) {
     const other = Math.floor(generator() * (index + 1));
@@ -178,16 +206,32 @@ function shapeExamples() {
   return balancedExamples([squarePatterns(), circlePatterns(), trianglePatterns()], SHAPE_LABELS, 96, 0xc1a551f1);
 }
 
+function placeGlyph(lines, left) {
+  const result = new Array(INPUTS).fill(0);
+  lines.forEach((line, row) => [...line].forEach((value, column) => {
+    if (value === '1') result[row * 5 + left + column] = 1;
+  }));
+  return result;
+}
+
+function glyphSeedPatterns(label) {
+  const regular = GLYPH_LINES[label];
+  const condensed = regular.map(line => `${line[0]}${line[1]}${line[3]}${line[4]}`);
+  const compact = COMPACT_GLYPH_LINES[label];
+  const patterns = [
+    flatPattern(regular),
+    placeGlyph(condensed, 0),
+    placeGlyph(condensed, 1),
+    placeGlyph(compact, 0),
+    placeGlyph(compact, 1),
+    placeGlyph(compact, 2)
+  ];
+  return [...new Map(patterns.map(pattern => [pattern.join(''), pattern])).values()];
+}
+
 function glyphExamples(labels, perClass, seed) {
   const seeded = seededRandom(seed);
-  const rawSets = labels.map(label => {
-    const base = flatPattern(GLYPH_LINES[label]);
-    const shifted = [];
-    for (let vertical = -1; vertical <= 1; vertical += 1) {
-      for (let horizontal = -1; horizontal <= 1; horizontal += 1) shifted.push(shiftPattern(base, horizontal, vertical));
-    }
-    return [...new Map(shifted.map(pattern => [pattern.join(''), pattern])).values()];
-  });
+  const rawSets = labels.map(glyphSeedPatterns);
   const owners = new Map();
   rawSets.forEach((patterns, classIndex) => patterns.forEach(pattern => {
     const key = pattern.join('');
@@ -207,7 +251,7 @@ function glyphExamples(labels, perClass, seed) {
       attempts += 1;
       const source = patternSets[classIndex][Math.floor(seeded() * patternSets[classIndex].length)];
       const x = [...source];
-      const flips = seeded() < .86 ? 1 : 2;
+      const flips = seeded() < .9 ? 1 : 2;
       for (let flip = 0; flip < flips; flip += 1) {
         const index = Math.floor(seeded() * INPUTS);
         x[index] = x[index] ? 0 : 1;
@@ -530,7 +574,8 @@ function renderNetwork(result = forward(gridValues)) {
   }
 
   positions.forEach((layer, index) => {
-    const text = svgElement('text', { x: layer[0].x, y: 27, class: 'layer-label' });
+    const labelX = index === 0 ? layer.reduce((sum, position) => sum + position.x, 0) / layer.length : layer[0].x;
+    const text = svgElement('text', { x: labelX, y: 27, class: 'layer-label' });
     text.textContent = index === 0 ? 'DRAW HERE · 5×5 INPUT' : `${currentConfig.layers[index]} ${layerName(index).toUpperCase()}`;
     networkSvg.append(text);
   });
