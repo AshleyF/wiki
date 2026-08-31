@@ -12,7 +12,7 @@
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260831-10">
+    <link rel="stylesheet" href="styles.css?v=20260831-11">
   </head>
   <body>
     <header class="project-header">
@@ -24,10 +24,19 @@
       <section class="network-panel panel" aria-labelledby="network-title">
         <div class="network-topline">
           <div>
-            <p class="eyebrow">25 inputs → 12 hidden → 3 outputs</p>
-            <h2 id="network-title">Draw directly on the network</h2>
+            <p id="architecture-label" class="eyebrow">25 inputs → 12 hidden → 3 outputs</p>
+            <h2 id="network-title">Shape recognizer network</h2>
           </div>
-          <button id="clear-grid" class="quiet-button" type="button">Clear</button>
+          <div class="network-actions">
+            <label class="mode-picker"><span>Recognizer</span>
+              <select id="recognizer-mode">
+                <option value="shapes">Shapes</option>
+                <option value="digits">Digits</option>
+                <option value="letters">Letters</option>
+              </select>
+            </label>
+            <button id="clear-grid" class="quiet-button" type="button">Clear</button>
+          </div>
         </div>
 
         <div class="network-scroll">
@@ -52,12 +61,7 @@
           </div>
         </div>
 
-        <div class="label-actions" aria-label="Label this drawing">
-          <span>Teach it:</span>
-          <button type="button" data-label="square"><span aria-hidden="true">□</span> Square</button>
-          <button type="button" data-label="circle"><span aria-hidden="true">○</span> Circle</button>
-          <button type="button" data-label="triangle"><span aria-hidden="true">△</span> Triangle</button>
-        </div>
+        <div id="label-actions" class="label-actions" aria-label="Label this drawing"></div>
       </section>
 
       <section class="training panel" aria-labelledby="training-title">
@@ -87,9 +91,6 @@
           <label class="example-filter"><span>Show</span>
             <select id="example-filter">
               <option value="all">Everything</option>
-              <option value="square">Squares</option>
-              <option value="circle">Circles</option>
-              <option value="triangle">Triangles</option>
               <option value="user">My examples</option>
             </select>
           </label>
@@ -101,6 +102,6 @@
 
     <div id="weight-tooltip" class="weight-tooltip" role="tooltip" hidden></div>
 
-    <script type="module" src="app.js?v=20260831-11"></script>
+    <script type="module" src="app.js?v=20260831-13"></script>
   </body>
 </html>

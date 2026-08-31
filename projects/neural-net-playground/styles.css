@@ -48,6 +48,9 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .examples-panel { min-width: 0; }
 .section-heading, .network-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .65rem; }
 .section-heading h2, .network-topline h2 { margin: .05rem 0; font-size: 1.15rem; }
+.network-actions { display: flex; align-items: end; gap: .5rem; }
+.mode-picker { display: grid; gap: .18rem; color: var(--muted); font-size: .68rem; }
+.mode-picker select { min-height: 2.65rem; }
 .eyebrow { margin: 0; color: var(--accent-2); text-transform: uppercase; letter-spacing: .1em; font-size: .66rem; font-weight: 800; }
 .status { color: var(--muted); font-size: .82rem; }
 
@@ -73,6 +76,7 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .network .neuron { stroke: var(--line); stroke-width: 2; }
 .network .neuron-label { fill: var(--text); font-size: 17px; font-weight: 800; dominant-baseline: middle; }
 .network .output-symbol { fill: var(--text); font-size: 22px; dominant-baseline: middle; }
+.network .output-symbol.compact { font-size: 10px; }
 .network .hidden-activation { font-size: 9px; font-weight: 800; dominant-baseline: middle; }
 .network .hidden-activation.positive { fill: var(--positive); }
 .network .hidden-activation.negative { fill: var(--negative); }
@@ -90,6 +94,7 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .label-actions span { color: var(--muted); font-size: .8rem; }
 .label-actions button { min-height: 2.3rem; flex: 1 1 5rem; }
 .label-actions button span { margin-right: .25rem; font-size: 1.15em; }
+.label-actions select { min-height: 2.3rem; flex: 1 1 8rem; }
 
 .training-controls { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
 .training-controls label { display: grid; gap: .25rem; color: var(--muted); font-size: .72rem; }
@@ -133,6 +138,8 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
   .panel { padding: .65rem; }
   .prediction-strip { grid-template-columns: 1fr; }
   .network-footer { align-items: stretch; flex-direction: column; }
+  .network-topline { align-items: end; }
+  .network-actions { flex-direction: column; align-items: stretch; }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
@@ -142,6 +149,8 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
   .network-panel { grid-row: span 2; }
   .network-topline { margin-bottom: .3rem; }
   .network-topline h2 { font-size: .95rem; }
+  .mode-picker span { display: none; }
+  .mode-picker select { min-height: 2rem; padding-block: .2rem; }
   .network-topline button { min-height: 2rem; padding-block: .25rem; }
   .prediction-strip { grid-template-columns: minmax(130px, .34fr) 1fr; padding: .3rem .5rem; margin-bottom: .2rem; }
   .prediction-name strong { font-size: 1.1rem; }
