@@ -2,6 +2,8 @@
 
 A groove is more than a list of drum hits. It is a repeating pattern of expectation and surprise: where attacks fall, which instruments reinforce one another, which events are withheld, and how the pattern changes across its cycle.
 
+The [percussion notation reference](#/music/percussion-notation) explains how the renderer separates steady cymbal timekeeping from the kick, snare, and tom voice while keeping reorchestrated rhythms visually consistent.
+
 [Open Rhythm Explorer](projects/rhythm-explorer/) to edit, generate, hear, notate, and analyze patterns with kick, snare, hi-hat, cymbals, toms, and cowbell.
 
 ## A useful vocabulary

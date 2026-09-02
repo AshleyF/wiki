@@ -143,6 +143,8 @@ body { margin: 0; min-height: 100vh; }
 .drum-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
 .drum-render { overflow-x: auto; padding: 1rem; background: var(--notation-paper); }
 .drum-render svg { display: block; max-width: 100%; height: auto; }
+.drum-render svg .drum-hidden-playback-note,
+.drum-render svg .drum-hidden-playback-note * { opacity: 0 !important; }
 .drum-render .drum-open-hat { fill: var(--notation-open-fill); stroke: var(--notation-ink); stroke-width: 1.2; }
 .drum-render .drum-current-note,
 .drum-render .drum-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }

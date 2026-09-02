@@ -572,7 +572,8 @@ const drumRows = {
 };
 
 function parseDrumToken(rawToken) {
-  if (rawToken === '.') return { hit: false, kind: '.', accent: false, ghost: false, tremolo: 0 };
+  if (rawToken === '.') return { hit: false, visible: false, kind: '.', accent: false, ghost: false, tremolo: 0 };
+  if (rawToken === '_') return { hit: true, visible: false, kind: 'x', accent: false, ghost: true, tremolo: 0 };
   let token = rawToken;
   let ghost = false;
   if (token.startsWith('(') && token.endsWith(')')) {
@@ -586,9 +587,9 @@ function parseDrumToken(rawToken) {
   if (tremolo > 3) throw new Error(`Too many tremolo slashes in "${rawToken}". Use x/, x//, or x///.`);
   if (tremolo) token = token.slice(0, -tremolo);
   if (!['x', 'o', 'f', 'd'].includes(token)) {
-    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, or .`);
+    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, or .`);
   }
-  return { hit: true, kind: token, accent, ghost, tremolo };
+  return { hit: true, visible: true, kind: token, accent, ghost, tremolo };
 }
 
 function parseDrumPattern(source) {
@@ -596,6 +597,7 @@ function parseDrumPattern(source) {
     meter: '4/4',
     division: 8,
     tempo: null,
+    voices: 'auto',
     sticking: null,
     rows: {}
   };
@@ -604,7 +606,7 @@ function parseDrumPattern(source) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) return;
 
-    const directive = trimmed.match(/^(tempo|meter|division)\s+(.+)$/i);
+    const directive = trimmed.match(/^(tempo|meter|division|voices)\s+(.+)$/i);
     if (directive) {
       const name = directive[1].toLowerCase();
       const value = directive[2].trim();
@@ -628,6 +630,8 @@ function parseDrumPattern(source) {
   if (!lengths.length) throw new Error('Add at least one drum row such as "hh: x x x x x x x x".');
   const steps = Math.max(...lengths);
   if (![8, 12, 16, 24].includes(pattern.division)) throw new Error('Drum division must be 8, 12, 16, or 24.');
+  pattern.voices = String(pattern.voices).toLowerCase();
+  if (!['auto', 'single', 'split'].includes(pattern.voices)) throw new Error('Drum voices must be auto, single, or split.');
   if (steps % pattern.division !== 0) throw new Error(`Division ${pattern.division} expects a whole-bar multiple of ${pattern.division} slots.`);
   pattern.steps = steps;
   pattern.bars = steps / pattern.division;
@@ -672,6 +676,13 @@ function drumMeter(pattern) {
 function drumVoiceOptions(pattern) {
   const meter = drumMeter(pattern);
   return { num_beats: meter.beats * (pattern.bars || 1), beat_value: meter.value };
+}
+
+function drumSlotsPerQuarter(pattern) {
+  const meter = drumMeter(pattern);
+  const quarterNotesPerBar = meter.beats * (4 / meter.value);
+  const slots = pattern.division / quarterNotesPerBar;
+  return Number.isInteger(slots) ? slots : null;
 }
 
 function drumStepDuration(pattern, tempo) {
@@ -753,18 +764,48 @@ function makeDrumRestNote(duration = 8, visible = false) {
   }
 
   const rest = new Flow.StaveNote({ keys: ['b/4'], duration: `${vexDuration}r` });
+  if (vexDuration.endsWith('d') && typeof Flow.Dot?.buildAndAttach === 'function') {
+    Flow.Dot.buildAndAttach([rest], { all: true });
+  }
   if (!visible) rest.setStyle?.({ fillStyle: 'transparent', strokeStyle: 'transparent' });
   rest.isWikiGhostNote = true;
   return rest;
 }
 
-function drumActiveRowsAt(pattern, index) {
-  return Object.keys(drumRows)
-    .filter((row) => parseDrumToken(pattern.rows[row][index]).hit);
+function makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection) {
+  const Flow = window.Vex.Flow;
+  const row = rowNames.find((name) => {
+    const token = parseDrumToken(pattern.rows[name][index]);
+    return token.hit && !token.visible;
+  }) || 'sn';
+  const note = new Flow.StaveNote({
+    keys: [drumRows[row].key],
+    duration: String(duration),
+    stem_direction: stemDirection
+  });
+  note.setStyle?.({ fillStyle: 'transparent', strokeStyle: 'transparent' });
+  note.isWikiGhostNote = true;
+  note.isWikiHiddenPlaybackNote = true;
+  return note;
 }
 
-function drumStepIsSilent(pattern, index) {
-  return !drumActiveRowsAt(pattern, index).length;
+function drumActiveRowsAt(pattern, index, rowNames = Object.keys(drumRows)) {
+  return rowNames
+    .filter((row) => {
+      const token = parseDrumToken(pattern.rows[row][index]);
+      return token.hit && token.visible;
+    });
+}
+
+function drumStepIsSilent(pattern, index, rowNames = Object.keys(drumRows)) {
+  return !drumActiveRowsAt(pattern, index, rowNames).length;
+}
+
+function drumStepHasHiddenHits(pattern, index, rowNames = Object.keys(drumRows)) {
+  return rowNames.some((row) => {
+    const token = parseDrumToken(pattern.rows[row][index]);
+    return token.hit && !token.visible;
+  });
 }
 
 function renderedDrumSticking(sticking, tokens) {
@@ -782,17 +823,20 @@ function drumDurationForSlots(pattern, slots) {
   return Number.isInteger(duration) ? duration : null;
 }
 
-function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern)) {
+function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern), stemDirection = window.Vex.Flow.StaveNote.STEM_UP) {
   const Flow = window.Vex.Flow;
   const keys = rows.map((row) => drumRows[row].key);
   const tokens = rows.map((row) => parseDrumToken(pattern.rows[row][index]));
   const note = new Flow.StaveNote({
     keys,
     duration: String(duration),
-    stem_direction: Flow.StaveNote.STEM_UP
+    stem_direction: stemDirection
   });
   note.isWikiGhostNote = false;
   note.wikiStep = index;
+  if (String(duration).endsWith('d') && typeof Flow.Dot?.buildAndAttach === 'function') {
+    Flow.Dot.buildAndAttach([note], { all: true });
+  }
 
   rows.forEach((row, keyIndex) => {
     const token = tokens[keyIndex];
@@ -824,7 +868,7 @@ function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern)) 
       keys: [drumRows[graceRow].key],
       duration: '16',
       slash: kind === 'f',
-      stem_direction: Flow.StaveNote.STEM_UP
+      stem_direction: stemDirection
     }));
     if (graceSticking !== '.' && typeof Flow.Annotation === 'function') {
       graceNotes.forEach((graceNote) => {
@@ -848,10 +892,106 @@ function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern)) 
   return note;
 }
 
-function makeDrumVoice(pattern) {
+const drumSixteenthBeatSpellings = {
+  '0000': [{ rest: true, step: 0, slots: 4, duration: '4' }],
+  '0001': [{ rest: true, step: 0, slots: 3, duration: '8d' }, { step: 3, slots: 1, duration: '16' }],
+  '0010': [{ rest: true, step: 0, slots: 2, duration: '8' }, { step: 2, slots: 2, duration: '8' }],
+  '0011': [{ rest: true, step: 0, slots: 2, duration: '8' }, { step: 2, slots: 1, duration: '16' }, { step: 3, slots: 1, duration: '16' }],
+  '0100': [{ rest: true, step: 0, slots: 1, duration: '16' }, { step: 1, slots: 3, duration: '8d' }],
+  '0101': [{ rest: true, step: 0, slots: 1, duration: '16' }, { step: 1, slots: 2, duration: '8' }, { step: 3, slots: 1, duration: '16' }],
+  '0110': [{ rest: true, step: 0, slots: 1, duration: '16' }, { step: 1, slots: 1, duration: '16' }, { step: 2, slots: 2, duration: '8' }],
+  '0111': [{ rest: true, step: 0, slots: 1, duration: '16' }, { step: 1, slots: 1, duration: '16' }, { step: 2, slots: 1, duration: '16' }, { step: 3, slots: 1, duration: '16' }],
+  '1000': [{ step: 0, slots: 4, duration: '4' }],
+  '1001': [{ step: 0, slots: 3, duration: '8d' }, { step: 3, slots: 1, duration: '16' }],
+  '1010': [{ step: 0, slots: 2, duration: '8' }, { step: 2, slots: 2, duration: '8' }],
+  '1011': [{ step: 0, slots: 2, duration: '8' }, { step: 2, slots: 1, duration: '16' }, { step: 3, slots: 1, duration: '16' }],
+  '1100': [{ step: 0, slots: 1, duration: '16' }, { step: 1, slots: 1, duration: '16' }, { rest: true, step: 2, slots: 2, duration: '8' }],
+  '1101': [{ step: 0, slots: 1, duration: '16' }, { step: 1, slots: 2, duration: '8' }, { step: 3, slots: 1, duration: '16' }],
+  '1110': [{ step: 0, slots: 1, duration: '16' }, { step: 1, slots: 1, duration: '16' }, { step: 2, slots: 2, duration: '8' }],
+  '1111': [{ step: 0, slots: 1, duration: '16' }, { step: 1, slots: 1, duration: '16' }, { step: 2, slots: 1, duration: '16' }, { step: 3, slots: 1, duration: '16' }]
+};
+
+const drumHiddenTripletSpellings = {
+  '000': { tuplet: false, events: [{ rest: true, step: 0, slots: 3, duration: '4' }] },
+  '001': { tuplet: true, events: [{ rest: true, step: 0, slots: 2, duration: '4' }, { step: 2, slots: 1, duration: '8' }] },
+  '010': { tuplet: true, events: [{ rest: true, step: 0, slots: 1, duration: '8' }, { step: 1, slots: 2, duration: '4' }] },
+  '011': { tuplet: true, events: [{ rest: true, step: 0, slots: 1, duration: '8' }, { step: 1, slots: 1, duration: '8' }, { step: 2, slots: 1, duration: '8' }] },
+  '100': { tuplet: false, events: [{ step: 0, slots: 3, duration: '4' }] },
+  '101': { tuplet: true, events: [{ step: 0, slots: 2, duration: '4' }, { step: 2, slots: 1, duration: '8' }] },
+  '110': { tuplet: true, events: [{ step: 0, slots: 1, duration: '8' }, { step: 1, slots: 1, duration: '8' }, { rest: true, step: 2, slots: 1, duration: '8' }] },
+  '111': { tuplet: true, events: [{ step: 0, slots: 1, duration: '8' }, { step: 1, slots: 1, duration: '8' }, { step: 2, slots: 1, duration: '8' }] }
+};
+
+function usesCanonicalDrumSixteenths(pattern) {
+  const meter = drumMeter(pattern);
+  return pattern.division === 16 && meter.beats === 4 && meter.value === 4;
+}
+
+function makeCanonicalDrumSixteenthVoice(pattern, rowNames = Object.keys(drumRows), stemDirection = window.Vex.Flow.StaveNote.STEM_UP) {
+  const Flow = window.Vex.Flow;
+  const notes = [];
+
+  for (let groupStart = 0; groupStart < pattern.steps; groupStart += 4) {
+    const mask = Array.from({ length: 4 }, (_, offset) => Number(!drumStepIsSilent(pattern, groupStart + offset, rowNames))).join('');
+    drumSixteenthBeatSpellings[mask].forEach((event) => {
+      const step = groupStart + event.step;
+      const note = event.rest
+        ? makeDrumRestNote(event.duration, true)
+        : makeDrumHit(drumActiveRowsAt(pattern, step, rowNames), step, pattern, event.duration, stemDirection);
+      note.wikiStep = step;
+      note.wikiConsumedSlots = event.slots;
+      if (!event.rest) note.wikiBeamGroup = groupStart;
+      notes.push(note);
+    });
+  }
+
+  const voice = new Flow.Voice(drumVoiceOptions(pattern));
+  voice.addTickables(notes);
+  return { voice, notes, tuplets: [] };
+}
+
+function makeHiddenTripletGroup(pattern, groupStart, rowNames, stemDirection) {
+  const Flow = window.Vex.Flow;
+  const mask = Array.from({ length: 3 }, (_, offset) => Number(!drumStepIsSilent(pattern, groupStart + offset, rowNames))).join('');
+  const spelling = drumHiddenTripletSpellings[mask];
+  const groupNotes = spelling.events.map((event) => {
+    const step = groupStart + event.step;
+    const note = event.rest
+      ? makeDrumRestNote(event.duration, true)
+      : makeDrumHit(drumActiveRowsAt(pattern, step, rowNames), step, pattern, event.duration, stemDirection);
+    note.wikiStep = step;
+    note.wikiConsumedSlots = event.slots;
+    note.wikiTupletGroup = groupStart;
+    if (event.duration === '4') note.wikiCollapsedToBeat = true;
+    return note;
+  });
+  const tuplet = spelling.tuplet && typeof Flow.Tuplet === 'function'
+    ? new Flow.Tuplet(groupNotes, {
+      num_notes: 3,
+      notes_occupied: 2,
+      bracketed: true,
+      ratioed: false
+    })
+    : null;
+  if (tuplet) {
+    tuplet.isWikiVisible = true;
+    // VexFlow brackets tuplets from the first event position to the last
+    // event's onset. For B-A-B, the final engraved quarter note occupies the
+    // middle and final triplet slots, so its duration must extend the bracket.
+    tuplet.wikiExtendThroughLastDuration = mask === '010';
+    tuplet.wikiSpellingNotes = groupNotes;
+  }
+  return { notes: groupNotes, tuplet };
+}
+
+function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection = window.Vex.Flow.StaveNote.STEM_UP) {
   const Flow = window.Vex.Flow;
   const duration = drumVexDuration(pattern);
   const tupletSpec = drumTupletSpec(pattern);
+
+  if (usesCanonicalDrumSixteenths(pattern)) {
+    return makeCanonicalDrumSixteenthVoice(pattern, rowNames, stemDirection);
+  }
 
   if (tupletSpec) {
     const notes = [];
@@ -859,13 +999,22 @@ function makeDrumVoice(pattern) {
 
     for (let groupStart = 0; groupStart < pattern.steps; groupStart += tupletSpec.size) {
       const groupSteps = Array.from({ length: tupletSpec.size }, (_, offset) => groupStart + offset);
-      const activeSteps = groupSteps.filter((step) => !drumStepIsSilent(pattern, step));
+      if (tupletSpec.size === 3 && groupSteps.some((step) => drumStepHasHiddenHits(pattern, step, rowNames))) {
+        const hiddenGroup = makeHiddenTripletGroup(pattern, groupStart, rowNames, stemDirection);
+        notes.push(...hiddenGroup.notes);
+        if (hiddenGroup.tuplet) tuplets.push(hiddenGroup.tuplet);
+        continue;
+      }
+      const activeSteps = groupSteps.filter((step) => !drumStepIsSilent(pattern, step, rowNames));
       const shouldCollapseToBeat = activeSteps.length === 1
         && activeSteps[0] === groupStart
-        && groupSteps.slice(1).every((step) => drumStepIsSilent(pattern, step));
+        && groupSteps.slice(1).every((step) => (
+          drumStepIsSilent(pattern, step, rowNames)
+          && !drumStepHasHiddenHits(pattern, step, rowNames)
+        ));
 
       if (shouldCollapseToBeat) {
-        const note = makeDrumHit(drumActiveRowsAt(pattern, groupStart), groupStart, pattern, 4);
+        const note = makeDrumHit(drumActiveRowsAt(pattern, groupStart, rowNames), groupStart, pattern, 4, stemDirection);
         note.wikiCollapsedToBeat = true;
         note.wikiConsumedSlots = tupletSpec.size;
         notes.push(note);
@@ -880,10 +1029,13 @@ function makeDrumVoice(pattern) {
       }
 
       const groupNotes = groupSteps.map((index) => {
-        const activeRows = drumActiveRowsAt(pattern, index);
+        const activeRows = drumActiveRowsAt(pattern, index, rowNames);
+        const hiddenHit = drumStepHasHiddenHits(pattern, index, rowNames);
         const note = activeRows.length
-          ? makeDrumHit(activeRows, index, pattern, duration)
-          : makeDrumRestNote(duration, true);
+          ? makeDrumHit(activeRows, index, pattern, duration, stemDirection)
+          : hiddenHit
+            ? makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection)
+            : makeDrumRestNote(duration, true);
         note.wikiStep = index;
         note.wikiTupletGroup = groupStart;
         return note;
@@ -897,7 +1049,8 @@ function makeDrumVoice(pattern) {
           bracketed: true,
           ratioed: false
         });
-        tuplet.isWikiVisible = groupNotes.filter((note) => !note.isWikiGhostNote).length > 1;
+        tuplet.isWikiVisible = groupNotes.filter((note) => !note.isWikiGhostNote).length > 1
+          || groupSteps.some((step) => drumStepHasHiddenHits(pattern, step, rowNames));
         tuplets.push(tuplet);
       }
     }
@@ -908,15 +1061,19 @@ function makeDrumVoice(pattern) {
   }
 
   const notes = [];
+  const quarterSlots = drumSlotsPerQuarter(pattern);
   for (let index = 0; index < pattern.steps; index += 1) {
     const step = index;
-    const activeRows = drumActiveRowsAt(pattern, index);
+    const activeRows = drumActiveRowsAt(pattern, index, rowNames);
     let note;
     if (activeRows.length) {
       let availableSlots = 1;
+      const groupEnd = quarterSlots
+        ? Math.min(pattern.steps, index + quarterSlots - (index % quarterSlots))
+        : pattern.steps;
       while (
-        index + availableSlots < pattern.steps
-        && drumStepIsSilent(pattern, index + availableSlots)
+        index + availableSlots < groupEnd
+        && drumStepIsSilent(pattern, index + availableSlots, rowNames)
       ) {
         availableSlots += 1;
       }
@@ -925,9 +1082,10 @@ function makeDrumVoice(pattern) {
         if (drumDurationForSlots(pattern, candidateSlots)) consumedSlots = candidateSlots;
       }
       const collapsedDuration = drumDurationForSlots(pattern, consumedSlots) || duration;
-      note = makeDrumHit(activeRows, index, pattern, collapsedDuration);
+      note = makeDrumHit(activeRows, index, pattern, collapsedDuration, stemDirection);
       note.wikiConsumedSlots = consumedSlots;
       if (consumedSlots > 1 && collapsedDuration < 8) note.wikiCollapsedToBeat = true;
+      if (quarterSlots) note.wikiBeamGroup = Math.floor(step / quarterSlots);
       index += consumedSlots - 1;
     } else {
       note = makeDrumRestNote(duration, false);
@@ -939,6 +1097,44 @@ function makeDrumVoice(pattern) {
   const voice = new Flow.Voice(drumVoiceOptions(pattern));
   voice.addTickables(notes);
   return { voice, notes, tuplets: [] };
+}
+
+const drumUpperVoiceRows = ['cr', 'rd', 'hh', 'wb'];
+const drumLowerVoiceRows = ['ht', 'mt', 'sn', 'ft', 'bd', 'ph'];
+
+function drumRowsContainHits(pattern, rowNames) {
+  return rowNames.some((row) => pattern.rows[row].some((token) => parseDrumToken(token).hit));
+}
+
+function hasSteadyDrumTimekeeping(pattern) {
+  const quarterSlots = drumSlotsPerQuarter(pattern);
+  return ['hh', 'rd'].some((row) => {
+    const hits = pattern.rows[row].map((token) => parseDrumToken(token).hit);
+    if (hits.filter(Boolean).length < pattern.steps / 2) return false;
+    if (!quarterSlots) return true;
+    for (let start = 0; start < pattern.steps; start += quarterSlots) {
+      if (!hits.slice(start, start + quarterSlots).some(Boolean)) return false;
+    }
+    return true;
+  });
+}
+
+function shouldSplitDrumVoices(pattern) {
+  if (pattern.voices === 'single') return false;
+  if (!drumRowsContainHits(pattern, drumUpperVoiceRows)
+    || !drumRowsContainHits(pattern, drumLowerVoiceRows)) return false;
+  return pattern.voices === 'split' || hasSteadyDrumTimekeeping(pattern);
+}
+
+function makeDrumVoiceParts(pattern) {
+  const Flow = window.Vex.Flow;
+  if (!shouldSplitDrumVoices(pattern)) {
+    return [makeDrumVoice(pattern)];
+  }
+  return [
+    makeDrumVoice(pattern, drumUpperVoiceRows, Flow.StaveNote.STEM_UP),
+    makeDrumVoice(pattern, drumLowerVoiceRows, Flow.StaveNote.STEM_DOWN)
+  ];
 }
 
 function makeDrumBeams(notes, pattern) {
@@ -956,7 +1152,7 @@ function makeDrumBeams(notes, pattern) {
       return;
     }
 
-    const noteGroup = note.wikiTupletGroup ?? null;
+    const noteGroup = note.wikiTupletGroup ?? note.wikiBeamGroup ?? null;
     if (run.length && noteGroup !== runGroup) {
       if (run.length > 1) beams.push(new Flow.Beam(run));
       run = [];
@@ -978,10 +1174,13 @@ function addDrumStepElement(stepElements, step, element) {
 function renderedDrumStems(target) {
   return Array.from(target.querySelectorAll('.vf-stem')).map((stemGroup) => {
     const path = stemGroup.querySelector('path');
-    const stemStart = path?.getAttribute('d')?.match(/M\s*(-?\d+(?:\.\d+)?)/);
+    const coordinates = path?.getAttribute('d')?.match(/-?\d+(?:\.\d+)?/g)?.map(Number) || [];
     return {
       element: stemGroup,
-      x: stemStart ? Number(stemStart[1]) : null
+      x: coordinates[0],
+      direction: coordinates.length >= 4
+        ? (coordinates[3] < coordinates[1] ? window.Vex.Flow.StaveNote.STEM_UP : window.Vex.Flow.StaveNote.STEM_DOWN)
+        : null
     };
   }).filter((stem) => Number.isFinite(stem.x));
 }
@@ -991,8 +1190,12 @@ function renderedStemForNote(stems, note) {
 
   const stemX = note.getStemX();
   if (!Number.isFinite(stemX)) return null;
+  const stemDirection = note.getStemDirection?.();
 
-  return stems.find((stem) => Math.abs(stem.x - stemX) < 0.75)?.element || null;
+  return stems.find((stem) => (
+    Math.abs(stem.x - stemX) < 0.75
+    && (!Number.isFinite(stemDirection) || stem.direction === stemDirection)
+  ))?.element || null;
 }
 
 function setDrumRepeatBarlines(stave, Flow) {
@@ -1063,6 +1266,46 @@ function positionDrumAccents(target, notes) {
   });
 }
 
+function extendHiddenTripletBracket(group, tuplet) {
+  if (!group || !tuplet.wikiExtendThroughLastDuration) return;
+  const [firstNote, lastNote] = tuplet.wikiSpellingNotes || [];
+  const firstX = Number(firstNote?.getAbsoluteX?.());
+  const lastX = Number(lastNote?.getAbsoluteX?.());
+  // A full onset-to-onset extension reaches into the following beat because
+  // VexFlow also pads each bracket beyond its outer events. Half that spacing
+  // gives the sustained quarter note a clear visual tail without crowding the
+  // next triplet bracket.
+  const extension = (lastX - firstX) / 2;
+  if (!Number.isFinite(extension) || extension <= 0) return;
+
+  const rects = Array.from(group.children).filter((element) => element.tagName === 'rect');
+  const glyph = Array.from(group.children).find((element) => element.tagName === 'path');
+  if (rects.length < 4) return;
+
+  const [leftRule, rightRule, , rightHook] = rects;
+  const halfExtension = extension / 2;
+  const values = [
+    Number(leftRule.getAttribute('width')),
+    Number(rightRule.getAttribute('x')),
+    Number(rightRule.getAttribute('width')),
+    Number(rightHook.getAttribute('x'))
+  ];
+  if (!values.every(Number.isFinite)) return;
+
+  leftRule.setAttribute('width', String(values[0] + halfExtension));
+  rightRule.setAttribute('x', String(values[1] + halfExtension));
+  rightRule.setAttribute('width', String(values[2] + halfExtension));
+  rightHook.setAttribute('x', String(values[3] + extension));
+  if (glyph) {
+    const existingTransform = glyph.getAttribute('transform');
+    glyph.setAttribute(
+      'transform',
+      `${existingTransform ? `${existingTransform} ` : ''}translate(${halfExtension} 0)`
+    );
+  }
+  group.classList.add('drum-tuplet-duration-extended');
+}
+
 function renderDrumNotation(target, pattern) {
   const Flow = window.Vex.Flow;
   target.innerHTML = '';
@@ -1081,24 +1324,33 @@ function renderDrumNotation(target, pattern) {
   stave.addClef('percussion').addTimeSignature(pattern.meter);
   stave.setContext(context).draw();
 
-  const drums = makeDrumVoice(pattern);
-  const beams = makeDrumBeams(drums.notes, pattern);
+  const drumParts = makeDrumVoiceParts(pattern);
+  const voices = drumParts.map((part) => part.voice);
+  const notes = drumParts.flatMap((part) => part.notes);
+  const beams = drumParts.flatMap((part) => makeDrumBeams(part.notes, pattern));
   new Flow.Formatter()
-    .joinVoices([drums.voice])
-    .format([drums.voice], width - 150);
+    .joinVoices(voices)
+    .format(voices, width - 150);
 
-  drums.voice.draw(context, stave);
+  voices.forEach((voice) => voice.draw(context, stave));
   beams.forEach((beam) => beam.setContext(context).draw());
-  positionDrumAccents(target, drums.notes);
-  drums.tuplets.filter((tuplet) => tuplet.isWikiVisible).forEach((tuplet) => {
-    if (typeof context.openGroup === 'function') context.openGroup('tuplet');
+  positionDrumAccents(target, notes);
+  drumParts.flatMap((part) => part.tuplets).filter((tuplet) => tuplet.isWikiVisible).forEach((tuplet) => {
+    const groupCount = target.querySelectorAll('.vf-tuplet').length;
+    const openedGroup = typeof context.openGroup === 'function' ? context.openGroup('tuplet') : null;
     tuplet.setContext(context).draw();
     if (typeof context.closeGroup === 'function') context.closeGroup();
+    const renderedGroup = target.querySelectorAll('.vf-tuplet')[groupCount] || openedGroup;
+    extendHiddenTripletBracket(renderedGroup, tuplet);
   });
 
   const stepElements = Array.from({ length: pattern.steps }, () => []);
   const stems = renderedDrumStems(target);
-  drums.notes.forEach((note) => {
+  notes.forEach((note) => {
+    if (note.isWikiHiddenPlaybackNote) {
+      note.getSVGElement?.()?.classList.add('drum-hidden-playback-note');
+      return;
+    }
     if (note.isWikiGhostNote) return;
     const step = note.wikiStep;
     if (!Number.isInteger(step)) return;
