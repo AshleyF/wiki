@@ -1,18 +1,26 @@
 # Music
 
-Wiki notes:
+## Wiki notes
+
+### Drums
 
 - [Drum rudiments](#/music/rudiments) — sticking, rolls, paradiddles, flams, drags, and hybrid rudiments
 - [Triplet Vocabulary](#/music/triplet-vocabulary) — nine abstract A/B triplet melodies with playable ghost-note practice loops
 - [Paradiddle inversions](#/music/paradiddles) — the four PAS inversions and every ordered pair
 - [Drum fills](#/music/fills) — fill rhythms organized by length and subdivision, with orchestration variants
+
+### Piano
+
+- [Piano sheet music](#/music/sheet-music) — playable scores that can follow a MIDI keyboard note by note
+
+### Theory
+
 - [Percussion notation](#/music/percussion-notation) — canonical, compact spellings for common rhythmic cells
 - [Grooves](#/music/grooves) — playable beats and groove theory
 - [Rhythm](#/music/rhythm) — a study map of rhythmic concepts, percussion, and technique
 - [Euclidean rhythms](#/music/euclidean-rhythms) — even-distribution rhythms and Boolean combinations
-- [Piano sheet music](#/music/sheet-music) — playable scores that can follow a MIDI keyboard note by note
 
-Standalone tools:
+## Standalone tools
 
 - [Rhythm Explorer](projects/rhythm-explorer/) — generate, edit, orchestrate, and perform layered drum parts
 - [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) — combine Euclidean generators into playable tracks

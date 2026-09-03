@@ -171,7 +171,9 @@ body { margin: 0; min-height: 100vh; }
 .piano-score-render .piano-score-current,
 .piano-score-render .piano-score-current * { fill: var(--accent) !important; stroke: var(--accent) !important; }
 .piano-score-render .piano-score-wrong,
-.piano-score-render .piano-score-wrong * { fill: var(--notation-error) !important; stroke: var(--notation-error) !important; }
+.piano-score-render .piano-score-wrong *,
+.piano-score-render .piano-score-missed,
+.piano-score-render .piano-score-missed * { fill: var(--notation-error) !important; stroke: var(--notation-error) !important; }
 .piano-score-render .piano-score-wrong { animation: piano-score-error-pulse 175ms ease-in-out 2 alternate; }
 .piano-score-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
 .piano-score-controls button { border: 1px solid var(--notation-button-border); padding: .5rem .85rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
@@ -314,13 +316,21 @@ body { margin: 0; min-height: 100vh; }
 :root[data-theme="dark"] .drum-render .drum-current-note,
 :root[data-theme="dark"] .drum-render .drum-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }
 :root[data-theme="dark"] .piano-score-render .piano-score-wrong,
-:root[data-theme="dark"] .piano-score-render .piano-score-wrong * { fill: var(--notation-error) !important; stroke: var(--notation-error) !important; }
+:root[data-theme="dark"] .piano-score-render .piano-score-wrong *,
+:root[data-theme="dark"] .piano-score-render .piano-score-missed,
+:root[data-theme="dark"] .piano-score-render .piano-score-missed * { fill: var(--notation-error) !important; stroke: var(--notation-error) !important; }
 :root[data-theme="dark"] .piano-score-render svg .piano-score-wrong .vf-notehead path,
 :root[data-theme="dark"] .piano-score-render svg .piano-score-wrong .vf-flag path,
 :root[data-theme="dark"] .piano-score-render svg .piano-score-wrong .vf-modifiers path,
-:root[data-theme="dark"] .piano-score-render svg .piano-score-wrong > path[stroke="none"] { fill: var(--notation-error) !important; stroke: none !important; }
+:root[data-theme="dark"] .piano-score-render svg .piano-score-wrong > path[stroke="none"],
+:root[data-theme="dark"] .piano-score-render svg .piano-score-missed .vf-notehead path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-missed .vf-flag path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-missed .vf-modifiers path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-missed > path[stroke="none"] { fill: var(--notation-error) !important; stroke: none !important; }
 :root[data-theme="dark"] .piano-score-render svg .piano-score-wrong .vf-stem path,
-:root[data-theme="dark"] .piano-score-render svg .vf-stem.piano-score-wrong path { fill: none !important; stroke: var(--notation-error) !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stem.piano-score-wrong path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-missed .vf-stem path,
+:root[data-theme="dark"] .piano-score-render svg .vf-stem.piano-score-missed path { fill: none !important; stroke: var(--notation-error) !important; }
 :root[data-theme="dark"] .drum-render svg .drum-current-note.vf-stem path { fill: none !important; stroke: var(--accent) !important; }
 :root[data-theme="dark"] .drum-render svg .vf-stem.drum-step-grace.drum-current-note path,
 :root[data-theme="dark"] .drum-render svg .drum-current-note.drum-step-grace path,

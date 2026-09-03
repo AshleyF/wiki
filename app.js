@@ -772,6 +772,13 @@ function renderPianoScoreBlock(block) {
         });
       }
     }
+    if (activePianoScore?.mode === 'follow' && activePianoScore.block === block) {
+      activePianoScore.misses.forEach((count, eventIndex) => {
+        markPianoScoreSessionMiss(activePianoScore, eventIndex, count);
+      });
+      pianoScoreEventElements(block.pianoScoreElements[activePianoScore.index])
+        .forEach(element => element.classList.add('piano-score-current'));
+    }
   } catch (error) {
     console.error(error);
     target.innerHTML = `<p class="piano-score-error">${escapeHtml(error.message || 'Could not render this score.')}</p>`;
@@ -804,9 +811,17 @@ function setPianoScoreButtons(block, mode = 'idle') {
   follow.dataset.state = mode === 'following' ? 'playing' : '';
 }
 
-function clearPianoScoreHighlight(block = document) {
+function clearPianoScoreTransientHighlight(block = document) {
   block.querySelectorAll?.('.piano-score-current, .piano-score-wrong').forEach((element) => {
     element.classList.remove('piano-score-current', 'piano-score-wrong');
+  });
+}
+
+function clearPianoScoreHighlight(block = document) {
+  clearPianoScoreTransientHighlight(block);
+  block.querySelectorAll?.('.piano-score-missed').forEach((element) => {
+    element.classList.remove('piano-score-missed');
+    element.removeAttribute('title');
   });
 }
 
@@ -814,11 +829,21 @@ function pianoScoreEventElements(value) {
   return (Array.isArray(value) ? value : [value]).filter(Boolean);
 }
 
+function markPianoScoreSessionMiss(follow, eventIndex, count) {
+  const scoreEvent = follow.block.pianoScore.events[eventIndex];
+  const label = scoreEvent.notes.map(midiName).join(' + ');
+  const description = `Missed ${label} ${count} ${count === 1 ? 'time' : 'times'} this session`;
+  pianoScoreEventElements(follow.block.pianoScoreElements[eventIndex]).forEach((element) => {
+    element.classList.add('piano-score-missed');
+    element.setAttribute('title', description);
+  });
+}
+
 function followPianoScoreElement(block, eventElements) {
   const elements = pianoScoreEventElements(eventElements);
   const element = elements[0];
   if (!element) return;
-  clearPianoScoreHighlight(block);
+  clearPianoScoreTransientHighlight(block);
   elements.forEach(item => item.classList.add('piano-score-current'));
   const scroller = block.querySelector('.piano-score-render');
   const elementBox = element.getBoundingClientRect();
@@ -837,6 +862,7 @@ function followPianoScoreElement(block, eventElements) {
 
 function stopPianoScoreBlocks() {
   if (activePianoScore) {
+    clearTimeout(activePianoScore.wrongTimer);
     activePianoScore.timers?.forEach(clearTimeout);
     activePianoScore.nodes?.forEach((node) => {
       try { node.stop(); } catch { /* The node may already have ended. */ }
@@ -973,6 +999,9 @@ function handlePianoScoreMidiMessage(message) {
   const played = scoreEvent.notes.length === 1 ? [note] : [...pianoScoreHeldNotes];
   if (!samePitchSet(played, scoreEvent.notes)) {
     const elements = pianoScoreEventElements(follow.block.pianoScoreElements[follow.index]);
+    const missCount = (follow.misses.get(follow.index) || 0) + 1;
+    follow.misses.set(follow.index, missCount);
+    markPianoScoreSessionMiss(follow, follow.index, missCount);
     elements.forEach(element => element.classList.add('piano-score-wrong'));
     setPianoScoreStatus(follow.block, `Try ${scoreEvent.notes.map(midiName).join(' + ')}`, true);
     clearTimeout(follow.wrongTimer);
@@ -982,6 +1011,7 @@ function handlePianoScoreMidiMessage(message) {
     }, 350);
     return;
   }
+  clearTimeout(follow.wrongTimer);
   const next = nextPianoScorePlayableEvent(follow.block.pianoScore, follow.index + 1);
   if (next < 0) {
     follow.index = nextPianoScorePlayableEvent(follow.block.pianoScore, 0);
@@ -996,7 +1026,7 @@ async function followPianoScoreBlock(block) {
   await preparePianoScoreMidi();
   const index = nextPianoScorePlayableEvent(block.pianoScore, 0);
   if (index < 0) throw new Error('This score has no playable notes.');
-  const follow = { block, mode: 'follow', index, timers: [], nodes: [] };
+  const follow = { block, mode: 'follow', index, timers: [], nodes: [], misses: new Map() };
   activePianoScore = follow;
   pianoScoreHeldNotes.clear();
   setPianoScoreButtons(block, 'following');

@@ -4,9 +4,30 @@ These scores can play themselves or follow a piano over MIDI. **Play** performs 
 
 The plain-text `piano-score` notation keeps measures and durations explicit. Pitch names use scientific pitch notation; `q`, `e`, and `h` mean quarter, eighth, and half notes; a trailing dot makes a duration dotted; `r` is a rest; and bracketed pitches form a chord. Beginner scores can add `note-names show` before `notes:` to print pitch letters beneath the staff.
 
+## When the Saints Go Marching In (middle C)
+
+The same simple C-major melody in 2/4, beginning on middle C and staying within C4–G4.
+
+```piano-score
+title When the Saints Go Marching In (middle C)
+tempo 104
+meter 2/4
+clef treble
+note-names show
+notes:
+r:e C4:e E4:e F4:e | G4:h |
+r:e C4:e E4:e F4:e | G4:h |
+r:e C4:e E4:e F4:e | G4:q E4:q |
+C4:q E4:q | D4:h |
+r:e E4:e E4:e D4:e | C4:h |
+E4:q G4:q | G4:e F4:q. |
+r:q E4:e F4:e | G4:q E4:q |
+C4:q D4:q | C4:h
+```
+
 ## When the Saints Go Marching In
 
-A simple C-major melody in 2/4. This [traditional spiritual](https://library.timelesstruths.org/music/When_the_Saints_Go_Marching_In/) is in the public domain.
+The same melody one octave higher, in C5–G5. This [traditional spiritual](https://library.timelesstruths.org/music/When_the_Saints_Go_Marching_In/) is in the public domain.
 
 ```piano-score
 title When the Saints Go Marching In
