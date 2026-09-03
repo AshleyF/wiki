@@ -646,7 +646,7 @@ function parsePianoScoreToken(rawToken) {
 }
 
 function parsePianoScore(source) {
-  const score = { title: '', tempo: 92, meter: '4/4', clef: 'treble', measures: [], events: [] };
+  const score = { title: '', tempo: 92, meter: '4/4', clef: 'treble', noteNames: false, measures: [], events: [] };
   const musicLines = [];
   let readingNotes = false;
   String(source).replace(/\r\n?/g, '\n').split('\n').forEach((rawLine) => {
@@ -656,7 +656,7 @@ function parsePianoScore(source) {
       musicLines.push(line);
       return;
     }
-    const directive = line.match(/^(title|tempo|meter|clef|notes)\b\s*:?[ \t]*(.*)$/i);
+    const directive = line.match(/^(title|tempo|meter|clef|note-names|notes)\b\s*:?[ \t]*(.*)$/i);
     if (!directive) throw new Error(`Unknown piano-score line "${line}".`);
     const name = directive[1].toLowerCase();
     const value = directive[2].trim();
@@ -667,6 +667,10 @@ function parsePianoScore(source) {
     else if (name === 'tempo') score.tempo = Math.max(20, Math.min(300, Number(value) || 92));
     else if (name === 'meter') score.meter = value;
     else if (name === 'clef') score.clef = value.toLowerCase();
+    else if (name === 'note-names') {
+      if (!['show', 'hide'].includes(value.toLowerCase())) throw new Error('note-names must be show or hide.');
+      score.noteNames = value.toLowerCase() === 'show';
+    }
   });
 
   const meterMatch = score.meter.match(/^(\d+)\/(1|2|4|8|16)$/);
@@ -695,7 +699,7 @@ function parsePianoScore(source) {
   return score;
 }
 
-function makePianoScoreVexNote(Flow, scoreEvent, clef) {
+function makePianoScoreVexNote(Flow, scoreEvent, clef, showNoteNames = false) {
   const duration = `${pianoScoreVexDurations[scoreEvent.duration]}${scoreEvent.dotted ? 'd' : ''}${scoreEvent.rest ? 'r' : ''}`;
   const keys = scoreEvent.rest ? [clef === 'bass' ? 'd/3' : 'b/4'] : scoreEvent.notes.map(midiToVexKey);
   const note = new Flow.StaveNote({ clef, keys, duration });
@@ -704,6 +708,15 @@ function makePianoScoreVexNote(Flow, scoreEvent, clef) {
       const accidental = vexAccidentalForKey(key);
       if (accidental) note.addModifier(new Flow.Accidental(accidental), index);
     });
+    if (showNoteNames) {
+      const label = scoreEvent.notes.map(midi => midiName(midi).replace(/-?\d+$/, '')).join('/');
+      note.addModifier(
+        new Flow.Annotation(label)
+          .setFont('Arial', 9, 'bold')
+          .setVerticalJustification(Flow.Annotation.VerticalJustify.BOTTOM),
+        0
+      );
+    }
   }
   if (scoreEvent.dotted) Flow.Dot.buildAndAttach([note], { all: true });
   return note;
@@ -740,7 +753,7 @@ function renderPianoScoreBlock(block) {
         if (measureIndex === 0) stave.addTimeSignature(score.meter);
         stave.setContext(context).draw();
         const scoreEvents = score.measures[measureIndex];
-        const notes = scoreEvents.map(scoreEvent => makePianoScoreVexNote(Flow, scoreEvent, score.clef));
+        const notes = scoreEvents.map(scoreEvent => makePianoScoreVexNote(Flow, scoreEvent, score.clef, score.noteNames));
         const voice = new Flow.Voice({ num_beats: score.numBeats, beat_value: score.beatValue });
         voice.addTickables(notes);
         const beams = Flow.Beam.generateBeams(notes);
@@ -971,13 +984,10 @@ function handlePianoScoreMidiMessage(message) {
   }
   const next = nextPianoScorePlayableEvent(follow.block.pianoScore, follow.index + 1);
   if (next < 0) {
-    clearPianoScoreHighlight(follow.block);
-    setPianoScoreStatus(follow.block, 'Complete');
-    activePianoScore = null;
-    setPianoScoreButtons(follow.block);
-    return;
+    follow.index = nextPianoScorePlayableEvent(follow.block.pianoScore, 0);
+  } else {
+    follow.index = next;
   }
-  follow.index = next;
   updatePianoScoreFollowPrompt(follow);
 }
 

@@ -169,7 +169,7 @@ ABC source is declarative music notation, not executable JavaScript. It is still
 
 ## Piano score integration
 
-The `piano-score` fence is the wiki's compact, interactive score format for piano practice. It accepts `title`, `tempo`, `meter`, `clef`, and a bar-separated `notes:` body. Note tokens use scientific pitch plus a duration (`C4:q`), `r` represents a rest (`r:e`), brackets represent chords (`[C4,E4,G4]:h`), and a trailing duration dot makes a dotted value (`F4:q.`). Each written measure must exactly fill the declared meter.
+The `piano-score` fence is the wiki's compact, interactive score format for piano practice. It accepts `title`, `tempo`, `meter`, `clef`, the optional `note-names show|hide` directive, and a bar-separated `notes:` body. Note tokens use scientific pitch plus a duration (`C4:q`), `r` represents a rest (`r:e`), brackets represent chords (`[C4,E4,G4]:h`), and a trailing duration dot makes a dotted value (`F4:q.`). Each written measure must exactly fill the declared meter. Note names are hidden by default; when enabled, compact pitch-class labels appear beneath playable notes while rests remain unlabeled.
 
 VexFlow renders the score and the parsed event list drives both Web Audio playback and note highlighting. Follow MIDI mode is deliberately untimed: it skips written rests, highlights the next playable event, and advances only when the selected MIDI input supplies the exact pitch or chord. The selected input shares the Piano Reading Trainer's `piano-reading-trainer-midi-input` preference. Starting another wiki audio block, navigating, hiding the document, or blurring the window must stop score playback and following cleanly.
 

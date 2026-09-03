@@ -2,7 +2,7 @@
 
 These scores can play themselves or follow a piano over MIDI. **Play** performs the written music and highlights each event. **Follow MIDI** waits at each written note or chord until the correct keys arrive from the selected MIDI input, then advances through the score at the player's pace.
 
-The plain-text `piano-score` notation keeps measures and durations explicit. Pitch names use scientific pitch notation; `q`, `e`, and `h` mean quarter, eighth, and half notes; a trailing dot makes a duration dotted; `r` is a rest; and bracketed pitches form a chord.
+The plain-text `piano-score` notation keeps measures and durations explicit. Pitch names use scientific pitch notation; `q`, `e`, and `h` mean quarter, eighth, and half notes; a trailing dot makes a duration dotted; `r` is a rest; and bracketed pitches form a chord. Beginner scores can add `note-names show` before `notes:` to print pitch letters beneath the staff.
 
 ## When the Saints Go Marching In
 
@@ -13,6 +13,7 @@ title When the Saints Go Marching In
 tempo 104
 meter 2/4
 clef treble
+note-names show
 notes:
 r:e C5:e E5:e F5:e | G5:h |
 r:e C5:e E5:e F5:e | G5:h |
