@@ -16,7 +16,7 @@
         document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260901-hidden-playback-notes">
+    <link rel="stylesheet" href="styles.css?v=20260903-score-barlines">
   </head>
   <body>
     <header class="site-header">
@@ -33,11 +33,14 @@
       </div>
     </header>
 
+    <button class="sidebar-collapse" type="button" aria-expanded="true" aria-controls="sidebar" aria-label="Collapse table of contents" title="Collapse table of contents">‹</button>
+
     <div class="layout">
       <aside class="sidebar" id="sidebar">
         <nav aria-label="Wiki pages">
           <p class="nav-label">Contents</p>
           <a href="#/home">Home</a>
+          <a href="#/projects">Projects</a>
           <a href="#/music">Music</a>
           <a href="#/cubing">Cubing</a>
           <a href="#/microblog">Microblog</a>
@@ -53,6 +56,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
     <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
     <script src="cube-notation.js?v=20260708-4"></script>
-    <script type="module" src="app.js?v=20260901-triplet-vocabulary-6"></script>
+    <script type="module" src="app.js?v=20260903-score-beams"></script>
   </body>
 </html>

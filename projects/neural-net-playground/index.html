@@ -12,7 +12,7 @@
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260831-11">
+    <link rel="stylesheet" href="styles.css?v=20260903-training-history">
   </head>
   <body>
     <header class="project-header">
@@ -70,31 +70,42 @@
           <span id="train-status" class="status" role="status" aria-live="polite">Ready</span>
         </div>
         <div class="training-controls">
-          <label><span>Epochs</span><input id="epochs" type="number" min="1" max="5000" step="50" value="600"></label>
-          <label><span>Learning rate</span><input id="learning-rate" type="number" min="0.001" max="1" step="0.01" value="0.08"></label>
+          <label><span>Epochs</span><input id="epochs" type="number" min="1" max="5000" step="50" value="1200"></label>
+          <label><span>Learning rate</span><input id="learning-rate" type="number" min="0.001" max="1" step="0.0025" value="0.04"></label>
           <button id="train" class="primary-button" type="button">Train network</button>
           <button id="randomize-weights" class="quiet-button" type="button">Randomize weights</button>
-          <button id="reset-all" class="quiet-button danger-button" type="button">Reset examples</button>
         </div>
-        <div class="stats" aria-label="Training statistics">
-          <div><span>Examples</span><strong id="example-count">0</strong></div>
-          <div><span>Accuracy</span><strong id="accuracy">—</strong></div>
-          <div><span>Loss</span><strong id="loss">—</strong></div>
-          <div><span>Last run</span><strong id="last-epochs">—</strong></div>
+        <div class="training-monitor" aria-label="Live training progress">
+          <div class="monitor-summary">
+            <div><span>Epoch</span><strong id="last-epochs">—</strong></div>
+            <div><span class="accuracy-key">Accuracy</span><strong id="accuracy">—</strong></div>
+            <div><span class="loss-key">Loss</span><strong id="loss">—</strong></div>
+          </div>
+          <svg id="training-chart" class="training-chart" viewBox="0 0 320 140" role="img" aria-label="Accuracy and loss during training">
+            <line class="chart-guide" x1="8" y1="66" x2="312" y2="66"></line>
+            <path id="accuracy-path" class="chart-line accuracy-line"></path>
+            <path id="loss-path" class="chart-line loss-line"></path>
+            <circle id="accuracy-point" class="chart-point accuracy-point" r="3" visibility="hidden"></circle>
+            <circle id="loss-point" class="chart-point loss-point" r="3" visibility="hidden"></circle>
+          </svg>
         </div>
-        <div id="class-counts" class="class-counts"></div>
       </section>
 
       <section class="examples-panel panel" aria-labelledby="examples-title">
         <div class="section-heading">
           <div><p class="eyebrow">What it learns from</p><h2 id="examples-title">Training set</h2></div>
-          <label class="example-filter"><span>Show</span>
-            <select id="example-filter">
-              <option value="all">Everything</option>
-              <option value="user">My examples</option>
-            </select>
-          </label>
+          <div class="example-actions">
+            <span class="example-total"><strong id="example-count">0</strong> examples</span>
+            <button id="reset-all" class="quiet-button danger-button" type="button">Reset examples</button>
+            <label class="example-filter"><span>Show</span>
+              <select id="example-filter">
+                <option value="all">Everything</option>
+                <option value="user">My examples</option>
+              </select>
+            </label>
+          </div>
         </div>
+        <div id="class-counts" class="class-counts"></div>
         <p class="examples-hint">Select an example to load it into the input layer.</p>
         <div id="training-set" class="training-set" aria-live="polite"></div>
       </section>
@@ -102,6 +113,6 @@
 
     <div id="weight-tooltip" class="weight-tooltip" role="tooltip" hidden></div>
 
-    <script type="module" src="app.js?v=20260831-17"></script>
+    <script type="module" src="app.js?v=20260903-longer-training"></script>
   </body>
 </html>

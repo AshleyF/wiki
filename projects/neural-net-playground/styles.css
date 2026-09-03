@@ -70,7 +70,6 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .network { display: block; min-width: 660px; width: 100%; height: auto; max-height: 540px; touch-action: none; user-select: none; }
 .network .connection { vector-effect: non-scaling-stroke; pointer-events: stroke; transition: opacity 90ms ease, stroke-width 90ms ease; }
 .network .connection:hover { opacity: 1 !important; stroke: var(--accent-2) !important; }
-.network .connection.learned { animation: learned-weight 1.15s ease-out; }
 .network .input-pixel { stroke: var(--line); stroke-width: 2; cursor: pointer; fill-opacity: .54; }
 .network .input-pixel[data-on="true"] { stroke: var(--text); stroke-width: 2.5; fill-opacity: .66; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 55%, transparent)); }
 .network .neuron { stroke: var(--line); stroke-width: 2; }
@@ -101,13 +100,31 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .training-controls input { width: 100%; color: var(--text); }
 .training-controls button { min-height: 2.4rem; }
 .primary-button { background: var(--accent); color: white; border-color: transparent; }
+.primary-button.stop-button { background: var(--negative); }
 .quiet-button { background: transparent; }
 .danger-button { color: #e87968; }
-.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; margin-top: .7rem; }
-.stats div { padding: .55rem; border-radius: .55rem; background: var(--panel-2); border: 1px solid var(--line); display: grid; gap: .12rem; }
-.stats span { color: var(--muted); font-size: .66rem; }
-.stats strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
-.class-counts { margin-top: .55rem; color: var(--muted); font-size: .72rem; line-height: 1.4; }
+.training-monitor { margin-top: .7rem; padding: .55rem; border: 1px solid var(--line); border-radius: .65rem; background: var(--panel-2); }
+.monitor-summary { display: grid; grid-template-columns: .7fr 1fr 1fr; gap: .75rem; }
+.monitor-summary div { display: grid; gap: .08rem; min-width: 0; }
+.monitor-summary div:nth-child(2) { text-align: center; }
+.monitor-summary div:last-child { text-align: right; }
+.monitor-summary span { color: var(--muted); font-size: .65rem; }
+.monitor-summary strong { font-size: .95rem; font-variant-numeric: tabular-nums; }
+.monitor-summary .accuracy-key { color: var(--positive); }
+.monitor-summary .loss-key { color: var(--accent-2); }
+.training-chart { display: block; width: 100%; height: 9rem; margin-top: .35rem; overflow: visible; }
+.chart-guide { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+.chart-line { fill: none; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.accuracy-line { stroke: var(--positive); }
+.loss-line { stroke: var(--accent-2); }
+.chart-point { stroke: var(--panel-2); stroke-width: 1.5; }
+.accuracy-point { fill: var(--positive); }
+.loss-point { fill: var(--accent-2); }
+.example-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .4rem; }
+.example-total { color: var(--muted); font-size: .72rem; white-space: nowrap; }
+.example-total strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.example-actions button { min-height: 2rem; padding-block: .25rem; font-size: .72rem; }
+.class-counts { margin: -.2rem 0 .55rem; color: var(--muted); font-size: .72rem; line-height: 1.4; }
 
 .examples-hint { color: var(--muted); margin: -.2rem 0 .6rem; font-size: .75rem; }
 .training-set { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: .45rem; max-height: 430px; overflow-y: auto; padding-right: .2rem; }
@@ -121,11 +138,6 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
 .empty-examples { color: var(--muted); font-size: .8rem; grid-column: 1 / -1; }
 .weight-tooltip { position: fixed; z-index: 30; max-width: min(300px, calc(100vw - 16px)); padding: .55rem .65rem; border: 1px solid var(--line); border-radius: .5rem; background: color-mix(in srgb, var(--panel) 94%, transparent); color: var(--text); box-shadow: 0 .45rem 1.4rem var(--shadow); pointer-events: none; white-space: pre-line; font-size: .75rem; line-height: 1.4; font-variant-numeric: tabular-nums; backdrop-filter: blur(8px); }
 .weight-tooltip[hidden] { display: none; }
-
-@keyframes learned-weight {
-  0% { stroke: #ffd166; opacity: 1; }
-  38% { stroke: #ffd166; opacity: .92; }
-}
 
 @media (max-width: 820px) {
   main { grid-template-columns: 1fr; }
@@ -161,8 +173,8 @@ main { width: min(1220px, 100%); margin: 0 auto; padding: .85rem; display: grid;
   .section-heading { margin-bottom: .35rem; }
   .training-controls { gap: .35rem; }
   .training-controls input, .training-controls button { min-height: 2rem; }
-  .stats { margin-top: .4rem; }
-  .stats div { padding: .35rem; }
+  .training-monitor { margin-top: .4rem; padding: .35rem; }
+  .training-chart { height: 6rem; }
   .training-set { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); max-height: 210px; }
   .example-card { padding: .3rem; }
 }

@@ -78,6 +78,28 @@ body { margin: 0; min-height: 100vh; }
 .menu-button:hover,
 .menu-button:focus-visible { color: var(--paper); background: var(--ink); }
 
+.sidebar-collapse {
+  position: fixed;
+  z-index: 12;
+  top: 50%;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 3.5rem;
+  border: 1px solid var(--rule);
+  border-left: 0;
+  border-radius: 0 .45rem .45rem 0;
+  padding: 0;
+  color: var(--muted);
+  background: var(--panel);
+  font: 700 1.25rem/1 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.sidebar-collapse:hover,
+.sidebar-collapse:focus-visible { color: var(--accent); border-color: var(--accent); }
+
 .layout { display: grid; grid-template-columns: minmax(190px, 1fr) minmax(0, 760px) minmax(80px, 1fr); gap: 4vw; padding: 3rem 5vw 7rem; }
 .sidebar { grid-column: 1; position: sticky; top: 104px; align-self: start; }
 .sidebar nav { display: flex; flex-direction: column; gap: .35rem; }
@@ -140,6 +162,27 @@ body { margin: 0; min-height: 100vh; }
 .abc-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .abc-source pre { overflow-x: auto; margin: 0; padding: 1rem; border-top: 1px solid var(--rule); background: var(--panel); }
 .abc-source code { padding: 0; background: transparent; white-space: pre; }
+.piano-score-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
+.piano-score-render { overflow-x: auto; padding: 1rem; background: var(--notation-paper); scroll-behavior: smooth; }
+.piano-score-render svg { display: block; max-width: none; height: auto; }
+.piano-score-render .piano-score-current,
+.piano-score-render .piano-score-current * { fill: var(--accent) !important; stroke: var(--accent) !important; }
+.piano-score-render .piano-score-wrong,
+.piano-score-render .piano-score-wrong * { fill: #d84a43 !important; stroke: #d84a43 !important; }
+.piano-score-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: 1rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
+.piano-score-controls button { border: 1px solid var(--notation-button-border); padding: .5rem .85rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }
+.piano-score-controls button:hover { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
+.piano-score-controls button[data-state="playing"] { border-color: var(--notation-ink); color: var(--notation-paper); background: var(--notation-ink); }
+.piano-score-midi-input { max-width: 15rem; border: 1px solid var(--notation-button-border); padding: .48rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
+.piano-score-midi-input:disabled { opacity: .55; }
+.piano-score-status { color: var(--notation-muted); font: 700 .72rem/1.3 monospace; }
+.piano-score-status.is-error { color: #d84a43; }
+.piano-score-status:empty { display: none; }
+.piano-score-error { margin: 0; color: var(--accent); font: .9rem/1.5 ui-monospace, monospace; }
+.piano-score-source { border-top: 1px solid var(--rule); }
+.piano-score-source summary { padding: .65rem .9rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.piano-score-source pre { overflow-x: auto; margin: 0; padding: 1rem; border-top: 1px solid var(--rule); background: var(--panel); }
+.piano-score-source code { padding: 0; background: transparent; white-space: pre; }
 .drum-block { margin: 1.8rem 0; border: 1px solid var(--rule); background: var(--notation-panel); }
 .drum-render { overflow-x: auto; padding: 1rem; background: var(--notation-paper); }
 .drum-render svg { display: block; max-width: 100%; height: auto; }
@@ -210,6 +253,25 @@ body { margin: 0; min-height: 100vh; }
 .drum-source code { padding: 0; background: transparent; white-space: pre; }
 :root[data-theme="dark"] .abc-render svg * { stroke: var(--notation-ink) !important; }
 :root[data-theme="dark"] .abc-render svg [fill]:not([fill="none"]) { fill: var(--notation-ink) !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stave path,
+:root[data-theme="dark"] .piano-score-render svg .vf-stem path,
+:root[data-theme="dark"] .piano-score-render svg path[fill="none"][stroke]:not([stroke="none"]) { stroke: var(--notation-ink) !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stavebarline path[fill="none"] { stroke: var(--notation-ink) !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stavebarline path:not([fill="none"]),
+:root[data-theme="dark"] .piano-score-render svg .vf-stavebarline rect,
+:root[data-theme="dark"] .piano-score-render svg .vf-stavebarline circle { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-notehead path,
+:root[data-theme="dark"] .piano-score-render svg .vf-clef path,
+:root[data-theme="dark"] .piano-score-render svg .vf-timesignature path,
+:root[data-theme="dark"] .piano-score-render svg .vf-flag path,
+:root[data-theme="dark"] .piano-score-render svg .vf-stavenote > path[stroke="none"],
+:root[data-theme="dark"] .piano-score-render svg .vf-modifiers path { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-beam path { fill: var(--notation-ink) !important; stroke: none !important; }
+:root[data-theme="dark"] .piano-score-render svg .piano-score-current .vf-stem path { fill: none !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stem.piano-score-current path { fill: none !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .piano-score-render svg .piano-score-current .vf-notehead path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-current .vf-flag path,
+:root[data-theme="dark"] .piano-score-render svg .piano-score-current > path[stroke="none"] { fill: var(--accent) !important; stroke: none !important; }
 :root[data-theme="dark"] .drum-render svg .vf-stave path,
 :root[data-theme="dark"] .drum-render svg .vf-stem path,
 :root[data-theme="dark"] .drum-render svg .vf-stavebarline path,
@@ -242,8 +304,13 @@ body { margin: 0; min-height: 100vh; }
 :root[data-theme="dark"] .drum-render svg .vf-stavenote path[fill="none"] { fill: none !important; stroke: var(--notation-ink) !important; }
 :root[data-theme="dark"] .abc-render .abc-current-note,
 :root[data-theme="dark"] .abc-render .abc-current-note *,
+:root[data-theme="dark"] .piano-score-render .piano-score-current,
+:root[data-theme="dark"] .piano-score-render .piano-score-current *,
 :root[data-theme="dark"] .drum-render .drum-current-note,
 :root[data-theme="dark"] .drum-render .drum-current-note * { fill: var(--accent) !important; stroke: var(--accent) !important; }
+:root[data-theme="dark"] .piano-score-render .piano-score-wrong,
+:root[data-theme="dark"] .piano-score-render .piano-score-wrong * { fill: #ff625c !important; stroke: #ff625c !important; }
+:root[data-theme="dark"] .piano-score-render svg .vf-stem.piano-score-wrong path { fill: none !important; stroke: #ff625c !important; }
 :root[data-theme="dark"] .drum-render svg .drum-current-note.vf-stem path { fill: none !important; stroke: var(--accent) !important; }
 :root[data-theme="dark"] .drum-render svg .vf-stem.drum-step-grace.drum-current-note path,
 :root[data-theme="dark"] .drum-render svg .drum-current-note.drum-step-grace path,
@@ -288,8 +355,29 @@ body { margin: 0; min-height: 100vh; }
 @media (max-width: 720px) {
   .site-header { height: 62px; }
   .menu-button { display: block; }
+  .sidebar-collapse { display: none; }
   .layout { display: block; padding-top: 1.6rem; }
   .sidebar { display: none; position: static; margin: 0 0 2.5rem; padding: 1rem; border: 1px solid var(--rule); background: var(--panel); }
   .sidebar.open { display: block; }
   .content h1 { font-size: clamp(2.7rem, 15vw, 4.5rem); }
+}
+
+@media (min-width: 721px) {
+  body.wide-score-page .layout {
+    grid-template-columns: minmax(190px, .45fr) minmax(0, 1200px) minmax(24px, .45fr);
+    gap: clamp(1.5rem, 3vw, 3.5rem);
+  }
+
+  body.sidebar-collapsed .layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: max(5vw, 2.5rem);
+    padding-left: max(5vw, 2.5rem);
+  }
+  body.sidebar-collapsed .sidebar { display: none; }
+  body.sidebar-collapsed .content {
+    grid-column: 1;
+    width: min(100%, 1100px);
+    margin-inline: auto;
+  }
+  body.sidebar-collapsed.wide-score-page .content { width: min(100%, 1400px); }
 }

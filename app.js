@@ -1,14 +1,17 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-velocity-slider';
+import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
 const menuButton = document.querySelector('.menu-button');
+const sidebarCollapseButton = document.querySelector('.sidebar-collapse');
 const themeToggle = document.querySelector('.theme-toggle');
 const currentPathLabel = document.querySelector('#current-path');
 let strudelReady;
 let abcBlockId = 0;
 let drumBlockId = 0;
 let cubeBlockId = 0;
+let pianoScoreBlockId = 0;
 let abcAudioContext;
 let activeAbcSynth = null;
 let activeAbcTiming = null;
@@ -38,6 +41,21 @@ let wikiSnareKitId = DEFAULT_WIKI_SNARE_KIT_ID;
 let wikiSnareSampleKit = null;
 let wikiSnareSampleKitPromise = null;
 let drumSampleWarningShown = false;
+let pianoScoreAudioContext;
+let activePianoScore = null;
+let pianoScoreMidiAccess = null;
+let pianoScoreMidiInput = null;
+let pianoScoreMidiInputId = '';
+let sidebarCollapsed = false;
+let pianoScoreResizeTimer = null;
+const pianoScoreHeldNotes = new Set();
+
+try {
+  pianoScoreMidiInputId = localStorage.getItem('piano-reading-trainer-midi-input') || '';
+  sidebarCollapsed = localStorage.getItem('personal-wiki-sidebar-collapsed') === 'true';
+} catch {
+  // MIDI preferences remain session-only when browser storage is unavailable.
+}
 
 try {
   drumMidiEnabled = localStorage.getItem('personal-wiki-drum-midi-enabled') === 'true';
@@ -73,6 +91,19 @@ function setTheme(theme) {
   themeToggle.setAttribute('title', `Switch to ${isDark ? 'light' : 'dark'} mode`);
 }
 
+function setSidebarCollapsed(collapsed) {
+  sidebarCollapsed = Boolean(collapsed);
+  document.body.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+  if (sidebarCollapseButton) {
+    sidebarCollapseButton.textContent = sidebarCollapsed ? '›' : '‹';
+    sidebarCollapseButton.setAttribute('aria-expanded', String(!sidebarCollapsed));
+    sidebarCollapseButton.setAttribute('aria-label', sidebarCollapsed ? 'Expand table of contents' : 'Collapse table of contents');
+    sidebarCollapseButton.setAttribute('title', sidebarCollapsed ? 'Expand table of contents' : 'Collapse table of contents');
+  }
+  try { localStorage.setItem('personal-wiki-sidebar-collapsed', String(sidebarCollapsed)); } catch { /* Ignore storage failures. */ }
+  if (document.querySelector('.piano-score-block')) requestAnimationFrame(renderPianoScoreBlocks);
+}
+
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 
 function parseFenceOptions(text = '') {
@@ -103,6 +134,25 @@ function inline(text) {
 }
 
 const fenceRenderers = {
+  'piano-score'(source) {
+    const encodedSource = encodeURIComponent(source);
+    const targetId = `piano-score-${pianoScoreBlockId += 1}`;
+    return `<section class="piano-score-block" data-piano-score-source="${encodedSource}" data-playing="false" data-following="false">
+      <div class="piano-score-render" id="${targetId}" aria-label="Rendered piano score"></div>
+      <div class="piano-score-controls">
+        <button class="piano-score-play" type="button" aria-label="Play this piano score">▶ Play</button>
+        <button class="piano-score-follow" type="button" aria-label="Follow this score from a MIDI keyboard">♫ Follow MIDI</button>
+        <select class="piano-score-midi-input" aria-label="Piano MIDI input" disabled>
+          <option value="">Choose MIDI input</option>
+        </select>
+        <span class="piano-score-status" role="status" aria-live="polite"></span>
+      </div>
+      <details class="piano-score-source">
+        <summary>Source</summary>
+        <pre><code>${escapeHtml(source)}</code></pre>
+      </details>
+    </section>`;
+  },
   abc(source) {
     const encodedSource = encodeURIComponent(source);
     const targetId = `abc-notation-${abcBlockId += 1}`;
@@ -121,6 +171,13 @@ const fenceRenderers = {
     const encodedSource = encodeURIComponent(source);
     const targetId = `drum-notation-${drumBlockId += 1}`;
     const tempo = source.match(/^tempo\s+([0-9.]+)/im)?.[1] || '120';
+    const requestedSwing = Number(source.match(/^swing\s+([0-9.]+)/im)?.[1] || 50);
+    const swing = Math.max(50, Math.min(83.333, Number.isFinite(requestedSwing) ? requestedSwing : 50));
+    const swingValue = String(Math.round(swing * 1000) / 1000);
+    const swingLabel = `${swing.toFixed(1).replace(/\.0$/, '')}%`;
+    const swingAria = Math.abs(swing - DRUM_TRIPLET_SWING_PERCENT) < 0.01
+      ? `${swingLabel}, triplet swing`
+      : swing === 50 ? `${swingLabel}, straight` : swingLabel;
     return `<section class="drum-block" data-drum-source="${encodedSource}" data-playing="false">
       <div class="drum-render" id="${targetId}" aria-label="Rendered drum notation"></div>
       <div class="drum-controls">
@@ -134,10 +191,10 @@ const fenceRenderers = {
         <label class="drum-swing-control" title="50% is straight, 66.7% is triplet swing, and 83.3% is the maximum delay.">
           <span>Swing</span>
           <span class="drum-swing-track">
-            <input class="drum-swing" type="range" min="50" max="83.333" step="0.001" value="50" aria-label="Drum playback swing" aria-valuetext="50%, straight">
+            <input class="drum-swing" type="range" min="50" max="83.333" step="0.001" value="${swingValue}" aria-label="Drum playback swing" aria-valuetext="${swingAria}">
             <span class="drum-swing-triplet-mark" aria-hidden="true" title="Triplet swing: 66.7%"></span>
           </span>
-          <output class="drum-swing-output">50%</output>
+          <output class="drum-swing-output">${swingLabel}</output>
         </label>
         <div class="drum-velocity-control" role="group" aria-label="Drum velocities" title="Set ghost, normal, and accented hit velocities. Moving one handle through another pushes the neighboring velocity.">
           <span>Velocity</span>
@@ -558,6 +615,384 @@ function renderAbcBlocks() {
   });
 }
 
+const pianoScoreDurationBeats = { w: 4, h: 2, q: 1, e: 0.5, s: 0.25 };
+const pianoScoreVexDurations = { w: 'w', h: 'h', q: 'q', e: '8', s: '16' };
+
+function pianoPitchToMidi(pitch) {
+  const match = String(pitch).match(/^([A-Ga-g])([#b]?)(-?\d+)$/);
+  if (!match) throw new Error(`Invalid pitch "${pitch}". Use a pitch such as C4, F#4, or Bb3.`);
+  const semitones = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  const accidental = match[2] === '#' ? 1 : match[2] === 'b' ? -1 : 0;
+  return ((Number(match[3]) + 1) * 12) + semitones[match[1].toUpperCase()] + accidental;
+}
+
+function parsePianoScoreToken(rawToken) {
+  const match = rawToken.match(/^(r|[A-Ga-g][#b]?-?\d+|\[(?:[A-Ga-g][#b]?-?\d+,?)+\]):([whqes])(\.)?$/);
+  if (!match) {
+    throw new Error(`Invalid score token "${rawToken}". Use C4:q, r:e, or [C4,E4,G4]:h.`);
+  }
+  const dotted = Boolean(match[3]);
+  const notes = match[1] === 'r'
+    ? []
+    : (match[1].startsWith('[') ? match[1].slice(1, -1).split(',') : [match[1]]).map(pianoPitchToMidi);
+  return {
+    raw: rawToken,
+    notes,
+    rest: notes.length === 0,
+    duration: match[2],
+    dotted,
+    beats: pianoScoreDurationBeats[match[2]] * (dotted ? 1.5 : 1)
+  };
+}
+
+function parsePianoScore(source) {
+  const score = { title: '', tempo: 92, meter: '4/4', clef: 'treble', measures: [], events: [] };
+  const musicLines = [];
+  let readingNotes = false;
+  String(source).replace(/\r\n?/g, '\n').split('\n').forEach((rawLine) => {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('//')) return;
+    if (readingNotes) {
+      musicLines.push(line);
+      return;
+    }
+    const directive = line.match(/^(title|tempo|meter|clef|notes)\b\s*:?[ \t]*(.*)$/i);
+    if (!directive) throw new Error(`Unknown piano-score line "${line}".`);
+    const name = directive[1].toLowerCase();
+    const value = directive[2].trim();
+    if (name === 'notes') {
+      readingNotes = true;
+      if (value) musicLines.push(value);
+    } else if (name === 'title') score.title = value;
+    else if (name === 'tempo') score.tempo = Math.max(20, Math.min(300, Number(value) || 92));
+    else if (name === 'meter') score.meter = value;
+    else if (name === 'clef') score.clef = value.toLowerCase();
+  });
+
+  const meterMatch = score.meter.match(/^(\d+)\/(1|2|4|8|16)$/);
+  if (!meterMatch) throw new Error('Meter must look like 4/4, 3/4, or 6/8.');
+  score.numBeats = Number(meterMatch[1]);
+  score.beatValue = Number(meterMatch[2]);
+  score.measureBeats = score.numBeats * (4 / score.beatValue);
+  if (!['treble', 'bass'].includes(score.clef)) throw new Error('Clef must be treble or bass.');
+
+  const normalized = musicLines.join(' ').replace(/\|\|/g, '|').trim();
+  const measureSources = normalized.split('|').map(part => part.trim()).filter(Boolean);
+  if (!measureSources.length) throw new Error('The score needs notes after the notes: directive.');
+  score.measures = measureSources.map((measureSource, measureIndex) => {
+    const events = measureSource.split(/\s+/).filter(Boolean).map(parsePianoScoreToken);
+    const beats = events.reduce((sum, scoreEvent) => sum + scoreEvent.beats, 0);
+    if (Math.abs(beats - score.measureBeats) > 0.0001) {
+      throw new Error(`Measure ${measureIndex + 1} contains ${beats} quarter-note beats; ${score.meter} needs ${score.measureBeats}.`);
+    }
+    events.forEach((scoreEvent) => {
+      scoreEvent.index = score.events.length;
+      scoreEvent.measureIndex = measureIndex;
+      score.events.push(scoreEvent);
+    });
+    return events;
+  });
+  return score;
+}
+
+function makePianoScoreVexNote(Flow, scoreEvent, clef) {
+  const duration = `${pianoScoreVexDurations[scoreEvent.duration]}${scoreEvent.dotted ? 'd' : ''}${scoreEvent.rest ? 'r' : ''}`;
+  const keys = scoreEvent.rest ? [clef === 'bass' ? 'd/3' : 'b/4'] : scoreEvent.notes.map(midiToVexKey);
+  const note = new Flow.StaveNote({ clef, keys, duration });
+  if (!scoreEvent.rest) {
+    keys.forEach((key, index) => {
+      const accidental = vexAccidentalForKey(key);
+      if (accidental) note.addModifier(new Flow.Accidental(accidental), index);
+    });
+  }
+  if (scoreEvent.dotted) Flow.Dot.buildAndAttach([note], { all: true });
+  return note;
+}
+
+function renderPianoScoreBlock(block) {
+  const target = block.querySelector('.piano-score-render');
+  if (!window.Vex?.Flow) {
+    target.innerHTML = '<p class="piano-score-error">Could not load VexFlow. Open Source below to read the score.</p>';
+    return;
+  }
+  try {
+    const Flow = window.Vex.Flow;
+    const score = parsePianoScore(decodeURIComponent(block.dataset.pianoScoreSource || ''));
+    const measuresPerSystem = 4;
+    const systemCount = Math.ceil(score.measures.length / measuresPerSystem);
+    const width = Math.max(820, target.clientWidth - 32);
+    const height = systemCount * 132 + 20;
+    target.innerHTML = '';
+    const renderer = new Flow.Renderer(target, Flow.Renderer.Backends.SVG);
+    renderer.resize(width, height);
+    const context = renderer.getContext();
+    block.pianoScoreElements = [];
+    block.pianoScore = score;
+
+    for (let system = 0; system < systemCount; system += 1) {
+      const firstMeasure = system * measuresPerSystem;
+      const count = Math.min(measuresPerSystem, score.measures.length - firstMeasure);
+      const staveWidth = (width - 28) / count;
+      for (let offset = 0; offset < count; offset += 1) {
+        const measureIndex = firstMeasure + offset;
+        const stave = new Flow.Stave(14 + offset * staveWidth, 24 + system * 132, staveWidth);
+        if (offset === 0) stave.addClef(score.clef);
+        if (measureIndex === 0) stave.addTimeSignature(score.meter);
+        stave.setContext(context).draw();
+        const scoreEvents = score.measures[measureIndex];
+        const notes = scoreEvents.map(scoreEvent => makePianoScoreVexNote(Flow, scoreEvent, score.clef));
+        const voice = new Flow.Voice({ num_beats: score.numBeats, beat_value: score.beatValue });
+        voice.addTickables(notes);
+        const beams = Flow.Beam.generateBeams(notes);
+        new Flow.Formatter().joinVoices([voice]).formatToStave([voice], stave, { align_rests: true });
+        voice.draw(context, stave);
+        beams.forEach(beam => beam.setContext(context).draw());
+        notes.forEach((note, index) => {
+          const element = note.getSVGElement?.();
+          if (element) {
+            element.classList.add('piano-score-note');
+            const stem = note.getStem?.()?.getSVGElement?.();
+            block.pianoScoreElements[scoreEvents[index].index] = stem && !element.contains(stem)
+              ? [element, stem]
+              : [element];
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    target.innerHTML = `<p class="piano-score-error">${escapeHtml(error.message || 'Could not render this score.')}</p>`;
+  }
+}
+
+function renderPianoScoreBlocks() {
+  document.querySelectorAll('.piano-score-block').forEach(renderPianoScoreBlock);
+  syncPianoScoreMidiInputs();
+}
+
+function setPianoScoreStatus(block, message = '', error = false) {
+  const status = block?.querySelector('.piano-score-status');
+  if (!status) return;
+  status.textContent = message;
+  status.classList.toggle('is-error', error);
+}
+
+function setPianoScoreButtons(block, mode = 'idle') {
+  if (!block) return;
+  const play = block.querySelector('.piano-score-play');
+  const follow = block.querySelector('.piano-score-follow');
+  block.dataset.playing = String(mode === 'playing');
+  block.dataset.following = String(mode === 'following');
+  play.textContent = mode === 'playing' ? '■ Stop' : '▶ Play';
+  follow.textContent = mode === 'following' ? '■ Stop following' : mode === 'connecting' ? 'Connecting…' : '♫ Follow MIDI';
+  play.setAttribute('aria-label', mode === 'playing' ? 'Stop this piano score' : 'Play this piano score');
+  follow.setAttribute('aria-label', mode === 'following' ? 'Stop following this piano score' : 'Follow this score from a MIDI keyboard');
+  play.dataset.state = mode === 'playing' ? 'playing' : '';
+  follow.dataset.state = mode === 'following' ? 'playing' : '';
+}
+
+function clearPianoScoreHighlight(block = document) {
+  block.querySelectorAll?.('.piano-score-current, .piano-score-wrong').forEach((element) => {
+    element.classList.remove('piano-score-current', 'piano-score-wrong');
+  });
+}
+
+function pianoScoreEventElements(value) {
+  return (Array.isArray(value) ? value : [value]).filter(Boolean);
+}
+
+function followPianoScoreElement(block, eventElements) {
+  const elements = pianoScoreEventElements(eventElements);
+  const element = elements[0];
+  if (!element) return;
+  clearPianoScoreHighlight(block);
+  elements.forEach(item => item.classList.add('piano-score-current'));
+  const scroller = block.querySelector('.piano-score-render');
+  const elementBox = element.getBoundingClientRect();
+  const scrollerBox = scroller.getBoundingClientRect();
+  const centerOffset = elementBox.left + elementBox.width / 2 - (scrollerBox.left + scrollerBox.width / 2);
+  scroller.scrollTo({ left: Math.max(0, scroller.scrollLeft + centerOffset), behavior: 'smooth' });
+
+  const headerBottom = document.querySelector('.site-header')?.getBoundingClientRect().bottom || 0;
+  const usableViewportCenter = headerBottom + ((window.innerHeight - headerBottom) / 2);
+  const noteCenter = elementBox.top + (elementBox.height / 2);
+  const verticalOffset = noteCenter - usableViewportCenter;
+  if (Math.abs(verticalOffset) > 24) {
+    window.scrollTo({ top: Math.max(0, window.scrollY + verticalOffset), behavior: 'smooth' });
+  }
+}
+
+function stopPianoScoreBlocks() {
+  if (activePianoScore) {
+    activePianoScore.timers?.forEach(clearTimeout);
+    activePianoScore.nodes?.forEach((node) => {
+      try { node.stop(); } catch { /* The node may already have ended. */ }
+    });
+  }
+  activePianoScore = null;
+  pianoScoreHeldNotes.clear();
+  clearPianoScoreHighlight(document);
+  document.querySelectorAll('.piano-score-block').forEach((block) => {
+    setPianoScoreButtons(block);
+    setPianoScoreStatus(block);
+  });
+}
+
+function schedulePianoScoreTone(context, midi, startTime, duration, nodes) {
+  const frequency = 440 * (2 ** ((midi - 69) / 12));
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.18, startTime + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(0.09, duration));
+  gain.connect(context.destination);
+  [
+    { type: 'triangle', ratio: 1, level: 1 },
+    { type: 'sine', ratio: 2, level: 0.16 }
+  ].forEach((partial) => {
+    const oscillator = context.createOscillator();
+    const partialGain = context.createGain();
+    oscillator.type = partial.type;
+    oscillator.frequency.value = frequency * partial.ratio;
+    partialGain.gain.value = partial.level;
+    oscillator.connect(partialGain).connect(gain);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + Math.max(0.1, duration) + 0.03);
+    nodes.push(oscillator);
+  });
+}
+
+async function playPianoScoreBlock(block) {
+  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextConstructor) throw new Error('This browser does not support Web Audio.');
+  if (!block.pianoScore) throw new Error('This score did not render.');
+  if (!pianoScoreAudioContext) pianoScoreAudioContext = new AudioContextConstructor();
+  if (pianoScoreAudioContext.state === 'suspended') await pianoScoreAudioContext.resume();
+  const score = block.pianoScore;
+  const secondsPerBeat = 60 / score.tempo;
+  const startTime = pianoScoreAudioContext.currentTime + 0.08;
+  const playback = { block, mode: 'playback', timers: [], nodes: [] };
+  activePianoScore = playback;
+  setPianoScoreButtons(block, 'playing');
+  let beat = 0;
+  score.events.forEach((scoreEvent) => {
+    const eventTime = startTime + beat * secondsPerBeat;
+    scoreEvent.notes.forEach(midi => schedulePianoScoreTone(
+      pianoScoreAudioContext,
+      midi,
+      eventTime,
+      Math.max(0.12, scoreEvent.beats * secondsPerBeat * 0.82),
+      playback.nodes
+    ));
+    playback.timers.push(setTimeout(() => {
+      if (activePianoScore !== playback) return;
+      followPianoScoreElement(block, block.pianoScoreElements[scoreEvent.index]);
+    }, Math.max(0, (eventTime - pianoScoreAudioContext.currentTime) * 1000)));
+    beat += scoreEvent.beats;
+  });
+  playback.timers.push(setTimeout(() => {
+    if (activePianoScore === playback) stopPianoScoreBlocks();
+  }, ((startTime - pianoScoreAudioContext.currentTime) + beat * secondsPerBeat + 0.2) * 1000));
+}
+
+function syncPianoScoreMidiInputs() {
+  const inputs = pianoScoreMidiAccess ? [...pianoScoreMidiAccess.inputs.values()] : [];
+  document.querySelectorAll('.piano-score-midi-input').forEach((select) => {
+    const selected = pianoScoreMidiInputId;
+    select.innerHTML = inputs.length
+      ? inputs.map(input => `<option value="${escapeHtml(input.id)}">${escapeHtml(input.name || 'MIDI input')}</option>`).join('')
+      : '<option value="">No MIDI inputs found</option>';
+    select.disabled = inputs.length === 0;
+    if (inputs.some(input => input.id === selected)) select.value = selected;
+    else if (inputs[0]) select.value = inputs[0].id;
+  });
+}
+
+function selectPianoScoreMidiInput(inputId) {
+  if (pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = null;
+  const inputs = pianoScoreMidiAccess ? [...pianoScoreMidiAccess.inputs.values()] : [];
+  pianoScoreMidiInput = inputs.find(input => input.id === inputId) || inputs[0] || null;
+  pianoScoreMidiInputId = pianoScoreMidiInput?.id || '';
+  if (pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = handlePianoScoreMidiMessage;
+  try { localStorage.setItem('piano-reading-trainer-midi-input', pianoScoreMidiInputId); } catch { /* Ignore storage failures. */ }
+  syncPianoScoreMidiInputs();
+}
+
+async function preparePianoScoreMidi() {
+  if (!navigator.requestMIDIAccess) throw new Error('Web MIDI is unavailable. Use Chrome or Edge on localhost or HTTPS.');
+  if (!pianoScoreMidiAccess) {
+    pianoScoreMidiAccess = await navigator.requestMIDIAccess();
+    pianoScoreMidiAccess.addEventListener?.('statechange', () => {
+      syncPianoScoreMidiInputs();
+      if (!pianoScoreMidiAccess.inputs.has(pianoScoreMidiInputId)) selectPianoScoreMidiInput('');
+    });
+  }
+  const inputs = [...pianoScoreMidiAccess.inputs.values()];
+  if (!inputs.length) throw new Error('No MIDI input is available. Connect a keyboard and try again.');
+  selectPianoScoreMidiInput(pianoScoreMidiInputId);
+  return pianoScoreMidiInput;
+}
+
+function nextPianoScorePlayableEvent(score, fromIndex) {
+  for (let index = fromIndex; index < score.events.length; index += 1) {
+    if (score.events[index].notes.length) return index;
+  }
+  return -1;
+}
+
+function updatePianoScoreFollowPrompt(follow) {
+  const scoreEvent = follow.block.pianoScore.events[follow.index];
+  followPianoScoreElement(follow.block, follow.block.pianoScoreElements[follow.index]);
+  setPianoScoreStatus(follow.block, `Play ${scoreEvent.notes.map(midiName).join(' + ')}`);
+}
+
+function handlePianoScoreMidiMessage(message) {
+  const [status, note, velocity = 0] = message.data;
+  const command = status & 0xf0;
+  if (command === 0x80 || (command === 0x90 && velocity === 0)) {
+    pianoScoreHeldNotes.delete(note);
+    return;
+  }
+  if (command !== 0x90) return;
+  pianoScoreHeldNotes.add(note);
+  const follow = activePianoScore?.mode === 'follow' ? activePianoScore : null;
+  if (!follow) return;
+  const scoreEvent = follow.block.pianoScore.events[follow.index];
+  const played = scoreEvent.notes.length === 1 ? [note] : [...pianoScoreHeldNotes];
+  if (!samePitchSet(played, scoreEvent.notes)) {
+    const elements = pianoScoreEventElements(follow.block.pianoScoreElements[follow.index]);
+    elements.forEach(element => element.classList.add('piano-score-wrong'));
+    setPianoScoreStatus(follow.block, `Try ${scoreEvent.notes.map(midiName).join(' + ')}`, true);
+    clearTimeout(follow.wrongTimer);
+    follow.wrongTimer = setTimeout(() => {
+      elements.forEach(element => element.classList.remove('piano-score-wrong'));
+      if (activePianoScore === follow) setPianoScoreStatus(follow.block, `Play ${scoreEvent.notes.map(midiName).join(' + ')}`);
+    }, 350);
+    return;
+  }
+  const next = nextPianoScorePlayableEvent(follow.block.pianoScore, follow.index + 1);
+  if (next < 0) {
+    clearPianoScoreHighlight(follow.block);
+    setPianoScoreStatus(follow.block, 'Complete');
+    activePianoScore = null;
+    setPianoScoreButtons(follow.block);
+    return;
+  }
+  follow.index = next;
+  updatePianoScoreFollowPrompt(follow);
+}
+
+async function followPianoScoreBlock(block) {
+  setPianoScoreButtons(block, 'connecting');
+  await preparePianoScoreMidi();
+  const index = nextPianoScorePlayableEvent(block.pianoScore, 0);
+  if (index < 0) throw new Error('This score has no playable notes.');
+  const follow = { block, mode: 'follow', index, timers: [], nodes: [] };
+  activePianoScore = follow;
+  pianoScoreHeldNotes.clear();
+  setPianoScoreButtons(block, 'following');
+  updatePianoScoreFollowPrompt(follow);
+}
+
 const drumRows = {
   cr: { key: 'a/5/X2' },
   wb: { key: 'g/5/X2' },
@@ -574,6 +1009,9 @@ const drumRows = {
 function parseDrumToken(rawToken) {
   if (rawToken === '.') return { hit: false, visible: false, kind: '.', accent: false, ghost: false, tremolo: 0 };
   if (rawToken === '_') return { hit: true, visible: false, kind: 'x', accent: false, ghost: true, tremolo: 0 };
+  if (rawToken === '~' || rawToken === '~>') {
+    return { hit: true, visible: false, kind: 'x', accent: rawToken.endsWith('>'), ghost: false, tremolo: 0 };
+  }
   let token = rawToken;
   let ghost = false;
   if (token.startsWith('(') && token.endsWith(')')) {
@@ -587,7 +1025,7 @@ function parseDrumToken(rawToken) {
   if (tremolo > 3) throw new Error(`Too many tremolo slashes in "${rawToken}". Use x/, x//, or x///.`);
   if (tremolo) token = token.slice(0, -tremolo);
   if (!['x', 'o', 'f', 'd'].includes(token)) {
-    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, or .`);
+    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, ~, ~>, or .`);
   }
   return { hit: true, visible: true, kind: token, accent, ghost, tremolo };
 }
@@ -597,6 +1035,7 @@ function parseDrumPattern(source) {
     meter: '4/4',
     division: 8,
     tempo: null,
+    swing: 50,
     voices: 'auto',
     sticking: null,
     rows: {}
@@ -606,11 +1045,11 @@ function parseDrumPattern(source) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) return;
 
-    const directive = trimmed.match(/^(tempo|meter|division|voices)\s+(.+)$/i);
+    const directive = trimmed.match(/^(tempo|meter|division|swing|voices)\s+(.+)$/i);
     if (directive) {
       const name = directive[1].toLowerCase();
       const value = directive[2].trim();
-      pattern[name] = name === 'division' ? Number(value) : value;
+      pattern[name] = ['division', 'swing'].includes(name) ? Number(value) : value;
       return;
     }
 
@@ -630,6 +1069,9 @@ function parseDrumPattern(source) {
   if (!lengths.length) throw new Error('Add at least one drum row such as "hh: x x x x x x x x".');
   const steps = Math.max(...lengths);
   if (![8, 12, 16, 24].includes(pattern.division)) throw new Error('Drum division must be 8, 12, 16, or 24.');
+  if (!Number.isFinite(pattern.swing) || pattern.swing < 50 || pattern.swing > 83.333) {
+    throw new Error('Drum swing must be between 50 and 83.333 percent.');
+  }
   pattern.voices = String(pattern.voices).toLowerCase();
   if (!['auto', 'single', 'split'].includes(pattern.voices)) throw new Error('Drum voices must be auto, single, or split.');
   if (steps % pattern.division !== 0) throw new Error(`Division ${pattern.division} expects a whole-bar multiple of ${pattern.division} slots.`);
@@ -760,6 +1202,7 @@ function makeDrumRestNote(duration = 8, visible = false) {
   if (!visible && typeof Flow.GhostNote === 'function') {
     const note = new Flow.GhostNote(vexDuration);
     note.isWikiGhostNote = true;
+    note.isWikiVisibleRest = false;
     return note;
   }
 
@@ -769,6 +1212,7 @@ function makeDrumRestNote(duration = 8, visible = false) {
   }
   if (!visible) rest.setStyle?.({ fillStyle: 'transparent', strokeStyle: 'transparent' });
   rest.isWikiGhostNote = true;
+  rest.isWikiVisibleRest = visible;
   return rest;
 }
 
@@ -1351,7 +1795,7 @@ function renderDrumNotation(target, pattern) {
       note.getSVGElement?.()?.classList.add('drum-hidden-playback-note');
       return;
     }
-    if (note.isWikiGhostNote) return;
+    if (note.isWikiGhostNote && !note.isWikiVisibleRest) return;
     const step = note.wikiStep;
     if (!Number.isInteger(step)) return;
     const coveredSteps = Array.from(
@@ -1411,6 +1855,7 @@ function renderDrumBlocks() {
   });
   syncDrumMidiControls();
   syncDrumSampleKitControls();
+  document.querySelectorAll('.drum-block').forEach(updateDrumSwingOutput);
   document.querySelectorAll('.drum-block').forEach(updateDrumVelocityControl);
 }
 
@@ -1597,6 +2042,7 @@ function stopDrumBlocks() {
   document.querySelectorAll('.drum-block').forEach((block) => {
     if (block.drumVelocityPrepareTimer) clearTimeout(block.drumVelocityPrepareTimer);
     block.drumVelocityPrepareTimer = null;
+    block.drumVelocityPendingProfile = null;
     block.drumVelocityPrepareVersion = (block.drumVelocityPrepareVersion || 0) + 1;
     block.drumActiveVelocityProfile = null;
     if (block.drumMidiOutput) {
@@ -1816,20 +2262,22 @@ async function prepareWikiSnareSamples(context, pattern, block) {
   }
 }
 
-function sameDrumVelocityProfile(left, right) {
-  return DRUM_VELOCITY_ROLES.every(role => Number(left?.[role]) === Number(right?.[role]));
-}
-
 function prepareLiveDrumVelocitySamples(block) {
-  if (block.drumVelocityPrepareTimer) clearTimeout(block.drumVelocityPrepareTimer);
-  block.drumVelocityPrepareTimer = null;
   if (block.dataset.playing !== 'true' || block.drumMidiOutput || !drumAudioContext || !wikiSnareSampleKit) return;
-  const requestedProfile = drumVelocityProfile(block);
-  const prepareVersion = (block.drumVelocityPrepareVersion || 0) + 1;
-  block.drumVelocityPrepareVersion = prepareVersion;
-  block.drumVelocityPrepareTimer = setTimeout(async () => {
+  block.drumVelocityPendingProfile = drumVelocityProfile(block);
+  if (block.drumVelocityPrepareTimer || block.drumVelocityPrepareInFlight) return;
+
+  const prepareNextProfile = async () => {
     block.drumVelocityPrepareTimer = null;
-    if (block.dataset.playing !== 'true' || block.drumMidiOutput || !document.body.contains(block)) return;
+    if (block.dataset.playing !== 'true' || block.drumMidiOutput || !document.body.contains(block)) {
+      block.drumVelocityPendingProfile = null;
+      return;
+    }
+    const requestedProfile = block.drumVelocityPendingProfile;
+    block.drumVelocityPendingProfile = null;
+    if (!requestedProfile) return;
+    const prepareVersion = block.drumVelocityPrepareVersion || 0;
+    block.drumVelocityPrepareInFlight = true;
     try {
       const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
       const velocities = (pattern.rows.sn || [])
@@ -1841,14 +2289,28 @@ function prepareLiveDrumVelocitySamples(block) {
         && !block.drumMidiOutput
         && document.body.contains(block)
         && block.drumVelocityPrepareVersion === prepareVersion
-        && sameDrumVelocityProfile(drumVelocityProfile(block), requestedProfile)
       ) {
         block.drumActiveVelocityProfile = requestedProfile;
       }
     } catch (error) {
       console.warn('Updated drum velocities could not be prepared.', error);
+    } finally {
+      block.drumVelocityPrepareInFlight = false;
+      if (
+        block.drumVelocityPendingProfile
+        && block.dataset.playing === 'true'
+        && !block.drumMidiOutput
+        && document.body.contains(block)
+      ) {
+        block.drumVelocityPrepareTimer = setTimeout(prepareNextProfile, 50);
+      }
     }
-  }, 0);
+  };
+
+  // Sample the newest slider position at a bounded rate. Preparation remains
+  // serialized, and playback keeps its previous fully loaded profile until the
+  // replacement is ready, avoiding transient synthesized fallback clicks.
+  block.drumVelocityPrepareTimer = setTimeout(prepareNextProfile, 50);
 }
 
 function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile) {
@@ -2058,6 +2520,48 @@ content.addEventListener('click', async (event) => {
     return;
   }
 
+  const pianoScorePlay = event.target.closest('.piano-score-play');
+  if (pianoScorePlay) {
+    const block = pianoScorePlay.closest('.piano-score-block');
+    if (block.dataset.playing === 'true') {
+      stopPianoScoreBlocks();
+      return;
+    }
+    try {
+      stopStrudelBlocks();
+      stopAbcBlocks();
+      stopDrumBlocks();
+      stopPianoScoreBlocks();
+      await playPianoScoreBlock(block);
+    } catch (error) {
+      console.error(error);
+      stopPianoScoreBlocks();
+      setPianoScoreStatus(block, error.message || 'Could not play this score.', true);
+    }
+    return;
+  }
+
+  const pianoScoreFollow = event.target.closest('.piano-score-follow');
+  if (pianoScoreFollow) {
+    const block = pianoScoreFollow.closest('.piano-score-block');
+    if (block.dataset.following === 'true') {
+      stopPianoScoreBlocks();
+      return;
+    }
+    try {
+      stopStrudelBlocks();
+      stopAbcBlocks();
+      stopDrumBlocks();
+      stopPianoScoreBlocks();
+      await followPianoScoreBlock(block);
+    } catch (error) {
+      console.error(error);
+      stopPianoScoreBlocks();
+      setPianoScoreStatus(block, error.message || 'Could not connect to MIDI.', true);
+    }
+    return;
+  }
+
   const abcButton = event.target.closest('.abc-toggle');
   if (abcButton) {
     const block = event.target.closest('.abc-block');
@@ -2072,6 +2576,7 @@ content.addEventListener('click', async (event) => {
       stopStrudelBlocks();
       stopAbcBlocks();
       stopDrumBlocks();
+      stopPianoScoreBlocks();
       setAbcButton(block, 'loading');
       await playAbcBlock(block);
     } catch (error) {
@@ -2106,6 +2611,7 @@ content.addEventListener('click', async (event) => {
       stopStrudelBlocks();
       stopAbcBlocks();
       stopDrumBlocks();
+      stopPianoScoreBlocks();
       prepareDrumButton(block);
       await playDrumBlock(block);
     } catch (error) {
@@ -2133,6 +2639,7 @@ content.addEventListener('click', async (event) => {
 
     stopAbcBlocks();
     stopDrumBlocks();
+    stopPianoScoreBlocks();
     stopStrudelBlocks();
     setStrudelButton(block, 'loading');
     const source = decodeURIComponent(block.dataset.strudelSource);
@@ -2176,6 +2683,7 @@ content.addEventListener('input', (event) => {
   const velocityInput = event.target.closest('.drum-velocity');
   if (velocityInput) {
     setDrumVelocityFromInput(velocityInput);
+    prepareLiveDrumVelocitySamples(velocityInput.closest('.drum-block'));
     return;
   }
   const swingInput = event.target.closest('.drum-swing');
@@ -2186,6 +2694,18 @@ content.addEventListener('input', (event) => {
 });
 
 content.addEventListener('change', async (event) => {
+  const pianoMidiInput = event.target.closest('.piano-score-midi-input');
+  if (pianoMidiInput) {
+    const wasFollowing = pianoMidiInput.closest('.piano-score-block')?.dataset.following === 'true';
+    selectPianoScoreMidiInput(pianoMidiInput.value);
+    if (wasFollowing) {
+      const block = pianoMidiInput.closest('.piano-score-block');
+      stopPianoScoreBlocks();
+      await followPianoScoreBlock(block);
+    }
+    return;
+  }
+
   const velocityInput = event.target.closest('.drum-velocity');
   if (velocityInput) {
     prepareLiveDrumVelocitySamples(velocityInput.closest('.drum-block'));
@@ -2275,10 +2795,12 @@ function renderCurrentPath(page) {
 
 async function loadPage() {
   const page = currentPage();
+  document.body.classList.toggle('wide-score-page', page === 'music/sheet-music');
   renderCurrentPath(page);
   stopStrudelBlocks();
   stopAbcBlocks();
   stopDrumBlocks();
+  stopPianoScoreBlocks();
   content.innerHTML = '<p class="loading">Loading…</p>';
   document.querySelectorAll('.sidebar a').forEach((link) => {
     const hrefPage = link.getAttribute('href')?.replace(/^#\//, '');
@@ -2289,6 +2811,7 @@ async function loadPage() {
     const response = await fetch(pagePath(page), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Page returned ${response.status}`);
     content.innerHTML = renderMarkdown(await response.text());
+    renderPianoScoreBlocks();
     renderAbcBlocks();
     renderDrumBlocks();
     renderCubeBlocks();
@@ -2311,15 +2834,24 @@ menuButton.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
+setSidebarCollapsed(sidebarCollapsed);
+sidebarCollapseButton?.addEventListener('click', () => setSidebarCollapsed(!sidebarCollapsed));
 setTheme(currentTheme());
 themeToggle?.addEventListener('click', () => {
   setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
 });
 window.addEventListener('hashchange', loadPage);
+window.addEventListener('resize', () => {
+  clearTimeout(pianoScoreResizeTimer);
+  pianoScoreResizeTimer = setTimeout(() => {
+    if (document.querySelector('.piano-score-block')) renderPianoScoreBlocks();
+  }, 120);
+});
 function stopPlaybackForInactivePage() {
   stopStrudelBlocks();
   stopAbcBlocks();
   stopDrumBlocks();
+  stopPianoScoreBlocks();
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) stopPlaybackForInactivePage();

@@ -10,6 +10,7 @@ Wiki notes:
 - [Grooves](#/music/grooves) — playable beats and groove theory
 - [Rhythm](#/music/rhythm) — a study map of rhythmic concepts, percussion, and technique
 - [Euclidean rhythms](#/music/euclidean-rhythms) — even-distribution rhythms and Boolean combinations
+- [Piano sheet music](#/music/sheet-music) — playable scores that can follow a MIDI keyboard note by note
 
 Standalone tools:
 

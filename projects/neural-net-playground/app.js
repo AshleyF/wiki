@@ -90,6 +90,12 @@ const trainingSetElement = document.querySelector('#training-set');
 const weightTooltip = document.querySelector('#weight-tooltip');
 const labelActions = document.querySelector('#label-actions');
 const modeSelect = document.querySelector('#recognizer-mode');
+const trainingChart = document.querySelector('#training-chart');
+const accuracyPath = document.querySelector('#accuracy-path');
+const lossPath = document.querySelector('#loss-path');
+const accuracyPoint = document.querySelector('#accuracy-point');
+const lossPoint = document.querySelector('#loss-point');
+const trainButton = document.querySelector('#train');
 let currentMode = 'shapes';
 let currentConfig;
 let examples = [];
@@ -98,6 +104,9 @@ let painting = false;
 let paintValue = 1;
 let recentWeightChanges = null;
 let trainingGeneration = 0;
+let trainingHistory = [];
+let trainingTargetEpochs = 0;
+let activeManualTraining = null;
 
 function seededRandom(seed = 0x51a9e) {
   let state = seed >>> 0;
@@ -270,24 +279,24 @@ const CONFIGS = {
     name: 'Shape recognizer network',
     labels: SHAPE_LABELS,
     layers: [25, 12, 3],
-    epochs: 600,
-    learningRate: .08,
+    epochs: 1200,
+    learningRate: .04,
     createExamples: shapeExamples
   },
   digits: {
     name: 'Digit recognizer network',
     labels: [...'0123456789'],
     layers: [25, 20, 14, 10],
-    epochs: 300,
-    learningRate: .065,
+    epochs: 600,
+    learningRate: .0325,
     createExamples: () => glyphExamples([...'0123456789'], 32, 0xd16175)
   },
   letters: {
     name: 'Letter recognizer network',
     labels: [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'],
     layers: [25, 28, 18, 26],
-    epochs: 200,
-    learningRate: .05,
+    epochs: 400,
+    learningRate: .025,
     createExamples: () => glyphExamples([...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'], 20, 0x1e77e25)
   }
 };
@@ -353,6 +362,71 @@ function train(epochs, learningRate) {
   }
 }
 
+function trainWithHistory(epochs, learningRate) {
+  const history = [{ epoch: 0, ...metrics() }];
+  for (let epoch = 1; epoch <= epochs; epoch += 1) {
+    train(1, learningRate);
+    history.push({ epoch, ...metrics() });
+  }
+  return history;
+}
+
+function nextAnimationFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+async function trainVisibly(epochs, learningRate, run, beforeSummary) {
+  const started = performance.now();
+  let completed = 0;
+  let epochsPerFrame = 1;
+  let framesAtCurrentPace = 0;
+
+  while (completed < epochs) {
+    if (run.generation !== trainingGeneration || activeManualTraining !== run) return false;
+    const batchSize = Math.min(epochsPerFrame, epochs - completed);
+    const beforeWeights = snapshotWeights();
+    train(batchSize, learningRate);
+    completed += batchSize;
+    run.completed = completed;
+    recordWeightChanges(beforeWeights);
+    const summary = updateStats(completed);
+    recordTrainingProgress(completed, summary);
+    renderPrediction();
+    statusElement.textContent = `Training ${completed} / ${epochs} epochs… · ${epochsPerFrame} per frame`;
+    await nextAnimationFrame();
+
+    framesAtCurrentPace += 1;
+    if (framesAtCurrentPace >= 24 && epochsPerFrame < 32) {
+      epochsPerFrame *= 2;
+      framesAtCurrentPace = 0;
+    }
+  }
+
+  if (run.generation !== trainingGeneration || activeManualTraining !== run) return false;
+  const afterAccuracy = metrics().accuracy;
+  save();
+  recentWeightChanges = null;
+  statusElement.textContent = `Trained ${epochs} epochs · ${formatAccuracy(beforeSummary.accuracy)} → ${formatAccuracy(afterAccuracy)} · ${Math.round(performance.now() - started)} ms`;
+  return true;
+}
+
+function setManualTrainingButton(active) {
+  trainButton.textContent = active ? 'Stop training' : 'Train network';
+  trainButton.classList.toggle('stop-button', active);
+}
+
+function stopManualTraining(announce = true) {
+  const run = activeManualTraining;
+  if (!run) return false;
+  activeManualTraining = null;
+  trainingGeneration += 1;
+  recentWeightChanges = null;
+  save();
+  setManualTrainingButton(false);
+  if (announce) statusElement.textContent = `Stopped at ${run.completed} / ${run.total} epochs.`;
+  return true;
+}
+
 function metrics() {
   let correct = 0;
   let loss = 0;
@@ -363,6 +437,54 @@ function metrics() {
     loss -= Math.log(Math.max(1e-9, output[example.y]));
   });
   return { accuracy: correct / examples.length, loss: loss / examples.length };
+}
+
+function chartCoordinates(point, maxEpoch, maxLoss) {
+  const x = 8 + (point.epoch / maxEpoch) * 304;
+  return {
+    accuracy: { x, y: 58 - point.accuracy * 50 },
+    loss: { x, y: 128 - Math.min(1, point.loss / maxLoss) * 50 }
+  };
+}
+
+function renderTrainingChart() {
+  if (!trainingHistory.length) {
+    accuracyPath.setAttribute('d', '');
+    lossPath.setAttribute('d', '');
+    accuracyPoint.setAttribute('visibility', 'hidden');
+    lossPoint.setAttribute('visibility', 'hidden');
+    return;
+  }
+
+  const maxEpoch = Math.max(1, trainingTargetEpochs, trainingHistory.at(-1).epoch);
+  const maxLoss = Math.max(1e-9, ...trainingHistory.map(point => point.loss));
+  const points = trainingHistory.map(point => chartCoordinates(point, maxEpoch, maxLoss));
+  const pathFor = key => points.map((point, index) => `${index ? 'L' : 'M'} ${point[key].x.toFixed(2)} ${point[key].y.toFixed(2)}`).join(' ');
+  accuracyPath.setAttribute('d', pathFor('accuracy'));
+  lossPath.setAttribute('d', pathFor('loss'));
+
+  const last = points.at(-1);
+  accuracyPoint.setAttribute('visibility', 'visible');
+  lossPoint.setAttribute('visibility', 'visible');
+  accuracyPoint.setAttribute('cx', last.accuracy.x);
+  accuracyPoint.setAttribute('cy', last.accuracy.y);
+  lossPoint.setAttribute('cx', last.loss.x);
+  lossPoint.setAttribute('cy', last.loss.y);
+  const summary = trainingHistory.at(-1);
+  trainingChart.setAttribute('aria-label', `Epoch ${summary.epoch}: ${(summary.accuracy * 100).toFixed(2)} percent accuracy, loss ${summary.loss.toFixed(4)}`);
+}
+
+function resetTrainingHistory(summary, targetEpochs = 0, epoch = 0) {
+  trainingTargetEpochs = targetEpochs;
+  trainingHistory = summary ? [{ epoch, accuracy: summary.accuracy, loss: summary.loss }] : [];
+  if (targetEpochs) document.querySelector('#last-epochs').textContent = String(epoch);
+  renderTrainingChart();
+}
+
+function recordTrainingProgress(epoch, summary) {
+  trainingHistory.push({ epoch, accuracy: summary.accuracy, loss: summary.loss });
+  document.querySelector('#last-epochs').textContent = String(epoch);
+  renderTrainingChart();
 }
 
 function storageKey() {
@@ -424,6 +546,10 @@ function formatProbability(value) {
   if (percent > 0 && percent < .1) return '<0.1%';
   if (percent < 10) return `${percent.toFixed(1)}%`;
   return `${Math.round(percent)}%`;
+}
+
+function formatAccuracy(value) {
+  return `${(value * 100).toFixed(2)}%`;
 }
 
 function renderBars(output) {
@@ -509,7 +635,7 @@ function renderNetwork(result = forward(gridValues)) {
       y1: positions[layerIndex][inputIndex].y,
       x2: positions[layerIndex + 1][outputIndex].x,
       y2: positions[layerIndex + 1][outputIndex].y,
-      class: `connection${change?.normalized > .16 ? ' learned' : ''}`,
+      class: 'connection',
       stroke: weight >= 0 ? 'var(--positive)' : 'var(--negative)',
       'stroke-width': (.28 + strength * 4.1).toFixed(2),
       opacity: (.04 + strength * .34 + Math.min(1, Math.abs(activity)) * .23).toFixed(2),
@@ -584,10 +710,11 @@ function renderNetwork(result = forward(gridValues)) {
 function updateStats(lastEpochs = null) {
   const summary = metrics();
   document.querySelector('#example-count').textContent = String(examples.length);
-  document.querySelector('#accuracy').textContent = `${Math.round(summary.accuracy * 100)}%`;
+  document.querySelector('#accuracy').textContent = formatAccuracy(summary.accuracy);
   document.querySelector('#loss').textContent = summary.loss.toFixed(4);
   if (lastEpochs !== null) document.querySelector('#last-epochs').textContent = String(lastEpochs);
   document.querySelector('#class-counts').textContent = currentConfig.labels.map((label, index) => `${displayLabel(label)}: ${examples.filter(example => example.y === index).length}`).join(' · ');
+  return summary;
 }
 
 function rebuildExampleFilter() {
@@ -697,17 +824,21 @@ function autoTrain(generation) {
   requestAnimationFrame(() => {
     if (generation !== trainingGeneration || mode !== currentMode) return;
     const started = performance.now();
-    const beforeAccuracy = metrics().accuracy;
-    train(epochs, rate);
-    const afterAccuracy = metrics().accuracy;
+    const history = trainWithHistory(epochs, rate);
+    const beforeSummary = history[0];
+    const afterSummary = history.at(-1);
     save();
     updateStats(epochs);
+    trainingTargetEpochs = epochs;
+    trainingHistory = history;
+    renderTrainingChart();
     renderPrediction();
-    statusElement.textContent = `Auto-trained ${epochs} epochs · ${Math.round(beforeAccuracy * 100)}% → ${Math.round(afterAccuracy * 100)}% · ${Math.round(performance.now() - started)} ms`;
+    statusElement.textContent = `Auto-trained ${epochs} epochs · ${formatAccuracy(beforeSummary.accuracy)} → ${formatAccuracy(afterSummary.accuracy)} · ${Math.round(performance.now() - started)} ms`;
   });
 }
 
 function switchMode(mode) {
+  stopManualTraining(false);
   trainingGeneration += 1;
   currentMode = CONFIGS[mode] ? mode : 'shapes';
   currentConfig = CONFIGS[currentMode];
@@ -717,7 +848,8 @@ function switchMode(mode) {
   weightTooltip.hidden = true;
   load();
   updateModeUi();
-  updateStats();
+  const summary = updateStats();
+  resetTrainingHistory(summary);
   renderPrediction();
   renderTrainingSet();
   try {
@@ -777,42 +909,49 @@ labelActions.addEventListener('click', event => {
   if (direct) addExample(direct.dataset.label);
   else if (event.target.closest('#teach-selected')) addExample(document.querySelector('#teach-label').value);
 });
-document.querySelector('#train').addEventListener('click', () => {
+trainButton.addEventListener('click', async () => {
+  if (activeManualTraining) {
+    stopManualTraining();
+    return;
+  }
   const epochs = Math.max(1, Math.min(5000, Number(document.querySelector('#epochs').value) || currentConfig.epochs));
   const rate = Math.max(.001, Math.min(1, Number(document.querySelector('#learning-rate').value) || currentConfig.learningRate));
-  const generation = trainingGeneration;
-  statusElement.textContent = 'Training…';
-  requestAnimationFrame(() => {
-    if (generation !== trainingGeneration) return;
-    const started = performance.now();
-    const beforeAccuracy = metrics().accuracy;
-    const beforeWeights = snapshotWeights();
-    train(epochs, rate);
-    recordWeightChanges(beforeWeights);
-    const afterAccuracy = metrics().accuracy;
-    save();
-    updateStats(epochs);
-    renderPrediction();
-    recentWeightChanges = null;
-    statusElement.textContent = `Trained ${epochs} epochs · ${Math.round(beforeAccuracy * 100)}% → ${Math.round(afterAccuracy * 100)}% · ${Math.round(performance.now() - started)} ms`;
-  });
+  const run = { generation: trainingGeneration, completed: 0, total: epochs };
+  activeManualTraining = run;
+  const beforeSummary = metrics();
+  resetTrainingHistory(beforeSummary, epochs);
+  setManualTrainingButton(true);
+  statusElement.textContent = `Training 0 / ${epochs} epochs…`;
+  await nextAnimationFrame();
+  try {
+    await trainVisibly(epochs, rate, run, beforeSummary);
+  } finally {
+    if (activeManualTraining === run) {
+      activeManualTraining = null;
+      setManualTrainingButton(false);
+    }
+  }
 });
 document.querySelector('#randomize-weights').addEventListener('click', () => {
+  stopManualTraining(false);
   model = freshModel();
   recentWeightChanges = null;
   save();
-  updateStats();
+  const summary = updateStats();
+  resetTrainingHistory(summary);
   document.querySelector('#last-epochs').textContent = '—';
   renderPrediction();
   statusElement.textContent = 'Weights randomized · ready to train.';
 });
 document.querySelector('#reset-all').addEventListener('click', () => {
   if (!window.confirm(`Remove your ${currentConfig.name.toLowerCase()} examples and restore its starter training set?`)) return;
+  stopManualTraining(false);
   examples = currentConfig.createExamples();
   model = freshModel();
   train(currentConfig.epochs, currentConfig.learningRate);
   save();
-  updateStats(currentConfig.epochs);
+  const summary = updateStats(currentConfig.epochs);
+  resetTrainingHistory(summary, currentConfig.epochs, currentConfig.epochs);
   renderTrainingSet();
   setGrid(new Array(INPUTS).fill(0));
   statusElement.textContent = 'Starter examples restored and trained.';
