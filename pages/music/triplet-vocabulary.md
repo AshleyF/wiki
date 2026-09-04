@@ -2,6 +2,8 @@
 
 These nine two-triplet melodies come from the vocabulary approach taught by [JP Bouvet Method](https://jpbouvetmethod.com/). `A` and `B` are abstract roles rather than fixed limbs or instruments. An `A` can be assigned to a hand, foot, voice, or orchestration; `B` fills the remaining subdivisions.
 
+[Open the Triplet Vocabulary Trainer](projects/triplet-vocabulary-trainer/) to arrange any three core melodies into a loop or practice an automatically changing sequence with one-melody look-ahead.
+
 In these first practice loops, every `A` is an ordinary snare stroke and every `B` is heard as a quiet ghost stroke. A playback-only pedal hi-hat marks every quarter-note beat with a strong foot chick. The staff prints only the reduced `A` melody, using longer notes and the minimum necessary rests instead of displaying either background layer. Because every printed note has the same role, none receives a redundant accent mark. Each six-subdivision melody is written twice to fill one bar of 4/4. The source uses `_` for audible-but-unprinted ghost strokes and `~>` for the strong audible-but-unprinted timekeeper.
 
 ## Melody 1 — A B B · A B B

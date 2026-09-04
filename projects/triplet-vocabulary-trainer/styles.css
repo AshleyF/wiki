@@ -1,0 +1,21 @@
+body { min-width: 300px; background: radial-gradient(circle at 8% -15%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 32rem), var(--paper); }
+.app-header { display: flex; align-items: center; justify-content: space-between; max-width: 1250px; margin: 0 auto; padding: 1rem clamp(.7rem, 3vw, 2rem) .55rem; }
+h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
+main { display: grid; gap: .8rem; max-width: 1250px; margin: 0 auto; padding: 0 clamp(.7rem, 3vw, 2rem) 2rem; }
+.panel { border: 1px solid var(--rule); background: var(--notation-panel); }
+.controls.drum-controls { border-top: 1px solid var(--rule); background: var(--notation-paper); }
+.controls .auto-control { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
+.controls .auto-control input { accent-color: var(--accent); }
+.status:empty { display: none; }
+.sound-control .drum-kit-select { width: 12rem; max-width: 12rem; }
+.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.melody-card { overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.melody-card.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .55rem .65rem; background: var(--notation-paper); }
+.melody-card header label { display: flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.melody-card header select { min-height: 2.2rem; min-width: 7.5rem; border: 1px solid var(--notation-button-border); padding: .4rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
+.notation { min-height: 150px; }
+.notation svg { min-width: 290px; }
+@media (max-width: 850px) { .phrase { grid-template-columns: 1fr; } .notation { min-height: 132px; } .notation svg { width: 100%; min-width: 0; } }
+@media (max-width: 560px) { .app-header { padding-top: max(.65rem, env(safe-area-inset-top)); padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

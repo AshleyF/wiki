@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Build and loop three-part phrases from JP Bouvet's nine core triplet melodies.">
+    <title>Triplet Vocabulary Trainer</title>
+    <script>
+      (() => {
+        let theme = 'dark';
+        try { theme = localStorage.getItem('personal-wiki-theme') === 'light' ? 'light' : 'dark'; } catch (error) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="stylesheet" href="../../styles.css?v=20260903-compact-velocity">
+    <link rel="stylesheet" href="styles.css?v=20260903-4">
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Triplet Vocabulary Trainer</h1>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" title="Switch theme">☀</button>
+    </header>
+    <main>
+      <section class="controls drum-controls panel" aria-label="Trainer controls">
+        <button id="play" class="drum-toggle" type="button">▶ Play</button>
+        <button id="randomize" type="button">Shuffle</button>
+        <label class="auto-control" title="Shuffle the melody two positions ahead after each melody finishes."><input id="auto-randomize" type="checkbox"> <span>Auto</span></label>
+        <label class="tempo-control drum-tempo-control">
+          <span>Tempo</span>
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
+          <input id="tempo" class="drum-tempo" type="number" min="20" max="400" step="1" value="100" aria-label="Playback tempo">
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
+        </label>
+        <div class="velocity-control drum-velocity-control" role="group" aria-label="Drum velocities" title="Ghost, normal, and accent velocity">
+          <span>Velocity</span>
+          <span class="velocity-track drum-velocity-track">
+            <span class="velocity-rail drum-velocity-rail" aria-hidden="true"></span>
+            <input class="velocity velocity-ghost drum-velocity drum-velocity-ghost" data-velocity-role="ghost" type="range" min="1" max="127" step="1" value="16" aria-label="Ghost-note velocity" title="Ghost: 16">
+            <input class="velocity velocity-normal drum-velocity drum-velocity-normal" data-velocity-role="normal" type="range" min="1" max="127" step="1" value="64" aria-label="Normal-note velocity" title="Normal: 64">
+            <input class="velocity velocity-accent drum-velocity drum-velocity-accent" data-velocity-role="accent" type="range" min="1" max="127" step="1" value="111" aria-label="Accent velocity" title="Accent: 111">
+          </span>
+        </div>
+        <label class="midi-control drum-midi-control"><input id="midi-enabled" type="checkbox"> <span>MIDI</span></label>
+        <select id="midi-output" class="drum-midi-output" aria-label="MIDI output" disabled><option value="">MIDI off</option></select>
+        <label class="sound-control drum-kit-control"><span>Sound</span><select id="sound" class="drum-kit-select" aria-label="Snare or practice-pad sound" disabled><option value="">Loading…</option></select></label>
+        <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
+      </section>
+      <section class="phrase" aria-label="Rolling triplet phrase">
+        <article class="melody-card panel" data-slot="0"><header><label>Melody <select aria-label="First melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="1"><header><label>Melody <select aria-label="Second melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="2"><header><label>Melody <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
+      </section>
+    </main>
+    <script type="module" src="app.js?v=20260903-6"></script>
+  </body>
+</html>

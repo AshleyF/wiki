@@ -26,6 +26,7 @@
 - [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) — combine Euclidean generators into playable tracks
 - [Piano Reading Trainer](projects/piano/) — beginner sight-reading drills with MIDI input and a moving cursor
 - [Piano Flashcards](projects/piano-flashcards/) — endless letter, grand-staff, and ear-training note drills with on-screen or MIDI input
+- [Triplet Vocabulary Trainer](projects/triplet-vocabulary-trainer/) — combine any three core triplet melodies or practice a rolling shuffled sequence
 
 ## Strudel
 
