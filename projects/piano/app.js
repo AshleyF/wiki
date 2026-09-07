@@ -1,4 +1,5 @@
 import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './trainer-core.js?v=20260827-accidentals-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 
 const MIDI_INPUT_KEY = 'piano-reading-trainer-midi-input';
 
@@ -448,7 +449,7 @@ async function playKeyboardNote(midi) {
   envelope.gain.exponentialRampToValueAtTime(0.22, now + 0.008);
   envelope.gain.exponentialRampToValueAtTime(0.075, now + 0.16);
   envelope.gain.exponentialRampToValueAtTime(0.0001, now + 1.15);
-  envelope.connect(keyboardAudioContext.destination);
+  envelope.connect(boostedAudioOutput(keyboardAudioContext));
 
   [
     ['triangle', 1, 0.68],

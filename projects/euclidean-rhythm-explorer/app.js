@@ -7,6 +7,7 @@ import {
   snapRangeValue,
   trackTimingOffsetSeconds
 } from './euclidean-core.js';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 import { INSTRUMENTS, instrumentGroups } from './instrument-catalog.js';
 
 const STORAGE_KEY = 'euclidean-rhythm-explorer-state-v2';
@@ -751,7 +752,7 @@ async function start() {
   await audioContext.resume();
   if (!masterGain) {
     masterGain = audioContext.createGain();
-    masterGain.connect(audioContext.destination);
+    masterGain.connect(boostedAudioOutput(audioContext));
   }
   masterGain.gain.setValueAtTime(state.muted ? 0 : .72, audioContext.currentTime);
   playing = true;

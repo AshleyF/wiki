@@ -13,19 +13,27 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260903-compact-velocity">
-    <link rel="stylesheet" href="styles.css?v=20260903-4">
+    <link rel="stylesheet" href="styles.css?v=20260906-display-options">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
     <header class="app-header">
       <h1>Triplet Vocabulary Trainer</h1>
-      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" title="Switch theme">☀</button>
+      <div class="header-actions" aria-label="Display options">
+        <label class="view-option" title="Show the triplet count beneath each printed note"><input id="show-counting" type="checkbox" checked> <span>Count</span></label>
+        <label class="view-option" title="Highlight each written note or rest as it plays"><input id="follow-highlighting" type="checkbox" checked> <span>Follow</span></label>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" title="Switch theme">☀</button>
+      </div>
     </header>
     <main>
+      <section class="melody-filter panel" aria-label="Melodies available to the trainer">
+        <span class="melody-filter-label">Melodies</span>
+        <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
+      </section>
       <section class="controls drum-controls panel" aria-label="Trainer controls">
         <button id="play" class="drum-toggle" type="button">▶ Play</button>
         <button id="randomize" type="button">Shuffle</button>
-        <label class="auto-control" title="Shuffle the melody two positions ahead after each melody finishes."><input id="auto-randomize" type="checkbox"> <span>Auto</span></label>
+        <label class="auto-control" title="Shuffle the melody two positions ahead after each melody finishes."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
         <label class="tempo-control drum-tempo-control">
           <span>Tempo</span>
           <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
@@ -52,6 +60,6 @@
         <article class="melody-card panel" data-slot="2"><header><label>Melody <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260903-6"></script>
+    <script type="module" src="app.js?v=20260906-display-options"></script>
   </body>
 </html>

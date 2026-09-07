@@ -59,6 +59,8 @@ The long-term idea is broader than music. Future fences might describe drawing g
 
 Third-party browser dependencies are acceptable when they unlock an interactive language, but they should be pinned to a version and documented. Consider whether a dependency should eventually be vendored for offline use and deterministic deployment.
 
+Browser-generated audio shared by the wiki and standalone projects should route through `projects/shared/audio-output.js`. Its moderate gain lift and compressor make the site's deliberately conservative synth and sample levels easier to hear while containing overlapping peaks. Preserve musical velocity differences upstream of that output stage, and do not apply the browser-audio boost to MIDI velocities.
+
 ## Repository map
 
 ```text
@@ -306,7 +308,7 @@ The flashcard app shares the existing theme storage key and VexFlow version but 
 
 Do not copy the reduced-triplet spelling or SVG stem-mapping logic into this project. `projects/rhythm-explorer/drum-notation-core.js` is shared by the wiki renderer and trainer and owns those rules, including the special `B-A-B` bracket extension and detached VexFlow stem discovery. The trainer also loads the wiki's root `styles.css` and uses its `drum-*` control and notation classes; its local stylesheet should contain only standalone page layout. Run `node --test projects/rhythm-explorer/drum-notation-core.test.mjs` when changing the shared rules.
 
-The compact `Auto` control is a three-slot rolling shuffle. On each melody boundary, the slot just completed becomes the far-future slot and may be shuffled; the active slot and the immediately following slot must never change underneath the player. A manual Shuffle request made during playback waits for the end of the complete three-melody loop. Built-in playback populates its Sound selector from the shared drum-sample manifest and shares the wiki's `personal-wiki-drum-snare-kit` preference; Ludwig Black Beauty is only the fallback default. MIDI output uses percussion channel 10 with center snare note 38 and pedal hi-hat note 44.
+The compact `Auto` control is a three-slot rolling shuffle and defaults on for a first-time visitor. On each melody boundary, the slot just completed becomes the far-future slot and may be shuffled; the active slot and the immediately following slot must never change underneath the player. A manual Shuffle request made during playback waits for the end of the complete three-melody loop. The always-visible Melodies row defines the available vocabulary for both selector menus and every shuffle path, persists locally, and must never allow an empty set. Printed A-note onsets carry the conventional compact triplet counts `1 & a 2 & a`; hidden B events do not print count labels. The persistent Count checkbox controls those annotations. The persistent Follow checkbox controls only the moving note/rest cursor and must use the same shared stem discovery and root `.drum-current-note` styling as wiki drum blocks, including dark-mode behavior; disabling it clears any current cursor immediately. Built-in playback populates its Sound selector from the shared drum-sample manifest and shares the wiki's `personal-wiki-drum-snare-kit` preference; Ludwig Black Beauty is only the fallback default. MIDI output uses percussion channel 10 with center snare note 38 and pedal hi-hat note 44.
 
 ## Euclidean Rhythm Explorer architecture
 

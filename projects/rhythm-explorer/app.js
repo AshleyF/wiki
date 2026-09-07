@@ -1,4 +1,5 @@
 import { compileRhythmSource, serializeRhythmPattern } from './rhythm-language.js';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -1532,7 +1533,7 @@ function ensureAudio() {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     masterGain = audioContext.createGain();
-    masterGain.connect(audioContext.destination);
+    masterGain.connect(boostedAudioOutput(audioContext));
     noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i += 1) data[i] = Math.random() * 2 - 1;

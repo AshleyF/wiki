@@ -1,5 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -11,9 +12,16 @@ const cards = [...document.querySelectorAll('.melody-card')];
 const selectors = cards.map(card => card.querySelector('select'));
 const sampleLibrary = new DrumSampleLibrary('../rhythm-explorer/assets/drums/library.json');
 const DEFAULT_SAMPLE_KIT_ID = 'ludwig-black-beauty-snare-center';
+const ENABLED_MELODIES_KEY = 'triplet-vocabulary-enabled-melodies';
+const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
+const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
+const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
+const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
+const TRIPLET_COUNTS = ['1', '&', 'a', '2', '&', 'a'];
 let sampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
+let enabledMelodies = loadEnabledMelodies();
 let audioContext = null;
 let midiAccess = null;
 let midiOutput = null;
@@ -28,11 +36,82 @@ const scheduledSources = new Set();
 const visualTimers = new Set();
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
+function loadEnabledMelodies() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ENABLED_MELODIES_KEY) || 'null');
+    const valid = Array.isArray(saved)
+      ? saved.filter(index => Number.isInteger(index) && index >= 0 && index < MELODIES.length)
+      : [];
+    if (valid.length) return new Set(valid);
+  } catch {}
+  return new Set(ALL_MELODY_INDEXES);
+}
+function saveEnabledMelodies() {
+  try { localStorage.setItem(ENABLED_MELODIES_KEY, JSON.stringify(enabledMelodyIndexes())); } catch {}
+}
+function enabledMelodyIndexes() { return ALL_MELODY_INDEXES.filter(index => enabledMelodies.has(index)); }
+function populateSelector(select, preferredIndex) {
+  const choices = enabledMelodyIndexes();
+  const selected = enabledMelodies.has(preferredIndex) ? preferredIndex : choices[0];
+  select.replaceChildren(...choices.map(index => new Option(melodyLabel(index), String(index))));
+  select.value = String(selected);
+}
 function initializeSelectors() {
   selectors.forEach((select, slot) => {
-    MELODIES.forEach((_, index) => select.add(new Option(melodyLabel(index), String(index))));
-    select.value = String(slot);
+    populateSelector(select, enabledMelodies.has(slot) ? slot : enabledMelodyIndexes()[slot % enabledMelodies.size]);
   });
+}
+function initializeMelodyFilter() {
+  const container = $('#melody-filter-options');
+  container.replaceChildren(...ALL_MELODY_INDEXES.map(index => {
+    const label = document.createElement('label');
+    label.title = melodyLabel(index);
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = String(index);
+    input.checked = enabledMelodies.has(index);
+    input.setAttribute('aria-label', `Include melody ${melodyLabel(index)}`);
+    const text = document.createElement('span');
+    text.textContent = melodyLabel(index);
+    label.append(input, text);
+    return label;
+  }));
+  container.addEventListener('change', event => {
+    const input = event.target.closest('input[type="checkbox"]');
+    if (!input) return;
+    const index = Number(input.value);
+    if (!input.checked && enabledMelodies.size === 1) {
+      input.checked = true;
+      setStatus('Keep at least one melody enabled.');
+      return;
+    }
+    if (playing) stop();
+    if (input.checked) enabledMelodies.add(index); else enabledMelodies.delete(index);
+    saveEnabledMelodies();
+    selectors.forEach(select => populateSelector(select, Number(select.value)));
+    renderAll();
+    setStatus('');
+  });
+}
+function initializeAutoShuffle() {
+  try {
+    const saved = localStorage.getItem(AUTO_SHUFFLE_KEY);
+    $('#auto-randomize').checked = saved === null ? true : saved === 'true';
+  } catch {
+    $('#auto-randomize').checked = true;
+  }
+}
+function loadBooleanPreference(key, fallback = true) {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved === null ? fallback : saved === 'true';
+  } catch {
+    return fallback;
+  }
+}
+function initializeDisplayOptions() {
+  $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY);
+  $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
 }
 function selectedMelody(slot) { return MELODIES[Number(selectors[slot].value)] || MELODIES[0]; }
 function setStatus(message) { $('#status').textContent = message; }
@@ -87,6 +166,14 @@ function renderCard(slot) {
         duration:`${event.duration}${event.rest ? 'r' : ''}`,
         stem_direction:1
       });
+      if ($('#show-counting').checked && !event.rest && typeof VF.Annotation === 'function') {
+        note.addModifier(
+          new VF.Annotation(TRIPLET_COUNTS[groupStart + event.step])
+            .setFont('Arial', 9, 'normal')
+            .setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM),
+          0
+        );
+      }
       note.trainerEvent = event;
       note.trainerStep = groupStart + event.step;
       notes.push(note);
@@ -134,9 +221,9 @@ function updatePositions(slot) {
   });
 }
 function randomMelody(except = -1) {
-  let index = Math.floor(Math.random() * MELODIES.length);
-  if (MELODIES.length > 1 && index === except) index = (index + 1 + Math.floor(Math.random() * (MELODIES.length - 1))) % MELODIES.length;
-  return index;
+  const enabled = enabledMelodyIndexes();
+  const choices = enabled.length > 1 ? enabled.filter(index => index !== except) : enabled;
+  return choices[Math.floor(Math.random() * choices.length)];
 }
 function randomizeAll() {
   selectors.forEach((select, slot) => { select.value = String(randomMelody(Number(select.value))); renderCard(slot); });
@@ -168,7 +255,7 @@ function scheduleFallbackSnare(time, velocity) {
   const gain = audioContext.createGain();
   source.buffer = buffer; filter.type = 'highpass'; filter.frequency.value = 1100;
   gain.gain.setValueAtTime(Math.max(.015, velocity/127*.32), time);
-  source.connect(filter).connect(gain).connect(audioContext.destination); source.start(time);
+  source.connect(filter).connect(gain).connect(boostedAudioOutput(audioContext)); source.start(time);
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
 }
 function scheduleHat(time, velocity) {
@@ -183,13 +270,13 @@ function scheduleHat(time, velocity) {
   source.buffer = buffer; filter.type = 'highpass'; filter.frequency.value = 6500;
   gain.gain.setValueAtTime(Math.max(.008, velocity/82*.18),time);
   gain.gain.exponentialRampToValueAtTime(.001,time+.055);
-  source.connect(filter).connect(gain).connect(audioContext.destination); source.start(time); source.stop(time+.055);
+  source.connect(filter).connect(gain).connect(boostedAudioOutput(audioContext)); source.start(time); source.stop(time+.055);
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
 }
 function scheduleSnare(time, velocity) {
   if (midiOutput) scheduleMidi(38, velocity, time);
   else {
-    const source = sampleKit?.schedule(audioContext, { velocity, time });
+    const source = sampleKit?.schedule(audioContext, { velocity, time, destination: boostedAudioOutput(audioContext) });
     if (source) {
       scheduledSources.add(source);
       source.onended = () => scheduledSources.delete(source);
@@ -202,7 +289,9 @@ function showStep(slot, step, time) {
     visualTimers.delete(timer);
     cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
     updatePositions(slot);
-    cards[slot].stepElements?.[step]?.forEach(element => element.classList.add('drum-current-note'));
+    if ($('#follow-highlighting').checked) {
+      cards[slot].stepElements?.[step]?.forEach(element => element.classList.add('drum-current-note'));
+    }
   }, delay);
   visualTimers.add(timer);
 }
@@ -308,10 +397,23 @@ async function prepareChangedVelocities() {
     setStatus('');
   } catch { setStatus('Velocity samples unavailable'); }
 }
-initializeSelectors(); renderAll();
+initializeMelodyFilter(); initializeAutoShuffle(); initializeDisplayOptions(); initializeSelectors(); renderAll();
 selectors.forEach((select,slot) => select.addEventListener('change', () => renderCard(slot)));
 $('#play').addEventListener('click', start);
 $('#randomize').addEventListener('click', requestRandomize);
+$('#auto-randomize').addEventListener('change', event => {
+  try { localStorage.setItem(AUTO_SHUFFLE_KEY, String(event.target.checked)); } catch {}
+});
+$('#show-counting').addEventListener('change', event => {
+  try { localStorage.setItem(SHOW_COUNTING_KEY, String(event.target.checked)); } catch {}
+  renderAll();
+});
+$('#follow-highlighting').addEventListener('change', event => {
+  try { localStorage.setItem(FOLLOW_HIGHLIGHTING_KEY, String(event.target.checked)); } catch {}
+  if (!event.target.checked) {
+    cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  }
+});
 document.querySelectorAll('.tempo-step').forEach(button => button.addEventListener('click', () => {
   $('#tempo').value = String(Math.max(20, Math.min(400, (Number($('#tempo').value) || 100) + Number(button.dataset.tempoStep))));
 }));

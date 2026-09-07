@@ -1,5 +1,6 @@
 import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-3';
 import { midiName, midiToVexKey, vexAccidentalForKey } from '../piano/trainer-core.js?v=20260827-accidentals-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;
@@ -232,7 +233,7 @@ async function synthesizeNote(note, duration = 700) {
   envelope.gain.exponentialRampToValueAtTime(0.24, now + 0.008);
   envelope.gain.exponentialRampToValueAtTime(0.075, now + Math.min(0.18, seconds * 0.35));
   envelope.gain.exponentialRampToValueAtTime(0.0001, now + seconds);
-  envelope.connect(audioContext.destination);
+  envelope.connect(boostedAudioOutput(audioContext));
 
   [['triangle', 1, 0.7], ['sine', 2, 0.21], ['sine', 3, 0.09]].forEach(([type, multiple, level]) => {
     const oscillator = audioContext.createOscillator();

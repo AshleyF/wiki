@@ -1,6 +1,7 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-velocity-slider';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote } from './projects/rhythm-explorer/drum-notation-core.js?v=20260903-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
+import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260904-1';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
@@ -917,7 +918,7 @@ function schedulePianoScoreTone(context, midi, startTime, duration, nodes) {
   gain.gain.setValueAtTime(0.0001, startTime);
   gain.gain.exponentialRampToValueAtTime(0.18, startTime + 0.012);
   gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(0.09, duration));
-  gain.connect(context.destination);
+  gain.connect(boostedAudioOutput(context));
   [
     { type: 'triangle', ratio: 1, level: 1 },
     { type: 'sine', ratio: 2, level: 0.16 }
@@ -2170,13 +2171,14 @@ function oppositeDrumSticking(sticking) {
 }
 
 function connectDrumOutput(context, node, pan = 0) {
+  const output = boostedAudioOutput(context);
   if (pan && typeof context.createStereoPanner === 'function') {
     const panner = context.createStereoPanner();
     panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), context.currentTime);
-    node.connect(panner).connect(context.destination);
+    node.connect(panner).connect(output);
     return;
   }
-  node.connect(context.destination);
+  node.connect(output);
 }
 
 function highlightDrumStep(block, step) {
@@ -2246,7 +2248,8 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
     const sampleSource = wikiSnareSampleKit?.schedule(context, {
       velocity,
       time,
-      pan
+      pan,
+      destination: boostedAudioOutput(context)
     });
     if (sampleSource) {
       trackDrumNode(sampleSource);
