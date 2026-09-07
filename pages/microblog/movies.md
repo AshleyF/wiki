@@ -1,5 +1,9 @@
 # Movies
 
+## Margin Call (04 SEP 2026)
+
+I didn't realize the moving was about the 2008 financial crisis until a third of the way in. It's very cryptic. A guy gets fired. You don't know who he is, or why. People start freaking out late one night about some numbers in a spreadsheet or some financial modeling program and you don't know what they're talking about. There's all kinds of drama around it and politics between people who you don't know. Very weird. When it's finally clear, they still keep other random facts hidden from the audience. It's as if the director confused crypticness for "suspense" or "mystery." It's not something for the audiance to unravel, but simply information being witheld. It does keep you watching to find out, but for the wrong reason. Still, I think it was decent. It was interesting. It had a lot of famous people in it and good acting. Just the storytelling was an odd delivery. In the end, I think it represented Leman Brothers, which went completely bankrumpt and no longer exists after the crisis.
+
 ## Eva (23 AUG 2026)
 
 A La Femm Nakita kind of thing with our favorite red-head actress. Lots of action and blood. Pretty predictible and we actually spent it only half-watching while in our phones and me giving Tracey a food massage.
