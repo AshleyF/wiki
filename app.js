@@ -14,6 +14,7 @@ let abcBlockId = 0;
 let drumBlockId = 0;
 let cubeBlockId = 0;
 let pianoScoreBlockId = 0;
+let tripletGridTestBlockId = 0;
 let abcAudioContext;
 let activeAbcSynth = null;
 let activeAbcTiming = null;
@@ -250,6 +251,13 @@ const fenceRenderers = {
         <summary>Source</summary>
         <pre><code>${escapeHtml(source)}</code></pre>
       </details>
+    </section>`;
+  },
+  'triplet-grid-test'(source) {
+    const masks = source.trim().split(/\s+/).filter((mask) => /^[01]{3}$/.test(mask));
+    const encodedMasks = encodeURIComponent((masks.length ? masks : Object.keys(DRUM_HIDDEN_TRIPLET_SPELLINGS)).join(' '));
+    return `<section class="triplet-grid-test" data-triplet-masks="${encodedMasks}" id="triplet-grid-test-${tripletGridTestBlockId += 1}">
+      <div class="triplet-grid-test-cells" aria-label="All eight triplet combinations"></div>
     </section>`;
   },
   'cube-cmll'(source, language, optionText) {
@@ -1943,6 +1951,111 @@ function renderDrumBlocks() {
   document.querySelectorAll('.drum-block').forEach(updateDrumVelocityControl);
 }
 
+function appendFixedTripletBracket(svg, left, right, y) {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const group = document.createElementNS(namespace,'g');
+  group.classList.add('triplet-grid-test-bracket');
+  const center = (left+right)/2;
+  const gap = 18;
+  const path = document.createElementNS(namespace,'path');
+  path.setAttribute('d',`M${left} ${y+7}V${y}H${center-gap/2} M${center+gap/2} ${y}H${right}V${y+7}`);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','currentColor');
+  path.setAttribute('stroke-width','1');
+  const number = document.createElementNS(namespace,'text');
+  number.setAttribute('x',String(center));
+  number.setAttribute('y',String(y+4));
+  number.setAttribute('text-anchor','middle');
+  number.setAttribute('font-family','Arial, sans-serif');
+  number.setAttribute('font-size','12');
+  number.textContent = '3';
+  group.append(path,number);
+  svg.append(group);
+}
+
+function appendFixedTripletNumber(svg, x, y) {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const number = document.createElementNS(namespace,'text');
+  number.classList.add('triplet-grid-test-number');
+  number.setAttribute('x',String(x));
+  number.setAttribute('y',String(y));
+  number.setAttribute('text-anchor','middle');
+  number.setAttribute('font-family','Arial, sans-serif');
+  number.setAttribute('font-size','12');
+  number.textContent = '3';
+  svg.append(number);
+}
+
+function renderTripletGridTestCell(target, mask) {
+  const Flow = window.Vex.Flow;
+  const width = 176;
+  const height = 118;
+  const renderer = new Flow.Renderer(target,Flow.Renderer.Backends.SVG);
+  renderer.resize(width,height);
+  const context = renderer.getContext();
+  const stave = new Flow.Stave(4,30,width-8);
+  stave.setContext(context).draw();
+  const bracketLeft = 14;
+  const bracketRight = 162;
+  const bracketY = 39;
+  const slotWidth = (bracketRight-bracketLeft)/3;
+  const slotCenters = Array.from({ length:3 },(_,index) => bracketLeft+((index+.5)*slotWidth));
+  const spelling = DRUM_HIDDEN_TRIPLET_SPELLINGS[mask];
+  const notes = spelling.events.map((event) => {
+    const note = new Flow.StaveNote({
+      clef:'percussion',
+      keys:[event.rest ? 'b/4' : 'c/5'],
+      duration:`${event.duration}${event.rest ? 'r' : ''}`,
+      stem_direction:Flow.StaveNote.STEM_UP
+    });
+    note.setStave(stave).setContext(context);
+    const tickContext = new Flow.TickContext();
+    // VexFlow's glyph origin sits to the left of the visible notehead/rest.
+    // Compensate for that pinned 4.2.2 origin so each visible glyph is centered
+    // in its exact third of this deliberately fixed test cell.
+    const glyphCenterOffset = event.rest
+      ? (event.duration === '4' ? 26.475 : 25.998)
+      : 26.967;
+    tickContext.addTickable(note).preFormat().setX(slotCenters[event.step]-glyphCenterOffset);
+    note.setTickContext(tickContext);
+    note.tripletGridEvent = event;
+    return note;
+  });
+  const beamable = notes.filter((note) => !note.tripletGridEvent.rest && note.tripletGridEvent.duration === '8');
+  // Attach the beam before drawing the notes so VexFlow suppresses the
+  // individual eighth-note flags instead of drawing both forms at once.
+  const beam = beamable.length > 1 ? new Flow.Beam(beamable) : null;
+  notes.forEach((note) => note.draw());
+  beam?.setContext(context).draw();
+  const svg = target.querySelector('svg');
+  if (mask === '111') appendFixedTripletNumber(svg,(bracketLeft+bracketRight)/2,bracketY+4);
+  else if (spelling.tuplet) appendFixedTripletBracket(svg,bracketLeft,bracketRight,bracketY);
+}
+
+function renderTripletGridTestBlocks() {
+  document.querySelectorAll('.triplet-grid-test').forEach((block) => {
+    const masks = decodeURIComponent(block.dataset.tripletMasks || '').split(/\s+/).filter(Boolean);
+    const cells = block.querySelector('.triplet-grid-test-cells');
+    cells.replaceChildren();
+    masks.forEach((mask) => {
+      const cell = document.createElement('figure');
+      cell.className = 'triplet-grid-test-cell';
+      const notation = document.createElement('div');
+      notation.className = 'drum-render triplet-grid-test-notation';
+      const caption = document.createElement('figcaption');
+      caption.textContent = mask;
+      cell.append(notation,caption);
+      cells.append(cell);
+      try {
+        renderTripletGridTestCell(notation,mask);
+      } catch (error) {
+        console.error(error);
+        notation.textContent = 'Could not render.';
+      }
+    });
+  });
+}
+
 function drumKitLabel(definition) {
   return [definition.drum.manufacturer, definition.drum.model, definition.name !== 'center' ? definition.name : '']
     .filter(Boolean)
@@ -2978,6 +3091,7 @@ async function loadPage() {
     renderPianoScoreBlocks();
     renderAbcBlocks();
     renderDrumBlocks();
+    renderTripletGridTestBlocks();
     renderCubeBlocks();
     document.title = `${content.querySelector('h1')?.textContent || 'Wiki'} — Personal Wiki`;
   } catch (error) {

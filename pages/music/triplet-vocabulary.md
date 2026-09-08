@@ -1,5 +1,9 @@
 # Triplet Vocabulary
 
+```triplet-grid-test
+000 001 010 011 100 101 110 111
+```
+
 These nine two-triplet melodies come from the vocabulary approach taught by [JP Bouvet Method](https://jpbouvetmethod.com/). `A` and `B` are abstract roles rather than fixed limbs or instruments. An `A` can be assigned to a hand, foot, voice, or orchestration; `B` fills the remaining subdivisions.
 
 [Open the Triplet Vocabulary Trainer](projects/triplet-vocabulary-trainer/) to arrange any three core melodies into a loop or practice an automatically changing sequence with one-melody look-ahead.
