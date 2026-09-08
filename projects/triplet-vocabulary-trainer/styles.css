@@ -25,7 +25,7 @@ main { display: grid; gap: .8rem; max-width: 1250px; margin: 0 auto; padding: 0 
 .melody-card header select { min-height: 2.2rem; min-width: 7.5rem; border: 1px solid var(--notation-button-border); padding: .4rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
 .notation { min-height: 150px; }
 .notation svg { min-width: 290px; }
-@media (max-width: 850px) { .phrase { grid-template-columns: 1fr; } .notation { min-height: 132px; } .notation svg { width: 100%; min-width: 0; } }
+@media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation { min-height: 132px; } .notation svg { width: 100%; min-width: 0; } }
 @media (max-width: 1250px) { .melody-filter { overflow-x: auto; overscroll-behavior-inline: contain; } }
 @media (max-width: 560px) { .app-header { padding-top: max(.65rem, env(safe-area-inset-top)); padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

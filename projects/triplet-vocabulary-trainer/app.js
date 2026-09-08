@@ -1,5 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js';
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js';
+import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-shared-3';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
 
 const MELODIES = [
@@ -145,62 +146,34 @@ function renderCard(slot) {
   target.replaceChildren();
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
-  const renderer = new VF.Renderer(target, VF.Renderer.Backends.SVG);
-  renderer.resize(width, 145);
-  const context = renderer.getContext();
-  const stave = new VF.Stave(4, 20, width - 8);
-  if (slot === 0) stave.addClef('percussion').addTimeSignature('2/4');
-  stave.setContext(context).draw();
   const melody = selectedMelody(slot);
-  const notes = [];
-  const tuplets = [];
-  const beams = [];
-  const stepElements = Array.from({ length:6 }, () => []);
-  for (let groupStart=0; groupStart<6; groupStart+=3) {
-    const mask = melody.slice(groupStart,groupStart+3).map(role => role === 'A' ? '1' : '0').join('');
-    const spelling = DRUM_HIDDEN_TRIPLET_SPELLINGS[mask];
-    const groupNotes = spelling.events.map(event => {
-      const note = new VF.StaveNote({
-        clef:'percussion',
-        keys:[event.rest ? 'b/4' : 'c/5'],
-        duration:`${event.duration}${event.rest ? 'r' : ''}`,
-        stem_direction:1
-      });
-      if ($('#show-counting').checked && !event.rest && typeof VF.Annotation === 'function') {
-        note.addModifier(
-          new VF.Annotation(TRIPLET_COUNTS[groupStart + event.step])
-            .setFont('Arial', 9, 'normal')
-            .setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM),
-          0
-        );
-      }
-      note.trainerEvent = event;
-      note.trainerStep = groupStart + event.step;
-      notes.push(note);
-      return note;
-    });
-    if (spelling.tuplet) {
-      const tuplet = new VF.Tuplet(groupNotes, { num_notes:3, notes_occupied:2, bracketed:true, ratioed:false });
-      tuplet.wikiExtendThroughLastDuration = Boolean(spelling.extendThroughLastDuration);
-      tuplet.wikiSpellingNotes = groupNotes;
-      tuplets.push(tuplet);
-    }
-    const beamable = groupNotes.filter(note => !note.trainerEvent.rest && note.trainerEvent.duration === '8');
-    if (beamable.length > 1) beams.push(new VF.Beam(beamable));
-  }
-  const voice = new VF.Voice({ num_beats:2, beat_value:4 }).setStrict(true).addTickables(notes);
-  new VF.Formatter().joinVoices([voice]).format([voice], width - (slot === 0 ? 100 : 28));
-  voice.draw(context, stave);
-  beams.forEach(beam => beam.setContext(context).draw());
-  tuplets.forEach(tuplet => {
-    const groupCount = target.querySelectorAll('.vf-tuplet').length;
-    const openedGroup = typeof context.openGroup === 'function' ? context.openGroup('tuplet') : null;
-    tuplet.setContext(context).draw();
-    if (typeof context.closeGroup === 'function') context.closeGroup();
-    extendHiddenTripletBracket(target.querySelectorAll('.vf-tuplet')[groupCount] || openedGroup, tuplet);
+  const masks = [0,3].map(groupStart => melody.slice(groupStart,groupStart+3).map(role => role === 'A' ? '1' : '0').join(''));
+  const cellGap = 12;
+  const desiredGridWidth = 308;
+  const availableLeft = slot === 0 ? 68 : 14;
+  const availableRight = width-10;
+  const gridWidth = Math.min(desiredGridWidth,availableRight-availableLeft);
+  const gridLeft = slot === 0 ? availableLeft : (width-gridWidth)/2;
+  const rendered = renderReducedTripletSequence({
+    Flow:VF,
+    target,
+    masks,
+    width,
+    height:145,
+    staveY:20,
+    gridLeft,
+    gridRight:gridLeft+gridWidth,
+    cellGap,
+    clef:slot === 0,
+    timeSignature:slot === 0 ? '2/4' : '',
+    annotationForStep:$('#show-counting').checked ? step => TRIPLET_COUNTS[step] : null
   });
+  const notes = rendered.notes;
+  const stepElements = Array.from({ length:6 }, () => []);
   const stems = renderedDrumStems(target,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
   notes.forEach(note => {
+    note.trainerEvent = note.reducedTripletEvent;
+    note.trainerStep = note.reducedTripletStep;
     const element = note.getSVGElement?.();
     const coveredSteps = Array.from({ length:note.trainerEvent.slots },(_,offset) => note.trainerStep+offset).filter(step => step < 6);
     element?.classList.add('drum-step');
@@ -213,20 +186,22 @@ function renderCard(slot) {
   });
   cards[slot].stepElements = stepElements;
 }
-function renderAll() { cards.forEach((_, slot) => renderCard(slot)); updatePositions(activeSlot); }
+function renderAll() {
+  cards.forEach((_, slot) => renderCard(slot));
+  updatePositions(activeSlot);
+}
 function updatePositions(slot) {
   activeSlot = slot;
   cards.forEach((card, index) => {
     card.classList.toggle('is-current', index === slot);
   });
 }
-function randomMelody(except = -1) {
+function randomMelody() {
   const enabled = enabledMelodyIndexes();
-  const choices = enabled.length > 1 ? enabled.filter(index => index !== except) : enabled;
-  return choices[Math.floor(Math.random() * choices.length)];
+  return enabled[Math.floor(Math.random() * enabled.length)];
 }
 function randomizeAll() {
-  selectors.forEach((select, slot) => { select.value = String(randomMelody(Number(select.value))); renderCard(slot); });
+  selectors.forEach((select, slot) => { select.value = String(randomMelody()); renderCard(slot); });
   updatePositions(activeSlot);
 }
 function requestRandomize() {
@@ -300,7 +275,7 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
     queuedRandomize = false; $('#randomize').textContent = 'Shuffle'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
     const select = selectors[previousSlot];
-    const nextMelody = String(randomMelody(Number(select.value)));
+    const nextMelody = String(randomMelody());
     const delay = Math.max(0, (nextEventTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);

@@ -1,5 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-velocity-slider';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote } from './projects/rhythm-explorer/drum-notation-core.js?v=20260903-2';
+import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-shared-3';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260904-1';
 
@@ -1951,85 +1952,17 @@ function renderDrumBlocks() {
   document.querySelectorAll('.drum-block').forEach(updateDrumVelocityControl);
 }
 
-function appendFixedTripletBracket(svg, left, right, y) {
-  const namespace = 'http://www.w3.org/2000/svg';
-  const group = document.createElementNS(namespace,'g');
-  group.classList.add('triplet-grid-test-bracket');
-  const center = (left+right)/2;
-  const gap = 18;
-  const path = document.createElementNS(namespace,'path');
-  path.setAttribute('d',`M${left} ${y+7}V${y}H${center-gap/2} M${center+gap/2} ${y}H${right}V${y+7}`);
-  path.setAttribute('fill','none');
-  path.setAttribute('stroke','currentColor');
-  path.setAttribute('stroke-width','1');
-  const number = document.createElementNS(namespace,'text');
-  number.setAttribute('x',String(center));
-  number.setAttribute('y',String(y+4));
-  number.setAttribute('text-anchor','middle');
-  number.setAttribute('font-family','Arial, sans-serif');
-  number.setAttribute('font-size','12');
-  number.textContent = '3';
-  group.append(path,number);
-  svg.append(group);
-}
-
-function appendFixedTripletNumber(svg, x, y) {
-  const namespace = 'http://www.w3.org/2000/svg';
-  const number = document.createElementNS(namespace,'text');
-  number.classList.add('triplet-grid-test-number');
-  number.setAttribute('x',String(x));
-  number.setAttribute('y',String(y));
-  number.setAttribute('text-anchor','middle');
-  number.setAttribute('font-family','Arial, sans-serif');
-  number.setAttribute('font-size','12');
-  number.textContent = '3';
-  svg.append(number);
-}
-
 function renderTripletGridTestCell(target, mask) {
-  const Flow = window.Vex.Flow;
-  const width = 176;
-  const height = 118;
-  const renderer = new Flow.Renderer(target,Flow.Renderer.Backends.SVG);
-  renderer.resize(width,height);
-  const context = renderer.getContext();
-  const stave = new Flow.Stave(4,30,width-8);
-  stave.setContext(context).draw();
-  const bracketLeft = 14;
-  const bracketRight = 162;
-  const bracketY = 39;
-  const slotWidth = (bracketRight-bracketLeft)/3;
-  const slotCenters = Array.from({ length:3 },(_,index) => bracketLeft+((index+.5)*slotWidth));
-  const spelling = DRUM_HIDDEN_TRIPLET_SPELLINGS[mask];
-  const notes = spelling.events.map((event) => {
-    const note = new Flow.StaveNote({
-      clef:'percussion',
-      keys:[event.rest ? 'b/4' : 'c/5'],
-      duration:`${event.duration}${event.rest ? 'r' : ''}`,
-      stem_direction:Flow.StaveNote.STEM_UP
-    });
-    note.setStave(stave).setContext(context);
-    const tickContext = new Flow.TickContext();
-    // VexFlow's glyph origin sits to the left of the visible notehead/rest.
-    // Compensate for that pinned 4.2.2 origin so each visible glyph is centered
-    // in its exact third of this deliberately fixed test cell.
-    const glyphCenterOffset = event.rest
-      ? (event.duration === '4' ? 26.475 : 25.998)
-      : 26.967;
-    tickContext.addTickable(note).preFormat().setX(slotCenters[event.step]-glyphCenterOffset);
-    note.setTickContext(tickContext);
-    note.tripletGridEvent = event;
-    return note;
+  renderReducedTripletSequence({
+    Flow:window.Vex.Flow,
+    target,
+    masks:[mask],
+    width:176,
+    height:118,
+    staveY:30,
+    gridLeft:14,
+    gridRight:162
   });
-  const beamable = notes.filter((note) => !note.tripletGridEvent.rest && note.tripletGridEvent.duration === '8');
-  // Attach the beam before drawing the notes so VexFlow suppresses the
-  // individual eighth-note flags instead of drawing both forms at once.
-  const beam = beamable.length > 1 ? new Flow.Beam(beamable) : null;
-  notes.forEach((note) => note.draw());
-  beam?.setContext(context).draw();
-  const svg = target.querySelector('svg');
-  if (mask === '111') appendFixedTripletNumber(svg,(bracketLeft+bracketRight)/2,bracketY+4);
-  else if (spelling.tuplet) appendFixedTripletBracket(svg,bracketLeft,bracketRight,bracketY);
 }
 
 function renderTripletGridTestBlocks() {
