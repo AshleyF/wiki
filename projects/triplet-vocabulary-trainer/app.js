@@ -47,6 +47,7 @@ let practiceScore = createPracticeScore();
 let expectedPracticeHits = [];
 let midiActivityTimer = null;
 let practiceTouch = null;
+let practiceScrollFrame = null;
 let countInBeatsRemaining = 0;
 let countInBeat = 0;
 let phraseStartTime = null;
@@ -724,15 +725,42 @@ function gestureTouch(event) {
   if (!practiceTouch) return null;
   return [...event.changedTouches,...event.touches].find(touch => touch.identifier === practiceTouch.identifier) || null;
 }
+function cancelPracticeScrollMomentum() {
+  cancelAnimationFrame(practiceScrollFrame);
+  practiceScrollFrame = null;
+}
+function continuePracticeScrollMomentum(velocity) {
+  cancelPracticeScrollMomentum();
+  if (Math.abs(velocity) < .08) return;
+  const scroller = document.scrollingElement;
+  let lastTime = performance.now();
+  let currentVelocity = Math.max(-2.5,Math.min(2.5,velocity));
+  const glide = now => {
+    const elapsed = Math.min(32,now-lastTime);
+    lastTime = now;
+    const before = scroller.scrollTop;
+    scroller.scrollTop += currentVelocity*elapsed;
+    currentVelocity *= Math.pow(.92,elapsed/(1000/60));
+    const hitEdge = scroller.scrollTop === before && Math.abs(currentVelocity) > .01;
+    if (!hitEdge && Math.abs(currentVelocity) >= .02) practiceScrollFrame = requestAnimationFrame(glide);
+    else practiceScrollFrame = null;
+  };
+  practiceScrollFrame = requestAnimationFrame(glide);
+}
 document.addEventListener('touchstart',event => {
+  if (event.touches.length === 1) cancelPracticeScrollMomentum();
   if (event.touches.length !== 1 || !event.target.closest?.('main') || isTrainerControl(event.target)) return;
   const touch = event.touches[0];
+  const now = performance.now();
   practiceTouch = {
     identifier:touch.identifier,
     startX:touch.clientX,
     startY:touch.clientY,
     lastX:touch.clientX,
     lastY:touch.clientY,
+    lastTime:now,
+    startScrollTop:document.scrollingElement.scrollTop,
+    scrollVelocity:0,
     hitTime:audioContext?.currentTime ?? null,
     scrolling:false
   };
@@ -744,11 +772,15 @@ document.addEventListener('touchmove',event => {
   if (!practiceTouch.scrolling && practiceTouchExceededThreshold(
     practiceTouch.startX,practiceTouch.startY,touch.clientX,touch.clientY
   )) practiceTouch.scrolling = true;
-  if (practiceTouch.scrolling) {
-    window.scrollBy(practiceTouch.lastX-touch.clientX,practiceTouch.lastY-touch.clientY);
-  }
+  const now = performance.now();
+  const elapsed = Math.max(1,now-practiceTouch.lastTime);
+  const instantaneousVelocity = (practiceTouch.lastY-touch.clientY)/elapsed;
+  practiceTouch.scrollVelocity = practiceTouch.scrollVelocity*.55+instantaneousVelocity*.45;
+  if (practiceTouch.scrolling) document.scrollingElement.scrollTop =
+    practiceTouch.startScrollTop+practiceTouch.startY-touch.clientY;
   practiceTouch.lastX = touch.clientX;
   practiceTouch.lastY = touch.clientY;
+  practiceTouch.lastTime = now;
   event.preventDefault();
 },{ passive:false });
 document.addEventListener('touchend',event => {
@@ -758,6 +790,7 @@ document.addEventListener('touchend',event => {
   practiceTouch = null;
   event.preventDefault();
   if (!completedTouch.scrolling) registerPracticeHit('tap',completedTouch.hitTime);
+  else continuePracticeScrollMomentum(completedTouch.scrollVelocity);
 },{ passive:false });
 document.addEventListener('touchcancel',() => { practiceTouch = null; },{ passive:true });
 document.addEventListener('keydown',event => {
