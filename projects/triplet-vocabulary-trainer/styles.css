@@ -35,8 +35,9 @@ main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: bo
 .midi-activity { width: .38rem; height: .38rem; border-radius: 50%; background: var(--notation-button-border); transition: background-color 80ms ease-out, box-shadow 80ms ease-out; }
 .midi-activity.is-active { background: var(--accent); box-shadow: 0 0 .3rem color-mix(in srgb,var(--accent) 55%,transparent); }
 .status:empty { display: none; }
-.practice-pad { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; min-height: 4.25rem; padding: .65rem .85rem; background: var(--notation-paper); cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.practice-pad { display: grid; min-height: 4.25rem; padding: .65rem .85rem; background: var(--notation-paper); cursor: pointer; touch-action: pan-y; }
 .practice-pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.practice-score-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; }
 .practice-stats { display: grid; grid-template-columns: repeat(4,minmax(3.4rem,auto)); gap: .45rem; justify-self: center; }
 .practice-stats span { display: grid; gap: .15rem; min-width: 3.5rem; text-align: center; }
 .practice-stats strong { color: var(--notation-ink); font: 800 1.05rem/1 ui-monospace,monospace; }
@@ -44,8 +45,11 @@ main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: bo
 .compact-transport { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; min-width: 2.75rem; border: 1px solid var(--notation-button-border); border-radius: .35rem; padding: 0; color: var(--notation-ink); background: var(--notation-panel); font: 800 1rem/1 ui-monospace,monospace; cursor: pointer; }
 .compact-transport:hover { border-color: var(--notation-ink); }
 .compact-transport:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dedicated-tap-pad { display: none; min-height: 0; border: 1px solid var(--notation-button-border); border-radius: .45rem; background: color-mix(in srgb,var(--accent) 5%,var(--notation-panel)); cursor: crosshair; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.practice-pad.is-tap-mode { min-height: 10.625rem; gap: .6rem; }
+.practice-pad.is-tap-mode .dedicated-tap-pad { display: block; min-height: 5.75rem; }
 .sound-control .drum-kit-select { width: 12rem; max-width: 12rem; }
-.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; touch-action: pan-y; }
 .melody-card { overflow: hidden; transition: border-color .15s, box-shadow .15s; }
 .melody-card.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
 .melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .4rem .6rem; background: var(--notation-paper); }

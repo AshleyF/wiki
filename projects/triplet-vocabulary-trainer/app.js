@@ -47,7 +47,6 @@ let practiceScore = createPracticeScore();
 let expectedPracticeHits = [];
 let midiActivityTimer = null;
 let practiceTouch = null;
-let practiceScrollFrame = null;
 let countInBeatsRemaining = 0;
 let countInBeat = 0;
 let phraseStartTime = null;
@@ -522,8 +521,18 @@ function setTransportState(state) {
   compact.setAttribute('aria-label',loading ? 'Loading' : active ? 'Stop' : 'Play');
   compact.title = loading ? 'Loading' : active ? 'Stop' : 'Play';
 }
-async function start() {
+function setTapMode(enabled) {
+  const panel = $('#practice-pad');
+  panel.classList.toggle('is-tap-mode',enabled);
+  $('#dedicated-tap-pad').setAttribute('aria-hidden',String(!enabled));
+}
+function scrollToTapPad() {
+  requestAnimationFrame(() => window.scrollTo({ top:document.scrollingElement.scrollHeight,behavior:'auto' }));
+}
+async function start({ tapMode = false } = {}) {
   if (playing) { stop(); return; }
+  setTapMode(tapMode);
+  if (tapMode) scrollToTapPad();
   setTransportState('loading');
   try {
     await prepareAudio();
@@ -533,7 +542,7 @@ async function start() {
     playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
     setTransportState('stop'); updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
-  } catch (error) { setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
+  } catch (error) { setTapMode(false); setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
 function stop() {
   playing = false; clearInterval(scheduler); scheduler = null;
@@ -542,6 +551,7 @@ function stop() {
   cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
   expectedPracticeHits = [];
   phraseStartTime = null;
+  setTapMode(false);
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
   setTransportState('play'); setStatus('');
 }
@@ -641,7 +651,7 @@ $('#play').addEventListener('click',event => {
 });
 $('#play-compact').addEventListener('click',event => {
   event.currentTarget.blur();
-  start();
+  start({ tapMode:true });
 });
 $('#randomize').addEventListener('click', requestRandomize);
 $('#auto-randomize').addEventListener('change', event => {
@@ -706,7 +716,7 @@ $('#midi-output').addEventListener('change', event => {
 });
 const practicePad = $('#practice-pad');
 function isTrainerControl(target) {
-  return Boolean(target.closest?.('button,input,select,textarea,a,summary,label,[contenteditable="true"]'));
+  return Boolean(target.closest?.('button,input,select,textarea,a,summary,label,[role="button"],[contenteditable="true"]'));
 }
 document.addEventListener('pointerdown',event => {
   if (!playing || !event.target.closest?.('main')) return;
@@ -725,74 +735,39 @@ function gestureTouch(event) {
   if (!practiceTouch) return null;
   return [...event.changedTouches,...event.touches].find(touch => touch.identifier === practiceTouch.identifier) || null;
 }
-function cancelPracticeScrollMomentum() {
-  cancelAnimationFrame(practiceScrollFrame);
-  practiceScrollFrame = null;
-}
-function continuePracticeScrollMomentum(velocity) {
-  cancelPracticeScrollMomentum();
-  if (Math.abs(velocity) < .08) return;
-  const scroller = document.scrollingElement;
-  let lastTime = performance.now();
-  let currentVelocity = Math.max(-2.5,Math.min(2.5,velocity));
-  const glide = now => {
-    const elapsed = Math.min(32,now-lastTime);
-    lastTime = now;
-    const before = scroller.scrollTop;
-    scroller.scrollTop += currentVelocity*elapsed;
-    currentVelocity *= Math.pow(.92,elapsed/(1000/60));
-    const hitEdge = scroller.scrollTop === before && Math.abs(currentVelocity) > .01;
-    if (!hitEdge && Math.abs(currentVelocity) >= .02) practiceScrollFrame = requestAnimationFrame(glide);
-    else practiceScrollFrame = null;
-  };
-  practiceScrollFrame = requestAnimationFrame(glide);
-}
 document.addEventListener('touchstart',event => {
-  if (event.touches.length === 1) cancelPracticeScrollMomentum();
   if (event.touches.length !== 1 || !event.target.closest?.('main') || isTrainerControl(event.target)) return;
   const touch = event.touches[0];
-  const now = performance.now();
   practiceTouch = {
     identifier:touch.identifier,
     startX:touch.clientX,
     startY:touch.clientY,
-    lastX:touch.clientX,
-    lastY:touch.clientY,
-    lastTime:now,
-    startScrollTop:document.scrollingElement.scrollTop,
-    scrollVelocity:0,
     hitTime:audioContext?.currentTime ?? null,
-    scrolling:false
+    moved:false
   };
-  event.preventDefault();
-},{ passive:false });
+},{ passive:true });
 document.addEventListener('touchmove',event => {
   const touch = gestureTouch(event);
   if (!touch) return;
-  if (!practiceTouch.scrolling && practiceTouchExceededThreshold(
+  if (!practiceTouch.moved && practiceTouchExceededThreshold(
     practiceTouch.startX,practiceTouch.startY,touch.clientX,touch.clientY
-  )) practiceTouch.scrolling = true;
-  const now = performance.now();
-  const elapsed = Math.max(1,now-practiceTouch.lastTime);
-  const instantaneousVelocity = (practiceTouch.lastY-touch.clientY)/elapsed;
-  practiceTouch.scrollVelocity = practiceTouch.scrollVelocity*.55+instantaneousVelocity*.45;
-  if (practiceTouch.scrolling) document.scrollingElement.scrollTop =
-    practiceTouch.startScrollTop+practiceTouch.startY-touch.clientY;
-  practiceTouch.lastX = touch.clientX;
-  practiceTouch.lastY = touch.clientY;
-  practiceTouch.lastTime = now;
-  event.preventDefault();
-},{ passive:false });
+  )) practiceTouch.moved = true;
+},{ passive:true });
 document.addEventListener('touchend',event => {
   const touch = gestureTouch(event);
   if (!touch) return;
   const completedTouch = practiceTouch;
   practiceTouch = null;
-  event.preventDefault();
-  if (!completedTouch.scrolling) registerPracticeHit('tap',completedTouch.hitTime);
-  else continuePracticeScrollMomentum(completedTouch.scrollVelocity);
-},{ passive:false });
+  if (!completedTouch.moved) registerPracticeHit('tap',completedTouch.hitTime);
+},{ passive:true });
 document.addEventListener('touchcancel',() => { practiceTouch = null; },{ passive:true });
+const dedicatedTapPad = $('#dedicated-tap-pad');
+dedicatedTapPad.addEventListener('pointerdown',event => {
+  if (event.button !== undefined && event.button !== 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+  registerPracticeHit('tap');
+});
 document.addEventListener('keydown',event => {
   if (event.code !== 'Space' || event.repeat) return;
   if (!playing) return;

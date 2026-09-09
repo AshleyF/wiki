@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260909-midi-input-filters-1">
+    <link rel="stylesheet" href="styles.css?v=20260909-dedicated-tap-pad-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -64,15 +64,18 @@
         <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
       </section>
       <section id="practice-pad" class="practice-pad panel" role="region" aria-label="Practice score and secondary transport">
-        <div class="practice-stats" aria-label="Practice score">
-          <span><strong id="score-accuracy">—</strong><small>Accuracy</small></span>
-          <span><strong id="score-streak">0</strong><small>Streak</small></span>
-          <span><strong id="score-hits">0</strong><small>Hits</small></span>
-          <span><strong id="score-misses">0</strong><small>Misses</small></span>
+        <div class="practice-score-row">
+          <div class="practice-stats" aria-label="Practice score">
+            <span><strong id="score-accuracy">—</strong><small>Accuracy</small></span>
+            <span><strong id="score-streak">0</strong><small>Streak</small></span>
+            <span><strong id="score-hits">0</strong><small>Hits</small></span>
+            <span><strong id="score-misses">0</strong><small>Misses</small></span>
+          </div>
+          <button id="play-compact" class="compact-transport" type="button" aria-label="Play" title="Play">▶</button>
         </div>
-        <button id="play-compact" class="compact-transport" type="button" aria-label="Play" title="Play">▶</button>
+        <div id="dedicated-tap-pad" class="dedicated-tap-pad" role="button" aria-label="Rhythm tap area" aria-hidden="true"></div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260909-touch-threshold-2"></script>
+    <script type="module" src="app.js?v=20260909-dedicated-tap-pad-1"></script>
   </body>
 </html>

@@ -79,7 +79,7 @@ test('MIDI practice filtering ignores feet and low-velocity ghost strokes indepe
   assert.equal(midiPracticeHitAccepted(38,20,{ ...options,ignoreGhosts:false }),true);
 });
 
-test('touches stay latched through a small wiggle and release after a deliberate drag', () => {
+test('touch classification distinguishes a tap from a scrolling drag', () => {
   assert.equal(practiceTouchExceededThreshold(100,100,110,110),false);
   assert.equal(practiceTouchExceededThreshold(100,100,118,100),true);
   assert.equal(practiceTouchExceededThreshold(100,100,90,85),true);
