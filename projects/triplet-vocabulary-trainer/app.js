@@ -271,7 +271,7 @@ function renderCard(slot) {
     target,
     masks,
     width,
-    height:124,
+    height:90,
     staveY:20,
     gridLeft,
     gridRight:gridLeft+gridWidth,

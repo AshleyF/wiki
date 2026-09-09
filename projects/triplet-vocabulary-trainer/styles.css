@@ -1,6 +1,6 @@
 html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 body { min-width: 300px; background: radial-gradient(circle at 8% -15%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 32rem), var(--paper); }
-.app-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .45rem 1rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: 1rem clamp(.7rem, 3vw, 2rem) .55rem; }
+.app-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .35rem 1rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: .75rem clamp(.7rem, 3vw, 2rem) .4rem; }
 h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .header-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .45rem; }
 .view-option { display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
@@ -24,10 +24,10 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .triplet-filter-notation svg .vf-stave path,
 .notation svg .vf-stave path { stroke-width: .5px !important; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: 0 clamp(.7rem, 3vw, 2rem) 2rem; touch-action: manipulation; }
+main { display: grid; gap: .55rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: 0 clamp(.7rem, 3vw, 2rem) max(.75rem,env(safe-area-inset-bottom)); touch-action: manipulation; }
 .panel { border: 1px solid var(--rule); background: var(--notation-panel); }
 .melody-filter, .controls, .phrase, .melody-card, .notation { min-width: 0; max-width: 100%; box-sizing: border-box; }
-.controls.drum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
+.controls.drum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
 .controls .auto-control { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .controls .auto-control input { accent-color: var(--accent); }
 .midi-port-control { display: inline-flex; align-items: center; gap: .3rem; color: var(--notation-muted); font: 700 .68rem/1 monospace; }
@@ -49,17 +49,17 @@ main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: bo
 .practice-pad.is-tap-mode { min-height: 10.625rem; gap: .6rem; }
 .practice-pad.is-tap-mode .dedicated-tap-pad { display: block; min-height: 5.75rem; }
 .sound-control .drum-kit-select { width: 12rem; max-width: 12rem; }
-.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; touch-action: pan-y; }
+.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; touch-action: pan-y; }
 .melody-card { overflow: hidden; transition: border-color .15s, box-shadow .15s; }
 .melody-card.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
-.melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .4rem .6rem; background: var(--notation-paper); }
+.melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .25rem .5rem; background: var(--notation-paper); }
 .melody-card header label { display: flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
 .melody-card header select { min-height: 2rem; min-width: 7.5rem; border: 1px solid var(--notation-button-border); padding: .32rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
 body[data-trainer-mode="triplets"] .melody-card header select { display: none; }
-.notation.drum-render { min-height: 126px; padding: .25rem .5rem; }
+.notation.drum-render { min-height: 90px; padding: .1rem .5rem; }
 .notation svg { min-width: 290px; }
-@media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation { min-height: 118px; } .notation svg { width: 100%; min-width: 0; } }
+@media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation svg { width: 100%; min-width: 0; } }
 @media (max-width: 1250px) { .melody-filter { overflow-x: auto; overscroll-behavior-inline: contain; } }
 @media (max-width: 900px) { select, input[type="number"] { font-size: 16px !important; } }
-@media (max-width: 560px) { .app-header { padding-top: max(.65rem, env(safe-area-inset-top)); padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .practice-pad { padding-inline: .5rem; } .practice-stats { width: 100%; grid-template-columns: repeat(4,1fr); gap: .2rem; } .practice-stats span { min-width: 0; } }
+@media (max-width: 560px) { .app-header { padding-top: max(.45rem, env(safe-area-inset-top)); padding-bottom: .3rem; padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .25rem .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .practice-pad { padding-inline: .5rem; } .practice-stats { width: 100%; grid-template-columns: repeat(4,1fr); gap: .2rem; } .practice-stats span { min-width: 0; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
