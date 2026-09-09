@@ -1,5 +1,6 @@
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 body { min-width: 300px; background: radial-gradient(circle at 8% -15%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 32rem), var(--paper); }
-.app-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .45rem 1rem; max-width: 1250px; margin: 0 auto; padding: 1rem clamp(.7rem, 3vw, 2rem) .55rem; }
+.app-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .45rem 1rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: 1rem clamp(.7rem, 3vw, 2rem) .55rem; }
 h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .header-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .45rem; }
 .view-option { display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
@@ -23,21 +24,25 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .triplet-filter-notation svg .vf-stave path,
 .notation svg .vf-stave path { stroke-width: .5px !important; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-main { display: grid; gap: .8rem; max-width: 1250px; margin: 0 auto; padding: 0 clamp(.7rem, 3vw, 2rem) 2rem; touch-action: manipulation; }
+main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: border-box; margin: 0 auto; padding: 0 clamp(.7rem, 3vw, 2rem) 2rem; touch-action: manipulation; }
 .panel { border: 1px solid var(--rule); background: var(--notation-panel); }
+.melody-filter, .controls, .phrase, .melody-card, .notation { min-width: 0; max-width: 100%; box-sizing: border-box; }
 .controls.drum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
 .controls .auto-control { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .controls .auto-control input { accent-color: var(--accent); }
 .midi-port-control { display: inline-flex; align-items: center; gap: .3rem; color: var(--notation-muted); font: 700 .68rem/1 monospace; }
 .status:empty { display: none; }
-.practice-pad { display: flex; align-items: center; justify-content: center; min-height: 4.25rem; padding: .65rem .85rem; background: var(--notation-paper); cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.practice-pad { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; min-height: 4.25rem; padding: .65rem .85rem; background: var(--notation-paper); cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .practice-pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.practice-stats { display: grid; grid-template-columns: repeat(4,minmax(3.4rem,auto)); gap: .45rem; }
+.practice-stats { display: grid; grid-template-columns: repeat(4,minmax(3.4rem,auto)); gap: .45rem; justify-self: center; }
 .practice-stats span { display: grid; gap: .15rem; min-width: 3.5rem; text-align: center; }
 .practice-stats strong { color: var(--notation-ink); font: 800 1.05rem/1 ui-monospace,monospace; }
 .practice-stats small { color: var(--notation-muted); font: 700 .62rem/1 ui-monospace,monospace; text-transform: uppercase; letter-spacing: .06em; }
+.compact-transport { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; min-width: 2.75rem; border: 1px solid var(--notation-button-border); border-radius: .35rem; padding: 0; color: var(--notation-ink); background: var(--notation-panel); font: 800 1rem/1 ui-monospace,monospace; cursor: pointer; }
+.compact-transport:hover { border-color: var(--notation-ink); }
+.compact-transport:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sound-control .drum-kit-select { width: 12rem; max-width: 12rem; }
-.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .melody-card { overflow: hidden; transition: border-color .15s, box-shadow .15s; }
 .melody-card.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
 .melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .4rem .6rem; background: var(--notation-paper); }
@@ -48,5 +53,6 @@ body[data-trainer-mode="triplets"] .melody-card header select { display: none; }
 .notation svg { min-width: 290px; }
 @media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation { min-height: 118px; } .notation svg { width: 100%; min-width: 0; } }
 @media (max-width: 1250px) { .melody-filter { overflow-x: auto; overscroll-behavior-inline: contain; } }
-@media (max-width: 560px) { .app-header { padding-top: max(.65rem, env(safe-area-inset-top)); padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .practice-stats { width: 100%; grid-template-columns: repeat(4,1fr); } }
+@media (max-width: 900px) { select, input[type="number"] { font-size: 16px !important; } }
+@media (max-width: 560px) { .app-header { padding-top: max(.65rem, env(safe-area-inset-top)); padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .practice-pad { padding-inline: .5rem; } .practice-stats { width: 100%; grid-template-columns: repeat(4,1fr); gap: .2rem; } .practice-stats span { min-width: 0; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

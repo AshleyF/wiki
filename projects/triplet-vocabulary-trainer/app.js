@@ -313,7 +313,7 @@ function updateModeUI({ randomizeTriplets = false } = {}) {
   activeSlot = Math.min(activeSlot,activeCardCount()-1);
   initializePatternFilter();
   if (trainerMode === 'triplets' && randomizeTriplets) randomizeTripletCards();
-  renderAll();
+  requestAnimationFrame(renderAll);
 }
 function updatePositions(slot) {
   activeSlot = slot;
@@ -505,18 +505,28 @@ async function prepareAudio() {
     activeVelocities = requested;
   } catch (error) { console.warn('Using synthesized snare fallback.', error); }
 }
+function setTransportState(state) {
+  const loading = state === 'loading';
+  const active = state === 'stop';
+  $('#play').textContent = loading ? 'Loading…' : active ? '■ Stop' : '▶ Play';
+  const compact = $('#play-compact');
+  compact.textContent = loading ? '…' : active ? '■' : '▶';
+  compact.disabled = loading;
+  compact.setAttribute('aria-label',loading ? 'Loading' : active ? 'Stop' : 'Play');
+  compact.title = loading ? 'Loading' : active ? 'Stop' : 'Play';
+}
 async function start() {
   if (playing) { stop(); return; }
-  $('#play').textContent = 'Loading…';
+  setTransportState('loading');
   try {
     await prepareAudio();
     if (document.hidden) throw new Error('Return to this tab before starting playback.');
     const withMetronome = $('#metronome').checked;
     resetPracticeSession();
     playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
-    $('#play').textContent = '■ Stop'; updatePositions(0); setStatus('');
+    setTransportState('stop'); updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
-  } catch (error) { $('#play').textContent = '▶ Play'; setStatus(error.message || 'Could not start playback'); }
+  } catch (error) { setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
 function stop() {
   playing = false; clearInterval(scheduler); scheduler = null;
@@ -526,7 +536,7 @@ function stop() {
   expectedPracticeHits = [];
   phraseStartTime = null;
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
-  $('#play').textContent = '▶ Play'; setStatus('');
+  setTransportState('play'); setStatus('');
 }
 
 function attachMidiInput(nextInput) {
@@ -606,6 +616,10 @@ $('#play').addEventListener('click',event => {
   event.currentTarget.blur();
   start();
 });
+$('#play-compact').addEventListener('click',event => {
+  event.currentTarget.blur();
+  start();
+});
 $('#randomize').addEventListener('click', requestRandomize);
 $('#auto-randomize').addEventListener('change', event => {
   try { localStorage.setItem(AUTO_SHUFFLE_KEY, String(event.target.checked)); } catch {}
@@ -664,18 +678,25 @@ $('#midi-output').addEventListener('change', event => {
   if (wasPlaying) start();
 });
 const practicePad = $('#practice-pad');
+function isTrainerControl(target) {
+  return Boolean(target.closest?.('button,input,select,textarea,a,summary,label,[contenteditable="true"]'));
+}
 document.addEventListener('pointerdown',event => {
   if (!playing || !event.target.closest?.('main')) return;
-  if (event.target.closest('button,input,select,textarea,a,summary,label,[contenteditable="true"]')) return;
+  if (isTrainerControl(event.target)) return;
   if (event.button !== undefined && event.button !== 0) return;
   event.preventDefault();
   registerPracticeHit('tap');
 });
 document.addEventListener('dblclick',event => {
   if (!event.target.closest?.('main')) return;
-  if (event.target.closest('button,input,select,textarea,a,summary,label,[contenteditable="true"]')) return;
+  if (isTrainerControl(event.target)) return;
   event.preventDefault();
 });
+document.addEventListener('touchend',event => {
+  if (!event.target.closest?.('main') || isTrainerControl(event.target)) return;
+  event.preventDefault();
+},{ passive:false });
 document.addEventListener('keydown',event => {
   if (event.code !== 'Space' || event.repeat) return;
   if (!playing) return;

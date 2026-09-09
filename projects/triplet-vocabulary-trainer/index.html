@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <meta name="description" content="Practice JP Bouvet's triplet vocabulary or randomized phrases built from every possible triplet cell.">
     <title>Triplet Vocabulary Trainer</title>
     <script>
@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260908-compact-cards-2">
+    <link rel="stylesheet" href="styles.css?v=20260908-bottom-transport-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -61,15 +61,16 @@
         <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select aria-label="Second melody"></select></label></header><div class="notation drum-render"></div></article>
         <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
       </section>
-      <section id="practice-pad" class="practice-pad panel" role="button" tabindex="0" aria-label="Tap the rhythm here or press Space">
+      <section id="practice-pad" class="practice-pad panel" role="region" aria-label="Practice score and secondary transport">
         <div class="practice-stats" aria-label="Practice score">
           <span><strong id="score-accuracy">—</strong><small>Accuracy</small></span>
-          <span><strong id="score-streak">0</strong><small>Best streak</small></span>
+          <span><strong id="score-streak">0</strong><small>Streak</small></span>
           <span><strong id="score-hits">0</strong><small>Hits</small></span>
           <span><strong id="score-misses">0</strong><small>Misses</small></span>
         </div>
+        <button id="play-compact" class="compact-transport" type="button" aria-label="Play" title="Play">▶</button>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260908-compact-cards-1"></script>
+    <script type="module" src="app.js?v=20260908-bottom-transport-1"></script>
   </body>
 </html>
