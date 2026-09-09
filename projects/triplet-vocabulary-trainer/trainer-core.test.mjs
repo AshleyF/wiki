@@ -7,6 +7,7 @@ import {
   practiceAccuracy,
   practiceTimingWindowSeconds,
   practiceTimingWindows,
+  practiceTouchExceededThreshold,
   randomTripletMasks,
   rolesForTripletMasks,
   scorePracticeTap
@@ -76,4 +77,10 @@ test('MIDI practice filtering ignores feet and low-velocity ghost strokes indepe
   assert.equal(midiPracticeHitAccepted(38,40,options),true);
   assert.equal(midiPracticeHitAccepted(36,110,{ ...options,ignoreFeet:false }),true);
   assert.equal(midiPracticeHitAccepted(38,20,{ ...options,ignoreGhosts:false }),true);
+});
+
+test('touches stay latched through a small wiggle and release after a deliberate drag', () => {
+  assert.equal(practiceTouchExceededThreshold(100,100,110,110),false);
+  assert.equal(practiceTouchExceededThreshold(100,100,118,100),true);
+  assert.equal(practiceTouchExceededThreshold(100,100,90,85),true);
 });

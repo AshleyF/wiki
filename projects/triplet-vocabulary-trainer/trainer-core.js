@@ -41,6 +41,10 @@ export function midiPracticeHitAccepted(note,velocity,{ ignoreFeet = true,ignore
   return Number(velocity) > 0;
 }
 
+export function practiceTouchExceededThreshold(startX,startY,currentX,currentY,threshold = 18) {
+  return Math.hypot(Number(currentX)-Number(startX),Number(currentY)-Number(startY)) >= threshold;
+}
+
 export function practiceAccuracy(score) {
   const attempts = score.hits+score.misses;
   return attempts ? (score.hits/attempts)*100 : 100;

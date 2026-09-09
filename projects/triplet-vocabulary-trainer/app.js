@@ -2,7 +2,7 @@ import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/dru
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
-import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260909-midi-input-filters-1';
+import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260909-touch-threshold-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -46,6 +46,7 @@ let activeVelocities = { ghost:16, normal:64, accent:111 };
 let practiceScore = createPracticeScore();
 let expectedPracticeHits = [];
 let midiActivityTimer = null;
+let practiceTouch = null;
 let countInBeatsRemaining = 0;
 let countInBeat = 0;
 let phraseStartTime = null;
@@ -373,9 +374,9 @@ function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
   if (expired) updatePracticeScore();
   expectedPracticeHits = expectedPracticeHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
 }
-function registerPracticeHit(source = 'tap') {
+function registerPracticeHit(source = 'tap',hitTime = null) {
   if (!playing || !audioContext || phraseStartTime === null) return;
-  const time = audioContext.currentTime;
+  const time = hitTime ?? audioContext.currentTime;
   const windowSeconds = practiceTimingWindows(eventDuration());
   if (time < phraseStartTime-windowSeconds.early) return;
   expirePracticeScore(time);
@@ -709,6 +710,7 @@ function isTrainerControl(target) {
 document.addEventListener('pointerdown',event => {
   if (!playing || !event.target.closest?.('main')) return;
   if (isTrainerControl(event.target)) return;
+  if (event.pointerType === 'touch') return;
   if (event.button !== undefined && event.button !== 0) return;
   event.preventDefault();
   registerPracticeHit('tap');
@@ -718,10 +720,46 @@ document.addEventListener('dblclick',event => {
   if (isTrainerControl(event.target)) return;
   event.preventDefault();
 });
-document.addEventListener('touchend',event => {
-  if (!event.target.closest?.('main') || isTrainerControl(event.target)) return;
+function gestureTouch(event) {
+  if (!practiceTouch) return null;
+  return [...event.changedTouches,...event.touches].find(touch => touch.identifier === practiceTouch.identifier) || null;
+}
+document.addEventListener('touchstart',event => {
+  if (event.touches.length !== 1 || !event.target.closest?.('main') || isTrainerControl(event.target)) return;
+  const touch = event.touches[0];
+  practiceTouch = {
+    identifier:touch.identifier,
+    startX:touch.clientX,
+    startY:touch.clientY,
+    lastX:touch.clientX,
+    lastY:touch.clientY,
+    hitTime:audioContext?.currentTime ?? null,
+    scrolling:false
+  };
   event.preventDefault();
 },{ passive:false });
+document.addEventListener('touchmove',event => {
+  const touch = gestureTouch(event);
+  if (!touch) return;
+  if (!practiceTouch.scrolling && practiceTouchExceededThreshold(
+    practiceTouch.startX,practiceTouch.startY,touch.clientX,touch.clientY
+  )) practiceTouch.scrolling = true;
+  if (practiceTouch.scrolling) {
+    window.scrollBy(practiceTouch.lastX-touch.clientX,practiceTouch.lastY-touch.clientY);
+  }
+  practiceTouch.lastX = touch.clientX;
+  practiceTouch.lastY = touch.clientY;
+  event.preventDefault();
+},{ passive:false });
+document.addEventListener('touchend',event => {
+  const touch = gestureTouch(event);
+  if (!touch) return;
+  const completedTouch = practiceTouch;
+  practiceTouch = null;
+  event.preventDefault();
+  if (!completedTouch.scrolling) registerPracticeHit('tap',completedTouch.hitTime);
+},{ passive:false });
+document.addEventListener('touchcancel',() => { practiceTouch = null; },{ passive:true });
 document.addEventListener('keydown',event => {
   if (event.code !== 'Space' || event.repeat) return;
   if (!playing) return;
