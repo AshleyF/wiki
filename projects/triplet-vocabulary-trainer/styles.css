@@ -31,6 +31,9 @@ main { display: grid; gap: .8rem; width: 100%; max-width: 1250px; box-sizing: bo
 .controls .auto-control { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .controls .auto-control input { accent-color: var(--accent); }
 .midi-port-control { display: inline-flex; align-items: center; gap: .3rem; color: var(--notation-muted); font: 700 .68rem/1 monospace; }
+.midi-input-label { display: inline-flex; align-items: center; gap: .28rem; }
+.midi-activity { width: .38rem; height: .38rem; border-radius: 50%; background: var(--notation-button-border); transition: background-color 80ms ease-out, box-shadow 80ms ease-out; }
+.midi-activity.is-active { background: var(--accent); box-shadow: 0 0 .3rem color-mix(in srgb,var(--accent) 55%,transparent); }
 .status:empty { display: none; }
 .practice-pad { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; min-height: 4.25rem; padding: .65rem .85rem; background: var(--notation-paper); cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .practice-pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

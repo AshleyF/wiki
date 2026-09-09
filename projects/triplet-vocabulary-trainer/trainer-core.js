@@ -17,15 +17,40 @@ export function practiceTimingWindowSeconds(subdivisionSeconds) {
   return Math.max(.045,Math.min(.12,Number(subdivisionSeconds)*.35));
 }
 
+export function practiceTimingWindows(subdivisionSeconds) {
+  const symmetricWindow = practiceTimingWindowSeconds(subdivisionSeconds);
+  const totalWindow = Math.min(.21,symmetricWindow*2+.02);
+  return {
+    early: totalWindow/3,
+    late: totalWindow*2/3
+  };
+}
+
+function timingWindows(windowSeconds) {
+  if (typeof windowSeconds === 'number') return { early:windowSeconds,late:windowSeconds };
+  return {
+    early:Number(windowSeconds?.early) || 0,
+    late:Number(windowSeconds?.late) || 0
+  };
+}
+
+export function midiPracticeHitAccepted(note,velocity,{ ignoreFeet = true,ignoreGhosts = true,ghostVelocity = 16,normalVelocity = 64 } = {}) {
+  if (ignoreFeet && [35,36,44].includes(Number(note))) return false;
+  const ghostCutoff = (Number(ghostVelocity)+Number(normalVelocity))/2;
+  if (ignoreGhosts && Number(velocity) < ghostCutoff) return false;
+  return Number(velocity) > 0;
+}
+
 export function practiceAccuracy(score) {
   const attempts = score.hits+score.misses;
   return attempts ? (score.hits/attempts)*100 : 100;
 }
 
 export function expirePracticeHits(score,expectedHits,now,windowSeconds) {
+  const { late } = timingWindows(windowSeconds);
   let expired = 0;
   expectedHits.forEach(expected => {
-    if (expected.matched || expected.expired || now <= expected.time+windowSeconds) return;
+    if (expected.matched || expected.expired || now <= expected.time+late) return;
     expected.expired = true;
     score.misses += 1;
     score.streak = 0;
@@ -35,12 +60,13 @@ export function expirePracticeHits(score,expectedHits,now,windowSeconds) {
 }
 
 export function scorePracticeTap(score,expectedHits,time,windowSeconds) {
+  const { early,late } = timingWindows(windowSeconds);
   let closest = null;
   let closestError = Infinity;
   expectedHits.forEach(expected => {
     if (expected.matched || expected.expired) return;
     const error = time-expected.time;
-    if (Math.abs(error) <= windowSeconds && Math.abs(error) < Math.abs(closestError)) {
+    if (error >= -early && error <= late && Math.abs(error) < Math.abs(closestError)) {
       closest = expected;
       closestError = error;
     }

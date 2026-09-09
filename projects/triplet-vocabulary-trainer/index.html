@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260908-bottom-transport-1">
+    <link rel="stylesheet" href="styles.css?v=20260909-midi-input-filters-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -23,6 +23,8 @@
         <label class="view-option" title="Show the triplet count beneath each printed note"><input id="show-counting" type="checkbox"> <span>Count</span></label>
         <label class="view-option" title="Highlight each written note or rest as it plays"><input id="follow-highlighting" type="checkbox" checked> <span>Follow</span></label>
         <label class="view-option" title="Play a four-beat count-in and a 4/4 pedal-hi-hat metronome, with the downbeat accented"><input id="metronome" type="checkbox"> <span>Metronome</span></label>
+        <label class="view-option" title="Ignore incoming kick and pedal-hi-hat MIDI notes when scoring"><input id="ignore-feet" type="checkbox" checked> <span>Ignore feet</span></label>
+        <label class="view-option" title="Ignore incoming MIDI velocities below the midpoint between the Ghost and Normal velocity handles"><input id="ignore-ghosts" type="checkbox" checked> <span>Ignore ghosts</span></label>
         <label class="header-tempo drum-tempo-control">
           <span>Tempo</span>
           <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
@@ -52,7 +54,7 @@
           </span>
         </div>
         <label class="sound-control drum-kit-control"><span>Sound</span><select id="sound" class="drum-kit-select" aria-label="Snare or practice-pad sound" disabled><option value="">Loading…</option></select></label>
-        <label class="midi-port-control"><span>MIDI In</span><select id="midi-input" class="drum-midi-output" aria-label="MIDI input"><option value="">None</option></select></label>
+        <label class="midi-port-control"><span class="midi-input-label"><i id="midi-activity" class="midi-activity" aria-hidden="true"></i>MIDI In</span><select id="midi-input" class="drum-midi-output" aria-label="MIDI input"><option value="">None</option></select></label>
         <label class="midi-port-control"><span>Out</span><select id="midi-output" class="drum-midi-output" aria-label="MIDI output"><option value="">None</option></select></label>
         <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
       </section>
@@ -71,6 +73,6 @@
         <button id="play-compact" class="compact-transport" type="button" aria-label="Play" title="Play">▶</button>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260908-bottom-transport-1"></script>
+    <script type="module" src="app.js?v=20260909-midi-input-filters-1"></script>
   </body>
 </html>

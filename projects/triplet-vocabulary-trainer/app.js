@@ -2,7 +2,7 @@ import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/dru
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
-import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, practiceAccuracy, practiceTimingWindowSeconds, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260908-triplet-mode-1';
+import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260909-midi-input-filters-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -21,6 +21,8 @@ const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
+const IGNORE_FEET_KEY = 'triplet-vocabulary-ignore-feet';
+const IGNORE_GHOSTS_KEY = 'triplet-vocabulary-ignore-ghosts';
 const TEMPO_KEY = 'triplet-vocabulary-tempo';
 const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
 let sampleKit = null;
@@ -43,6 +45,7 @@ let queuedRandomize = false;
 let activeVelocities = { ghost:16, normal:64, accent:111 };
 let practiceScore = createPracticeScore();
 let expectedPracticeHits = [];
+let midiActivityTimer = null;
 let countInBeatsRemaining = 0;
 let countInBeat = 0;
 let phraseStartTime = null;
@@ -206,6 +209,8 @@ function initializeDisplayOptions() {
   $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
+  $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
+  $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
 function selectedPattern(slot) {
   return trainerMode === 'triplets'
@@ -364,15 +369,15 @@ function resetPracticeSession() {
   updatePracticeScore();
 }
 function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
-  const expired = expirePracticeHits(practiceScore,expectedPracticeHits,now,practiceTimingWindowSeconds(eventDuration()));
+  const expired = expirePracticeHits(practiceScore,expectedPracticeHits,now,practiceTimingWindows(eventDuration()));
   if (expired) updatePracticeScore();
   expectedPracticeHits = expectedPracticeHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
 }
 function registerPracticeHit(source = 'tap') {
   if (!playing || !audioContext || phraseStartTime === null) return;
   const time = audioContext.currentTime;
-  const windowSeconds = practiceTimingWindowSeconds(eventDuration());
-  if (time < phraseStartTime-windowSeconds) return;
+  const windowSeconds = practiceTimingWindows(eventDuration());
+  if (time < phraseStartTime-windowSeconds.early) return;
   expirePracticeScore(time);
   scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
   updatePracticeScore();
@@ -544,9 +549,25 @@ function attachMidiInput(nextInput) {
   midiInput = nextInput || null;
   if (!midiInput) return;
   midiInput.onmidimessage = event => {
-    const [status,,velocity = 0] = event.data || [];
-    if ((status&0xf0) === 0x90 && velocity > 0) registerPracticeHit('midi');
+    const [status,note,velocity = 0] = event.data || [];
+    if ((status&0xf0) !== 0x90 || velocity <= 0) return;
+    const [ghostVelocity,normalVelocity] = velocityValues();
+    const accepted = midiPracticeHitAccepted(note,velocity,{
+      ignoreFeet:$('#ignore-feet').checked,
+      ignoreGhosts:$('#ignore-ghosts').checked,
+      ghostVelocity,
+      normalVelocity
+    });
+    if (!accepted) return;
+    showMidiActivity();
+    registerPracticeHit('midi');
   };
+}
+function showMidiActivity() {
+  const indicator = $('#midi-activity');
+  clearTimeout(midiActivityTimer);
+  indicator.classList.add('is-active');
+  midiActivityTimer = setTimeout(() => indicator.classList.remove('is-active'),90);
 }
 function refreshMidiPorts() {
   const outputSelect = $('#midi-output');
@@ -628,6 +649,10 @@ $('#metronome').addEventListener('change',event => {
   try { localStorage.setItem(METRONOME_KEY,String(event.target.checked)); } catch {}
   if (playing) { stop(); start(); }
 });
+[$('#ignore-feet'),$('#ignore-ghosts')].forEach(input => input.addEventListener('change',event => {
+  const key = event.target.id === 'ignore-feet' ? IGNORE_FEET_KEY : IGNORE_GHOSTS_KEY;
+  try { localStorage.setItem(key,String(event.target.checked)); } catch {}
+}));
 $('#show-counting').addEventListener('change', event => {
   try { localStorage.setItem(SHOW_COUNTING_KEY, String(event.target.checked)); } catch {}
   renderAll();
