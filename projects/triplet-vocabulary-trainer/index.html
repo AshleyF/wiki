@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="Build and loop three-part phrases from JP Bouvet's nine core triplet melodies.">
+    <meta name="description" content="Practice JP Bouvet's triplet vocabulary or randomized phrases built from every possible triplet cell.">
     <title>Triplet Vocabulary Trainer</title>
     <script>
       (() => {
@@ -13,20 +13,28 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260908-triplet-layout">
+    <link rel="stylesheet" href="styles.css?v=20260908-compact-cards-2">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
     <header class="app-header">
       <h1>Triplet Vocabulary Trainer</h1>
       <div class="header-actions" aria-label="Display options">
-        <label class="view-option" title="Show the triplet count beneath each printed note"><input id="show-counting" type="checkbox" checked> <span>Count</span></label>
+        <label class="view-option" title="Show the triplet count beneath each printed note"><input id="show-counting" type="checkbox"> <span>Count</span></label>
         <label class="view-option" title="Highlight each written note or rest as it plays"><input id="follow-highlighting" type="checkbox" checked> <span>Follow</span></label>
+        <label class="view-option" title="Play a four-beat count-in and a 4/4 pedal-hi-hat metronome, with the downbeat accented"><input id="metronome" type="checkbox"> <span>Metronome</span></label>
+        <label class="header-tempo drum-tempo-control">
+          <span>Tempo</span>
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
+          <input id="tempo" class="drum-tempo" type="number" min="20" max="400" step="1" value="100" aria-label="Playback tempo">
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
+        </label>
         <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" title="Switch theme">☀</button>
       </div>
     </header>
     <main>
       <section class="melody-filter panel" aria-label="Melodies available to the trainer">
+        <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="triplets">Triplets</option></select></label>
         <span class="melody-filter-label">Melodies</span>
         <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
       </section>
@@ -34,14 +42,8 @@
         <button id="play" class="drum-toggle" type="button">▶ Play</button>
         <button id="randomize" type="button">Shuffle</button>
         <label class="auto-control" title="Shuffle the melody two positions ahead after each melody finishes."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
-        <label class="tempo-control drum-tempo-control">
-          <span>Tempo</span>
-          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
-          <input id="tempo" class="drum-tempo" type="number" min="20" max="400" step="1" value="100" aria-label="Playback tempo">
-          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
-        </label>
         <div class="velocity-control drum-velocity-control" role="group" aria-label="Drum velocities" title="Ghost, normal, and accent velocity">
-          <span>Velocity</span>
+          <span>Vel</span>
           <span class="velocity-track drum-velocity-track">
             <span class="velocity-rail drum-velocity-rail" aria-hidden="true"></span>
             <input class="velocity velocity-ghost drum-velocity drum-velocity-ghost" data-velocity-role="ghost" type="range" min="1" max="127" step="1" value="16" aria-label="Ghost-note velocity" title="Ghost: 16">
@@ -49,17 +51,25 @@
             <input class="velocity velocity-accent drum-velocity drum-velocity-accent" data-velocity-role="accent" type="range" min="1" max="127" step="1" value="111" aria-label="Accent velocity" title="Accent: 111">
           </span>
         </div>
-        <label class="midi-control drum-midi-control"><input id="midi-enabled" type="checkbox"> <span>MIDI</span></label>
-        <select id="midi-output" class="drum-midi-output" aria-label="MIDI output" disabled><option value="">MIDI off</option></select>
         <label class="sound-control drum-kit-control"><span>Sound</span><select id="sound" class="drum-kit-select" aria-label="Snare or practice-pad sound" disabled><option value="">Loading…</option></select></label>
+        <label class="midi-port-control"><span>MIDI In</span><select id="midi-input" class="drum-midi-output" aria-label="MIDI input"><option value="">None</option></select></label>
+        <label class="midi-port-control"><span>Out</span><select id="midi-output" class="drum-midi-output" aria-label="MIDI output"><option value="">None</option></select></label>
         <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
       </section>
       <section class="phrase" aria-label="Rolling triplet phrase">
-        <article class="melody-card panel" data-slot="0"><header><label>Melody <select aria-label="First melody"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="1"><header><label>Melody <select aria-label="Second melody"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="2"><header><label>Melody <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="0"><header><label><span class="card-kind">Melody</span> <select aria-label="First melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select aria-label="Second melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
+      </section>
+      <section id="practice-pad" class="practice-pad panel" role="button" tabindex="0" aria-label="Tap the rhythm here or press Space">
+        <div class="practice-stats" aria-label="Practice score">
+          <span><strong id="score-accuracy">—</strong><small>Accuracy</small></span>
+          <span><strong id="score-streak">0</strong><small>Best streak</small></span>
+          <span><strong id="score-hits">0</strong><small>Hits</small></span>
+          <span><strong id="score-misses">0</strong><small>Misses</small></span>
+        </div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260908-shared-triplet-renderer-3"></script>
+    <script type="module" src="app.js?v=20260908-compact-cards-1"></script>
   </body>
 </html>

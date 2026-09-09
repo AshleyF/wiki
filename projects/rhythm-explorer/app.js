@@ -36,7 +36,7 @@ const meters = {
 
 const refs = {
   play: $('#play-toggle'), mute: $('#mute-toggle'), volume: $('#master-volume'), volumeOutput: $('#master-volume-output'),
-  midiEnable: $('#enable-midi'), midiOutput: $('#midi-output'), midiChannel: $('#midi-channel'), midiClock: $('#midi-clock'),
+  midiOutput: $('#midi-output'), midiChannel: $('#midi-channel'), midiClock: $('#midi-clock'),
   liveDrummer: $('#live-drummer'), coreLoopBars: $('#core-loop-bars'), liveEvolution: $('#live-evolution'), liveEvolutionOutput: $('#live-evolution-output'),
   embellishment: $('#embellishment'), embellishmentOutput: $('#embellishment-output'),
   punctuationEvery: $('#punctuation-every'), punctuationChance: $('#punctuation-chance'), punctuationChanceOutput: $('#punctuation-chance-output'),
@@ -1466,8 +1466,8 @@ function syncAudioControls() {
 
 function refreshMidiOutputs() {
   const outputs = midiAccess ? [...midiAccess.outputs.values()].filter(output => output.state === 'connected') : [];
-  const preferredId = pendingMidiOutputId !== null ? pendingMidiOutputId : midiOutput?.id || outputs[0]?.id || '';
-  refs.midiOutput.replaceChildren(new Option('Off', ''));
+  const preferredId = pendingMidiOutputId !== null ? pendingMidiOutputId : midiOutput?.id || '';
+  refs.midiOutput.replaceChildren(new Option('None', ''));
   outputs.forEach(output => refs.midiOutput.add(new Option(output.name || output.manufacturer || 'MIDI output', output.id)));
   refs.midiOutput.disabled = false;
   refs.midiOutput.value = outputs.some(output => output.id === preferredId) ? preferredId : '';
@@ -1480,15 +1480,11 @@ async function enableMidi() {
   if (midiAccess) return;
   if (!navigator.requestMIDIAccess) throw new Error('Web MIDI is not supported by this browser');
   const restartForClock = playing && refs.midiClock.checked;
-  refs.midiEnable.disabled = true;
-  refs.midiEnable.textContent = 'Connecting…';
   try {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiOutputs;
     refreshMidiOutputs();
-    refs.midiEnable.disabled = false;
-    refs.midiEnable.textContent = 'Disable MIDI';
-    refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI enabled; no output found';
+    refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : '';
     saveState();
     if (restartForClock && midiOutput) {
       stopPlayback();
@@ -1497,36 +1493,8 @@ async function enableMidi() {
   } catch (error) {
     midiAccess = null;
     midiOutput = null;
-    refs.midiEnable.disabled = false;
-    refs.midiEnable.textContent = 'Enable MIDI';
     throw error;
   }
-}
-
-function disableMidi() {
-  if (midiOutput) {
-    try {
-      midiOutput.clear?.();
-      if (midiClockRunning) midiOutput.send([0xFC]);
-      const channel = Math.max(0, Math.min(15, Number(refs.midiChannel.value) - 1));
-      midiOutput.send([0xB0 | channel, 120, 0]);
-      midiOutput.send([0xB0 | channel, 123, 0]);
-    } catch (error) { /* The port may already be disconnected. */ }
-  }
-  midiClockRunning = false;
-  midiAccess?.outputs.forEach(output => output.close?.());
-  if (midiAccess) midiAccess.onstatechange = null;
-  midiAccess = null;
-  midiOutput = null;
-  refs.midiOutput.disabled = true;
-  refs.midiEnable.disabled = false;
-  refs.midiEnable.textContent = 'Enable MIDI';
-  refs.status.textContent = 'MIDI disabled';
-}
-
-function toggleMidi() {
-  if (midiAccess) disableMidi();
-  else enableMidi().catch(error => { refs.status.textContent = `MIDI unavailable: ${error.message || error}`; });
 }
 
 function ensureAudio() {
@@ -1848,13 +1816,15 @@ refs.volume.addEventListener('input', () => {
   syncAudioControls();
   saveState();
 });
-refs.midiEnable.addEventListener('click', toggleMidi);
+refs.midiOutput.addEventListener('focus', () => {
+  if (!midiAccess) enableMidi().catch(error => { refs.status.textContent = `MIDI unavailable: ${error.message || error}`; });
+});
 refs.midiOutput.addEventListener('change', () => {
   const restart = playing;
   if (restart) stopPlayback();
   midiOutput = refs.midiOutput.value && midiAccess ? midiAccess.outputs.get(refs.midiOutput.value) : null;
   pendingMidiOutputId = refs.midiOutput.value;
-  refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : 'MIDI output off';
+  refs.status.textContent = midiOutput ? `MIDI: ${midiOutput.name}` : '';
   saveState();
   if (restart) startPlayback();
 });

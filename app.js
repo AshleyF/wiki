@@ -1,6 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-velocity-slider';
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote } from './projects/rhythm-explorer/drum-notation-core.js?v=20260903-2';
-import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-shared-3';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
+import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260904-1';
 
@@ -28,7 +28,6 @@ let activeDrumMidiTimer = null;
 let drumMidiStartNotBefore = 0;
 let activeDrumSwingSlider = null;
 let drumMidiAccess = null;
-let drumMidiEnabled = false;
 let drumMidiOutputId = '';
 const DRUM_MIDI_LOOKAHEAD_SECONDS = 0.1;
 const DRUM_MIDI_SCHEDULER_INTERVAL_MS = 30;
@@ -52,7 +51,6 @@ let pianoScoreMidiInput = null;
 let pianoScoreMidiInputId = '';
 let pianoScoreMidiOutput = null;
 let pianoScoreMidiOutputId = '';
-let pianoScoreMidiEnabled = false;
 let sidebarCollapsed = false;
 let pianoScoreResizeTimer = null;
 let pianoScoreAutoScrollPausedUntil = 0;
@@ -74,7 +72,6 @@ try {
 }
 
 try {
-  drumMidiEnabled = localStorage.getItem('personal-wiki-drum-midi-enabled') === 'true';
   drumMidiOutputId = localStorage.getItem('personal-wiki-drum-midi-output') || '';
   wikiSnareKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_WIKI_SNARE_KIT_ID;
 } catch {
@@ -166,12 +163,11 @@ const fenceRenderers = {
           <input class="piano-score-tempo" type="number" min="20" max="300" step="1" value="${tempo}" aria-label="Piano score tempo in beats per minute">
           <button class="piano-score-tempo-step" type="button" data-tempo-step="10" aria-label="Increase piano score tempo by 10">+</button>
         </label>
-        <button class="piano-score-midi" type="button" aria-label="Connect MIDI" aria-pressed="false">♫ MIDI</button>
-        <label class="piano-score-midi-port"><span>In</span><select class="piano-score-midi-input" aria-label="Piano MIDI input" disabled>
-          <option value="">MIDI input</option>
+        <label class="piano-score-midi-port"><span>MIDI in</span><select class="piano-score-midi-input" aria-label="Piano MIDI input">
+          <option value="">None</option>
         </select></label>
-        <label class="piano-score-midi-port"><span>Out</span><select class="piano-score-midi-output" aria-label="Piano MIDI output" disabled>
-          <option value="">MIDI output</option>
+        <label class="piano-score-midi-port"><span>MIDI out</span><select class="piano-score-midi-output" aria-label="Piano MIDI output">
+          <option value="">None</option>
         </select></label>
         <span class="piano-score-status" role="status" aria-live="polite"></span>
       </div>
@@ -233,13 +229,10 @@ const fenceRenderers = {
             <input class="drum-velocity drum-velocity-accent" data-velocity-role="accent" type="range" min="1" max="127" step="1" value="111" aria-label="Accent velocity" aria-valuetext="111, accent" title="Accent: 111">
           </span>
         </div>
-        <label class="drum-midi-control" title="Send drums on MIDI channel 10 and mute the built-in sounds. Snare sticking uses Superior Drummer center (R) and off-center (L) articulations.">
-          <input class="drum-midi-enabled" type="checkbox"${drumMidiEnabled ? ' checked' : ''}>
-          <span>MIDI</span>
+        <label class="drum-midi-control" title="Choose a MIDI output to send drums on channel 10 and mute built-in sounds, or None to use browser audio.">
+          <span>MIDI out</span>
+          <select class="drum-midi-output" aria-label="Drum MIDI output"><option value="">None</option></select>
         </label>
-        <select class="drum-midi-output" aria-label="Drum MIDI output" disabled>
-          <option value="">${drumMidiEnabled ? 'Connect on Play' : 'MIDI off'}</option>
-        </select>
         <label class="drum-kit-control" title="Select the sampled sound used for the snare part in built-in browser audio. MIDI output uses the kit configured in the receiving application.">
           <span>Sound</span>
           <select class="drum-kit-select" aria-label="Drum sample sound" disabled>
@@ -950,7 +943,7 @@ async function playPianoScoreBlock(block) {
   if (!block.pianoScore) throw new Error('This score did not render.');
   if (!pianoScoreAudioContext) pianoScoreAudioContext = new AudioContextConstructor();
   if (pianoScoreAudioContext.state === 'suspended') await pianoScoreAudioContext.resume();
-  if (pianoScoreMidiEnabled) await preparePianoScoreMidi();
+  if (pianoScoreMidiOutputId) await preparePianoScoreMidi();
   const score = block.pianoScore;
   const tempoInput = block.querySelector('.piano-score-tempo');
   normalizePianoScoreTempo(tempoInput, score.tempo);
@@ -960,7 +953,7 @@ async function playPianoScoreBlock(block) {
     mode: 'playback',
     timers: [],
     nodes: [],
-    midiOutput: pianoScoreMidiEnabled ? pianoScoreMidiOutput : null,
+    midiOutput: pianoScoreMidiOutput,
     midiNotes: new Set(),
     schedulerTimer: null,
     nextEvent: 0,
@@ -1040,33 +1033,23 @@ function syncPianoScoreMidiControls() {
   const inputs = pianoScoreMidiPorts('inputs');
   const outputs = pianoScoreMidiPorts('outputs');
   document.querySelectorAll('.piano-score-block').forEach((block) => {
-    const button = block.querySelector('.piano-score-midi');
     const input = block.querySelector('.piano-score-midi-input');
     const output = block.querySelector('.piano-score-midi-output');
-    button.textContent = pianoScoreMidiEnabled ? '♫ MIDI on' : '♫ MIDI';
-    button.setAttribute('aria-pressed', String(pianoScoreMidiEnabled));
-    button.setAttribute('aria-label', pianoScoreMidiEnabled ? 'Disconnect MIDI' : 'Connect MIDI');
-    button.classList.toggle('is-connected', pianoScoreMidiEnabled);
-
-    input.replaceChildren(...(inputs.length
-      ? inputs.map(port => new Option(port.name || 'MIDI input', port.id))
-      : [new Option(pianoScoreMidiAccess ? 'No MIDI inputs' : 'MIDI input', '')]));
-    output.replaceChildren(...(outputs.length
-      ? outputs.map(port => new Option(port.name || 'MIDI output', port.id))
-      : [new Option(pianoScoreMidiAccess ? 'No MIDI outputs' : 'MIDI output', '')]));
-    input.disabled = !pianoScoreMidiEnabled || inputs.length === 0;
-    output.disabled = !pianoScoreMidiEnabled || outputs.length === 0;
-    if (inputs.some(port => port.id === pianoScoreMidiInputId)) input.value = pianoScoreMidiInputId;
-    if (outputs.some(port => port.id === pianoScoreMidiOutputId)) output.value = pianoScoreMidiOutputId;
+    input.replaceChildren(new Option('None', ''), ...inputs.map(port => new Option(port.name || 'MIDI input', port.id)));
+    output.replaceChildren(new Option('None', ''), ...outputs.map(port => new Option(port.name || 'MIDI output', port.id)));
+    input.disabled = false;
+    output.disabled = false;
+    input.value = inputs.some(port => port.id === pianoScoreMidiInputId) ? pianoScoreMidiInputId : '';
+    output.value = outputs.some(port => port.id === pianoScoreMidiOutputId) ? pianoScoreMidiOutputId : '';
   });
 }
 
 function selectPianoScoreMidiInput(inputId) {
   if (pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = null;
   const inputs = pianoScoreMidiAccess ? [...pianoScoreMidiAccess.inputs.values()] : [];
-  pianoScoreMidiInput = inputs.find(input => input.id === inputId) || inputs[0] || null;
+  pianoScoreMidiInput = inputs.find(input => input.id === inputId) || null;
   pianoScoreMidiInputId = pianoScoreMidiInput?.id || '';
-  if (pianoScoreMidiEnabled && pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = handlePianoScoreMidiMessage;
+  if (pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = handlePianoScoreMidiMessage;
   try { localStorage.setItem('piano-reading-trainer-midi-input', pianoScoreMidiInputId); } catch { /* Ignore storage failures. */ }
   syncPianoScoreMidiControls();
 }
@@ -1086,29 +1069,16 @@ async function preparePianoScoreMidi({ requireInput = false } = {}) {
     pianoScoreMidiAccess.addEventListener?.('statechange', () => {
       if (!pianoScoreMidiAccess.inputs.has(pianoScoreMidiInputId)) selectPianoScoreMidiInput('');
       if (!pianoScoreMidiAccess.outputs.has(pianoScoreMidiOutputId)) {
-        selectPianoScoreMidiOutput(pianoScoreMidiPorts('outputs')[0]?.id || '');
+        selectPianoScoreMidiOutput('');
       }
       syncPianoScoreMidiControls();
     });
   }
-  pianoScoreMidiEnabled = true;
   selectPianoScoreMidiInput(pianoScoreMidiInputId);
-  if (!pianoScoreMidiOutputId && pianoScoreMidiPorts('outputs')[0]) {
-    pianoScoreMidiOutputId = pianoScoreMidiPorts('outputs')[0].id;
-  }
   selectPianoScoreMidiOutput(pianoScoreMidiOutputId);
   if (requireInput && !pianoScoreMidiInput) throw new Error('No MIDI input is available. Connect a keyboard and try again.');
   syncPianoScoreMidiControls();
   return { input: pianoScoreMidiInput, output: pianoScoreMidiOutput };
-}
-
-function disablePianoScoreMidi() {
-  stopPianoScoreBlocks();
-  if (pianoScoreMidiInput) pianoScoreMidiInput.onmidimessage = null;
-  pianoScoreMidiInput = null;
-  pianoScoreMidiOutput = null;
-  pianoScoreMidiEnabled = false;
-  syncPianoScoreMidiControls();
 }
 
 function nextPianoScorePlayableEvent(score, fromIndex) {
@@ -1270,6 +1240,14 @@ function parseDrumPattern(source) {
     }
     return normalized;
   });
+  pattern.notationLayout = classifySingleInstrumentNotation(
+    pattern.rows,
+    pattern.sticking,
+    (token) => {
+      const parsed = parseDrumToken(token);
+      return parsed.hit && parsed.visible;
+    }
+  );
 
   return pattern;
 }
@@ -1372,7 +1350,7 @@ function setDrumVelocityFromInput(input) {
   updateDrumVelocityControl(block);
 }
 
-function makeDrumRestNote(duration = 8, visible = false) {
+function makeDrumRestNote(duration = 8, visible = false, singleLine = false) {
   const Flow = window.Vex.Flow;
   const vexDuration = String(duration);
   if (!visible && typeof Flow.GhostNote === 'function') {
@@ -1382,7 +1360,7 @@ function makeDrumRestNote(duration = 8, visible = false) {
     return note;
   }
 
-  const rest = new Flow.StaveNote({ keys: ['b/4'], duration: `${vexDuration}r` });
+  const rest = new Flow.StaveNote({ keys: [singleLine ? singleLineDrumKey() : 'b/4'], duration: `${vexDuration}r` });
   if (vexDuration.endsWith('d') && typeof Flow.Dot?.buildAndAttach === 'function') {
     Flow.Dot.buildAndAttach([rest], { all: true });
   }
@@ -1392,6 +1370,17 @@ function makeDrumRestNote(duration = 8, visible = false) {
   return rest;
 }
 
+function drumSingleLineKey(row, pattern, index, grace = false) {
+  if (!pattern.notationLayout?.singleLine || row !== pattern.notationLayout.row) return drumRows[row].key;
+  let sticking = '.';
+  if (pattern.notationLayout.handSeparated) {
+    const writtenSticking = pattern.sticking[index];
+    sticking = grace ? oppositeDrumSticking(writtenSticking) : writtenSticking;
+  }
+  const notehead = drumRows[row].key.split('/').slice(2).join('/');
+  return singleLineDrumKey(sticking,notehead);
+}
+
 function makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection) {
   const Flow = window.Vex.Flow;
   const row = rowNames.find((name) => {
@@ -1399,7 +1388,7 @@ function makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection
     return token.hit && !token.visible;
   }) || 'sn';
   const note = new Flow.StaveNote({
-    keys: [drumRows[row].key],
+    keys: [drumSingleLineKey(row,pattern,index)],
     duration: String(duration),
     stem_direction: stemDirection
   });
@@ -1445,7 +1434,7 @@ function drumDurationForSlots(pattern, slots) {
 
 function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern), stemDirection = window.Vex.Flow.StaveNote.STEM_UP) {
   const Flow = window.Vex.Flow;
-  const keys = rows.map((row) => drumRows[row].key);
+  const keys = rows.map((row) => drumSingleLineKey(row,pattern,index));
   const tokens = rows.map((row) => parseDrumToken(pattern.rows[row][index]));
   const note = new Flow.StaveNote({
     keys,
@@ -1485,12 +1474,12 @@ function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern), 
     const kind = parseDrumToken(pattern.rows[graceRow][index]).kind;
     const graceSticking = oppositeDrumSticking(pattern.sticking[index]);
     const graceNotes = Array.from({ length: kind === 'd' ? 2 : 1 }, () => new Flow.GraceNote({
-      keys: [drumRows[graceRow].key],
+      keys: [drumSingleLineKey(graceRow,pattern,index,true)],
       duration: '16',
       slash: kind === 'f',
       stem_direction: stemDirection
     }));
-    if (graceSticking !== '.' && typeof Flow.Annotation === 'function') {
+    if (!pattern.notationLayout?.handSeparated && graceSticking !== '.' && typeof Flow.Annotation === 'function') {
       graceNotes.forEach((graceNote) => {
         const label = new Flow.Annotation(graceSticking)
           .setFont('Arial', 7, 'normal')
@@ -1503,7 +1492,7 @@ function makeDrumHit(rows, index, pattern, duration = drumVexDuration(pattern), 
     note.addModifier(graceGroup, rows.indexOf(graceRow));
   }
   const sticking = pattern.sticking[index];
-  if (sticking !== '.' && typeof Flow.Annotation === 'function') {
+  if (!pattern.notationLayout?.handSeparated && sticking !== '.' && typeof Flow.Annotation === 'function') {
     const label = new Flow.Annotation(renderedDrumSticking(sticking, tokens))
       .setFont('Arial', 10, isAccented ? 'bold' : 'normal')
       .setVerticalJustification(Flow.Annotation.VerticalJustify.BOTTOM);
@@ -1545,7 +1534,7 @@ function makeCanonicalDrumSixteenthVoice(pattern, rowNames = Object.keys(drumRow
     drumSixteenthBeatSpellings[mask].forEach((event) => {
       const step = groupStart + event.step;
       const note = event.rest
-        ? makeDrumRestNote(event.duration, true)
+        ? makeDrumRestNote(event.duration, true,pattern.notationLayout?.singleLine)
         : makeDrumHit(drumActiveRowsAt(pattern, step, rowNames), step, pattern, event.duration, stemDirection);
       note.wikiStep = step;
       note.wikiConsumedSlots = event.slots;
@@ -1566,7 +1555,7 @@ function makeHiddenTripletGroup(pattern, groupStart, rowNames, stemDirection) {
   const groupNotes = spelling.events.map((event) => {
     const step = groupStart + event.step;
     const note = event.rest
-      ? makeDrumRestNote(event.duration, true)
+      ? makeDrumRestNote(event.duration, true,pattern.notationLayout?.singleLine)
       : makeDrumHit(drumActiveRowsAt(pattern, step, rowNames), step, pattern, event.duration, stemDirection);
     note.wikiStep = step;
     note.wikiConsumedSlots = event.slots;
@@ -1631,7 +1620,7 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
       }
 
       if (!activeSteps.length) {
-        const rest = makeDrumRestNote(4, false);
+        const rest = makeDrumRestNote(4, false,pattern.notationLayout?.singleLine);
         rest.wikiStep = groupStart;
         notes.push(rest);
         continue;
@@ -1644,7 +1633,7 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
           ? makeDrumHit(activeRows, index, pattern, duration, stemDirection)
           : hiddenHit
             ? makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection)
-            : makeDrumRestNote(duration, true);
+            : makeDrumRestNote(duration, true,pattern.notationLayout?.singleLine);
         note.wikiStep = index;
         note.wikiTupletGroup = groupStart;
         return note;
@@ -1697,7 +1686,7 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
       if (quarterSlots) note.wikiBeamGroup = Math.floor(step / quarterSlots);
       index += consumedSlots - 1;
     } else {
-      note = makeDrumRestNote(duration, false);
+      note = makeDrumRestNote(duration, false,pattern.notationLayout?.singleLine);
     }
     note.wikiStep = step;
     notes.push(note);
@@ -1849,16 +1838,17 @@ function renderDrumNotation(target, pattern) {
 
   const minWidth = pattern.steps > 8 ? 820 : 620;
   const width = Math.max(target.clientWidth || minWidth, minWidth);
-  const height = 175;
+  const singleLine = pattern.notationLayout?.singleLine;
+  const height = singleLine ? 135 : 175;
   const renderer = new Flow.Renderer(target, Flow.Renderer.Backends.SVG);
   renderer.resize(width, height);
 
   const context = renderer.getContext();
   context.setFont('Arial', 10);
 
-  const stave = new Flow.Stave(16, 28, width - 32);
-  setDrumRepeatBarlines(stave, Flow);
-  stave.addClef('percussion').addTimeSignature(pattern.meter);
+  const stave = new Flow.Stave(16, 28, width - 32,singleLine ? singleLineDrumStaveOptions() : undefined);
+  if (!singleLine) setDrumRepeatBarlines(stave, Flow);
+  if (!singleLine) stave.addClef('percussion').addTimeSignature(pattern.meter);
   stave.setContext(context).draw();
 
   const drumParts = makeDrumVoiceParts(pattern);
@@ -1867,7 +1857,7 @@ function renderDrumNotation(target, pattern) {
   const beams = drumParts.flatMap((part) => makeDrumBeams(part.notes, pattern));
   new Flow.Formatter()
     .joinVoices(voices)
-    .format(voices, width - 150);
+    .format(voices, width - (singleLine ? 64 : 150));
 
   voices.forEach((voice) => voice.draw(context, stave));
   beams.forEach((beam) => beam.setContext(context).draw());
@@ -2030,7 +2020,6 @@ async function syncDrumSampleKitControls() {
 
 function saveDrumMidiPreferences() {
   try {
-    localStorage.setItem('personal-wiki-drum-midi-enabled', String(drumMidiEnabled));
     localStorage.setItem('personal-wiki-drum-midi-output', drumMidiOutputId);
   } catch {
     // MIDI preferences remain session-only when browser storage is unavailable.
@@ -2049,41 +2038,22 @@ function availableDrumMidiOutputs() {
 
 function syncDrumMidiControls() {
   const outputs = availableDrumMidiOutputs();
-  if (outputs.length && !outputs.some((output) => output.id === drumMidiOutputId)) {
-    drumMidiOutputId = outputs[0].id;
+  if (drumMidiAccess && drumMidiOutputId && !outputs.some((output) => output.id === drumMidiOutputId)) {
+    drumMidiOutputId = '';
     saveDrumMidiPreferences();
   }
 
   document.querySelectorAll('.drum-block').forEach((block) => {
-    const enabled = block.querySelector('.drum-midi-enabled');
     const select = block.querySelector('.drum-midi-output');
-    if (!enabled || !select) return;
-    enabled.checked = drumMidiEnabled;
-    select.replaceChildren();
-
-    if (!drumMidiEnabled) {
-      select.append(new Option('MIDI off', ''));
-      select.disabled = true;
-      return;
-    }
-    if (!drumMidiAccess) {
-      select.append(new Option('Connect on Play', ''));
-      select.disabled = true;
-      return;
-    }
-    if (!outputs.length) {
-      select.append(new Option('No MIDI outputs', ''));
-      select.disabled = true;
-      return;
-    }
-
+    if (!select) return;
+    select.replaceChildren(new Option('None', ''));
     outputs.forEach((output) => select.append(new Option(output.name || 'MIDI output', output.id)));
     select.value = drumMidiOutputId;
     select.disabled = false;
   });
 }
 
-async function prepareDrumMidi() {
+async function prepareDrumMidi({ requireOutput = true } = {}) {
   if (!navigator.requestMIDIAccess) throw new Error('This browser does not support Web MIDI.');
   if (!drumMidiAccess) {
     drumMidiAccess = await navigator.requestMIDIAccess();
@@ -2091,7 +2061,7 @@ async function prepareDrumMidi() {
   }
   syncDrumMidiControls();
   const output = availableDrumMidiOutputs().find((candidate) => candidate.id === drumMidiOutputId);
-  if (!output) throw new Error('No MIDI output is available. Connect or enable a MIDI device, then retry.');
+  if (requireOutput && !output) throw new Error('Select a MIDI output, or choose None to use browser audio.');
   setDrumMidiStatus();
   return output;
 }
@@ -2597,7 +2567,7 @@ async function playDrumBlock(block) {
   if (!AudioContextConstructor) throw new Error('This browser does not support Web Audio.');
   if (!drumAudioContext) drumAudioContext = new AudioContextConstructor();
   if (drumAudioContext.state === 'suspended') await drumAudioContext.resume();
-  block.drumMidiOutput = drumMidiEnabled ? await prepareDrumMidi() : null;
+  block.drumMidiOutput = drumMidiOutputId ? await prepareDrumMidi() : null;
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
   if (!block.drumMidiOutput) {
@@ -2626,7 +2596,7 @@ async function restartDrumBlockIfPlaying(block) {
   } catch (error) {
     console.error(error);
     stopDrumBlocks();
-    if (drumMidiEnabled) setDrumMidiStatus(error.message || 'MIDI playback failed.');
+    if (drumMidiOutputId) setDrumMidiStatus(error.message || 'MIDI playback failed.');
     setDrumButton(block, 'error');
   }
 }
@@ -2660,31 +2630,6 @@ content.addEventListener('click', async (event) => {
     input.value = String(normalizePianoScoreTempo(input) + Number(pianoScoreTempoStep.dataset.tempoStep || 0));
     normalizePianoScoreTempo(input);
     pausePianoScoreAutoScroll();
-    return;
-  }
-
-  const pianoScoreMidi = event.target.closest('.piano-score-midi');
-  if (pianoScoreMidi) {
-    const block = pianoScoreMidi.closest('.piano-score-block');
-    if (pianoScoreMidiEnabled) {
-      disablePianoScoreMidi();
-      setPianoScoreStatus(block, 'MIDI disconnected.');
-      return;
-    }
-    pianoScoreMidi.disabled = true;
-    pianoScoreMidi.textContent = 'Connecting…';
-    try {
-      const { input, output } = await preparePianoScoreMidi();
-      const connections = [input && `in: ${input.name}`, output && `out: ${output.name}`].filter(Boolean);
-      setPianoScoreStatus(block, connections.length ? `MIDI ${connections.join(' · ')}` : 'MIDI enabled; no devices found.');
-    } catch (error) {
-      console.error(error);
-      pianoScoreMidiEnabled = false;
-      syncPianoScoreMidiControls();
-      setPianoScoreStatus(block, error.message || 'Could not connect to MIDI.', true);
-    } finally {
-      pianoScoreMidi.disabled = false;
-    }
     return;
   }
 
@@ -2802,7 +2747,7 @@ content.addEventListener('click', async (event) => {
     } catch (error) {
       console.error(error);
       stopDrumBlocks();
-      if (drumMidiEnabled) setDrumMidiStatus(error.message || 'MIDI playback failed.');
+      if (drumMidiOutputId) setDrumMidiStatus(error.message || 'MIDI playback failed.');
       setDrumButton(block, 'error');
     }
     return;
@@ -2848,11 +2793,20 @@ content.addEventListener('dblclick', (event) => {
 });
 
 content.addEventListener('pointerdown', (event) => {
-  if (event.target.closest('.piano-score-tempo-control, .piano-score-midi-port, .piano-score-midi')) {
+  if (event.target.closest('.piano-score-tempo-control, .piano-score-midi-port')) {
     pausePianoScoreAutoScroll();
   }
   const swingInput = event.target.closest('.drum-swing');
   if (swingInput) activeDrumSwingSlider = swingInput;
+});
+
+content.addEventListener('focusin', (event) => {
+  if (event.target.closest('.piano-score-midi-input, .piano-score-midi-output') && !pianoScoreMidiAccess) {
+    preparePianoScoreMidi().catch(error => setPianoScoreStatus(event.target.closest('.piano-score-block'), error.message || 'Could not connect to MIDI.', true));
+  }
+  if (event.target.closest('.drum-midi-output') && !drumMidiAccess) {
+    prepareDrumMidi({ requireOutput: false }).catch(error => setDrumMidiStatus(error.message || 'Could not connect to MIDI.'));
+  }
 });
 
 window.addEventListener('pointerup', () => {
@@ -2900,7 +2854,8 @@ content.addEventListener('change', async (event) => {
     selectPianoScoreMidiInput(pianoMidiInput.value);
     if (followingBlock) {
       stopPianoScoreBlocks();
-      await followPianoScoreBlock(followingBlock);
+      if (pianoScoreMidiInput) await followPianoScoreBlock(followingBlock);
+      else setPianoScoreStatus(followingBlock, 'MIDI input set to None.');
     }
     return;
   }
@@ -2933,28 +2888,6 @@ content.addEventListener('change', async (event) => {
     saveDrumSampleKitPreference();
     await syncDrumSampleKitControls();
     if (wasPlaying) await restartDrumBlockIfPlaying(block);
-    return;
-  }
-
-  const midiToggle = event.target.closest('.drum-midi-enabled');
-  if (midiToggle) {
-    const block = midiToggle.closest('.drum-block');
-    const wasPlaying = block?.dataset.playing === 'true';
-    drumMidiEnabled = midiToggle.checked;
-    saveDrumMidiPreferences();
-    syncDrumMidiControls();
-    try {
-      if (drumMidiEnabled) await prepareDrumMidi();
-      else setDrumMidiStatus();
-      if (wasPlaying) await restartDrumBlockIfPlaying(block);
-    } catch (error) {
-      console.error(error);
-      setDrumMidiStatus(error.message || 'Could not enable MIDI.');
-      if (wasPlaying) {
-        stopDrumBlocks();
-        setDrumButton(block, 'error');
-      }
-    }
     return;
   }
 

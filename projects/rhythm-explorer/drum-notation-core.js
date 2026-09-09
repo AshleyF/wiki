@@ -9,6 +9,32 @@ export const DRUM_HIDDEN_TRIPLET_SPELLINGS = Object.freeze({
   '111': { tuplet:true, events:[{ step:0, slots:1, duration:'8' }, { step:1, slots:1, duration:'8' }, { step:2, slots:1, duration:'8' }] }
 });
 
+export function classifySingleInstrumentNotation(rows, sticking, isVisibleHit) {
+  const visibleRows = Object.entries(rows)
+    .filter(([,tokens]) => tokens.some((token,index) => isVisibleHit(token,index)))
+    .map(([name]) => name);
+  if (visibleRows.length !== 1) {
+    return { singleLine:false, row:null, handSeparated:false };
+  }
+
+  const row = visibleRows[0];
+  const visibleSteps = rows[row]
+    .map((token,index) => isVisibleHit(token,index) ? index : -1)
+    .filter(index => index >= 0);
+  const handSeparated = visibleSteps.length > 0
+    && visibleSteps.every(index => ['R','L'].includes(sticking[index]));
+  return { singleLine:true, row, handSeparated };
+}
+
+export function singleLineDrumStaveOptions() {
+  return { num_lines:1 };
+}
+
+export function singleLineDrumKey(sticking = '.', notehead = '') {
+  const pitch = sticking === 'R' ? 'g/5' : sticking === 'L' ? 'e/5' : 'f/5';
+  return notehead ? `${pitch}/${notehead}` : pitch;
+}
+
 export function addDrumStepElement(stepElements, step, element) {
   if (!element || !stepElements[step] || stepElements[step].includes(element)) return;
   stepElements[step].push(element);

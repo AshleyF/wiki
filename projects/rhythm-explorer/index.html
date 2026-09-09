@@ -81,10 +81,9 @@
             <div class="transport-more-menu">
               <button id="clear-pattern" class="quiet-button" type="button">Clear pattern</button>
               <button id="copy-source" class="quiet-button" type="button">Copy source</button>
-              <button id="enable-midi" class="quiet-button" type="button" title="Allow this page to send drum notes to a MIDI device or virtual port">Enable MIDI</button>
               <label class="compact-control midi-control">
                 <span>MIDI out</span>
-                <select id="midi-output" disabled><option value="">Off</option></select>
+                <select id="midi-output"><option value="">None</option></select>
               </label>
               <label class="compact-control midi-channel-control">
                 <span>Channel</span>
@@ -360,6 +359,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
-    <script type="module" src="app.js?v=20260904-audio-output"></script>
+    <script type="module" src="app.js?v=20260908-midi-selectors-1"></script>
   </body>
 </html>

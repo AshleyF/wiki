@@ -1,4 +1,4 @@
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS } from './drum-notation-core.js';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, singleLineDrumKey, singleLineDrumStaveOptions } from './drum-notation-core.js?v=20260908-single-line-2';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const GLYPH_CENTER_OFFSETS = Object.freeze({
@@ -84,16 +84,12 @@ export function renderReducedTripletSequence({
   gridLeft,
   gridRight,
   cellGap = 0,
-  clef = false,
-  timeSignature = '',
   annotationForStep = null
 }) {
   const renderer = new Flow.Renderer(target,Flow.Renderer.Backends.SVG);
   renderer.resize(width,height);
   const context = renderer.getContext();
-  const stave = new Flow.Stave(4,staveY,width-8);
-  if (clef) stave.addClef('percussion');
-  if (timeSignature) stave.addTimeSignature(timeSignature);
+  const stave = new Flow.Stave(4,staveY,width-8,singleLineDrumStaveOptions());
   stave.setContext(context).draw();
 
   const geometry = reducedTripletGridGeometry(gridLeft,gridRight,masks.length,cellGap);
@@ -104,7 +100,7 @@ export function renderReducedTripletSequence({
       const globalStep = (cellIndex*3)+event.step;
       const note = new Flow.StaveNote({
         clef:'percussion',
-        keys:[event.rest ? 'b/4' : 'c/5'],
+        keys:[singleLineDrumKey()],
         duration:`${event.duration}${event.rest ? 'r' : ''}`,
         stem_direction:Flow.StaveNote.STEM_UP
       });
@@ -131,7 +127,7 @@ export function renderReducedTripletSequence({
   cells.flatMap((cell) => cell.notes).forEach((note) => note.draw());
   cells.forEach((cell) => cell.beam?.setContext(context).draw());
   const svg = target.querySelector('svg');
-  const bracketY = staveY+9;
+  const bracketY = staveY-11;
   cells.forEach((cell,cellIndex) => {
     if (cell.mask === '111') appendNumber(svg,cell.geometry.center,bracketY+4);
     else if (DRUM_HIDDEN_TRIPLET_SPELLINGS[cell.mask].tuplet) {

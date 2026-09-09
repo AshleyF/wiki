@@ -1,7 +1,8 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js';
-import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-shared-3';
+import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, practiceAccuracy, practiceTimingWindowSeconds, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260908-triplet-mode-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -14,17 +15,24 @@ const selectors = cards.map(card => card.querySelector('select'));
 const sampleLibrary = new DrumSampleLibrary('../rhythm-explorer/assets/drums/library.json');
 const DEFAULT_SAMPLE_KIT_ID = 'ludwig-black-beauty-snare-center';
 const ENABLED_MELODIES_KEY = 'triplet-vocabulary-enabled-melodies';
+const ENABLED_TRIPLETS_KEY = 'triplet-vocabulary-enabled-triplets';
+const TRAINER_MODE_KEY = 'triplet-vocabulary-trainer-mode';
 const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
+const METRONOME_KEY = 'triplet-vocabulary-metronome';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
+const TEMPO_KEY = 'triplet-vocabulary-tempo';
 const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
-const TRIPLET_COUNTS = ['1', '&', 'a', '2', '&', 'a'];
 let sampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
+let trainerMode = loadTrainerMode();
 let enabledMelodies = loadEnabledMelodies();
+let enabledTriplets = loadEnabledTriplets();
+let tripletCards = Array.from({ length:3 },() => ['100','100','100','100']);
 let audioContext = null;
 let midiAccess = null;
+let midiInput = null;
 let midiOutput = null;
 let playing = false;
 let scheduler = null;
@@ -33,10 +41,18 @@ let eventNumber = 0;
 let activeSlot = 0;
 let queuedRandomize = false;
 let activeVelocities = { ghost:16, normal:64, accent:111 };
+let practiceScore = createPracticeScore();
+let expectedPracticeHits = [];
+let countInBeatsRemaining = 0;
+let countInBeat = 0;
+let phraseStartTime = null;
 const scheduledSources = new Set();
 const visualTimers = new Set();
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
+function loadTrainerMode() {
+  try { return localStorage.getItem(TRAINER_MODE_KEY) === 'triplets' ? 'triplets' : 'vocabulary'; } catch { return 'vocabulary'; }
+}
 function loadEnabledMelodies() {
   try {
     const saved = JSON.parse(localStorage.getItem(ENABLED_MELODIES_KEY) || 'null');
@@ -47,10 +63,40 @@ function loadEnabledMelodies() {
   } catch {}
   return new Set(ALL_MELODY_INDEXES);
 }
+function loadEnabledTriplets() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ENABLED_TRIPLETS_KEY) || 'null');
+    const valid = Array.isArray(saved) ? saved.filter(mask => TRIPLET_MASKS.includes(mask)) : [];
+    if (valid.length) return new Set(valid);
+  } catch {}
+  return new Set(TRIPLET_MASKS);
+}
 function saveEnabledMelodies() {
   try { localStorage.setItem(ENABLED_MELODIES_KEY, JSON.stringify(enabledMelodyIndexes())); } catch {}
 }
+function saveEnabledTriplets() {
+  try { localStorage.setItem(ENABLED_TRIPLETS_KEY,JSON.stringify(enabledTripletMasks())); } catch {}
+}
+function setTempo(value, { persist = true } = {}) {
+  const tempo = Math.max(20,Math.min(400,Math.round(Number(value) || 100)));
+  $('#tempo').value = String(tempo);
+  if (persist) {
+    try { localStorage.setItem(TEMPO_KEY,String(tempo)); } catch {}
+  }
+  return tempo;
+}
+function initializeTempo() {
+  let saved = 100;
+  try { saved = localStorage.getItem(TEMPO_KEY) || 100; } catch {}
+  setTempo(saved,{ persist:false });
+}
+function persistTempoInput(value) {
+  const tempo = Number(value);
+  if (!Number.isFinite(tempo) || tempo < 20 || tempo > 400) return;
+  try { localStorage.setItem(TEMPO_KEY,String(Math.round(tempo))); } catch {}
+}
 function enabledMelodyIndexes() { return ALL_MELODY_INDEXES.filter(index => enabledMelodies.has(index)); }
+function enabledTripletMasks() { return TRIPLET_MASKS.filter(mask => enabledTriplets.has(mask)); }
 function populateSelector(select, preferredIndex) {
   const choices = enabledMelodyIndexes();
   const selected = enabledMelodies.has(preferredIndex) ? preferredIndex : choices[0];
@@ -62,37 +108,83 @@ function initializeSelectors() {
     populateSelector(select, enabledMelodies.has(slot) ? slot : enabledMelodyIndexes()[slot % enabledMelodies.size]);
   });
 }
-function initializeMelodyFilter() {
-  const container = $('#melody-filter-options');
-  container.replaceChildren(...ALL_MELODY_INDEXES.map(index => {
-    const label = document.createElement('label');
-    label.title = melodyLabel(index);
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.value = String(index);
-    input.checked = enabledMelodies.has(index);
-    input.setAttribute('aria-label', `Include melody ${melodyLabel(index)}`);
+function renderTripletFilterNotations() {
+  const VF = vexflow();
+  if (!VF) return;
+  document.querySelectorAll('.triplet-filter-notation').forEach(target => {
+    renderReducedTripletSequence({
+      Flow:VF,
+      target,
+      masks:[target.dataset.mask],
+      width:82,
+      height:100,
+      staveY:20,
+      gridLeft:7,
+      gridRight:75
+    });
+    const svg = target.querySelector('svg');
+    svg?.setAttribute('viewBox','0 0 82 100');
+    svg?.setAttribute('preserveAspectRatio','xMidYMid meet');
+  });
+}
+function patternFilterOption(value,labelText,checked,tripletMask = '') {
+  const label = document.createElement('label');
+  label.title = labelText;
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.value = String(value);
+  input.checked = checked;
+  input.setAttribute('aria-label',`Include ${labelText}`);
+  label.append(input);
+  if (tripletMask) {
+    label.classList.add('triplet-filter-option');
+    const notation = document.createElement('span');
+    notation.className = 'triplet-filter-notation drum-render';
+    notation.dataset.mask = tripletMask;
+    notation.setAttribute('aria-hidden','true');
+    const accessible = document.createElement('span');
+    accessible.className = 'visually-hidden';
+    accessible.textContent = labelText;
+    label.append(notation,accessible);
+  } else {
     const text = document.createElement('span');
-    text.textContent = melodyLabel(index);
-    label.append(input, text);
-    return label;
-  }));
-  container.addEventListener('change', event => {
-    const input = event.target.closest('input[type="checkbox"]');
-    if (!input) return;
+    text.textContent = labelText;
+    label.append(text);
+  }
+  return label;
+}
+function initializePatternFilter() {
+  const container = $('#melody-filter-options');
+  const isTriplets = trainerMode === 'triplets';
+  $('.melody-filter-label').textContent = isTriplets ? 'Triplets' : 'Melodies';
+  container.setAttribute('aria-label',isTriplets ? 'Enabled triplet cells' : 'Enabled triplet melodies');
+  container.replaceChildren(...(isTriplets
+    ? TRIPLET_MASKS.map(mask => patternFilterOption(mask,`triplet ${mask.split('').join(' ')}`,enabledTriplets.has(mask),mask))
+    : ALL_MELODY_INDEXES.map(index => patternFilterOption(index,melodyLabel(index),enabledMelodies.has(index)))));
+  if (isTriplets) renderTripletFilterNotations();
+}
+function changeEnabledPatterns(event) {
+  const input = event.target.closest('input[type="checkbox"]');
+  if (!input) return;
+  const enabled = trainerMode === 'triplets' ? enabledTriplets : enabledMelodies;
+  if (!input.checked && enabled.size === 1) {
+    input.checked = true;
+    setStatus(`Keep at least one ${trainerMode === 'triplets' ? 'triplet' : 'melody'} enabled.`);
+    return;
+  }
+  if (playing) stop();
+  if (trainerMode === 'triplets') {
+    if (input.checked) enabledTriplets.add(input.value); else enabledTriplets.delete(input.value);
+    saveEnabledTriplets();
+    randomizeAll();
+  } else {
     const index = Number(input.value);
-    if (!input.checked && enabledMelodies.size === 1) {
-      input.checked = true;
-      setStatus('Keep at least one melody enabled.');
-      return;
-    }
-    if (playing) stop();
     if (input.checked) enabledMelodies.add(index); else enabledMelodies.delete(index);
     saveEnabledMelodies();
-    selectors.forEach(select => populateSelector(select, Number(select.value)));
+    selectors.forEach(select => populateSelector(select,Number(select.value)));
     renderAll();
-    setStatus('');
-  });
+  }
+  setStatus('');
 }
 function initializeAutoShuffle() {
   try {
@@ -111,10 +203,25 @@ function loadBooleanPreference(key, fallback = true) {
   }
 }
 function initializeDisplayOptions() {
-  $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY);
+  $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
+  $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
 }
-function selectedMelody(slot) { return MELODIES[Number(selectors[slot].value)] || MELODIES[0]; }
+function selectedPattern(slot) {
+  return trainerMode === 'triplets'
+    ? rolesForTripletMasks(tripletCards[slot])
+    : MELODIES[Number(selectors[slot].value)] || MELODIES[0];
+}
+function selectedMasks(slot) {
+  if (trainerMode === 'triplets') return tripletCards[slot];
+  const melody = selectedPattern(slot);
+  return [0,3].map(groupStart => melody.slice(groupStart,groupStart+3).map(role => role === 'A' ? '1' : '0').join(''));
+}
+function activeCardCount() { return 3; }
+function stepsPerCard() { return trainerMode === 'triplets' ? 12 : 6; }
+function tripletCountForStep(step) {
+  return step%3 === 0 ? String(Math.floor(step/3)+1) : step%3 === 1 ? '&' : 'a';
+}
 function setStatus(message) { $('#status').textContent = message; }
 function vexflow() { return window.Vex?.Flow || window.VexFlow; }
 function sampleKitLabel(definition) {
@@ -146,36 +253,34 @@ function renderCard(slot) {
   target.replaceChildren();
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
-  const melody = selectedMelody(slot);
-  const masks = [0,3].map(groupStart => melody.slice(groupStart,groupStart+3).map(role => role === 'A' ? '1' : '0').join(''));
-  const cellGap = 12;
-  const desiredGridWidth = 308;
-  const availableLeft = slot === 0 ? 68 : 14;
+  const masks = selectedMasks(slot);
+  const cellGap = trainerMode === 'triplets' ? 8 : 12;
+  const desiredGridWidth = trainerMode === 'triplets' ? 520 : 308;
+  const availableLeft = 14;
   const availableRight = width-10;
   const gridWidth = Math.min(desiredGridWidth,availableRight-availableLeft);
-  const gridLeft = slot === 0 ? availableLeft : (width-gridWidth)/2;
+  const gridLeft = (width-gridWidth)/2;
   const rendered = renderReducedTripletSequence({
     Flow:VF,
     target,
     masks,
     width,
-    height:145,
+    height:124,
     staveY:20,
     gridLeft,
     gridRight:gridLeft+gridWidth,
     cellGap,
-    clef:slot === 0,
-    timeSignature:slot === 0 ? '2/4' : '',
-    annotationForStep:$('#show-counting').checked ? step => TRIPLET_COUNTS[step] : null
+    annotationForStep:$('#show-counting').checked ? tripletCountForStep : null
   });
   const notes = rendered.notes;
-  const stepElements = Array.from({ length:6 }, () => []);
+  const stepCount = masks.length*3;
+  const stepElements = Array.from({ length:stepCount }, () => []);
   const stems = renderedDrumStems(target,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
   notes.forEach(note => {
     note.trainerEvent = note.reducedTripletEvent;
     note.trainerStep = note.reducedTripletStep;
     const element = note.getSVGElement?.();
-    const coveredSteps = Array.from({ length:note.trainerEvent.slots },(_,offset) => note.trainerStep+offset).filter(step => step < 6);
+    const coveredSteps = Array.from({ length:note.trainerEvent.slots },(_,offset) => note.trainerStep+offset).filter(step => step < stepCount);
     element?.classList.add('drum-step');
     coveredSteps.forEach(step => addDrumStepElement(stepElements,step,element));
     const stem = renderedStemForNote(stems,note);
@@ -187,8 +292,28 @@ function renderCard(slot) {
   cards[slot].stepElements = stepElements;
 }
 function renderAll() {
-  cards.forEach((_, slot) => renderCard(slot));
+  cards.forEach((card,slot) => {
+    if (slot < activeCardCount()) renderCard(slot);
+    else {
+      card.querySelector('.notation').replaceChildren();
+      card.stepElements = [];
+    }
+  });
   updatePositions(activeSlot);
+}
+function updateModeUI({ randomizeTriplets = false } = {}) {
+  document.body.dataset.trainerMode = trainerMode;
+  $('#trainer-mode').value = trainerMode;
+  cards.forEach((card,slot) => {
+    card.hidden = slot >= activeCardCount();
+    card.querySelector('.card-kind').textContent = trainerMode === 'triplets'
+      ? `Bar ${slot+1}`
+      : 'Melody';
+  });
+  activeSlot = Math.min(activeSlot,activeCardCount()-1);
+  initializePatternFilter();
+  if (trainerMode === 'triplets' && randomizeTriplets) randomizeTripletCards();
+  renderAll();
 }
 function updatePositions(slot) {
   activeSlot = slot;
@@ -200,8 +325,17 @@ function randomMelody() {
   const enabled = enabledMelodyIndexes();
   return enabled[Math.floor(Math.random() * enabled.length)];
 }
+function randomizeTripletCards() {
+  const twelveTriplets = randomTripletMasks(enabledTripletMasks(),12);
+  tripletCards = Array.from({ length:3 },(_,slot) => twelveTriplets.slice(slot*4,slot*4+4));
+}
+function randomizeSlot(slot) {
+  if (trainerMode === 'triplets') tripletCards[slot] = randomTripletMasks(enabledTripletMasks(),4);
+  else selectors[slot].value = String(randomMelody());
+  renderCard(slot);
+}
 function randomizeAll() {
-  selectors.forEach((select, slot) => { select.value = String(randomMelody()); renderCard(slot); });
+  cards.slice(0,activeCardCount()).forEach((_,slot) => randomizeSlot(slot));
   updatePositions(activeSlot);
 }
 function requestRandomize() {
@@ -213,6 +347,36 @@ function requestRandomize() {
 }
 
 function eventDuration() { return 60 / Math.max(30,Number($('#tempo').value) || 100) / 3; }
+function quarterDuration() { return eventDuration()*3; }
+function updatePracticeScore() {
+  const attempts = practiceScore.hits+practiceScore.misses;
+  $('#score-accuracy').textContent = attempts
+    ? `${practiceAccuracy(practiceScore).toFixed(1).replace('.0','')}%`
+    : '—';
+  $('#score-streak').textContent = String(practiceScore.bestStreak);
+  $('#score-hits').textContent = String(practiceScore.hits);
+  $('#score-misses').textContent = String(practiceScore.misses);
+}
+function resetPracticeSession() {
+  practiceScore = createPracticeScore();
+  expectedPracticeHits = [];
+  phraseStartTime = null;
+  updatePracticeScore();
+}
+function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
+  const expired = expirePracticeHits(practiceScore,expectedPracticeHits,now,practiceTimingWindowSeconds(eventDuration()));
+  if (expired) updatePracticeScore();
+  expectedPracticeHits = expectedPracticeHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
+}
+function registerPracticeHit(source = 'tap') {
+  if (!playing || !audioContext || phraseStartTime === null) return;
+  const time = audioContext.currentTime;
+  const windowSeconds = practiceTimingWindowSeconds(eventDuration());
+  if (time < phraseStartTime-windowSeconds) return;
+  expirePracticeScore(time);
+  scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
+  updatePracticeScore();
+}
 function midiTimestamp(time) { return performance.now() + Math.max(0, time - audioContext.currentTime) * 1000; }
 function scheduleMidi(note, velocity, time, duration = .06) {
   if (!midiOutput) return;
@@ -271,35 +435,62 @@ function showStep(slot, step, time) {
   visualTimers.add(timer);
 }
 function crossMelodyBoundary(previousSlot, nextSlot) {
-  if (previousSlot === 2 && queuedRandomize) {
+  if (previousSlot === activeCardCount()-1 && queuedRandomize) {
     queuedRandomize = false; $('#randomize').textContent = 'Shuffle'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
-    const select = selectors[previousSlot];
-    const nextMelody = String(randomMelody());
+    const nextPattern = trainerMode === 'triplets'
+      ? randomTripletMasks(enabledTripletMasks(),4)
+      : String(randomMelody());
     const delay = Math.max(0, (nextEventTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);
-      select.value = nextMelody;
+      if (trainerMode === 'triplets') tripletCards[previousSlot] = nextPattern;
+      else selectors[previousSlot].value = nextPattern;
       renderCard(previousSlot);
     }, delay);
     visualTimers.add(timer);
   }
 }
+function scheduleCountInBeat() {
+  const currentVelocities = velocityValues();
+  const beat = countInBeat+1;
+  scheduleHat(nextEventTime,beat === 1 ? currentVelocities[2] : currentVelocities[1]);
+  nextEventTime += quarterDuration();
+  countInBeat += 1;
+  countInBeatsRemaining -= 1;
+}
 function scheduleEvent() {
-  const step = eventNumber % 6;
-  const slot = Math.floor(eventNumber/6) % 3;
-  if (eventNumber > 0 && step === 0) crossMelodyBoundary((slot+2)%3, slot);
-  const role = selectedMelody(slot)[step];
+  if (countInBeatsRemaining > 0) {
+    scheduleCountInBeat();
+    return;
+  }
+  const cardSteps = stepsPerCard();
+  const cardCount = activeCardCount();
+  const step = eventNumber%cardSteps;
+  const slot = Math.floor(eventNumber/cardSteps)%cardCount;
+  if (eventNumber > 0 && step === 0) crossMelodyBoundary((slot+cardCount-1)%cardCount,slot);
+  const role = selectedPattern(slot)[step];
   const currentVelocities = velocityValues();
   const velocity = midiOutput
     ? currentVelocities[role === 'A' ? 1 : 0]
     : activeVelocities[role === 'A' ? 'normal' : 'ghost'];
+  if (phraseStartTime === null) {
+    phraseStartTime = nextEventTime;
+  }
+  if (role === 'A') expectedPracticeHits.push({ time:nextEventTime,slot,step,matched:false,expired:false });
   scheduleSnare(nextEventTime, velocity);
-  if (step === 0 || step === 3) scheduleHat(nextEventTime, currentVelocities[2]);
+  if ($('#metronome').checked && step%3 === 0) {
+    const quarterBeat = Math.floor(eventNumber/3);
+    scheduleHat(nextEventTime,quarterBeat%4 === 0 ? currentVelocities[2] : currentVelocities[1]);
+  }
   showStep(slot, step, nextEventTime);
   nextEventTime += eventDuration(eventNumber); eventNumber += 1;
 }
-function schedulerTick() { if (playing) while (nextEventTime < audioContext.currentTime+.11) scheduleEvent(); }
+function schedulerTick() {
+  if (!playing) return;
+  expirePracticeScore();
+  while (nextEventTime < audioContext.currentTime+.11) scheduleEvent();
+}
 async function prepareAudio() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) throw new Error('Web Audio is unavailable in this browser.');
@@ -320,7 +511,9 @@ async function start() {
   try {
     await prepareAudio();
     if (document.hidden) throw new Error('Return to this tab before starting playback.');
-    playing = true; eventNumber = 0; activeSlot = 0; nextEventTime = audioContext.currentTime+.08;
+    const withMetronome = $('#metronome').checked;
+    resetPracticeSession();
+    playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
     $('#play').textContent = '■ Stop'; updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
   } catch (error) { $('#play').textContent = '▶ Play'; setStatus(error.message || 'Could not start playback'); }
@@ -330,37 +523,57 @@ function stop() {
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();
   cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  expectedPracticeHits = [];
+  phraseStartTime = null;
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
   $('#play').textContent = '▶ Play'; setStatus('');
 }
 
-function refreshMidiOutputs() {
-  const select = $('#midi-output');
-  const remembered = localStorage.getItem('triplet-vocabulary-midi-output') || '';
+function attachMidiInput(nextInput) {
+  if (midiInput) midiInput.onmidimessage = null;
+  midiInput = nextInput || null;
+  if (!midiInput) return;
+  midiInput.onmidimessage = event => {
+    const [status,,velocity = 0] = event.data || [];
+    if ((status&0xf0) === 0x90 && velocity > 0) registerPracticeHit('midi');
+  };
+}
+function refreshMidiPorts() {
+  const outputSelect = $('#midi-output');
+  const inputSelect = $('#midi-input');
+  let rememberedOutput = '';
+  let rememberedInput = '';
+  try {
+    rememberedOutput = localStorage.getItem('triplet-vocabulary-midi-output') || '';
+    rememberedInput = localStorage.getItem('triplet-vocabulary-midi-input') || '';
+  } catch {}
   const outputs = midiAccess ? [...midiAccess.outputs.values()] : [];
-  select.replaceChildren();
-  if (!outputs.length) select.add(new Option('No MIDI outputs',''));
-  else outputs.forEach(output => select.add(new Option(output.name || output.manufacturer || 'MIDI output', output.id)));
-  select.disabled = !midiAccess || !outputs.length;
-  if (outputs.length) select.value = outputs.some(output => output.id === remembered) ? remembered : outputs[0].id;
-  midiOutput = outputs.find(output => output.id === select.value) || null;
+  const inputs = midiAccess ? [...midiAccess.inputs.values()] : [];
+  const currentOutput = outputSelect.value;
+  outputSelect.replaceChildren(new Option('None',''));
+  outputs.forEach(output => outputSelect.add(new Option(output.name || output.manufacturer || 'MIDI output',output.id)));
+  outputSelect.disabled = false;
+  outputSelect.value = outputs.some(output => output.id === rememberedOutput)
+    ? rememberedOutput
+    : (outputs.some(output => output.id === currentOutput) ? currentOutput : '');
+  midiOutput = outputs.find(output => output.id === outputSelect.value) || null;
+
+  const currentInput = inputSelect.value;
+  inputSelect.replaceChildren(new Option('None',''));
+  inputs.forEach(input => inputSelect.add(new Option(input.name || input.manufacturer || 'MIDI input',input.id)));
+  inputSelect.disabled = false;
+  inputSelect.value = inputs.some(input => input.id === rememberedInput)
+    ? rememberedInput
+    : (inputs.some(input => input.id === currentInput) ? currentInput : '');
+  attachMidiInput(inputs.find(input => input.id === inputSelect.value));
 }
 async function enableMidi() {
-  if (!navigator.requestMIDIAccess) { $('#midi-enabled').checked = false; setStatus('MIDI unavailable'); return; }
+  if (!navigator.requestMIDIAccess) { setStatus('MIDI unavailable'); return; }
   try {
     midiAccess ||= await navigator.requestMIDIAccess({ sysex:false });
-    midiAccess.onstatechange = refreshMidiOutputs; refreshMidiOutputs();
-    setStatus(midiAccess.outputs.size ? '' : 'No MIDI outputs');
-  } catch { $('#midi-enabled').checked = false; setStatus('MIDI unavailable'); }
-}
-function disableMidi() {
-  if (playing) stop();
-  midiOutput = null;
-  if (midiAccess) midiAccess.onstatechange = null;
-  midiAccess = null;
-  $('#midi-output').replaceChildren(new Option('MIDI off',''));
-  $('#midi-output').disabled = true;
-  setStatus('');
+    midiAccess.onstatechange = refreshMidiPorts; refreshMidiPorts();
+    setStatus(midiAccess.inputs.size || midiAccess.outputs.size ? '' : 'No MIDI devices');
+  } catch { setStatus('MIDI unavailable'); }
 }
 async function prepareChangedVelocities() {
   if (!audioContext || !sampleKit || midiOutput) return;
@@ -372,12 +585,34 @@ async function prepareChangedVelocities() {
     setStatus('');
   } catch { setStatus('Velocity samples unavailable'); }
 }
-initializeMelodyFilter(); initializeAutoShuffle(); initializeDisplayOptions(); initializeSelectors(); renderAll();
-selectors.forEach((select,slot) => select.addEventListener('change', () => renderCard(slot)));
-$('#play').addEventListener('click', start);
+initializeAutoShuffle();
+initializeDisplayOptions();
+initializeSelectors();
+initializeTempo();
+randomizeTripletCards();
+updateModeUI();
+$('#melody-filter-options').addEventListener('change',changeEnabledPatterns);
+selectors.forEach((select,slot) => select.addEventListener('change', () => {
+  if (trainerMode === 'vocabulary') renderCard(slot);
+}));
+$('#trainer-mode').addEventListener('change',event => {
+  if (playing) stop();
+  trainerMode = event.target.value === 'triplets' ? 'triplets' : 'vocabulary';
+  try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
+  updateModeUI({ randomizeTriplets:trainerMode === 'triplets' });
+  setStatus('');
+});
+$('#play').addEventListener('click',event => {
+  event.currentTarget.blur();
+  start();
+});
 $('#randomize').addEventListener('click', requestRandomize);
 $('#auto-randomize').addEventListener('change', event => {
   try { localStorage.setItem(AUTO_SHUFFLE_KEY, String(event.target.checked)); } catch {}
+});
+$('#metronome').addEventListener('change',event => {
+  try { localStorage.setItem(METRONOME_KEY,String(event.target.checked)); } catch {}
+  if (playing) { stop(); start(); }
 });
 $('#show-counting').addEventListener('change', event => {
   try { localStorage.setItem(SHOW_COUNTING_KEY, String(event.target.checked)); } catch {}
@@ -390,8 +625,10 @@ $('#follow-highlighting').addEventListener('change', event => {
   }
 });
 document.querySelectorAll('.tempo-step').forEach(button => button.addEventListener('click', () => {
-  $('#tempo').value = String(Math.max(20, Math.min(400, (Number($('#tempo').value) || 100) + Number(button.dataset.tempoStep))));
+  setTempo((Number($('#tempo').value) || 100)+Number(button.dataset.tempoStep));
 }));
+$('#tempo').addEventListener('change',event => setTempo(event.target.value));
+$('#tempo').addEventListener('input',event => persistTempoInput(event.target.value));
 function velocityInputs() { return [...document.querySelectorAll('.velocity')]; }
 function velocityValues() { return velocityInputs().map(input => Number(input.value)); }
 function updateVelocity(input) {
@@ -409,19 +646,43 @@ velocityInputs().forEach(input => {
   input.addEventListener('input', () => updateVelocity(input));
   input.addEventListener('change', prepareChangedVelocities);
 });
-$('#midi-enabled').addEventListener('change', async event => {
-  const wasPlaying = playing;
-  if (wasPlaying) stop();
-  if (event.target.checked) await enableMidi(); else disableMidi();
-  if (wasPlaying && (!event.target.checked || midiOutput)) start();
+[$('#midi-input'), $('#midi-output')].forEach(select => {
+  select.addEventListener('focus', () => { if (!midiAccess) enableMidi(); }, { once:false });
+});
+$('#midi-input').addEventListener('change', event => {
+  const input = midiAccess ? [...midiAccess.inputs.values()].find(candidate => candidate.id === event.target.value) : null;
+  attachMidiInput(input);
+  try { localStorage.setItem('triplet-vocabulary-midi-input',event.target.value); } catch {}
+  setStatus('');
 });
 $('#midi-output').addEventListener('change', event => {
   const wasPlaying = playing;
   if (wasPlaying) stop();
   midiOutput = midiAccess ? [...midiAccess.outputs.values()].find(output => output.id === event.target.value) || null : null;
-  localStorage.setItem('triplet-vocabulary-midi-output', event.target.value);
+  try { localStorage.setItem('triplet-vocabulary-midi-output',event.target.value); } catch {}
   setStatus('');
   if (wasPlaying) start();
+});
+const practicePad = $('#practice-pad');
+document.addEventListener('pointerdown',event => {
+  if (!playing || !event.target.closest?.('main')) return;
+  if (event.target.closest('button,input,select,textarea,a,summary,label,[contenteditable="true"]')) return;
+  if (event.button !== undefined && event.button !== 0) return;
+  event.preventDefault();
+  registerPracticeHit('tap');
+});
+document.addEventListener('dblclick',event => {
+  if (!event.target.closest?.('main')) return;
+  if (event.target.closest('button,input,select,textarea,a,summary,label,[contenteditable="true"]')) return;
+  event.preventDefault();
+});
+document.addEventListener('keydown',event => {
+  if (event.code !== 'Space' || event.repeat) return;
+  if (!playing) return;
+  const editingControl = event.target.closest?.('input,select,textarea,a,[contenteditable="true"]');
+  if (editingControl && event.target !== practicePad) return;
+  event.preventDefault();
+  registerPracticeHit('space');
 });
 $('#sound').addEventListener('change', async event => {
   const wasPlaying = playing;

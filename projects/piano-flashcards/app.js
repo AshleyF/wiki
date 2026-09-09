@@ -27,7 +27,6 @@ const elements = {
   resetStats: document.querySelector('#reset-stats'),
   noteRange: document.querySelector('#note-range'),
   includeAccidentals: document.querySelector('#include-accidentals'),
-  enableMidi: document.querySelector('#enable-midi'),
   midiControls: document.querySelector('.midi-controls'),
   midiInput: document.querySelector('#midi-input'),
   midiOutput: document.querySelector('#midi-output'),
@@ -349,13 +348,13 @@ function refreshMidiPorts() {
   const outputs = midiAccess ? [...midiAccess.outputs.values()].filter(port => port.state !== 'disconnected') : [];
   const previousInput = elements.midiInput.value;
   const previousOutput = elements.midiOutput.value;
-  elements.midiInput.replaceChildren(new Option(inputs.length ? 'Choose input' : 'No input found', ''), ...inputs.map(port => new Option(port.name || 'MIDI input', port.id)));
-  elements.midiOutput.replaceChildren(new Option('Browser sound', ''), ...outputs.map(port => new Option(port.name || 'MIDI output', port.id)));
-  elements.midiInput.disabled = inputs.length === 0;
-  elements.midiOutput.disabled = outputs.length === 0;
+  elements.midiInput.replaceChildren(new Option('None', ''), ...inputs.map(port => new Option(port.name || 'MIDI input', port.id)));
+  elements.midiOutput.replaceChildren(new Option('None', ''), ...outputs.map(port => new Option(port.name || 'MIDI output', port.id)));
+  elements.midiInput.disabled = false;
+  elements.midiOutput.disabled = false;
   elements.midiInput.value = inputs.some(port => port.id === preferredMidiInputId)
     ? preferredMidiInputId
-    : (inputs.some(port => port.id === previousInput) ? previousInput : (inputs[0]?.id || ''));
+    : (inputs.some(port => port.id === previousInput) ? previousInput : '');
   elements.midiOutput.value = outputs.some(port => port.id === preferredMidiOutputId)
     ? preferredMidiOutputId
     : (outputs.some(port => port.id === previousOutput) ? previousOutput : '');
@@ -368,43 +367,17 @@ async function enableMidi() {
     setStatus('Web MIDI is unavailable in this browser.');
     return;
   }
-  elements.enableMidi.disabled = true;
-  elements.enableMidi.textContent = 'Connecting…';
   try {
     midiAccess = await navigator.requestMIDIAccess({ sysex: false });
     midiAccess.onstatechange = refreshMidiPorts;
     refreshMidiPorts();
-    elements.enableMidi.disabled = false;
-    elements.enableMidi.textContent = 'Disable MIDI';
     setStatus(selectedMidiInput ? `MIDI input: ${selectedMidiInput.name}` : 'MIDI enabled.');
   } catch (error) {
     midiAccess = null;
     selectedMidiInput = null;
     selectedMidiOutput = null;
-    elements.enableMidi.disabled = false;
-    elements.enableMidi.textContent = 'Enable MIDI';
     setStatus(`Could not enable MIDI: ${error.message || error}`);
   }
-}
-
-function disableMidi() {
-  if (selectedMidiInput) selectedMidiInput.onmidimessage = null;
-  midiAccess?.inputs.forEach(port => port.close?.());
-  midiAccess?.outputs.forEach(port => port.close?.());
-  if (midiAccess) midiAccess.onstatechange = null;
-  midiAccess = null;
-  selectedMidiInput = null;
-  selectedMidiOutput = null;
-  elements.midiInput.disabled = true;
-  elements.midiOutput.disabled = true;
-  elements.enableMidi.disabled = false;
-  elements.enableMidi.textContent = 'Enable MIDI';
-  setStatus('MIDI disabled.');
-}
-
-function toggleMidi() {
-  if (midiAccess) disableMidi();
-  else enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
 }
 
 function setMode(nextMode) {
@@ -447,7 +420,6 @@ elements.midiControls.addEventListener('toggle', () => {
     enableMidi().catch(error => setStatus(`Could not enable MIDI: ${error.message || error}`));
   }
 });
-elements.enableMidi.addEventListener('click', toggleMidi);
 elements.midiInput.addEventListener('change', selectMidiPorts);
 elements.midiOutput.addEventListener('change', selectMidiPorts);
 elements.theme.addEventListener('click', () => {

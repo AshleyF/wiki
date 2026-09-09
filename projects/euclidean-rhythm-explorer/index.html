@@ -33,8 +33,7 @@
         <details class="midi-controls">
           <summary>MIDI</summary>
           <div class="midi-controls-menu">
-            <button id="enable-midi" class="quiet-button" type="button">Enable MIDI</button>
-            <label><span>MIDI out</span><select id="midi-output" disabled title="Choosing an output sends the tracks to MIDI and silences built-in sounds"><option value="">Off</option></select></label>
+            <label><span>MIDI out</span><select id="midi-output" title="Choosing an output sends the tracks to MIDI and silences built-in sounds"><option value="">None</option></select></label>
             <label><span>Channel</span><select id="midi-channel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10" selected>10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option></select></label>
             <label class="midi-clock-label" title="Send standard MIDI clock, Start, and Stop messages"><input id="midi-clock" type="checkbox"> <span>Clock</span></label>
           </div>
@@ -122,6 +121,6 @@
       </section>
     </template>
 
-    <script type="module" src="app.js?v=20260904-audio-output"></script>
+    <script type="module" src="app.js?v=20260908-midi-selectors-1"></script>
   </body>
 </html>
