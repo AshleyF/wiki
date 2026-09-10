@@ -359,7 +359,8 @@ function updatePracticeScore() {
   $('#score-accuracy').textContent = attempts
     ? `${practiceAccuracy(practiceScore).toFixed(1).replace('.0','')}%`
     : '—';
-  $('#score-streak').textContent = String(practiceScore.bestStreak);
+  $('#score-streak').textContent = String(practiceScore.streak);
+  $('#score-best').textContent = String(practiceScore.bestStreak);
   $('#score-hits').textContent = String(practiceScore.hits);
   $('#score-misses').textContent = String(practiceScore.misses);
 }
