@@ -2,7 +2,7 @@ import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/dru
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
-import { TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomTripletMasks, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260909-touch-threshold-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260910-emphasis-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -11,11 +11,14 @@ const MELODIES = [
 ];
 const $ = selector => document.querySelector(selector);
 const cards = [...document.querySelectorAll('.melody-card')];
-const selectors = cards.map(card => card.querySelector('select'));
+const selectors = cards.map(card => card.querySelector('.card-pattern-first'));
+const extendedSecondSelectors = cards.map(card => card.querySelector('.card-pattern-second'));
 const sampleLibrary = new DrumSampleLibrary('../rhythm-explorer/assets/drums/library.json');
 const DEFAULT_SAMPLE_KIT_ID = 'ludwig-black-beauty-snare-center';
 const ENABLED_MELODIES_KEY = 'triplet-vocabulary-enabled-melodies';
 const ENABLED_TRIPLETS_KEY = 'triplet-vocabulary-enabled-triplets';
+const ENABLED_EXTENDED_KEY = 'triplet-vocabulary-enabled-extended';
+const EMPHASIS_KEY = 'triplet-vocabulary-emphasis';
 const TRAINER_MODE_KEY = 'triplet-vocabulary-trainer-mode';
 const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
@@ -24,14 +27,20 @@ const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
 const IGNORE_FEET_KEY = 'triplet-vocabulary-ignore-feet';
 const IGNORE_GHOSTS_KEY = 'triplet-vocabulary-ignore-ghosts';
 const TEMPO_KEY = 'triplet-vocabulary-tempo';
+const VELOCITIES_KEY = 'triplet-vocabulary-velocities';
+const DEFAULT_VELOCITIES = Object.freeze([16,64,111]);
 const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
+const ALL_EXTENDED_INDEXES = EXTENDED_PATTERNS.map((_,index) => index);
 let sampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
 let trainerMode = loadTrainerMode();
 let enabledMelodies = loadEnabledMelodies();
 let enabledTriplets = loadEnabledTriplets();
+let enabledExtended = loadEnabledExtended();
+let emphasisByMode = loadEmphasis();
 let tripletCards = Array.from({ length:3 },() => ['100','100','100','100']);
+let extendedCards = Array.from({ length:3 },() => [0,3]);
 let audioContext = null;
 let midiAccess = null;
 let midiInput = null;
@@ -42,7 +51,7 @@ let nextEventTime = 0;
 let eventNumber = 0;
 let activeSlot = 0;
 let queuedRandomize = false;
-let activeVelocities = { ghost:16, normal:64, accent:111 };
+let activeVelocities = { ghost:DEFAULT_VELOCITIES[0],normal:DEFAULT_VELOCITIES[1],accent:DEFAULT_VELOCITIES[2] };
 let practiceScore = createPracticeScore();
 let expectedPracticeHits = [];
 let midiActivityTimer = null;
@@ -54,8 +63,15 @@ const scheduledSources = new Set();
 const visualTimers = new Set();
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
+function extendedLabel(index) {
+  const printRole = role => role === 'R' ? '–' : role;
+  return `${index + 1} · ${EXTENDED_PATTERNS[index].slice(0,3).map(printRole).join('')}-${EXTENDED_PATTERNS[index].slice(3).map(printRole).join('')}`;
+}
 function loadTrainerMode() {
-  try { return localStorage.getItem(TRAINER_MODE_KEY) === 'triplets' ? 'triplets' : 'vocabulary'; } catch { return 'vocabulary'; }
+  try {
+    const saved = localStorage.getItem(TRAINER_MODE_KEY);
+    return ['vocabulary','extended','triplets'].includes(saved) ? saved : 'vocabulary';
+  } catch { return 'vocabulary'; }
 }
 function loadEnabledMelodies() {
   try {
@@ -75,11 +91,35 @@ function loadEnabledTriplets() {
   } catch {}
   return new Set(TRIPLET_MASKS);
 }
+function loadEnabledExtended() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ENABLED_EXTENDED_KEY) || 'null');
+    const valid = Array.isArray(saved)
+      ? saved.filter(index => Number.isInteger(index) && index >= 0 && index < EXTENDED_PATTERNS.length)
+      : [];
+    const hasFirst = valid.some(index => index < 3);
+    const hasSecond = valid.some(index => index >= 3);
+    if (hasFirst && hasSecond) return new Set(valid);
+  } catch {}
+  return new Set(ALL_EXTENDED_INDEXES);
+}
 function saveEnabledMelodies() {
   try { localStorage.setItem(ENABLED_MELODIES_KEY, JSON.stringify(enabledMelodyIndexes())); } catch {}
 }
 function saveEnabledTriplets() {
   try { localStorage.setItem(ENABLED_TRIPLETS_KEY,JSON.stringify(enabledTripletMasks())); } catch {}
+}
+function saveEnabledExtended() {
+  try { localStorage.setItem(ENABLED_EXTENDED_KEY,JSON.stringify(enabledExtendedIndexes())); } catch {}
+}
+function loadEmphasis() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(EMPHASIS_KEY) || '{}');
+    return saved && typeof saved === 'object' ? saved : {};
+  } catch { return {}; }
+}
+function saveEmphasis() {
+  try { localStorage.setItem(EMPHASIS_KEY,JSON.stringify(emphasisByMode)); } catch {}
 }
 function setTempo(value, { persist = true } = {}) {
   const tempo = Math.max(20,Math.min(400,Math.round(Number(value) || 100)));
@@ -101,6 +141,7 @@ function persistTempoInput(value) {
 }
 function enabledMelodyIndexes() { return ALL_MELODY_INDEXES.filter(index => enabledMelodies.has(index)); }
 function enabledTripletMasks() { return TRIPLET_MASKS.filter(mask => enabledTriplets.has(mask)); }
+function enabledExtendedIndexes() { return ALL_EXTENDED_INDEXES.filter(index => enabledExtended.has(index)); }
 function populateSelector(select, preferredIndex) {
   const choices = enabledMelodyIndexes();
   const selected = enabledMelodies.has(preferredIndex) ? preferredIndex : choices[0];
@@ -110,6 +151,23 @@ function populateSelector(select, preferredIndex) {
 function initializeSelectors() {
   selectors.forEach((select, slot) => {
     populateSelector(select, enabledMelodies.has(slot) ? slot : enabledMelodyIndexes()[slot % enabledMelodies.size]);
+  });
+}
+function populateExtendedSelectors() {
+  const firstChoices = enabledExtendedIndexes().filter(index => index < 3);
+  const secondChoices = enabledExtendedIndexes().filter(index => index >= 3);
+  selectors.forEach((firstSelect,slot) => {
+    const secondSelect = extendedSecondSelectors[slot];
+    const preferred = extendedCards[slot] || [];
+    const first = firstChoices.includes(preferred[0]) ? preferred[0] : firstChoices[0];
+    const second = secondChoices.includes(preferred[1]) ? preferred[1] : secondChoices[0];
+    extendedCards[slot] = [first,second];
+    firstSelect.replaceChildren(...firstChoices.map(index => new Option(extendedLabel(index),String(index))));
+    secondSelect.replaceChildren(...secondChoices.map(index => new Option(extendedLabel(index),String(index))));
+    firstSelect.value = String(first);
+    secondSelect.value = String(second);
+    firstSelect.disabled = false;
+    secondSelect.disabled = false;
   });
 }
 function renderTripletFilterNotations() {
@@ -131,7 +189,7 @@ function renderTripletFilterNotations() {
     svg?.setAttribute('preserveAspectRatio','xMidYMid meet');
   });
 }
-function patternFilterOption(value,labelText,checked,tripletMask = '') {
+function patternFilterOption(value,labelText,checked,tripletMask = '',displayText = labelText) {
   const label = document.createElement('label');
   label.title = labelText;
   const input = document.createElement('input');
@@ -152,7 +210,7 @@ function patternFilterOption(value,labelText,checked,tripletMask = '') {
     label.append(notation,accessible);
   } else {
     const text = document.createElement('span');
-    text.textContent = labelText;
+    text.textContent = displayText;
     label.append(text);
   }
   return label;
@@ -160,26 +218,70 @@ function patternFilterOption(value,labelText,checked,tripletMask = '') {
 function initializePatternFilter() {
   const container = $('#melody-filter-options');
   const isTriplets = trainerMode === 'triplets';
-  $('.melody-filter-label').textContent = isTriplets ? 'Triplets' : 'Melodies';
-  container.setAttribute('aria-label',isTriplets ? 'Enabled triplet cells' : 'Enabled triplet melodies');
-  container.replaceChildren(...(isTriplets
+  const isExtended = trainerMode === 'extended';
+  $('.melody-filter-label').textContent = isTriplets ? 'Triplets' : isExtended ? 'Patterns' : 'Melodies';
+  container.setAttribute('aria-label',isTriplets ? 'Enabled triplet cells' : isExtended ? 'Enabled extended patterns' : 'Enabled triplet melodies');
+  const options = isTriplets
     ? TRIPLET_MASKS.map(mask => patternFilterOption(mask,`triplet ${mask.split('').join(' ')}`,enabledTriplets.has(mask),mask))
-    : ALL_MELODY_INDEXES.map(index => patternFilterOption(index,melodyLabel(index),enabledMelodies.has(index)))));
+    : isExtended
+      ? ALL_EXTENDED_INDEXES.map(index => patternFilterOption(index,extendedLabel(index),enabledExtended.has(index),'',String(index+1)))
+      : ALL_MELODY_INDEXES.map(index => patternFilterOption(index,melodyLabel(index),enabledMelodies.has(index),'',String(index+1)));
+  if (isExtended) {
+    const divider = document.createElement('span');
+    divider.className = 'pattern-group-divider';
+    divider.setAttribute('aria-hidden','true');
+    options.splice(3,0,divider);
+  }
+  container.replaceChildren(...options);
   if (isTriplets) renderTripletFilterNotations();
+  populateEmphasis();
+}
+function emphasisChoices() {
+  if (trainerMode === 'triplets') return enabledTripletMasks().map(value => ({
+    value,
+    label:`${value} · ${[...value].map(bit => bit === '1' ? 'A' : 'B').join('')}`
+  }));
+  if (trainerMode === 'extended') return enabledExtendedIndexes().map(value => ({ value:String(value),label:extendedLabel(value) }));
+  return enabledMelodyIndexes().map(value => ({ value:String(value),label:melodyLabel(value) }));
+}
+function currentEmphasis() {
+  const saved = emphasisByMode[trainerMode];
+  const choices = emphasisChoices();
+  const match = choices.find(choice => choice.value === String(saved));
+  if (!match) return null;
+  return trainerMode === 'triplets' ? match.value : Number(match.value);
+}
+function populateEmphasis() {
+  const select = $('#emphasis');
+  const emphasis = currentEmphasis();
+  if (emphasis === null && emphasisByMode[trainerMode] !== undefined && emphasisByMode[trainerMode] !== '') {
+    emphasisByMode[trainerMode] = '';
+    saveEmphasis();
+  }
+  select.replaceChildren(new Option('None',''),...emphasisChoices().map(choice => new Option(choice.label,choice.value)));
+  select.value = emphasis === null ? '' : String(emphasis);
 }
 function changeEnabledPatterns(event) {
   const input = event.target.closest('input[type="checkbox"]');
   if (!input) return;
-  const enabled = trainerMode === 'triplets' ? enabledTriplets : enabledMelodies;
-  if (!input.checked && enabled.size === 1) {
+  const enabled = trainerMode === 'triplets' ? enabledTriplets : trainerMode === 'extended' ? enabledExtended : enabledMelodies;
+  const extendedGroupWouldBeEmpty = trainerMode === 'extended' && !input.checked &&
+    enabledExtendedIndexes().filter(index => Number(input.value) < 3 ? index < 3 : index >= 3).length === 1;
+  if ((!input.checked && enabled.size === 1) || extendedGroupWouldBeEmpty) {
     input.checked = true;
-    setStatus(`Keep at least one ${trainerMode === 'triplets' ? 'triplet' : 'melody'} enabled.`);
+    setStatus(`Keep at least one ${trainerMode === 'triplets' ? 'triplet' : trainerMode === 'extended' ? 'pattern in each group' : 'melody'} enabled.`);
     return;
   }
   if (playing) stop();
   if (trainerMode === 'triplets') {
     if (input.checked) enabledTriplets.add(input.value); else enabledTriplets.delete(input.value);
     saveEnabledTriplets();
+    randomizeAll();
+  } else if (trainerMode === 'extended') {
+    const index = Number(input.value);
+    if (input.checked) enabledExtended.add(index); else enabledExtended.delete(index);
+    saveEnabledExtended();
+    populateExtendedSelectors();
     randomizeAll();
   } else {
     const index = Number(input.value);
@@ -188,6 +290,7 @@ function changeEnabledPatterns(event) {
     selectors.forEach(select => populateSelector(select,Number(select.value)));
     renderAll();
   }
+  populateEmphasis();
   setStatus('');
 }
 function initializeAutoShuffle() {
@@ -214,17 +317,17 @@ function initializeDisplayOptions() {
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
 function selectedPattern(slot) {
-  return trainerMode === 'triplets'
-    ? rolesForTripletMasks(tripletCards[slot])
-    : MELODIES[Number(selectors[slot].value)] || MELODIES[0];
+  if (trainerMode === 'triplets') return rolesForTripletMasks(tripletCards[slot]);
+  if (trainerMode === 'extended') return rolesForExtendedBar(extendedCards[slot]);
+  return MELODIES[Number(selectors[slot].value)] || MELODIES[0];
 }
 function selectedMasks(slot) {
   if (trainerMode === 'triplets') return tripletCards[slot];
   const melody = selectedPattern(slot);
-  return [0,3].map(groupStart => melody.slice(groupStart,groupStart+3).map(role => role === 'A' ? '1' : '0').join(''));
+  return Array.from({ length:melody.length/3 },(_,group) => melody.slice(group*3,group*3+3).map(role => role === 'A' ? '1' : '0').join(''));
 }
 function activeCardCount() { return 3; }
-function stepsPerCard() { return trainerMode === 'triplets' ? 12 : 6; }
+function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : 12; }
 function tripletCountForStep(step) {
   return step%3 === 0 ? String(Math.floor(step/3)+1) : step%3 === 1 ? '&' : 'a';
 }
@@ -260,8 +363,9 @@ function renderCard(slot) {
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
   const masks = selectedMasks(slot);
-  const cellGap = trainerMode === 'triplets' ? 8 : 12;
-  const desiredGridWidth = trainerMode === 'triplets' ? 520 : 308;
+  const fourTripletBar = trainerMode !== 'vocabulary';
+  const cellGap = fourTripletBar ? 8 : 12;
+  const desiredGridWidth = fourTripletBar ? 520 : 308;
   const availableLeft = 14;
   const availableRight = width-10;
   const gridWidth = Math.min(desiredGridWidth,availableRight-availableLeft);
@@ -314,8 +418,14 @@ function updateModeUI({ randomizeTriplets = false } = {}) {
     card.hidden = slot >= activeCardCount();
     card.querySelector('.card-kind').textContent = trainerMode === 'triplets'
       ? `Bar ${slot+1}`
-      : 'Melody';
+      : trainerMode === 'extended' ? `Bar ${slot+1}` : 'Melody';
   });
+  if (trainerMode === 'extended') populateExtendedSelectors();
+  else if (trainerMode === 'vocabulary') selectors.forEach(select => {
+    select.disabled = false;
+    populateSelector(select,Number(select.value));
+  });
+  else selectors.forEach(select => { select.disabled = false; });
   activeSlot = Math.min(activeSlot,activeCardCount()-1);
   initializePatternFilter();
   if (trainerMode === 'triplets' && randomizeTriplets) randomizeTripletCards();
@@ -328,19 +438,28 @@ function updatePositions(slot) {
   });
 }
 function randomMelody() {
-  const enabled = enabledMelodyIndexes();
-  return enabled[Math.floor(Math.random() * enabled.length)];
+  return randomChoiceWithEmphasis(enabledMelodyIndexes(),currentEmphasis());
 }
 function randomizeTripletCards() {
-  const twelveTriplets = randomTripletMasks(enabledTripletMasks(),12);
+  const twelveTriplets = randomTripletMasks(enabledTripletMasks(),12,Math.random,currentEmphasis());
   tripletCards = Array.from({ length:3 },(_,slot) => twelveTriplets.slice(slot*4,slot*4+4));
 }
+function randomizeExtendedCards() {
+  extendedCards = Array.from({ length:3 },() => randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis()));
+  populateExtendedSelectors();
+}
 function randomizeSlot(slot) {
-  if (trainerMode === 'triplets') tripletCards[slot] = randomTripletMasks(enabledTripletMasks(),4);
+  if (trainerMode === 'triplets') tripletCards[slot] = randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis());
+  else if (trainerMode === 'extended') return;
   else selectors[slot].value = String(randomMelody());
   renderCard(slot);
 }
 function randomizeAll() {
+  if (trainerMode === 'extended') {
+    randomizeExtendedCards();
+    renderAll();
+    return;
+  }
   cards.slice(0,activeCardCount()).forEach((_,slot) => randomizeSlot(slot));
   updatePositions(activeSlot);
 }
@@ -446,12 +565,18 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
     queuedRandomize = false; $('#randomize').textContent = 'Shuffle'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
     const nextPattern = trainerMode === 'triplets'
-      ? randomTripletMasks(enabledTripletMasks(),4)
-      : String(randomMelody());
+      ? randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis())
+      : trainerMode === 'extended'
+        ? randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis())
+        : String(randomMelody());
     const delay = Math.max(0, (nextEventTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);
       if (trainerMode === 'triplets') tripletCards[previousSlot] = nextPattern;
+      else if (trainerMode === 'extended') {
+        extendedCards[previousSlot] = nextPattern;
+        populateExtendedSelectors();
+      }
       else selectors[previousSlot].value = nextPattern;
       renderCard(previousSlot);
     }, delay);
@@ -485,7 +610,7 @@ function scheduleEvent() {
     phraseStartTime = nextEventTime;
   }
   if (role === 'A') expectedPracticeHits.push({ time:nextEventTime,slot,step,matched:false,expired:false });
-  scheduleSnare(nextEventTime, velocity);
+  if (role !== 'R') scheduleSnare(nextEventTime, velocity);
   if ($('#metronome').checked && step%3 === 0) {
     const quarterBeat = Math.floor(eventNumber/3);
     scheduleHat(nextEventTime,quarterBeat%4 === 0 ? currentVelocities[2] : currentVelocities[1]);
@@ -633,16 +758,28 @@ initializeAutoShuffle();
 initializeDisplayOptions();
 initializeSelectors();
 initializeTempo();
+initializeVelocities();
 randomizeTripletCards();
 updateModeUI();
 $('#melody-filter-options').addEventListener('change',changeEnabledPatterns);
+$('#emphasis').addEventListener('change',event => {
+  emphasisByMode[trainerMode] = event.target.value;
+  saveEmphasis();
+});
 selectors.forEach((select,slot) => select.addEventListener('change', () => {
-  if (trainerMode === 'vocabulary') renderCard(slot);
+  if (trainerMode === 'extended') extendedCards[slot][0] = Number(select.value);
+  if (trainerMode !== 'triplets') renderCard(slot);
+}));
+extendedSecondSelectors.forEach((select,slot) => select.addEventListener('change',() => {
+  if (trainerMode !== 'extended') return;
+  extendedCards[slot][1] = Number(select.value);
+  renderCard(slot);
 }));
 $('#trainer-mode').addEventListener('change',event => {
   if (playing) stop();
-  trainerMode = event.target.value === 'triplets' ? 'triplets' : 'vocabulary';
+  trainerMode = ['vocabulary','extended','triplets'].includes(event.target.value) ? event.target.value : 'vocabulary';
   try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
+  if (trainerMode === 'extended') randomizeExtendedCards();
   updateModeUI({ randomizeTriplets:trainerMode === 'triplets' });
   setStatus('');
 });
@@ -683,6 +820,28 @@ $('#tempo').addEventListener('change',event => setTempo(event.target.value));
 $('#tempo').addEventListener('input',event => persistTempoInput(event.target.value));
 function velocityInputs() { return [...document.querySelectorAll('.velocity')]; }
 function velocityValues() { return velocityInputs().map(input => Number(input.value)); }
+function validVelocityValues(values) {
+  return Array.isArray(values) && values.length === 3 &&
+    values.every(value => Number.isInteger(value) && value >= 1 && value <= 127) &&
+    values[0] < values[1] && values[1] < values[2];
+}
+function saveVelocities() {
+  try { localStorage.setItem(VELOCITIES_KEY,JSON.stringify(velocityValues())); } catch {}
+}
+function initializeVelocities() {
+  let values = DEFAULT_VELOCITIES;
+  try {
+    const saved = JSON.parse(localStorage.getItem(VELOCITIES_KEY) || 'null');
+    if (validVelocityValues(saved)) values = saved;
+  } catch {}
+  const roles = ['Ghost','Normal','Accent'];
+  velocityInputs().forEach((input,index) => {
+    input.value = String(values[index]);
+    input.title = `${roles[index]}: ${values[index]}`;
+    input.setAttribute('aria-valuetext',`${values[index]}, ${roles[index].toLowerCase()} note`);
+  });
+  activeVelocities = { ghost:values[0],normal:values[1],accent:values[2] };
+}
 function updateVelocity(input) {
   const inputs = velocityInputs();
   const index = inputs.indexOf(input);
@@ -693,6 +852,7 @@ function updateVelocity(input) {
     candidate.title = `${roles[candidateIndex]}: ${values[candidateIndex]}`;
     candidate.setAttribute('aria-valuetext',`${values[candidateIndex]}, ${roles[candidateIndex].toLowerCase()} note`);
   });
+  saveVelocities();
 }
 velocityInputs().forEach(input => {
   input.addEventListener('input', () => updateVelocity(input));

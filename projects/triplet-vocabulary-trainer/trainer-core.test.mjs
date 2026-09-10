@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  EXTENDED_PATTERNS,
   createPracticeScore,
   expirePracticeHits,
   midiPracticeHitAccepted,
@@ -8,10 +9,24 @@ import {
   practiceTimingWindowSeconds,
   practiceTimingWindows,
   practiceTouchExceededThreshold,
+  randomChoiceWithEmphasis,
+  randomExtendedPatternPair,
   randomTripletMasks,
+  rolesForExtendedBar,
   rolesForTripletMasks,
   scorePracticeTap
 } from './trainer-core.js';
+
+test('extended vocabulary builds each four-triplet bar from its two pattern groups', () => {
+  assert.deepEqual(EXTENDED_PATTERNS.map(pattern => pattern.join('')),[
+    'ABBABA','ABAABA','AABABA','RABABB','RABABA','RABAAB','RBAABB','RBABBA','RBAABA'
+  ]);
+  assert.deepEqual(randomExtendedPatternPair([0,2,3,8],() => .99),[2,8]);
+  assert.deepEqual(rolesForExtendedBar([0,3]),[
+    'A','B','B','A','B','A','R','A','B','A','B','B'
+  ]);
+  assert.throws(() => randomExtendedPatternPair([0,1,2]),/each group/);
+});
 
 test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(rolesForTripletMasks(['000','101','111']),[
@@ -24,6 +39,13 @@ test('twelve random cells are independently selected from the enabled set', () =
   assert.deepEqual(randomTripletMasks(['001','110'],12,() => values.shift()),[
     '001','110','001','110','110','001','001','110','110','001','110','001'
   ]);
+});
+
+test('an emphasized choice receives exactly half of the random range', () => {
+  assert.equal(randomChoiceWithEmphasis(['A','B','C'],'B',() => .49),'B');
+  const values = [.5,.99];
+  assert.equal(randomChoiceWithEmphasis(['A','B','C'],'B',() => values.shift()),'C');
+  assert.equal(randomChoiceWithEmphasis(['A'],'A',() => .99),'A');
 });
 
 test('a tap matches the closest unclaimed expected stroke', () => {

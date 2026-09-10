@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260909-current-best-streak-1">
+    <link rel="stylesheet" href="styles.css?v=20260910-emphasis-3">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -27,23 +27,24 @@
         <label class="view-option" title="Ignore incoming MIDI velocities below the midpoint between the Ghost and Normal velocity handles"><input id="ignore-ghosts" type="checkbox" checked> <span>Ignore ghosts</span></label>
         <label class="header-tempo drum-tempo-control">
           <span>Tempo</span>
-          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-10" aria-label="Decrease tempo by 10">−</button>
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="-5" aria-label="Decrease tempo by 5">−</button>
           <input id="tempo" class="drum-tempo" type="number" min="20" max="400" step="1" value="100" aria-label="Playback tempo">
-          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="10" aria-label="Increase tempo by 10">+</button>
+          <button class="tempo-step drum-tempo-step" type="button" data-tempo-step="5" aria-label="Increase tempo by 5">+</button>
         </label>
         <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" title="Switch theme">☀</button>
       </div>
     </header>
     <main>
       <section class="melody-filter panel" aria-label="Melodies available to the trainer">
-        <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="triplets">Triplets</option></select></label>
+        <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="extended">Extended</option><option value="triplets">Triplets</option></select></label>
         <span class="melody-filter-label">Melodies</span>
         <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
+        <label class="emphasis-control" title="Give this pattern a 50% chance on each eligible shuffle"><span>Emphasize</span><select id="emphasis" aria-label="Emphasized pattern"><option value="">None</option></select></label>
       </section>
       <section class="controls drum-controls panel" aria-label="Trainer controls">
         <button id="play" class="drum-toggle" type="button">▶ Play</button>
         <button id="randomize" type="button">Shuffle</button>
-        <label class="auto-control" title="Shuffle the melody two positions ahead after each melody finishes."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
+        <label class="auto-control" title="Replace each completed card with a fresh random choice."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
         <div class="velocity-control drum-velocity-control" role="group" aria-label="Drum velocities" title="Ghost, normal, and accent velocity">
           <span>Vel</span>
           <span class="velocity-track drum-velocity-track">
@@ -59,9 +60,9 @@
         <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
       </section>
       <section class="phrase" aria-label="Rolling triplet phrase">
-        <article class="melody-card panel" data-slot="0"><header><label><span class="card-kind">Melody</span> <select aria-label="First melody"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select aria-label="Second melody"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select aria-label="Third melody"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="0"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="First melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 1"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Second melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 2"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Third melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 3"></select></label></header><div class="notation drum-render"></div></article>
       </section>
       <section id="practice-pad" class="practice-pad panel" role="region" aria-label="Practice score and secondary transport">
         <div class="practice-score-row">
@@ -77,6 +78,6 @@
         <div id="dedicated-tap-pad" class="dedicated-tap-pad" role="button" aria-label="Rhythm tap area" aria-hidden="true"></div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260909-current-best-streak-1"></script>
+    <script type="module" src="app.js?v=20260910-persist-velocities-1"></script>
   </body>
 </html>

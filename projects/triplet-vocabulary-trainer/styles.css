@@ -12,11 +12,14 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .melody-filter { display: flex; align-items: center; gap: .65rem; min-width: 0; padding: .45rem .6rem; background: var(--notation-paper); }
 .mode-control { display: inline-flex; align-items: center; gap: .4rem; flex: 0 0 auto; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
 .mode-control select { min-height: 2.25rem; border: 1px solid var(--notation-button-border); padding: .35rem .45rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
+.emphasis-control { display: inline-flex; align-items: center; gap: .4rem; flex: 0 0 auto; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.emphasis-control select { min-height: 2.25rem; max-width: 10rem; border: 1px solid var(--notation-button-border); padding: .35rem .45rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
 .melody-filter-label { flex: 0 0 auto; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
-.melody-filter-options { display: flex; flex: 1 0 auto; gap: .35rem; min-width: max-content; }
-.melody-filter-options label { display: flex; align-items: center; justify-content: center; gap: .3rem; min-height: 2.25rem; border: 1px solid var(--notation-button-border); padding: .35rem .45rem; color: var(--notation-ink); background: var(--notation-panel); font: 700 .68rem/1 monospace; cursor: pointer; white-space: nowrap; }
+.melody-filter-options { display: flex; flex: 1 0 auto; gap: .2rem; min-width: max-content; }
+.melody-filter-options label { display: flex; align-items: center; justify-content: center; gap: .2rem; min-height: 2.25rem; border: 1px solid var(--notation-button-border); padding: .3rem .35rem; color: var(--notation-ink); background: var(--notation-panel); font: 700 .68rem/1 monospace; cursor: pointer; white-space: nowrap; }
 .melody-filter-options label:has(input:checked) { border-color: color-mix(in srgb, var(--accent) 60%, var(--notation-button-border)); background: color-mix(in srgb, var(--accent) 9%, var(--notation-panel)); }
 .melody-filter-options input { margin: 0; accent-color: var(--accent); }
+.pattern-group-divider { align-self: stretch; flex: 0 0 1px; margin: .2rem .2rem; background: var(--rule); }
 .melody-filter-options .triplet-filter-option { gap: .1rem; min-height: 3.65rem; padding: .1rem .2rem; }
 .triplet-filter-notation { display: block; width: 64px; height: 54px; overflow: hidden; pointer-events: none; }
 .triplet-filter-notation.drum-render { padding: 0; background: transparent; }
@@ -52,14 +55,19 @@ main { display: grid; gap: .55rem; width: 100%; max-width: 1250px; box-sizing: b
 .phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; touch-action: pan-y; }
 .melody-card { overflow: hidden; transition: border-color .15s, box-shadow .15s; }
 .melody-card.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
-.melody-card header { display: flex; align-items: center; border-bottom: 1px solid var(--rule); padding: .25rem .5rem; background: var(--notation-paper); }
-.melody-card header label { display: flex; align-items: center; gap: .4rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.melody-card header { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--rule); padding: .25rem .5rem; background: var(--notation-paper); }
+.melody-card header label { display: flex; align-items: center; gap: .4rem; min-width: 0; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
+.melody-card .card-kind { flex: 0 0 auto; white-space: nowrap; }
 .melody-card header select { min-height: 2rem; min-width: 7.5rem; border: 1px solid var(--notation-button-border); padding: .32rem .5rem; color: var(--notation-ink); background: var(--notation-paper); font: 700 .72rem/1 monospace; }
+.extended-second { display: none !important; }
+body[data-trainer-mode="extended"] .melody-card header label { flex: 1 1 0; }
+body[data-trainer-mode="extended"] .melody-card header select { width: 100%; min-width: 0; }
+body[data-trainer-mode="extended"] .extended-second { display: flex !important; }
 body[data-trainer-mode="triplets"] .melody-card header select { display: none; }
 .notation.drum-render { min-height: 90px; padding: .1rem .5rem; }
 .notation svg { min-width: 290px; }
 @media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation svg { width: 100%; min-width: 0; } }
-@media (max-width: 1250px) { .melody-filter { overflow-x: auto; overscroll-behavior-inline: contain; } }
+@media (max-width: 1250px) { .melody-filter { flex-wrap: wrap; } .melody-filter-options { flex: 1 1 auto; flex-wrap: wrap; min-width: 0; } }
 @media (max-width: 900px) { select, input[type="number"] { font-size: 16px !important; } }
-@media (max-width: 560px) { .app-header { padding-top: max(.45rem, env(safe-area-inset-top)); padding-bottom: .3rem; padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .25rem .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .practice-pad { padding-inline: .5rem; } .practice-stats { width: 100%; grid-template-columns: repeat(5,1fr); gap: .15rem; } .practice-stats span { min-width: 0; } }
+@media (max-width: 560px) { .app-header { padding-top: max(.45rem, env(safe-area-inset-top)); padding-bottom: .3rem; padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .header-actions { gap: .25rem .35rem; } .view-option { font-size: .66rem; } main { padding-left: max(.65rem, env(safe-area-inset-left)); padding-right: max(.65rem, env(safe-area-inset-right)); } .melody-filter-label, .mode-control > span { display: none; } .mode-control, .emphasis-control { order: 1; } .melody-filter-options { order: 2; flex-basis: 100%; } .melody-filter-options label { padding-inline: .25rem; } .emphasis-control { margin-left: auto; } .emphasis-control select { max-width: 8.5rem; } .practice-pad { padding-inline: .5rem; } .practice-stats { width: 100%; grid-template-columns: repeat(5,1fr); gap: .15rem; } .practice-stats span { min-width: 0; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

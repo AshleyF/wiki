@@ -1,12 +1,46 @@
 export const TRIPLET_MASKS = Object.freeze(['000','001','010','011','100','101','110','111']);
+export const EXTENDED_PATTERNS = Object.freeze([
+  Object.freeze(['A','B','B','A','B','A']),
+  Object.freeze(['A','B','A','A','B','A']),
+  Object.freeze(['A','A','B','A','B','A']),
+  Object.freeze(['R','A','B','A','B','B']),
+  Object.freeze(['R','A','B','A','B','A']),
+  Object.freeze(['R','A','B','A','A','B']),
+  Object.freeze(['R','B','A','A','B','B']),
+  Object.freeze(['R','B','A','B','B','A']),
+  Object.freeze(['R','B','A','A','B','A'])
+]);
+export function randomChoiceWithEmphasis(choices,emphasized = null,random = Math.random) {
+  if (!choices.length) throw new Error('At least one choice must be enabled.');
+  if (!choices.includes(emphasized) || choices.length === 1) {
+    return choices[Math.floor(random()*choices.length)];
+  }
+  if (random() < .5) return emphasized;
+  const alternatives = choices.filter(choice => choice !== emphasized);
+  return alternatives[Math.floor(random()*alternatives.length)];
+}
+
+export function randomExtendedPatternPair(enabledIndexes,random = Math.random,emphasized = null) {
+  const firstHalf = enabledIndexes.filter(index => index >= 0 && index < 3);
+  const secondHalf = enabledIndexes.filter(index => index >= 3 && index < EXTENDED_PATTERNS.length);
+  if (!firstHalf.length || !secondHalf.length) throw new Error('Extended mode needs at least one pattern in each group.');
+  return [
+    randomChoiceWithEmphasis(firstHalf,emphasized,random),
+    randomChoiceWithEmphasis(secondHalf,emphasized,random)
+  ];
+}
+
+export function rolesForExtendedBar(patternIndexes) {
+  return patternIndexes.flatMap(index => EXTENDED_PATTERNS[index]);
+}
 
 export function rolesForTripletMasks(masks) {
   return masks.flatMap(mask => [...mask].map(bit => bit === '1' ? 'A' : 'B'));
 }
 
-export function randomTripletMasks(enabledMasks,count,random = Math.random) {
+export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null) {
   if (!enabledMasks.length) throw new Error('At least one triplet must be enabled.');
-  return Array.from({ length:count },() => enabledMasks[Math.floor(random()*enabledMasks.length)]);
+  return Array.from({ length:count },() => randomChoiceWithEmphasis(enabledMasks,emphasized,random));
 }
 
 export function createPracticeScore() {
