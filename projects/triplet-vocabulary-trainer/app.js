@@ -2,7 +2,7 @@ import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/dru
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap } from './trainer-core.js?v=20260910-emphasis-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, createPracticeScore, expirePracticeHits, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery } from './trainer-core.js?v=20260910-recovery-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -61,6 +61,14 @@ let countInBeat = 0;
 let phraseStartTime = null;
 const scheduledSources = new Set();
 const visualTimers = new Set();
+const RECOVERY_HIT_TARGET = 2;
+let practiceHasStarted = false;
+let lastPracticeInputTime = null;
+let recoveryMode = false;
+let recoveryExitQueued = false;
+let recoveryCards = [false,false,false];
+let recoveryScore = createPracticeScore();
+let recoveryExpectedHits = [];
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
 function extendedLabel(index) {
@@ -317,6 +325,7 @@ function initializeDisplayOptions() {
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
 function selectedPattern(slot) {
+  if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
   if (trainerMode === 'triplets') return rolesForTripletMasks(tripletCards[slot]);
   if (trainerMode === 'extended') return rolesForExtendedBar(extendedCards[slot]);
   return MELODIES[Number(selectors[slot].value)] || MELODIES[0];
@@ -450,7 +459,10 @@ function randomizeExtendedCards() {
 }
 function randomizeSlot(slot) {
   if (trainerMode === 'triplets') tripletCards[slot] = randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis());
-  else if (trainerMode === 'extended') return;
+  else if (trainerMode === 'extended') {
+    extendedCards[slot] = randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
+    populateExtendedSelectors();
+  }
   else selectors[slot].value = String(randomMelody());
   renderCard(slot);
 }
@@ -489,18 +501,85 @@ function resetPracticeSession() {
   phraseStartTime = null;
   updatePracticeScore();
 }
+function resetRecoveryState() {
+  recoveryMode = false;
+  recoveryExitQueued = false;
+  recoveryCards = [false,false,false];
+  recoveryScore = createPracticeScore();
+  recoveryExpectedHits = [];
+  practiceHasStarted = false;
+  lastPracticeInputTime = null;
+}
+function queueNotationRender() {
+  const timer = setTimeout(() => {
+    visualTimers.delete(timer);
+    renderAll();
+  },0);
+  visualTimers.add(timer);
+}
+function queueCardRender(slot) {
+  const timer = setTimeout(() => {
+    visualTimers.delete(timer);
+    renderCard(slot);
+  },0);
+  visualTimers.add(timer);
+}
+function enterRecovery(currentSlot = activeSlot) {
+  recoveryMode = true;
+  recoveryExitQueued = false;
+  recoveryCards = recoveryCards.map((_,slot) => slot !== currentSlot);
+  recoveryScore = createPracticeScore();
+  recoveryExpectedHits = [];
+  practiceScore = createPracticeScore();
+  expectedPracticeHits = [];
+  updatePracticeScore();
+  queueNotationRender();
+}
+function beginRecoveryExit(currentSlot) {
+  if (recoveryExitQueued) return;
+  recoveryExitQueued = true;
+  const previousSlot = (currentSlot+activeCardCount()-1)%activeCardCount();
+  recoveryCards[previousSlot] = false;
+  randomizeSlot(previousSlot);
+}
+function leaveRecovery() {
+  recoveryMode = false;
+  recoveryExitQueued = false;
+  recoveryCards = [false,false,false];
+  recoveryScore = createPracticeScore();
+  recoveryExpectedHits = [];
+  practiceHasStarted = false;
+  lastPracticeInputTime = null;
+  resetPracticeSession();
+  queueNotationRender();
+}
 function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
+  if (recoveryMode) {
+    expirePracticeHits(recoveryScore,recoveryExpectedHits,now,practiceTimingWindows(eventDuration()));
+    recoveryExpectedHits = recoveryExpectedHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
+    return;
+  }
   const expired = expirePracticeHits(practiceScore,expectedPracticeHits,now,practiceTimingWindows(eventDuration()));
   if (expired) updatePracticeScore();
   expectedPracticeHits = expectedPracticeHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
+  if (practiceHasStarted && lastPracticeInputTime !== null && shouldQueueRecovery(lastPracticeInputTime,now,quarterDuration())) {
+    enterRecovery(activeSlot);
+  }
 }
 function registerPracticeHit(source = 'tap',hitTime = null) {
   if (!playing || !audioContext || phraseStartTime === null) return;
   const time = hitTime ?? audioContext.currentTime;
   const windowSeconds = practiceTimingWindows(eventDuration());
   if (time < phraseStartTime-windowSeconds.early) return;
+  practiceHasStarted = true;
+  lastPracticeInputTime = time;
   expirePracticeScore(time);
-  scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
+  if (recoveryMode) {
+    const result = scorePracticeTap(recoveryScore,recoveryExpectedHits,time,windowSeconds);
+    if (result.kind === 'hit' && recoveryScore.streak >= RECOVERY_HIT_TARGET) beginRecoveryExit(result.expected.slot);
+    return;
+  }
+  const result = scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
   updatePracticeScore();
 }
 function midiTimestamp(time) { return performance.now() + Math.max(0, time - audioContext.currentTime) * 1000; }
@@ -561,6 +640,27 @@ function showStep(slot, step, time) {
   visualTimers.add(timer);
 }
 function crossMelodyBoundary(previousSlot, nextSlot) {
+  if (recoveryMode) {
+    if (recoveryExitQueued) {
+      if (recoveryCards[previousSlot]) {
+        recoveryCards[previousSlot] = false;
+        const timer = setTimeout(() => {
+          visualTimers.delete(timer);
+          randomizeSlot(previousSlot);
+        },0);
+        visualTimers.add(timer);
+      }
+      if (!recoveryCards.some(Boolean)) leaveRecovery();
+    } else if (!recoveryCards[previousSlot]) {
+      recoveryCards[previousSlot] = true;
+      queueCardRender(previousSlot);
+    }
+    return;
+  }
+  if (practiceHasStarted && lastPracticeInputTime !== null && shouldQueueRecovery(lastPracticeInputTime,nextEventTime,quarterDuration())) {
+    enterRecovery(previousSlot);
+    return;
+  }
   if (previousSlot === activeCardCount()-1 && queuedRandomize) {
     queuedRandomize = false; $('#randomize').textContent = 'Shuffle'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
@@ -609,7 +709,11 @@ function scheduleEvent() {
   if (phraseStartTime === null) {
     phraseStartTime = nextEventTime;
   }
-  if (role === 'A') expectedPracticeHits.push({ time:nextEventTime,slot,step,matched:false,expired:false });
+  if (role === 'A') {
+    const expected = { time:nextEventTime,slot,step,matched:false,expired:false };
+    if (recoveryCards[slot]) recoveryExpectedHits.push(expected);
+    else expectedPracticeHits.push(expected);
+  }
   if (role !== 'R') scheduleSnare(nextEventTime, velocity);
   if ($('#metronome').checked && step%3 === 0) {
     const quarterBeat = Math.floor(eventNumber/3);
@@ -664,6 +768,7 @@ async function start({ tapMode = false } = {}) {
     await prepareAudio();
     if (document.hidden) throw new Error('Return to this tab before starting playback.');
     const withMetronome = $('#metronome').checked;
+    resetRecoveryState();
     resetPracticeSession();
     playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
     setTransportState('stop'); updatePositions(0); setStatus('');
@@ -677,6 +782,9 @@ function stop() {
   cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
   expectedPracticeHits = [];
   phraseStartTime = null;
+  const wasRecovering = recoveryMode;
+  resetRecoveryState();
+  if (wasRecovering) queueNotationRender();
   setTapMode(false);
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
   setTransportState('play'); setStatus('');
