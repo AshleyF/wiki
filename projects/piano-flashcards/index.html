@@ -34,9 +34,20 @@
           <div class="settings-menu">
             <label><span>Range</span>
               <select id="note-range" title="Set the note range for every question mode">
-                <option value="middle">Middle C octave · C4–B4</option>
-                <option value="two">Two octaves · C3–C5</option>
-                <option value="grand">Grand staff · C2–C6</option>
+                <optgroup label="Staffs">
+                  <option value="bass">Bass clef only · C2–B3</option>
+                  <option value="treble">Treble clef only · C4–C6</option>
+                  <option value="grand">Grand staff · C2–C6</option>
+                </optgroup>
+                <optgroup label="Octaves">
+                  <option value="low">Low octave · C2–B2</option>
+                  <option value="lowerMiddle">Bass octave · C3–B3</option>
+                  <option value="middle" selected>Middle C octave · C4–B4</option>
+                  <option value="upper">High octave · C5–B5</option>
+                </optgroup>
+                <optgroup label="Mixed ranges">
+                  <option value="two">Two octaves · C3–C5</option>
+                </optgroup>
               </select>
             </label>
             <label class="checkbox-label" title="Include the black-key notes between the natural notes">
@@ -61,7 +72,7 @@
         </div>
         <div id="prompt" class="prompt">
           <div id="letter-prompt" class="letter-prompt" aria-label="Note letter"></div>
-          <div id="staff-prompt" class="staff-prompt" aria-label="Grand staff notation" hidden></div>
+          <div id="staff-prompt" class="staff-prompt" aria-label="Staff notation" hidden></div>
           <div id="ear-prompt" class="ear-prompt" aria-label="Listen for the note" hidden>
             <span aria-hidden="true">♫</span><strong>Listen</strong>
           </div>
@@ -81,6 +92,6 @@
       </section>
     </main>
 
-    <script type="module" src="app.js?v=20260908-midi-selectors-1"></script>
+    <script type="module" src="app.js?v=20260911-clef-ranges-1"></script>
   </body>
 </html>

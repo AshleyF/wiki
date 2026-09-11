@@ -6,14 +6,23 @@ export const GRAND_STAFF_NOTES = Object.freeze(
 );
 
 export const NOTE_RANGES = Object.freeze({
-  middle: Object.freeze({ minimum: 60, maximum: 71 }),
-  two: Object.freeze({ minimum: 48, maximum: 72 }),
-  grand: Object.freeze({ minimum: 36, maximum: 84 })
+  bass: Object.freeze({ minimum: 36, maximum: 59, staff: 'bass' }),
+  treble: Object.freeze({ minimum: 60, maximum: 84, staff: 'treble' }),
+  low: Object.freeze({ minimum: 36, maximum: 47, staff: 'bass' }),
+  lowerMiddle: Object.freeze({ minimum: 48, maximum: 59, staff: 'bass' }),
+  middle: Object.freeze({ minimum: 60, maximum: 71, staff: 'treble' }),
+  upper: Object.freeze({ minimum: 72, maximum: 83, staff: 'treble' }),
+  two: Object.freeze({ minimum: 48, maximum: 72, staff: 'grand' }),
+  grand: Object.freeze({ minimum: 36, maximum: 84, staff: 'grand' })
 });
+
+export function noteRange(range, fallback = 'grand') {
+  return NOTE_RANGES[range] || NOTE_RANGES[fallback] || NOTE_RANGES.grand;
+}
 
 export function notesForSettings({ mode = 'letter', range = null, includeAccidentals = false } = {}) {
   const defaultRange = mode === 'letter' ? 'middle' : 'grand';
-  const selected = NOTE_RANGES[range] || NOTE_RANGES[defaultRange];
+  const selected = noteRange(range, defaultRange);
   return GRAND_STAFF_NOTES.filter(note => (
     note >= selected.minimum
     && note <= selected.maximum

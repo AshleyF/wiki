@@ -1,4 +1,4 @@
-import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-3';
+import { NOTE_RANGES, accuracy, chooseNextNote, letterPrompt, noteRange, notesForSettings } from './flashcard-core.js?v=20260911-clef-ranges-1';
 import { midiName, midiToVexKey, vexAccidentalForKey } from '../piano/trainer-core.js?v=20260827-accidentals-1';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 
@@ -62,7 +62,7 @@ function loadSettings() {
   // migration because that is where range and accidental selection matter most.
   const candidate = stored?.global || stored?.staff || stored;
   return {
-    range: ['middle', 'two', 'grand'].includes(candidate?.range) ? candidate.range : DEFAULT_SETTINGS.range,
+    range: Object.hasOwn(NOTE_RANGES, candidate?.range) ? candidate.range : DEFAULT_SETTINGS.range,
     includeAccidentals: typeof candidate?.includeAccidentals === 'boolean'
       ? candidate.includeAccidentals
       : DEFAULT_SETTINGS.includeAccidentals
@@ -102,7 +102,7 @@ function updateStats() {
   elements.accuracy.textContent = percent === null ? '—' : `${percent}%`;
 }
 
-function renderGrandStaff(note) {
+function renderStaff(note) {
   const Flow = window.Vex?.Flow;
   elements.staffPrompt.replaceChildren();
   if (!Flow) {
@@ -116,32 +116,29 @@ function renderGrandStaff(note) {
   const height = compact ? Math.max(112, Math.min(132, availableHeight)) : 218;
   const staveWidth = Math.min(width - 24, compact ? 520 : 640);
   const x = Math.max(8, Math.round((width - staveWidth) / 2));
-  const trebleY = compact ? -8 : 18;
-  const bassY = compact ? Math.max(44, height - 81) : 108;
   const renderer = new Flow.Renderer(elements.staffPrompt, Flow.Renderer.Backends.SVG);
   renderer.resize(width, height);
   const context = renderer.getContext();
   context.setFont('Arial', 10);
 
-  const treble = new Flow.Stave(x, trebleY, staveWidth).addClef('treble');
-  const bass = new Flow.Stave(x, bassY, staveWidth).addClef('bass');
-  treble.setContext(context).draw();
-  bass.setContext(context).draw();
-  new Flow.StaveConnector(treble, bass)
-    .setType(Flow.StaveConnector.type.BRACE)
-    .setContext(context)
-    .draw();
-  new Flow.StaveConnector(treble, bass)
-    .setType(Flow.StaveConnector.type.SINGLE_LEFT)
-    .setContext(context)
-    .draw();
-  new Flow.StaveConnector(treble, bass)
-    .setType(Flow.StaveConnector.type.SINGLE_RIGHT)
-    .setContext(context)
-    .draw();
-
-  const clef = note >= 60 ? 'treble' : 'bass';
-  const stave = clef === 'treble' ? treble : bass;
+  const staffMode = noteRange(currentSettings().range).staff;
+  const clef = staffMode === 'grand' ? (note >= 60 ? 'treble' : 'bass') : staffMode;
+  let stave;
+  if (staffMode === 'grand') {
+    const trebleY = compact ? -8 : 18;
+    const bassY = compact ? Math.max(44, height - 81) : 108;
+    const treble = new Flow.Stave(x, trebleY, staveWidth).addClef('treble');
+    const bass = new Flow.Stave(x, bassY, staveWidth).addClef('bass');
+    treble.setContext(context).draw();
+    bass.setContext(context).draw();
+    [Flow.StaveConnector.type.BRACE, Flow.StaveConnector.type.SINGLE_LEFT, Flow.StaveConnector.type.SINGLE_RIGHT]
+      .forEach(type => new Flow.StaveConnector(treble, bass).setType(type).setContext(context).draw());
+    stave = clef === 'treble' ? treble : bass;
+  } else {
+    const staveY = Math.round((height - 88) / 2);
+    stave = new Flow.Stave(x, staveY, staveWidth).addClef(clef);
+    stave.setContext(context).draw();
+  }
   const key = midiToVexKey(note);
   const vexNote = new Flow.StaveNote({ clef, keys: [key], duration: 'w' });
   const accidental = vexAccidentalForKey(key);
@@ -179,7 +176,10 @@ function ensureTargetVisible(note = currentNote) {
 
 function renderPrompt({ playEar = false } = {}) {
   elements.modeButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === mode)));
-  elements.modeLabel.textContent = MODE_LABELS[mode];
+  const staffMode = noteRange(currentSettings().range).staff;
+  elements.modeLabel.textContent = mode === 'staff'
+    ? ({ bass: 'Bass clef', treble: 'Treble clef', grand: 'Grand staff' }[staffMode])
+    : MODE_LABELS[mode];
   elements.replay.hidden = mode !== 'ear';
   elements.letterPrompt.hidden = mode !== 'letter';
   elements.staffPrompt.hidden = mode !== 'staff';
@@ -190,7 +190,7 @@ function renderPrompt({ playEar = false } = {}) {
       ? letterPrompt(currentNote)
       : midiName(currentNote);
   }
-  if (mode === 'staff') renderGrandStaff(currentNote);
+  if (mode === 'staff') renderStaff(currentNote);
   if (mode === 'ear' && playEar) playQuestion().catch(error => {
     console.warn('Could not play the ear-training question.', error);
     setStatus('Could not play this note. Try Hear again.');
@@ -434,7 +434,7 @@ window.addEventListener('resize', () => {
   window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     renderKeyboard();
-    if (mode === 'staff') renderGrandStaff(currentNote);
+    if (mode === 'staff') renderStaff(currentNote);
     ensureTargetVisible();
   }, 100);
 });
