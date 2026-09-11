@@ -94,17 +94,27 @@ export function practiceAccuracy(score) {
   return attempts ? (score.hits/attempts)*100 : 100;
 }
 
-export function expirePracticeHits(score,expectedHits,now,windowSeconds) {
+export function expirePracticeTargets(expectedHits,now,windowSeconds) {
   const { late } = timingWindows(windowSeconds);
   let expired = 0;
   expectedHits.forEach(expected => {
     if (expected.matched || expected.expired || now <= expected.time+late) return;
     expected.expired = true;
-    score.misses += 1;
-    score.streak = 0;
     expired += 1;
   });
   return expired;
+}
+
+export function commitPracticeMisses(score,count) {
+  const misses = Math.max(0,Math.floor(Number(count) || 0));
+  if (!misses) return 0;
+  score.misses += misses;
+  score.streak = 0;
+  return misses;
+}
+
+export function expirePracticeHits(score,expectedHits,now,windowSeconds) {
+  return commitPracticeMisses(score,expirePracticeTargets(expectedHits,now,windowSeconds));
 }
 
 export function scorePracticeTap(score,expectedHits,time,windowSeconds) {

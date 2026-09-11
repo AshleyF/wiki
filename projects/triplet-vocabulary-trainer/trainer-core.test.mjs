@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   EXTENDED_PATTERNS,
+  commitPracticeMisses,
   createPracticeScore,
   expirePracticeHits,
+  expirePracticeTargets,
   midiPracticeHitAccepted,
   practiceAccuracy,
   practiceTimingWindowSeconds,
@@ -74,6 +76,17 @@ test('extra taps and expired strokes count as misses', () => {
   assert.equal(expirePracticeHits(score,expected,1.09,.08),1);
   assert.equal(score.misses,2);
   assert.equal(practiceAccuracy(score),0);
+});
+
+test('expired trailing targets can remain provisional until the next attempt', () => {
+  const score = createPracticeScore();
+  scorePracticeTap(score,[{ time:1 }],1,.08);
+  const trailing = [{ time:2 },{ time:2.2 }];
+  const deferred = expirePracticeTargets(trailing,2.4,.08);
+  assert.equal(deferred,2);
+  assert.deepEqual({ hits:score.hits,misses:score.misses,streak:score.streak },{ hits:1,misses:0,streak:1 });
+  commitPracticeMisses(score,deferred);
+  assert.deepEqual({ hits:score.hits,misses:score.misses,streak:score.streak },{ hits:1,misses:2,streak:0 });
 });
 
 test('best streak survives a miss while a fresh score resets it', () => {
