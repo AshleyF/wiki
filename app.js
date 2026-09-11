@@ -1,4 +1,4 @@
-import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260818-velocity-slider';
+import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';

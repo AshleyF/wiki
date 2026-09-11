@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
-import { chooseWeightedVariant, conformSampleBufferChannels, DrumSampleKit, findKitDefinition, listKitDefinitions, pushOrderedVelocities, velocityFromStrength, velocityFromStrengthProfile } from './drum-sample-kit.js';
+import { chooseWeightedVariant, conformSampleBufferChannels, DrumSampleKit, findKitDefinition, listKitDefinitions, playbackVelocityGain, pushOrderedVelocities, velocityFromStrength, velocityFromStrengthProfile } from './drum-sample-kit.js';
 
 assert.equal(velocityFromStrength(1), 82);
 assert.equal(velocityFromStrength(0.35), 29);
@@ -22,6 +22,12 @@ const variants = [
 assert.equal(chooseWeightedVariant(variants, '', () => 0).sample_id, 'a');
 assert.equal(chooseWeightedVariant(variants, 'a', () => 0).sample_id, 'b');
 assert.equal(chooseWeightedVariant([{ sample_id: 'a', weight: 1 }], 'a', () => 0).sample_id, 'a');
+assert.equal(playbackVelocityGain({},16),1);
+const expandedDynamics = { gain:{ low_velocity_expansion:{ reference_velocity:64,minimum_gain_db:-12 } } };
+assert.ok(Math.abs(playbackVelocityGain(expandedDynamics,1)-(10**(-12/20))) < 1e-12);
+assert.ok(playbackVelocityGain(expandedDynamics,16) < 0.36);
+assert.equal(playbackVelocityGain(expandedDynamics,64),1);
+assert.equal(playbackVelocityGain(expandedDynamics,111),1);
 
 const quietChannel = new Float32Array([0, 0.01, 0]);
 const signalChannel = new Float32Array([0.2, -0.5, 0.1]);
@@ -131,6 +137,8 @@ for (const drum of library.drums) {
       });
     }
     if (manifest.kit_id === 'evans-practice-pad-center') {
+      assert.deepEqual(manifest.gain.low_velocity_expansion.reference_velocity,64);
+      assert.equal(manifest.gain.low_velocity_expansion.minimum_gain_db,-12);
       const samplesById = new Map(manifest.samples.map(sample => [sample.id, sample]));
       const mappedSampleIds = new Set();
       manifest.velocities.forEach(entry => {

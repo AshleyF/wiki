@@ -183,6 +183,8 @@ VexFlow renders the score and the parsed event list drives playback and note hig
 
 ## Drum notation integration
 
+Leaf sample manifests may optionally define `gain.low_velocity_expansion` with `reference_velocity` and a negative `minimum_gain_db`. Playback applies a linear-in-decibels ramp from that minimum at velocity 1 to unity at the reference velocity, with no change above it. Use this only for a kit whose recorded acoustic range is perceptually too narrow; the Evans practice pad uses it to separate ghost strokes from ordinary hits without changing the snare kits or MIDI velocities.
+
 `index.html` loads the pinned `vexflow@4.2.2` browser bundle from jsDelivr before `app.js`. A `drums` fence renders a VexFlow percussion staff and a collapsible copy of the raw source.
 
 The `drums` DSL is intentionally narrow in its first version:

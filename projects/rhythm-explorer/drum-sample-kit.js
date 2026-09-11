@@ -67,6 +67,17 @@ export function chooseWeightedVariant(variants, previousSampleId = '', random = 
   return available[available.length - 1];
 }
 
+export function playbackVelocityGain(manifest, velocity) {
+  const expansion = manifest?.gain?.low_velocity_expansion;
+  if (!expansion) return 1;
+  const referenceVelocity = clampVelocity(expansion.reference_velocity);
+  const minimumGainDb = Math.min(0,Number(expansion.minimum_gain_db) || 0);
+  const currentVelocity = clampVelocity(velocity);
+  if (referenceVelocity <= 1 || currentVelocity >= referenceVelocity || minimumGainDb === 0) return 1;
+  const distance = (referenceVelocity-currentVelocity)/(referenceVelocity-1);
+  return 10 ** ((minimumGainDb*distance)/20);
+}
+
 export function conformSampleBufferChannels(context, buffer, sample = {}) {
   const declaredMono = Number(sample.channel_count) === 1 || sample.channel_layout === 'mono';
   if (!declaredMono || buffer?.numberOfChannels === 1) return buffer;
@@ -176,6 +187,7 @@ export class DrumSampleKit {
     this.manifestUrl = new URL(manifestUrl, import.meta.url);
     this.random = random;
     this.manifestPromise = null;
+    this.manifest = null;
     this.sampleById = new Map();
     this.variantsByVelocity = new Map();
     this.bufferPromises = new Map();
@@ -196,6 +208,7 @@ export class DrumSampleKit {
           }
           this.sampleById = new Map(manifest.samples.map(sample => [sample.id, sample]));
           this.variantsByVelocity = new Map(manifest.velocities.map(entry => [clampVelocity(entry.velocity), entry.variants || []]));
+          this.manifest = manifest;
           return manifest;
         })
         .catch(error => {
@@ -256,7 +269,8 @@ export class DrumSampleKit {
     const sample = this.sampleById.get(variant.sample_id);
     const playbackOffset = Math.max(0, Number(sample?.playback_offset_seconds) || 0);
     source.buffer = this.buffers.get(variant.sample_id);
-    gain.gain.setValueAtTime(Math.max(0, Number(variant.gain_linear) || 0), time);
+    const mappedGain = Math.max(0,Number(variant.gain_linear) || 0);
+    gain.gain.setValueAtTime(mappedGain*playbackVelocityGain(this.manifest,velocity),time);
     source.connect(gain);
 
     if (pan && typeof context.createStereoPanner === 'function') {
