@@ -1,5 +1,5 @@
 import { compileRhythmSource, serializeRhythmPattern } from './rhythm-language.js';
-import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 
 const $ = (selector) => document.querySelector(selector);
 

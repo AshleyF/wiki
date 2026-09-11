@@ -7,7 +7,7 @@ import {
   snapRangeValue,
   trackTimingOffsetSeconds
 } from './euclidean-core.js';
-import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { INSTRUMENTS, instrumentGroups } from './instrument-catalog.js';
 
 const STORAGE_KEY = 'euclidean-rhythm-explorer-state-v2';

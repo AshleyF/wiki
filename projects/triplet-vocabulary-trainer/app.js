@@ -1,7 +1,7 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js';
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
-import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery } from './trainer-core.js?v=20260910-scoring-cutoff-1';
 
 const MELODIES = [

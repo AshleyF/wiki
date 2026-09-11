@@ -1,6 +1,6 @@
 import { accuracy, chooseNextNote, letterPrompt, notesForSettings } from './flashcard-core.js?v=20260826-3';
 import { midiName, midiToVexKey, vexAccidentalForKey } from '../piano/trainer-core.js?v=20260827-accidentals-1';
-import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;

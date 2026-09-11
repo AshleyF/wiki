@@ -1,5 +1,5 @@
 import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './trainer-core.js?v=20260827-accidentals-1';
-import { boostedAudioOutput } from '../shared/audio-output.js?v=20260904-1';
+import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 
 const MIDI_INPUT_KEY = 'piano-reading-trainer-midi-input';
 
