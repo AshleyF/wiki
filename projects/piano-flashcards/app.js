@@ -1,6 +1,7 @@
 import { NOTE_RANGES, accuracy, chooseNextNote, letterPrompt, noteRange, notesForSettings } from './flashcard-core.js?v=20260911-clef-ranges-1';
 import { midiName, midiToVexKey, vexAccidentalForKey } from '../piano/trainer-core.js?v=20260827-accidentals-1';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
+import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 
 const KEYBOARD_FIRST_NOTE = 36;
 const KEYBOARD_LAST_NOTE = 84;
@@ -48,6 +49,7 @@ let preferredMidiInputId = '';
 let preferredMidiOutputId = '';
 let questionLocked = false;
 let settings = loadSettings();
+const screenWakeLock = createScreenWakeLock();
 
 try {
   const midiSettings = JSON.parse(localStorage.getItem(MIDI_SETTINGS_KEY) || '{}');
@@ -336,6 +338,7 @@ function selectMidiPorts({ persist = true } = {}) {
   selectedMidiInput = midiAccess?.inputs.get(elements.midiInput.value) || null;
   selectedMidiOutput = midiAccess?.outputs.get(elements.midiOutput.value) || null;
   if (selectedMidiInput) selectedMidiInput.onmidimessage = onMidiMessage;
+  void screenWakeLock.setActive(Boolean(selectedMidiInput || selectedMidiOutput));
   if (persist) {
     preferredMidiInputId = elements.midiInput.value;
     preferredMidiOutputId = elements.midiOutput.value;

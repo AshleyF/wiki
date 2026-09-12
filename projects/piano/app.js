@@ -1,5 +1,6 @@
 import { classifyAttempt, classifyMidiPress, cursorXAtTimeline, heldPressReady, midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './trainer-core.js?v=20260827-accidentals-1';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
+import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 
 const MIDI_INPUT_KEY = 'piano-reading-trainer-midi-input';
 
@@ -171,6 +172,7 @@ let heldAttemptIndex = -1;
 let heldAttemptNotes = [];
 let keyboardChord = new Set();
 let chordHold = false;
+const screenWakeLock = createScreenWakeLock();
 
 function normalizeEvents(source) {
   const rawEvents = Array.isArray(source?.events)
@@ -284,6 +286,7 @@ function stop(message = 'Stopped.') {
   elements.cursor.hidden = currentIndex === 0;
   markCurrent();
   setStatus(message);
+  void screenWakeLock.setActive(false);
 }
 
 function fail(kind, played = null) {
@@ -305,6 +308,7 @@ function fail(kind, played = null) {
   markCurrent();
   showExpectedKey();
   setStatus(messages[kind]);
+  void screenWakeLock.setActive(true);
 }
 
 function complete() {
@@ -317,6 +321,7 @@ function complete() {
   elements.start.textContent = 'Again';
   markCurrent();
   setStatus('Drill complete.');
+  void screenWakeLock.setActive(false);
 }
 
 function positionCursor(now) {
@@ -372,6 +377,7 @@ function start() {
   elements.cursor.hidden = false;
   running = true;
   paused = false;
+  void screenWakeLock.setActive(true);
   startTime = performance.now() + beatMs();
   elements.start.textContent = 'Stop';
   setStatus('Count in…');

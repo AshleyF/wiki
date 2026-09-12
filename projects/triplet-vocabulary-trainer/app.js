@@ -2,6 +2,7 @@ import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/dru
 import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
+import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery } from './trainer-core.js?v=20260910-scoring-cutoff-1';
 
 const MELODIES = [
@@ -70,6 +71,7 @@ let recoveryExitQueued = false;
 let recoveryCards = [false,false,false];
 let recoveryScore = createPracticeScore();
 let recoveryExpectedHits = [];
+const screenWakeLock = createScreenWakeLock();
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
 function extendedLabel(index) {
@@ -777,12 +779,14 @@ async function start({ tapMode = false } = {}) {
     resetRecoveryState();
     resetPracticeSession();
     playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
+    void screenWakeLock.setActive(true);
     setTransportState('stop'); updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
   } catch (error) { setTapMode(false); setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
 function stop() {
   playing = false; clearInterval(scheduler); scheduler = null;
+  void screenWakeLock.setActive(false);
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();
   cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
