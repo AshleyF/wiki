@@ -12,7 +12,7 @@
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260826-2">
+    <link rel="stylesheet" href="styles.css?v=20260911-combined-prompts-3">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -23,37 +23,47 @@
 
     <main>
       <section class="toolbar panel" aria-label="Flashcard controls">
-        <div class="mode-switch" role="group" aria-label="Question mode">
-          <button type="button" data-mode="letter" aria-pressed="true" title="See a note name and find its key in the middle-C octave">Letter</button>
-          <button type="button" data-mode="staff" aria-pressed="false" title="Read one note from the grand staff">Staff</button>
-          <button type="button" data-mode="ear" aria-pressed="false" title="Hear a note and find it by ear">Ear</button>
+        <div class="mode-switch" role="group" aria-label="Prompt types">
+          <button type="button" data-mode="letter" aria-pressed="true" title="Show the note name"><span class="mode-check" aria-hidden="true">✓</span>Letter</button>
+          <button type="button" data-mode="staff" aria-pressed="false" title="Show the note on a staff"><span class="mode-check" aria-hidden="true">✓</span>Staff</button>
+          <button type="button" data-mode="ear" aria-pressed="false" title="Play the note as an audible prompt"><span class="mode-check" aria-hidden="true">✓</span>Ear</button>
         </div>
         <button id="replay" type="button" hidden title="Play the current ear-training note again">↻ Hear again</button>
         <details class="settings-controls">
-          <summary>Settings</summary>
-          <div class="settings-menu">
-            <label><span>Range</span>
-              <select id="note-range" title="Set the note range for every question mode">
+          <summary>Notes</summary>
+          <div class="settings-menu note-menu">
+            <div class="note-picker-toolbar">
+              <label><span>Preset</span>
+                <select id="note-preset" title="Choose a starting set of notes">
+                  <option value="">Custom selection</option>
                 <optgroup label="Staffs">
                   <option value="bass">Bass clef only · C2–B3</option>
                   <option value="treble">Treble clef only · C4–C6</option>
                   <option value="grand">Grand staff · C2–C6</option>
                 </optgroup>
                 <optgroup label="Octaves">
+                  <option value="octave1">C1 octave · C1–B1</option>
                   <option value="low">Low octave · C2–B2</option>
                   <option value="lowerMiddle">Bass octave · C3–B3</option>
                   <option value="middle" selected>Middle C octave · C4–B4</option>
                   <option value="upper">High octave · C5–B5</option>
+                  <option value="octave6">C6 octave · C6–B6</option>
+                  <option value="octave7">C7 octave · C7–B7</option>
                 </optgroup>
                 <optgroup label="Mixed ranges">
                   <option value="two">Two octaves · C3–C5</option>
+                  <option value="piano">Full piano · A0–C8</option>
                 </optgroup>
               </select>
-            </label>
-            <label class="checkbox-label" title="Include the black-key notes between the natural notes">
-              <input id="include-accidentals" type="checkbox">
-              <span>Sharps and flats</span>
-            </label>
+              </label>
+              <button id="random-four" type="button" title="Focus on four well-spaced notes from the gray practice range">Random 4</button>
+              <button id="remove-one" type="button" title="Remove one random note from the active drill">−1</button>
+              <button id="add-one" type="button" title="Add one random note from the gray practice range">+1</button>
+              <button id="select-all-notes" type="button" title="Activate the entire gray practice range">All</button>
+              <button id="reset-notes" type="button" title="Restore the middle-C natural-note range">Reset</button>
+              <span id="note-selection-count" class="note-selection-count" title="Active notes out of the full practice range">7 of 7</span>
+            </div>
+            <div id="note-picker" class="note-picker" role="group" aria-label="Select piano notes"></div>
           </div>
         </details>
         <details class="midi-controls">
@@ -92,6 +102,6 @@
       </section>
     </main>
 
-    <script type="module" src="app.js?v=20260911-wake-lock-1"></script>
+    <script type="module" src="app.js?v=20260911-key-release-1"></script>
   </body>
 </html>
