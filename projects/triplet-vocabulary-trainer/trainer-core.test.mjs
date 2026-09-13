@@ -19,7 +19,6 @@ import {
   rolesForExtendedBar,
   rolesForTripletMasks,
   tripletMasksForRoles,
-  shouldQueueRecovery,
   scorePracticeTap
 } from './trainer-core.js';
 
@@ -41,15 +40,22 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
 });
 
-test('recovery uses quarter-note pulses and starts after four missed triplet groups', () => {
+test('recovery uses quarter-note pulses and mode-sized re-entry targets', () => {
   assert.deepEqual(recoveryPulseRoles(12),[
     'A','R','R','A','R','R','A','R','R','A','R','R'
   ]);
   assert.deepEqual(tripletMasksForRoles(recoveryPulseRoles(12)),['100','100','100','100']);
   assert.equal(recoveryHitTarget(6),2);
   assert.equal(recoveryHitTarget(12),4);
-  assert.equal(shouldQueueRecovery(1,2.99,.5),false);
-  assert.equal(shouldQueueRecovery(1,3,.5),true);
+});
+
+test('rests do not become missed practice targets', () => {
+  const expectedHits = [
+    { time:1,matched:false,expired:false },
+    { time:4,matched:false,expired:false }
+  ];
+  assert.equal(expirePracticeTargets(expectedHits,10,{ early:.05,late:.1 }),2);
+  assert.equal(expirePracticeTargets(expectedHits,20,{ early:.05,late:.1 }),0);
 });
 
 test('twelve random cells are independently selected from the enabled set', () => {

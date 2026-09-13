@@ -3,7 +3,7 @@ import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery, tripletMasksForRoles } from './trainer-core.js?v=20260913-recovery-reentry-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260913-recovery-rests-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -64,7 +64,7 @@ let phraseStartTime = null;
 const scheduledSources = new Set();
 const visualTimers = new Set();
 let practiceHasStarted = false;
-let lastPracticeInputTime = null;
+let consecutiveExpiredTargets = 0;
 let recoveryMode = false;
 let recoveryExitQueued = false;
 let recoveryCards = [false,false,false];
@@ -499,6 +499,7 @@ function resetPracticeSession() {
   practiceScore = createPracticeScore();
   expectedPracticeHits = [];
   deferredPracticeMisses = 0;
+  consecutiveExpiredTargets = 0;
   phraseStartTime = null;
   updatePracticeScore();
 }
@@ -509,7 +510,7 @@ function resetRecoveryState() {
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
   practiceHasStarted = false;
-  lastPracticeInputTime = null;
+  consecutiveExpiredTargets = 0;
 }
 function queueNotationRender() {
   const timer = setTimeout(() => {
@@ -532,6 +533,7 @@ function enterRecovery(currentSlot = activeSlot) {
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
   deferredPracticeMisses = 0;
+  consecutiveExpiredTargets = 0;
   expectedPracticeHits = [];
   queueNotationRender();
 }
@@ -556,7 +558,7 @@ function leaveRecovery() {
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
   practiceHasStarted = false;
-  lastPracticeInputTime = null;
+  consecutiveExpiredTargets = 0;
   resetPracticeSession();
   queueNotationRender();
 }
@@ -566,9 +568,11 @@ function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
     recoveryExpectedHits = recoveryExpectedHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
     return;
   }
-  deferredPracticeMisses += expirePracticeTargets(expectedPracticeHits,now,practiceTimingWindows(eventDuration()));
+  const expiredTargets = expirePracticeTargets(expectedPracticeHits,now,practiceTimingWindows(eventDuration()));
+  deferredPracticeMisses += expiredTargets;
+  if (practiceHasStarted) consecutiveExpiredTargets += expiredTargets;
   expectedPracticeHits = expectedPracticeHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
-  if (practiceHasStarted && lastPracticeInputTime !== null && shouldQueueRecovery(lastPracticeInputTime,now,quarterDuration())) {
+  if (practiceHasStarted && consecutiveExpiredTargets >= 4) {
     enterRecovery(activeSlot);
   }
 }
@@ -578,7 +582,6 @@ function registerPracticeHit(source = 'tap',hitTime = null) {
   const windowSeconds = practiceTimingWindows(eventDuration());
   if (time < phraseStartTime-windowSeconds.early) return;
   practiceHasStarted = true;
-  lastPracticeInputTime = time;
   expirePracticeScore(time);
   if (recoveryMode) {
     const result = scorePracticeTap(recoveryScore,recoveryExpectedHits,time,windowSeconds);
@@ -588,6 +591,7 @@ function registerPracticeHit(source = 'tap',hitTime = null) {
   commitPracticeMisses(practiceScore,deferredPracticeMisses);
   deferredPracticeMisses = 0;
   const result = scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
+  if (result.kind === 'hit') consecutiveExpiredTargets = 0;
   updatePracticeScore();
 }
 function midiTimestamp(time) { return performance.now() + Math.max(0, time - audioContext.currentTime) * 1000; }
@@ -663,10 +667,6 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
       recoveryCards[previousSlot] = true;
       queueCardRender(previousSlot);
     }
-    return;
-  }
-  if (practiceHasStarted && lastPracticeInputTime !== null && shouldQueueRecovery(lastPracticeInputTime,nextEventTime,quarterDuration())) {
-    enterRecovery(previousSlot);
     return;
   }
   if (previousSlot === activeCardCount()-1 && queuedRandomize) {

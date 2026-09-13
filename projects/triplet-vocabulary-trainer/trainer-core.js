@@ -52,12 +52,6 @@ export function recoveryHitTarget(stepCount) {
   return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
 
-export function shouldQueueRecovery(lastSuccessfulHitTime,now,quarterNoteSeconds,tripletCount = 4) {
-  const elapsed = Number(now)-Number(lastSuccessfulHitTime);
-  const threshold = Number(quarterNoteSeconds)*Number(tripletCount);
-  return Number.isFinite(elapsed) && Number.isFinite(threshold) && threshold > 0 && elapsed >= threshold;
-}
-
 export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null) {
   if (!enabledMasks.length) throw new Error('At least one triplet must be enabled.');
   return Array.from({ length:count },() => randomChoiceWithEmphasis(enabledMasks,emphasized,random));
