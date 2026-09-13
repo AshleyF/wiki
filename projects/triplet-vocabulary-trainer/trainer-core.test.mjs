@@ -14,9 +14,11 @@ import {
   randomChoiceWithEmphasis,
   randomExtendedPatternPair,
   randomTripletMasks,
+  recoveryHitTarget,
   recoveryPulseRoles,
   rolesForExtendedBar,
   rolesForTripletMasks,
+  tripletMasksForRoles,
   shouldQueueRecovery,
   scorePracticeTap
 } from './trainer-core.js';
@@ -36,12 +38,16 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(rolesForTripletMasks(['000','101','111']),[
     'B','B','B','A','B','A','A','A','A'
   ]);
+  assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
 });
 
 test('recovery uses quarter-note pulses and starts after four missed triplet groups', () => {
   assert.deepEqual(recoveryPulseRoles(12),[
     'A','R','R','A','R','R','A','R','R','A','R','R'
   ]);
+  assert.deepEqual(tripletMasksForRoles(recoveryPulseRoles(12)),['100','100','100','100']);
+  assert.equal(recoveryHitTarget(6),2);
+  assert.equal(recoveryHitTarget(12),4);
   assert.equal(shouldQueueRecovery(1,2.99,.5),false);
   assert.equal(shouldQueueRecovery(1,3,.5),true);
 });

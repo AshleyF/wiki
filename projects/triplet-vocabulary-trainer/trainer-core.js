@@ -38,8 +38,18 @@ export function rolesForTripletMasks(masks) {
   return masks.flatMap(mask => [...mask].map(bit => bit === '1' ? 'A' : 'B'));
 }
 
+export function tripletMasksForRoles(roles) {
+  return Array.from({ length:Math.floor(roles.length/3) },(_,group) => (
+    roles.slice(group*3,group*3+3).map(role => role === 'A' ? '1' : '0').join('')
+  ));
+}
+
 export function recoveryPulseRoles(stepCount) {
   return Array.from({ length:stepCount },(_,step) => step%3 === 0 ? 'A' : 'R');
+}
+
+export function recoveryHitTarget(stepCount) {
+  return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
 
 export function shouldQueueRecovery(lastSuccessfulHitTime,now,quarterNoteSeconds,tripletCount = 4) {

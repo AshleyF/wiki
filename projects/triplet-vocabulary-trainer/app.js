@@ -3,7 +3,7 @@ import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery } from './trainer-core.js?v=20260910-scoring-cutoff-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, shouldQueueRecovery, tripletMasksForRoles } from './trainer-core.js?v=20260913-recovery-reentry-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -63,7 +63,6 @@ let countInBeat = 0;
 let phraseStartTime = null;
 const scheduledSources = new Set();
 const visualTimers = new Set();
-const RECOVERY_HIT_TARGET = 2;
 let practiceHasStarted = false;
 let lastPracticeInputTime = null;
 let recoveryMode = false;
@@ -334,9 +333,7 @@ function selectedPattern(slot) {
   return MELODIES[Number(selectors[slot].value)] || MELODIES[0];
 }
 function selectedMasks(slot) {
-  if (trainerMode === 'triplets') return tripletCards[slot];
-  const melody = selectedPattern(slot);
-  return Array.from({ length:melody.length/3 },(_,group) => melody.slice(group*3,group*3+3).map(role => role === 'A' ? '1' : '0').join(''));
+  return tripletMasksForRoles(selectedPattern(slot));
 }
 function activeCardCount() { return 3; }
 function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : 12; }
@@ -546,8 +543,11 @@ function beginRecoveryExit(currentSlot) {
   deferredPracticeMisses = 0;
   updatePracticeScore();
   const previousSlot = (currentSlot+activeCardCount()-1)%activeCardCount();
+  const nextSlot = (currentSlot+1)%activeCardCount();
   recoveryCards[previousSlot] = false;
   randomizeSlot(previousSlot);
+  recoveryCards[nextSlot] = false;
+  randomizeSlot(nextSlot);
 }
 function leaveRecovery() {
   recoveryMode = false;
@@ -582,7 +582,7 @@ function registerPracticeHit(source = 'tap',hitTime = null) {
   expirePracticeScore(time);
   if (recoveryMode) {
     const result = scorePracticeTap(recoveryScore,recoveryExpectedHits,time,windowSeconds);
-    if (result.kind === 'hit' && recoveryScore.streak >= RECOVERY_HIT_TARGET) beginRecoveryExit(result.expected.slot);
+    if (result.kind === 'hit' && recoveryScore.streak >= recoveryHitTarget(stepsPerCard())) beginRecoveryExit(result.expected.slot);
     return;
   }
   commitPracticeMisses(practiceScore,deferredPracticeMisses);
