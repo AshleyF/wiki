@@ -17,6 +17,7 @@ import {
   recoveryHitTarget,
   recoveryPulseRoles,
   rolesForExtendedBar,
+  rolesForKickVocabulary,
   rolesForTripletMasks,
   tripletMasksForRoles,
   scorePracticeTap
@@ -40,12 +41,20 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
 });
 
+test('kick vocabulary adds a third-beat snare landing', () => {
+  assert.deepEqual(
+    rolesForKickVocabulary(['A','B','A','A','B','B']),
+    ['A','B','A','A','B','B','S','R','R']
+  );
+});
+
 test('recovery uses quarter-note pulses and mode-sized re-entry targets', () => {
   assert.deepEqual(recoveryPulseRoles(12),[
     'A','R','R','A','R','R','A','R','R','A','R','R'
   ]);
   assert.deepEqual(tripletMasksForRoles(recoveryPulseRoles(12)),['100','100','100','100']);
   assert.equal(recoveryHitTarget(6),2);
+  assert.equal(recoveryHitTarget(9),3);
   assert.equal(recoveryHitTarget(12),4);
 });
 

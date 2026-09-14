@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
-    <meta name="description" content="Practice JP Bouvet's triplet vocabulary or randomized phrases built from every possible triplet cell.">
+    <meta name="description" content="Practice JP Bouvet's triplet vocabulary, kick-drum applications, or randomized phrases built from every possible triplet cell.">
     <title>Triplet Vocabulary Trainer</title>
     <script>
       (() => {
@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260910-compact-pattern-row-2">
+    <link rel="stylesheet" href="styles.css?v=20260913-kick-engraving-3">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -36,7 +36,7 @@
     </header>
     <main>
       <section class="melody-filter panel" aria-label="Melodies available to the trainer">
-        <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="extended">Extended</option><option value="triplets">Triplets</option></select></label>
+        <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="extended">Extended</option><option value="triplets">Triplets</option><option value="kick">Kick</option></select></label>
         <span class="melody-filter-label">Melodies</span>
         <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
         <label class="emphasis-control" title="Give this pattern a 50% chance on each eligible shuffle"><span>Emphasize</span><select id="emphasis" aria-label="Emphasized pattern"><option value="">None</option></select></label>
@@ -78,6 +78,6 @@
         <div id="dedicated-tap-pad" class="dedicated-tap-pad" role="button" aria-label="Rhythm tap area" aria-hidden="true"></div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260913-recovery-rests-1"></script>
+    <script type="module" src="app.js?v=20260913-kick-engraving-3"></script>
   </body>
 </html>

@@ -38,6 +38,10 @@ export function rolesForTripletMasks(masks) {
   return masks.flatMap(mask => [...mask].map(bit => bit === '1' ? 'A' : 'B'));
 }
 
+export function rolesForKickVocabulary(melody) {
+  return [...melody,'S','R','R'];
+}
+
 export function tripletMasksForRoles(roles) {
   return Array.from({ length:Math.floor(roles.length/3) },(_,group) => (
     roles.slice(group*3,group*3+3).map(role => role === 'A' ? '1' : '0').join('')

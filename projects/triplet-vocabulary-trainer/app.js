@@ -1,9 +1,9 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
-import { addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260913-recovery-rests-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260913-kick-mode-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -80,7 +80,7 @@ function extendedLabel(index) {
 function loadTrainerMode() {
   try {
     const saved = localStorage.getItem(TRAINER_MODE_KEY);
-    return ['vocabulary','extended','triplets'].includes(saved) ? saved : 'vocabulary';
+    return ['vocabulary','extended','triplets','kick'].includes(saved) ? saved : 'vocabulary';
   } catch { return 'vocabulary'; }
 }
 function loadEnabledMelodies() {
@@ -330,13 +330,14 @@ function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
   if (trainerMode === 'triplets') return rolesForTripletMasks(tripletCards[slot]);
   if (trainerMode === 'extended') return rolesForExtendedBar(extendedCards[slot]);
-  return MELODIES[Number(selectors[slot].value)] || MELODIES[0];
+  const melody = MELODIES[Number(selectors[slot].value)] || MELODIES[0];
+  return trainerMode === 'kick' ? rolesForKickVocabulary(melody) : melody;
 }
 function selectedMasks(slot) {
   return tripletMasksForRoles(selectedPattern(slot));
 }
 function activeCardCount() { return 3; }
-function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : 12; }
+function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : trainerMode === 'kick' ? 9 : 12; }
 function tripletCountForStep(step) {
   return step%3 === 0 ? String(Math.floor(step/3)+1) : step%3 === 1 ? '&' : 'a';
 }
@@ -365,12 +366,139 @@ async function populateSampleKits() {
     select.disabled = true;
   }
 }
+function renderKickCard(slot,target,width) {
+  const VF = vexflow();
+  const height = $('#show-counting').checked ? 168 : 148;
+  const renderer = new VF.Renderer(target,VF.Renderer.Backends.SVG);
+  renderer.resize(width,height);
+  const context = renderer.getContext();
+  const stave = new VF.Stave(8,20,width-16);
+  stave.addClef('percussion').addTimeSignature('3/4');
+  stave.setContext(context).draw();
+  if (slot > 0) {
+    target.querySelectorAll('.vf-clef,.vf-timesignature').forEach(element => {
+      element.style.visibility = 'hidden';
+    });
+  }
+
+  const roles = selectedPattern(slot);
+  const recovering = recoveryCards[slot];
+  const masks = tripletMasksForRoles(roles.slice(0,6));
+  const patternGroups = masks.map((mask,beat) => {
+    const spelling = DRUM_HIDDEN_TRIPLET_SPELLINGS[mask];
+    const notes = spelling.events.map(event => {
+      const step = beat*3+event.step;
+      const note = new VF.StaveNote({
+        clef:'percussion',
+        keys:[event.rest ? 'b/4' : recovering ? 'c/5' : 'f/4'],
+        duration:`${event.duration}${event.rest ? 'r' : ''}`,
+        stem_direction:VF.Stem.DOWN
+      });
+      note.trainerStep = step;
+      note.trainerSlots = event.slots;
+      note.trainerCount = event.rest ? '' : tripletCountForStep(step);
+      return note;
+    });
+    const beamable = notes.filter((note,index) => !spelling.events[index].rest && spelling.events[index].duration === '8');
+    return {
+      notes,
+      beam:beamable.length > 1 ? new VF.Beam(beamable) : null,
+      tuplet:spelling.tuplet ? new VF.Tuplet(notes,{
+        num_notes:3,
+        notes_occupied:2,
+        bracketed:true,
+        ratioed:false,
+        location:VF.Tuplet.LOCATION_BOTTOM
+      }) : null
+    };
+  });
+  const hiddenLandingRest = new VF.StaveNote({
+    clef:'percussion',keys:['b/4'],duration:'4r',stem_direction:VF.Stem.DOWN
+  });
+  hiddenLandingRest.trainerStep = 6;
+  hiddenLandingRest.trainerSlots = 3;
+  hiddenLandingRest.trainerHidden = true;
+  const patternNotes = [...patternGroups.flatMap(group => group.notes),hiddenLandingRest];
+  const grooveNotes = Array.from({ length:3 },(_,beat) => {
+    const landing = beat === 2;
+    const keys = recovering
+      ? landing ? ['c/5'] : ['b/4']
+      : landing ? ['c/5','f/5/x2'] : ['f/5/x2'];
+    const note = new VF.StaveNote({
+      clef:'percussion',
+      keys,
+      duration:recovering && !landing ? '4r' : '4',
+      stem_direction:VF.Stem.UP
+    });
+    note.trainerStep = beat*3;
+    note.trainerSlots = 3;
+    note.trainerHidden = recovering && !landing;
+    if (landing) {
+      const accent = new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE);
+      note.addModifier(accent,0);
+      note.trainerCount = '3';
+    }
+    return note;
+  });
+  const patternVoice = new VF.Voice({ num_beats:3,beat_value:4 }).setMode(VF.Voice.Mode.SOFT);
+  const grooveVoice = new VF.Voice({ num_beats:3,beat_value:4 }).setMode(VF.Voice.Mode.SOFT);
+  patternVoice.addTickables(patternNotes);
+  grooveVoice.addTickables(grooveNotes);
+  const voices = [patternVoice,grooveVoice];
+  new VF.Formatter().joinVoices(voices).format(voices,Math.max(150,width-112));
+  voices.forEach(voice => voice.draw(context,stave));
+  patternGroups.forEach(group => group.beam?.setContext(context).draw());
+  patternGroups.forEach(group => {
+    if (!group.tuplet) return;
+    if (typeof context.openGroup === 'function') context.openGroup('tuplet');
+    group.tuplet.setContext(context).draw();
+    if (typeof context.closeGroup === 'function') context.closeGroup();
+  });
+  if ($('#show-counting').checked) {
+    const svg = target.querySelector('svg');
+    [...patternNotes,...grooveNotes].filter(note => note.trainerCount).forEach(note => {
+      const annotation = document.createElementNS('http://www.w3.org/2000/svg','text');
+      annotation.classList.add('reduced-triplet-annotation');
+      annotation.setAttribute('x',String(note.getAbsoluteX()));
+      annotation.setAttribute('y',String(height-8));
+      annotation.setAttribute('text-anchor','middle');
+      annotation.setAttribute('font-family','Arial, sans-serif');
+      annotation.setAttribute('font-size','9');
+      annotation.textContent = note.trainerCount;
+      svg.append(annotation);
+    });
+  }
+
+  const stepElements = Array.from({ length:roles.length },() => []);
+  const stems = renderedDrumStems(target,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
+  [...patternNotes,...grooveNotes].forEach(note => {
+    const element = note.getSVGElement?.();
+    if (note.trainerHidden) {
+      element?.classList.add('drum-hidden-playback-note');
+      return;
+    }
+    element?.classList.add('drum-step');
+    const coveredSteps = Array.from({ length:note.trainerSlots || 1 },(_,offset) => note.trainerStep+offset)
+      .filter(step => step < stepElements.length);
+    coveredSteps.forEach(step => addDrumStepElement(stepElements,step,element));
+    const stem = renderedStemForNote(stems,note);
+    if (stem) {
+      stem.classList.add('drum-step-stem');
+      coveredSteps.forEach(step => addDrumStepElement(stepElements,step,stem));
+    }
+  });
+  cards[slot].stepElements = stepElements;
+}
 function renderCard(slot) {
   const VF = vexflow();
   const target = cards[slot].querySelector('.notation');
   target.replaceChildren();
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
+  if (trainerMode === 'kick') {
+    renderKickCard(slot,target,width);
+    return;
+  }
   const masks = selectedMasks(slot);
   const fourTripletBar = trainerMode !== 'vocabulary';
   const cellGap = fourTripletBar ? 8 : 12;
@@ -423,6 +551,16 @@ function renderAll() {
 function updateModeUI({ randomizeTriplets = false } = {}) {
   document.body.dataset.trainerMode = trainerMode;
   $('#trainer-mode').value = trainerMode;
+  const ignoreFeet = $('#ignore-feet');
+  if (trainerMode === 'kick') {
+    ignoreFeet.checked = false;
+    ignoreFeet.disabled = true;
+    ignoreFeet.closest('label').title = 'Kick strokes are scoring input in Kick mode';
+  } else {
+    ignoreFeet.checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
+    ignoreFeet.disabled = false;
+    ignoreFeet.closest('label').title = 'Ignore incoming kick and pedal-hi-hat MIDI notes when scoring';
+  }
   cards.forEach((card,slot) => {
     card.hidden = slot >= activeCardCount();
     card.querySelector('.card-kind').textContent = trainerMode === 'triplets'
@@ -430,7 +568,7 @@ function updateModeUI({ randomizeTriplets = false } = {}) {
       : trainerMode === 'extended' ? `Bar ${slot+1}` : 'Melody';
   });
   if (trainerMode === 'extended') populateExtendedSelectors();
-  else if (trainerMode === 'vocabulary') selectors.forEach(select => {
+  else if (trainerMode === 'vocabulary' || trainerMode === 'kick') selectors.forEach(select => {
     select.disabled = false;
     populateSelector(select,Number(select.value));
   });
@@ -614,8 +752,8 @@ function scheduleFallbackSnare(time, velocity) {
   source.connect(filter).connect(gain).connect(boostedAudioOutput(audioContext)); source.start(time);
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
 }
-function scheduleHat(time, velocity) {
-  if (midiOutput) { scheduleMidi(44, velocity, time, .045); return; }
+function scheduleHat(time, velocity, midiNote = 44) {
+  if (midiOutput) { scheduleMidi(midiNote, velocity, time, .045); return; }
   const length = Math.ceil(audioContext.sampleRate*.055);
   const buffer = audioContext.createBuffer(1,length,audioContext.sampleRate);
   const data = buffer.getChannelData(0);
@@ -628,6 +766,21 @@ function scheduleHat(time, velocity) {
   gain.gain.exponentialRampToValueAtTime(.001,time+.055);
   source.connect(filter).connect(gain).connect(boostedAudioOutput(audioContext)); source.start(time); source.stop(time+.055);
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
+}
+function scheduleKick(time,velocity) {
+  if (midiOutput) { scheduleMidi(36,velocity,time,.08); return; }
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(115,time);
+  oscillator.frequency.exponentialRampToValueAtTime(48,time+.09);
+  gain.gain.setValueAtTime(Math.max(.025,velocity/127*.7),time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+.16);
+  oscillator.connect(gain).connect(boostedAudioOutput(audioContext));
+  oscillator.start(time);
+  oscillator.stop(time+.17);
+  oscillator.onended = () => scheduledSources.delete(oscillator);
+  scheduledSources.add(oscillator);
 }
 function scheduleSnare(time, velocity) {
   if (midiOutput) scheduleMidi(38, velocity, time);
@@ -712,18 +865,23 @@ function scheduleEvent() {
   const role = selectedPattern(slot)[step];
   const currentVelocities = velocityValues();
   const velocity = midiOutput
-    ? currentVelocities[role === 'A' ? 1 : 0]
-    : activeVelocities[role === 'A' ? 'normal' : 'ghost'];
+    ? currentVelocities[role === 'S' ? 2 : role === 'A' ? 1 : 0]
+    : activeVelocities[role === 'S' ? 'accent' : role === 'A' ? 'normal' : 'ghost'];
   if (phraseStartTime === null) {
     phraseStartTime = nextEventTime;
   }
-  if (role === 'A') {
+  if (role === 'A' || role === 'S') {
     const expected = { time:nextEventTime,slot,step,matched:false,expired:false };
     if (recoveryCards[slot]) recoveryExpectedHits.push(expected);
     else expectedPracticeHits.push(expected);
   }
-  if (role !== 'R') scheduleSnare(nextEventTime, velocity);
-  if ($('#metronome').checked && step%3 === 0) {
+  const kickVocabulary = trainerMode === 'kick' && !recoveryCards[slot];
+  if (role !== 'R') {
+    if (kickVocabulary && role === 'A') scheduleKick(nextEventTime,velocity);
+    else scheduleSnare(nextEventTime,velocity);
+  }
+  if (kickVocabulary && step%3 === 0) scheduleHat(nextEventTime,currentVelocities[1],42);
+  if ($('#metronome').checked && !kickVocabulary && step%3 === 0) {
     const quarterBeat = Math.floor(eventNumber/3);
     scheduleHat(nextEventTime,quarterBeat%4 === 0 ? currentVelocities[2] : currentVelocities[1]);
   }
@@ -807,6 +965,7 @@ function attachMidiInput(nextInput) {
   midiInput.onmidimessage = event => {
     const [status,note,velocity = 0] = event.data || [];
     if ((status&0xf0) !== 0x90 || velocity <= 0) return;
+    if (trainerMode === 'kick' && [42,44,46].includes(Number(note))) return;
     const [ghostVelocity,normalVelocity] = velocityValues();
     const accepted = midiPracticeHitAccepted(note,velocity,{
       ignoreFeet:$('#ignore-feet').checked,
@@ -895,7 +1054,7 @@ extendedSecondSelectors.forEach((select,slot) => select.addEventListener('change
 }));
 $('#trainer-mode').addEventListener('change',event => {
   if (playing) stop();
-  trainerMode = ['vocabulary','extended','triplets'].includes(event.target.value) ? event.target.value : 'vocabulary';
+  trainerMode = ['vocabulary','extended','triplets','kick'].includes(event.target.value) ? event.target.value : 'vocabulary';
   try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
   if (trainerMode === 'extended') randomizeExtendedCards();
   updateModeUI({ randomizeTriplets:trainerMode === 'triplets' });
