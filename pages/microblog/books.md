@@ -6,15 +6,11 @@ Tracey and I started this together some time ago, but she's lost interest and I'
 
 ## On Drumming, JP Bouvet (10 AUG 2026 - 16 AUG 2026)
 
-- "Focal distance" (zooming/wide angle) -> "focus distance" "focal length" "depth of field"
-- "Automaticity" is that a word?
-- Sticking/spelling, rudiments/words, vocabulary (speaking/playing vs. reading/knowing)
+I read this book twice actually. He focuses on improvisation and producing unfolding melodies on the fly. His basic idea is to break things into "chunks" and develope a "rhythmic vocabulary." Sticking is spelling. Rudiments are words. Writers use words, but they think about ideas rather than individual words when writing. An example of chunking in memory is to memorize the letters XNSAFBICIAX. Easy once you see that it's NSA, FBI, and CIA with X's on each end! Then the idea is to create little constrained "creative games." Drills allow too little freedom. Some games: unfolding melody approach (down-up, 1/16th note grid, 1/8th down, e and a up, two downs or ups before switching), drop and go approach (small fragments across the grid). There's declarative memory (things you can explain) vs. procedural memory (things you can demonstrate). Declarative directs procedural learning. Sticking, counting, and notation are declarative. Feeling and sound are procedural. Some people learn by ear and can play. That's procedural without declarative. It can work, but requires talent and then they have trouble communicating precisely and targetting and adjusting what they're doing. Coordination and independence: Nobody can do two things at once. Once you're used to an ostinado, you can put it on "autopilot" and focus on other things. Focus is on one thing at a time. Funny example: Turning down the music in the car so you can "see" better. The "spotlight of attention" or what he calls the "creative director" being able to listen to yourself and direct at a high level. Intuition: Sometimes "go listen to this record" is the only way to explain and critique is merely, "it swings" or "it's not swinging." His mantra is, "Think simple thoughts, play complex things." This is achieved through chunking and raising the level of abstraction for the "creative director." An interesting point he makes: Lyrics are an accompaniment to the music. For example, happy lyrics over a sad song still feel sad.
 
-## Contact, Carl Sagan (24 JUL 2026 - )
+## Contact, Carl Sagan (24 JUL 2026 - 10 AUG 2026)
 
-- Religion throughout
-- No Doppler = directional
-- Polarization modulation, not interlacing
+The movie is slightly different to the movie. In the book, her dad dies and her mother remarries a non-scientific guy. In the movie, her mother dies in child birth and she grows up with her father until he has a heart attack. The book was much more international and less American. And in the book, she went on the mission with four other people. A minor technical bit: In the book the aliens used polarization modulation to encode the message. In the movie, it was interlaced video; better visual for the screen I suppose. Also, in the book, there was this whole bit about the Doppler shift being corrected for; showing that the transmision was intended for Earth's direction from Vega. In the movie she went alone. Both have a surprising amount of religion and God vs. science stuff. In the end, the data from her/their mission is lost and they have no "proof" but want people to believe on "faith." I found that whole line annoying. Especially coming from someone like Carl Sagan. As usual, the book is rich and the movie is thin. But I liked it.
 
 ## Project Hail Mary, Andy Weir (20 JUL 2026 - 24 JUL 2026)
 

@@ -1,5 +1,9 @@
 # Movies
 
+## United 93 (12 SEP 2026)
+
+I had seen this before, but Tracey hadn't. It's pretty good and quite accurate. Chilling how everyone (except the hijackers) went about their day like normal. We've boarded planes like this so many times. That day was astonishing. I remember seeing it on CNN after the first tower was hit, then watched the second, and then watched them collapse. This was all before I went to work for the day. There, everyone was freaking out because the MSN site was down from all the traffic. We did some emergency things to push out a static homepage that would be less load on the servers. And later we changed things to have a "big red switch" in case of something like this in the future. I felt weird being surrounded by people whose main concern was some website. On a day like this. One of the guys on my team had a sister working in the Pentagon and he didn't hear from her for days. Assumed she was dead, but it turned out that she was disallowed from contacting anyone. Weird. Anyway, the movie is quite good. Tracey enjoyed it. The Mark Bingham character is played by Cheyane Jackson, who we went to school with. He's Chris' brother; the guy I went to Europe with.
+
 ## War of the Worlds (07 SEP 2026)
 
 Directed by Spielberg and starring Tom Cruise, how could it be bad? It was pretty good. The reviews complained about Dakota Fanning's screaming all the time. Yes, that got old. It was a decent underdog-makes-good story and a character study. Everything wrapped up a little too tidily for my taste. But sure, a decent movie.

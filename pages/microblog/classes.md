@@ -1,10 +1,10 @@
 # Classes
 
-## Ringo Starr Teaches Drumming (05 AUG 2026 - )
+## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
 He spends a lot of time just telling stories, while following a loose curriculum.
 
-## Garry Kasparov Teaches Chess (05 AUG 2026 - )
+## Garry Kasparov Teaches Chess (05 AUG 2026 - 10 AUG 2026)
 
 I'm impressed by his psychological approach. He definitely doesn't play the board, but the person sitting on the other side. He's fine with playing sub-optimal moves even to make his opponent less comfortable and to steer the game to his style of play and away from his opponent's. I was surprised by this.
 
