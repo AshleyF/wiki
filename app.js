@@ -2922,7 +2922,11 @@ function currentPage() {
 }
 
 function pagePath(page) {
-  if (page === 'music' || page === 'cubing' || page === 'microblog') return `pages/${page}/index.md`;
+  const isIndexPage = page === 'music'
+    || page === 'cubing'
+    || page === 'microblog'
+    || /^microblog\/\d{4}$/.test(page);
+  if (isIndexPage) return `pages/${page}/index.md`;
   return `pages/${page}.md`;
 }
 

@@ -8,6 +8,6 @@
 ----
 
 2026:
-[JUL](#/microblog/jul-2026)
-[AUG](#/microblog/aug-2026)
-[SEP](#/microblog/sep-2026)
+[JUL](#/microblog/2026/jul)
+[AUG](#/microblog/2026/aug)
+[SEP](#/microblog/2026/sep)

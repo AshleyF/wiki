@@ -66,6 +66,6 @@ We went into town to watch Aurora's soccer game. She almost scored a couple of t
 
 ## 13 SEP 2026 Sun - Apples
 
-I spent the day drumming (learning tripplet patterns on the kick), and I went to the store for some things Tracey needed and helped peel and core apples. Tracey made a bunch of apple sause. Yum!
+I spent the day drumming (learning tripplet patterns on the kick), and I went to the store for some things Tracey needed and helped peel and core apples. Tracey made a bunch of apple sause. Yum! Oh yeah, I also made a little two minute YouTube video on adding a virtual tambourine to the hi-hat on the Roland module.
 
 ## 14 SEP 2026 Mon - 
