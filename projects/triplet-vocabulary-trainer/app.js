@@ -3,7 +3,7 @@ import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260913-kick-two';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260914-kick-ghost-grid';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -810,12 +810,13 @@ function registerPracticeHit(source = 'tap',hitTime = null) {
 }
 function midiTimestamp(time) { return performance.now() + Math.max(0, time - audioContext.currentTime) * 1000; }
 function scheduleMidi(note, velocity, time, duration = .06) {
-  if (!midiOutput) return;
+  if (!midiOutput || velocity <= 0) return;
   const stamp = midiTimestamp(time);
   midiOutput.send([0x99,note,velocity], stamp);
   midiOutput.send([0x89,note,0], stamp + duration * 1000);
 }
 function scheduleFallbackSnare(time, velocity) {
+  if (velocity <= 0) return;
   const length = Math.floor(audioContext.sampleRate * .09);
   const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
   const data = buffer.getChannelData(0);
@@ -859,6 +860,7 @@ function scheduleKick(time,velocity) {
   scheduledSources.add(oscillator);
 }
 function scheduleSnare(time, velocity) {
+  if (velocity <= 0) return;
   if (midiOutput) scheduleMidi(38, velocity, time);
   else {
     const source = sampleKit?.schedule(audioContext, { velocity, time, destination: boostedAudioOutput(audioContext) });
@@ -1000,7 +1002,7 @@ async function prepareAudio() {
     sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
     const [ghost, normal, accent] = velocityValues();
     const requested = { ghost, normal, accent };
-    await sampleKit.prepare(audioContext, [ghost, normal, accent]);
+    await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
     activeVelocities = requested;
   } catch (error) { console.warn('Using synthesized snare fallback.', error); }
 }
@@ -1191,7 +1193,7 @@ async function prepareChangedVelocities() {
   const [ghost, normal, accent] = velocityValues();
   const requested = { ghost, normal, accent };
   try {
-    await sampleKit.prepare(audioContext, [ghost, normal, accent]);
+    await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
     activeVelocities = requested;
     setStatus('');
   } catch { setStatus('Velocity samples unavailable'); }
@@ -1269,7 +1271,8 @@ function velocityInputs() { return [...document.querySelectorAll('.velocity')]; 
 function velocityValues() { return velocityInputs().map(input => Number(input.value)); }
 function validVelocityValues(values) {
   return Array.isArray(values) && values.length === 3 &&
-    values.every(value => Number.isInteger(value) && value >= 1 && value <= 127) &&
+    values.every(value => Number.isInteger(value) && value >= 0 && value <= 127) &&
+    values[1] >= 1 && values[2] >= 1 &&
     values[0] < values[1] && values[1] < values[2];
 }
 function saveVelocities() {
@@ -1292,7 +1295,7 @@ function initializeVelocities() {
 function updateVelocity(input) {
   const inputs = velocityInputs();
   const index = inputs.indexOf(input);
-  const values = pushOrderedVelocities(velocityValues(), index, Number(input.value));
+  const values = pushOrderedVelocities(velocityValues(), index, Number(input.value), { minimum:0 });
   const roles = ['Ghost','Normal','Accent'];
   inputs.forEach((candidate, candidateIndex) => {
     candidate.value = String(values[candidateIndex]);

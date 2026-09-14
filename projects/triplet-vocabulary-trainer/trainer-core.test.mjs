@@ -42,17 +42,17 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
 });
 
-test('kick vocabulary adds a third-beat snare landing and a silent fourth beat', () => {
+test('kick vocabulary keeps ghost strokes beneath the landing and main-pattern rest', () => {
   assert.deepEqual(
     rolesForKickVocabulary(['A','B','A','A','B','B']),
-    ['A','B','A','A','B','B','S','R','R','R','R','R']
+    ['A','B','A','A','B','B','S','B','B','B','B','B']
   );
 });
 
-test('second kick vocabulary anchors beat one and replaces the pattern downbeat with snare', () => {
+test('second kick vocabulary fills the opening grid with ghosts and replaces the pattern downbeat with snare', () => {
   assert.deepEqual(
     rolesForKickVocabulary2(['A','B','A','A','B','B']),
-    ['K','R','R','R','R','R','S','B','A','A','B','B']
+    ['K','B','B','B','B','B','S','B','A','A','B','B']
   );
 });
 
