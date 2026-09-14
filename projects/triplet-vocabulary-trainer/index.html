@@ -60,9 +60,9 @@
         <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
       </section>
       <section class="phrase" aria-label="Rolling triplet phrase">
-        <article class="melody-card panel" data-slot="0"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="First melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 1"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Second melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 2"></select></label></header><div class="notation drum-render"></div></article>
-        <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Third melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 3"></select></label></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="0"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="First melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 1"></select></label><button class="card-audition" type="button" data-slot="0" aria-label="Play first card" title="Play this card">▶</button></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="1"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Second melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 2"></select></label><button class="card-audition" type="button" data-slot="1" aria-label="Play second card" title="Play this card">▶</button></header><div class="notation drum-render"></div></article>
+        <article class="melody-card panel" data-slot="2"><header><label><span class="card-kind">Melody</span> <select class="card-pattern-first" aria-label="Third melody"></select></label><label class="extended-second"><select class="card-pattern-second" aria-label="Second half of bar 3"></select></label><button class="card-audition" type="button" data-slot="2" aria-label="Play third card" title="Play this card">▶</button></header><div class="notation drum-render"></div></article>
       </section>
       <section id="practice-pad" class="practice-pad panel" role="region" aria-label="Practice score and secondary transport">
         <div class="practice-score-row">
@@ -78,6 +78,6 @@
         <div id="dedicated-tap-pad" class="dedicated-tap-pad" role="button" aria-label="Rhythm tap area" aria-hidden="true"></div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260913-kick-two-accent-clearance"></script>
+    <script type="module" src="app.js?v=20260914-card-audition-2"></script>
   </body>
 </html>

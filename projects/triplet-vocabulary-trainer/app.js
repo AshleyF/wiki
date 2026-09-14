@@ -47,6 +47,9 @@ let midiAccess = null;
 let midiInput = null;
 let midiOutput = null;
 let playing = false;
+let playbackScope = null;
+let auditionSlot = null;
+let auditionEndTimer = null;
 let scheduler = null;
 let nextEventTime = 0;
 let eventNumber = 0;
@@ -928,23 +931,38 @@ function scheduleCountInBeat() {
 function scheduleEvent() {
   if (countInBeatsRemaining > 0) {
     scheduleCountInBeat();
-    return;
+    return true;
   }
   const cardSteps = stepsPerCard();
   const cardCount = activeCardCount();
+  if (playbackScope === 'card' && eventNumber >= cardSteps) {
+    clearInterval(scheduler);
+    scheduler = null;
+    const delay = Math.max(0,(nextEventTime-audioContext.currentTime)*1000);
+    const timer = setTimeout(() => {
+      visualTimers.delete(timer);
+      finishAudition();
+    },delay);
+    visualTimers.add(timer);
+    return false;
+  }
   const step = eventNumber%cardSteps;
-  const slot = Math.floor(eventNumber/cardSteps)%cardCount;
-  if (eventNumber > 0 && step === 0) crossMelodyBoundary((slot+cardCount-1)%cardCount,slot);
+  const slot = playbackScope === 'card'
+    ? auditionSlot
+    : Math.floor(eventNumber/cardSteps)%cardCount;
+  if (playbackScope === 'session' && eventNumber > 0 && step === 0) {
+    crossMelodyBoundary((slot+cardCount-1)%cardCount,slot);
+  }
   const role = selectedPattern(slot)[step];
   const currentVelocities = velocityValues();
   const ordinaryKick = role === 'A' || role === 'K';
   const velocity = midiOutput
     ? currentVelocities[role === 'S' ? 2 : ordinaryKick ? 1 : 0]
     : activeVelocities[role === 'S' ? 'accent' : ordinaryKick ? 'normal' : 'ghost'];
-  if (phraseStartTime === null) {
+  if (playbackScope === 'session' && phraseStartTime === null) {
     phraseStartTime = nextEventTime;
   }
-  if (role === 'A' || role === 'K' || role === 'S') {
+  if (playbackScope === 'session' && (role === 'A' || role === 'K' || role === 'S')) {
     const expected = { time:nextEventTime,slot,step,matched:false,expired:false };
     if (recoveryCards[slot]) recoveryExpectedHits.push(expected);
     else expectedPracticeHits.push(expected);
@@ -963,11 +981,14 @@ function scheduleEvent() {
   }
   showStep(slot, step, nextEventTime);
   nextEventTime += eventDuration(eventNumber); eventNumber += 1;
+  return true;
 }
 function schedulerTick() {
   if (!playing) return;
-  expirePracticeScore();
-  while (nextEventTime < audioContext.currentTime+.11) scheduleEvent();
+  if (playbackScope === 'session') expirePracticeScore();
+  while (nextEventTime < audioContext.currentTime+.11) {
+    if (!scheduleEvent()) break;
+  }
 }
 async function prepareAudio() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -993,6 +1014,18 @@ function setTransportState(state) {
   compact.setAttribute('aria-label',loading ? 'Loading' : active ? 'Stop' : 'Play');
   compact.title = loading ? 'Loading' : active ? 'Stop' : 'Play';
 }
+function setCardAuditionState(state = 'idle',slot = null) {
+  cards.forEach((card,index) => {
+    const button = card.querySelector('.card-audition');
+    const active = index === slot && state === 'playing';
+    const loading = index === slot && state === 'loading';
+    button.textContent = loading ? '…' : active ? '■' : '▶';
+    button.classList.toggle('is-playing',active);
+    button.disabled = loading;
+    button.setAttribute('aria-label',loading ? `Loading card ${index+1}` : active ? `Stop card ${index+1}` : `Play card ${index+1}`);
+    button.title = loading ? 'Loading' : active ? 'Stop' : 'Play this card';
+  });
+}
 function setTapMode(enabled) {
   const panel = $('#practice-pad');
   panel.classList.toggle('is-tap-mode',enabled);
@@ -1002,7 +1035,11 @@ function scrollToTapPad() {
   requestAnimationFrame(() => window.scrollTo({ top:document.scrollingElement.scrollHeight,behavior:'auto' }));
 }
 async function start({ tapMode = false } = {}) {
-  if (playing) { stop(); return; }
+  if (playing) {
+    const switchingFromAudition = playbackScope === 'card';
+    stop();
+    if (!switchingFromAudition) return;
+  }
   setTapMode(tapMode);
   if (tapMode) scrollToTapPad();
   setTransportState('loading');
@@ -1012,14 +1049,66 @@ async function start({ tapMode = false } = {}) {
     const withMetronome = $('#metronome').checked;
     resetRecoveryState();
     resetPracticeSession();
-    playing = true; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
+    playing = true; playbackScope = 'session'; auditionSlot = null; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
     void screenWakeLock.setActive(true);
     setTransportState('stop'); updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
   } catch (error) { setTapMode(false); setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
+async function auditionCard(slot) {
+  if (playing) {
+    const sameCard = playbackScope === 'card' && auditionSlot === slot;
+    stop();
+    if (sameCard) return;
+  }
+  setTapMode(false);
+  setCardAuditionState('loading',slot);
+  try {
+    await prepareAudio();
+    if (document.hidden) throw new Error('Return to this tab before starting playback.');
+    resetRecoveryState();
+    expectedPracticeHits = [];
+    playbackScope = 'card';
+    auditionSlot = slot;
+    playing = true;
+    eventNumber = 0;
+    countInBeat = 0;
+    countInBeatsRemaining = 0;
+    nextEventTime = audioContext.currentTime+.08;
+    const auditionDurationMs = 80+stepsPerCard()*eventDuration()*1000;
+    auditionEndTimer = setTimeout(finishAudition,auditionDurationMs);
+    void screenWakeLock.setActive(true);
+    setTransportState('play');
+    setCardAuditionState('playing',slot);
+    updatePositions(slot);
+    setStatus('');
+    scheduler = setInterval(schedulerTick,25);
+    schedulerTick();
+  } catch (error) {
+    playbackScope = null;
+    auditionSlot = null;
+    setCardAuditionState();
+    setStatus(error.message || 'Could not play this card');
+  }
+}
+function finishAudition() {
+  if (playbackScope !== 'card') return;
+  playing = false;
+  clearInterval(scheduler);
+  scheduler = null;
+  clearTimeout(auditionEndTimer);
+  auditionEndTimer = null;
+  playbackScope = null;
+  auditionSlot = null;
+  void screenWakeLock.setActive(false);
+  cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  setCardAuditionState();
+}
 function stop() {
   playing = false; clearInterval(scheduler); scheduler = null;
+  clearTimeout(auditionEndTimer); auditionEndTimer = null;
+  playbackScope = null;
+  auditionSlot = null;
   void screenWakeLock.setActive(false);
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();
@@ -1031,7 +1120,7 @@ function stop() {
   if (wasRecovering) queueNotationRender();
   setTapMode(false);
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
-  setTransportState('play'); setStatus('');
+  setTransportState('play'); setCardAuditionState(); setStatus('');
 }
 
 function attachMidiInput(nextInput) {
@@ -1144,6 +1233,11 @@ $('#play-compact').addEventListener('click',event => {
   event.currentTarget.blur();
   start({ tapMode:true });
 });
+document.querySelectorAll('.card-audition').forEach(button => button.addEventListener('click',event => {
+  event.stopPropagation();
+  event.currentTarget.blur();
+  auditionCard(Number(event.currentTarget.dataset.slot));
+}));
 $('#randomize').addEventListener('click', requestRandomize);
 $('#auto-randomize').addEventListener('change', event => {
   try { localStorage.setItem(AUTO_SHUFFLE_KEY, String(event.target.checked)); } catch {}
