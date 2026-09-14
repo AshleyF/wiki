@@ -39,7 +39,11 @@ export function rolesForTripletMasks(masks) {
 }
 
 export function rolesForKickVocabulary(melody) {
-  return [...melody,'S','R','R'];
+  return [...melody,'S','R','R','R','R','R'];
+}
+
+export function rolesForKickVocabulary2(melody) {
+  return ['K','R','R','R','R','R','S',...melody.slice(1)];
 }
 
 export function tripletMasksForRoles(roles) {

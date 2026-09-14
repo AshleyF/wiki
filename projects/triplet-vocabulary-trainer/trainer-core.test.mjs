@@ -18,6 +18,7 @@ import {
   recoveryPulseRoles,
   rolesForExtendedBar,
   rolesForKickVocabulary,
+  rolesForKickVocabulary2,
   rolesForTripletMasks,
   tripletMasksForRoles,
   scorePracticeTap
@@ -41,10 +42,17 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
   assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
 });
 
-test('kick vocabulary adds a third-beat snare landing', () => {
+test('kick vocabulary adds a third-beat snare landing and a silent fourth beat', () => {
   assert.deepEqual(
     rolesForKickVocabulary(['A','B','A','A','B','B']),
-    ['A','B','A','A','B','B','S','R','R']
+    ['A','B','A','A','B','B','S','R','R','R','R','R']
+  );
+});
+
+test('second kick vocabulary anchors beat one and replaces the pattern downbeat with snare', () => {
+  assert.deepEqual(
+    rolesForKickVocabulary2(['A','B','A','A','B','B']),
+    ['K','R','R','R','R','R','S','B','A','A','B','B']
   );
 });
 
