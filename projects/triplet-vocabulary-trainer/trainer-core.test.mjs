@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   EXTENDED_PATTERNS,
   calibrationOffsetSeconds,
+  consistentCalibrationOffset,
   commitPracticeMisses,
   createPracticeScore,
   expirePracticeHits,
@@ -149,6 +150,13 @@ test('latency calibration uses a robust median and stays within its safe range',
   assert.ok(Math.abs(calibrationOffsetSeconds([.1,.2])-.15) < 1e-12);
   assert.equal(calibrationOffsetSeconds([-.05]),0);
   assert.equal(calibrationOffsetSeconds([]),0);
+});
+
+test('implicit calibration requires three consistently offset recovery hits', () => {
+  assert.equal(consistentCalibrationOffset([.18,.19]),null);
+  assert.equal(consistentCalibrationOffset([.18,.19,.17],.04),.18);
+  assert.equal(consistentCalibrationOffset([.18,.29,.17],.04),null);
+  assert.equal(consistentCalibrationOffset([.4,.2,.21,.19],.04),.2);
 });
 
 test('MIDI practice filtering ignores feet and low-velocity ghost strokes independently', () => {

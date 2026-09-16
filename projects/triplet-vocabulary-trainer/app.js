@@ -3,7 +3,7 @@ import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260915-latency-calibration';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260915-adaptive-recovery-calibration';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -75,6 +75,7 @@ let recoveryExitQueued = false;
 let recoveryCards = [false,false,false];
 let recoveryScore = createPracticeScore();
 let recoveryExpectedHits = [];
+let recoveryCalibration = [];
 let latencyCompensation = loadLatencyCompensation();
 let calibrationRun = null;
 let patternPaint = null;
@@ -780,6 +781,7 @@ function resetRecoveryState() {
   recoveryCards = [false,false,false];
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
+  recoveryCalibration = [];
   practiceHasStarted = false;
   consecutiveExpiredTargets = 0;
 }
@@ -803,6 +805,7 @@ function enterRecovery(currentSlot = activeSlot) {
   recoveryCards = recoveryCards.map((_,slot) => slot !== currentSlot);
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
+  recoveryCalibration = [];
   deferredPracticeMisses = 0;
   consecutiveExpiredTargets = 0;
   expectedPracticeHits = [];
@@ -828,14 +831,54 @@ function leaveRecovery() {
   recoveryCards = [false,false,false];
   recoveryScore = createPracticeScore();
   recoveryExpectedHits = [];
+  recoveryCalibration = [];
   practiceHasStarted = false;
   consecutiveExpiredTargets = 0;
   resetPracticeSession();
   queueNotationRender();
 }
+function observeRecoveryCalibration(rawTime) {
+  const observedTargets = new Set(recoveryCalibration.map(observation => observation.expected));
+  const candidate = recoveryExpectedHits
+    .filter(expected => !expected.matched && !expected.expired && !observedTargets.has(expected))
+    .map(expected => ({ expected,offset:rawTime-expected.time }))
+    .filter(observation => observation.offset >= 0 && observation.offset <= .65)
+    .sort((a,b) => a.offset-b.offset)[0];
+  if (!candidate) return false;
+
+  const previous = recoveryCalibration.at(-1);
+  if (previous && Math.abs((candidate.expected.time-previous.expected.time)-quarterDuration()) > quarterDuration()*.25) {
+    recoveryCalibration = [];
+  }
+  recoveryCalibration.push({ ...candidate,rawTime });
+  recoveryCalibration = recoveryCalibration.slice(-4);
+  const tolerance = Math.max(.035,Math.min(.07,quarterDuration()*.18));
+  const learnedOffset = consistentCalibrationOffset(recoveryCalibration.map(observation => observation.offset),tolerance,3);
+  if (learnedOffset === null) return false;
+
+  saveLatencyCompensation(learnedOffset);
+  const accepted = recoveryCalibration.slice(-3);
+  const firstAcceptedTime = accepted[0].expected.time;
+  recoveryExpectedHits = recoveryExpectedHits.filter(expected => expected.time >= firstAcceptedTime);
+  recoveryScore = createPracticeScore();
+  accepted.forEach(({ expected,rawTime:observedTime }) => {
+    if (expected.matched) return;
+    expected.matched = true;
+    recoveryScore.hits += 1;
+    recoveryScore.streak += 1;
+    recoveryScore.bestStreak = Math.max(recoveryScore.bestStreak,recoveryScore.streak);
+    recoveryScore.totalAbsoluteError += Math.abs((observedTime-learnedOffset)-expected.time);
+  });
+  recoveryCalibration = [];
+  setStatus(`Latency adjusted to ${Math.round(learnedOffset*1000)} ms`);
+  const lastAccepted = accepted.at(-1)?.expected;
+  if (lastAccepted && recoveryScore.streak >= recoveryHitTarget(stepsPerCard())) beginRecoveryExit(lastAccepted.slot);
+  return true;
+}
 function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
   if (recoveryMode) {
-    expirePracticeHits(recoveryScore,recoveryExpectedHits,now,practiceTimingWindows(eventDuration()));
+    const windows = practiceTimingWindows(eventDuration());
+    expirePracticeHits(recoveryScore,recoveryExpectedHits,now,{ early:windows.early,late:Math.max(.7,windows.late) });
     recoveryExpectedHits = recoveryExpectedHits.filter(expected => !expected.expired && (!expected.matched || now < expected.time+1));
     return;
   }
@@ -849,16 +892,23 @@ function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
 }
 function registerPracticeHit(source = 'tap',hitTime = null) {
   if (!playing || !audioContext || phraseStartTime === null) return;
-  const time = (hitTime ?? audioContext.currentTime)-latencyCompensation;
+  const rawTime = hitTime ?? audioContext.currentTime;
+  const time = rawTime-latencyCompensation;
   const windowSeconds = practiceTimingWindows(eventDuration());
   if (time < phraseStartTime-windowSeconds.early) return;
   practiceHasStarted = true;
-  expirePracticeScore(time);
   if (recoveryMode) {
     const result = scorePracticeTap(recoveryScore,recoveryExpectedHits,time,windowSeconds);
-    if (result.kind === 'hit' && recoveryScore.streak >= recoveryHitTarget(stepsPerCard())) beginRecoveryExit(result.expected.slot);
+    if (result.kind === 'hit') {
+      recoveryCalibration = [];
+      if (recoveryScore.streak >= recoveryHitTarget(stepsPerCard())) beginRecoveryExit(result.expected.slot);
+    } else {
+      observeRecoveryCalibration(rawTime);
+    }
+    expirePracticeScore(time);
     return;
   }
+  expirePracticeScore(time);
   commitPracticeMisses(practiceScore,deferredPracticeMisses);
   deferredPracticeMisses = 0;
   const result = scorePracticeTap(practiceScore,expectedPracticeHits,time,windowSeconds);
@@ -1058,7 +1108,7 @@ function scheduleEvent() {
 }
 function schedulerTick() {
   if (!playing) return;
-  if (playbackScope === 'session') expirePracticeScore();
+  if (playbackScope === 'session') expirePracticeScore((audioContext?.currentTime ?? 0)-latencyCompensation);
   while (nextEventTime < audioContext.currentTime+.11) {
     if (!scheduleEvent()) break;
   }

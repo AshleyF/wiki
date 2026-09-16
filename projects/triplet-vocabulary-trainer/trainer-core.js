@@ -93,6 +93,14 @@ export function calibrationOffsetSeconds(offsets, maximum = .5) {
   return values.length%2 ? values[middle] : (values[middle-1]+values[middle])/2;
 }
 
+export function consistentCalibrationOffset(offsets, tolerance = .06, minimumCount = 3) {
+  const values = offsets.map(Number).filter(Number.isFinite);
+  if (values.length < minimumCount) return null;
+  const recent = values.slice(-minimumCount);
+  if (Math.max(...recent)-Math.min(...recent) > tolerance) return null;
+  return calibrationOffsetSeconds(recent);
+}
+
 function timingWindows(windowSeconds) {
   if (typeof windowSeconds === 'number') return { early:windowSeconds,late:windowSeconds };
   return {
