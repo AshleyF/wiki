@@ -82,6 +82,17 @@ export function practiceTimingWindows(subdivisionSeconds) {
   };
 }
 
+export function calibrationOffsetSeconds(offsets, maximum = .5) {
+  const values = offsets
+    .map(Number)
+    .filter(Number.isFinite)
+    .map(value => Math.max(0,Math.min(maximum,value)))
+    .sort((a,b) => a-b);
+  if (!values.length) return 0;
+  const middle = Math.floor(values.length/2);
+  return values.length%2 ? values[middle] : (values[middle-1]+values[middle])/2;
+}
+
 function timingWindows(windowSeconds) {
   if (typeof windowSeconds === 'number') return { early:windowSeconds,late:windowSeconds };
   return {

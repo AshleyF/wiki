@@ -15,7 +15,7 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .emphasis-control { display: inline-flex; align-items: center; gap: .4rem; flex: 0 0 auto; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
 .emphasis-control select { min-height: 2.25rem; max-width: 10rem; border: 1px solid var(--notation-button-border); padding: .35rem .45rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
 .melody-filter-label { flex: 0 0 auto; color: var(--notation-muted); font: 700 .72rem/1 monospace; }
-.melody-filter-options { display: flex; flex: 1 0 auto; gap: .2rem; min-width: max-content; }
+.melody-filter-options { display: flex; flex: 1 0 auto; gap: .2rem; min-width: max-content; touch-action: none; -webkit-user-select: none; user-select: none; }
 .melody-filter-options label { display: flex; align-items: center; justify-content: center; gap: .2rem; min-height: 2.25rem; border: 1px solid var(--notation-button-border); padding: .3rem .35rem; color: var(--notation-ink); background: var(--notation-panel); font: 700 .68rem/1 monospace; cursor: pointer; white-space: nowrap; }
 .melody-filter-options label:has(input:checked) { border-color: color-mix(in srgb, var(--accent) 60%, var(--notation-button-border)); background: color-mix(in srgb, var(--accent) 9%, var(--notation-panel)); }
 .melody-filter-options input { margin: 0; accent-color: var(--accent); }
@@ -63,6 +63,16 @@ main { display: grid; gap: .55rem; width: 100%; max-width: 1250px; box-sizing: b
 .card-audition:hover { border-color: var(--notation-ink); background: color-mix(in srgb,var(--accent) 8%,transparent); }
 .card-audition:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .card-audition.is-playing { border-color: var(--accent); color: var(--accent); }
+.calibration-dialog { width: min(27rem,calc(100vw - 2rem)); border: 1px solid var(--rule); padding: 0; color: var(--notation-ink); background: var(--notation-paper); }
+.calibration-dialog::backdrop { background: rgb(0 0 0 / .66); }
+.calibration-content { display: grid; gap: .8rem; padding: 1rem; }
+.calibration-content h2, .calibration-content p { margin: 0; }
+.calibration-content h2 { font-size: 1.15rem; }
+.calibration-content p { color: var(--notation-muted); font-size: .85rem; line-height: 1.45; }
+.calibration-tap { min-height: 7rem; border: 1px solid var(--notation-button-border); border-radius: .45rem; color: var(--notation-ink); background: color-mix(in srgb,var(--accent) 5%,var(--notation-panel)); font: 800 1rem/1 ui-monospace,monospace; touch-action: none; }
+.calibration-tap.is-listening { border-color: var(--accent); }
+.calibration-status { min-height: 1.2em; color: var(--notation-muted); text-align: center; font: 700 .75rem/1.2 ui-monospace,monospace; }
+.calibration-actions { display: flex; justify-content: flex-end; gap: .5rem; }
 .extended-second { display: none !important; }
 body[data-trainer-mode="extended"] .melody-card header label { flex: 1 1 0; }
 body[data-trainer-mode="extended"] .melody-card header select { width: 100%; min-width: 0; }

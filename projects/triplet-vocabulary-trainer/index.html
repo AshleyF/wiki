@@ -39,11 +39,11 @@
         <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="vocabulary">Vocabulary</option><option value="extended">Extended</option><option value="triplets">Triplets</option><option value="kick">Kick 1</option><option value="kick2">Kick 2</option></select></label>
         <span class="melody-filter-label">Melodies</span>
         <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
-        <label class="emphasis-control" title="Give this pattern a 50% chance on each eligible shuffle"><span>Emphasize</span><select id="emphasis" aria-label="Emphasized pattern"><option value="">None</option></select></label>
+        <label class="emphasis-control" title="Give this pattern a 50% chance on each eligible scramble"><span>Emphasize</span><select id="emphasis" aria-label="Emphasized pattern"><option value="">None</option></select></label>
       </section>
       <section class="controls drum-controls panel" aria-label="Trainer controls">
         <button id="play" class="drum-toggle" type="button">▶ Play</button>
-        <button id="randomize" type="button">Shuffle</button>
+        <button id="randomize" type="button">Scramble</button>
         <label class="auto-control" title="Replace each completed card with a fresh random choice."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
         <div class="velocity-control drum-velocity-control" role="group" aria-label="Drum velocities" title="Ghost, normal, and accent velocity">
           <span>Vel</span>
@@ -57,6 +57,7 @@
         <label class="sound-control drum-kit-control"><span>Sound</span><select id="sound" class="drum-kit-select" aria-label="Snare or practice-pad sound" disabled><option value="">Loading…</option></select></label>
         <label class="midi-port-control"><span class="midi-input-label"><i id="midi-activity" class="midi-activity" aria-hidden="true"></i>MIDI In</span><select id="midi-input" class="drum-midi-output" aria-label="MIDI input"><option value="">None</option></select></label>
         <label class="midi-port-control"><span>Out</span><select id="midi-output" class="drum-midi-output" aria-label="MIDI output"><option value="">None</option></select></label>
+        <button id="calibrate" type="button" title="Calibrate audio and input latency">Calibrate</button>
         <span id="status" class="status drum-midi-status" role="status" aria-live="polite"></span>
       </section>
       <section class="phrase" aria-label="Rolling triplet phrase">
@@ -78,6 +79,19 @@
         <div id="dedicated-tap-pad" class="dedicated-tap-pad" role="button" aria-label="Rhythm tap area" aria-hidden="true"></div>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260914-zero-ghost-velocity"></script>
+    <dialog id="calibration-dialog" class="calibration-dialog" aria-labelledby="calibration-title">
+      <div class="calibration-content">
+        <h2 id="calibration-title">Latency calibration</h2>
+        <p>Start the clicks, then tap the pad, press Space, or strike your MIDI instrument with each sound you hear.</p>
+        <button id="calibration-tap" class="calibration-tap" type="button">Tap</button>
+        <output id="calibration-status" class="calibration-status" aria-live="polite">Ready</output>
+        <div class="calibration-actions">
+          <button id="calibration-start" type="button">Start</button>
+          <button id="calibration-clear" type="button">Clear</button>
+          <button id="calibration-close" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+    <script type="module" src="app.js?v=20260915-latency-calibration"></script>
   </body>
 </html>

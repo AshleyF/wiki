@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   EXTENDED_PATTERNS,
+  calibrationOffsetSeconds,
   commitPracticeMisses,
   createPracticeScore,
   expirePracticeHits,
@@ -141,6 +142,13 @@ test('practice timing allows more latency after the beat than anticipation befor
   const score = createPracticeScore();
   assert.equal(scorePracticeTap(score,[{ time:1 }],1+window.late-.001,window).kind,'hit');
   assert.equal(scorePracticeTap(score,[{ time:2 }],2-window.early-.001,window).kind,'miss');
+});
+
+test('latency calibration uses a robust median and stays within its safe range', () => {
+  assert.equal(calibrationOffsetSeconds([.14,.15,.16,.145,.9]),.15);
+  assert.ok(Math.abs(calibrationOffsetSeconds([.1,.2])-.15) < 1e-12);
+  assert.equal(calibrationOffsetSeconds([-.05]),0);
+  assert.equal(calibrationOffsetSeconds([]),0);
 });
 
 test('MIDI practice filtering ignores feet and low-velocity ghost strokes independently', () => {

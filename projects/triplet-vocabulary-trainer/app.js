@@ -3,7 +3,7 @@ import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260914-kick-ghost-grid';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260915-latency-calibration';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -29,6 +29,7 @@ const IGNORE_FEET_KEY = 'triplet-vocabulary-ignore-feet';
 const IGNORE_GHOSTS_KEY = 'triplet-vocabulary-ignore-ghosts';
 const TEMPO_KEY = 'triplet-vocabulary-tempo';
 const VELOCITIES_KEY = 'triplet-vocabulary-velocities';
+const LATENCY_COMPENSATION_KEY = 'triplet-vocabulary-latency-compensation';
 const DEFAULT_VELOCITIES = Object.freeze([16,64,111]);
 const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
 const ALL_EXTENDED_INDEXES = EXTENDED_PATTERNS.map((_,index) => index);
@@ -65,6 +66,7 @@ let countInBeatsRemaining = 0;
 let countInBeat = 0;
 let phraseStartTime = null;
 const scheduledSources = new Set();
+const calibrationSources = new Set();
 const visualTimers = new Set();
 let practiceHasStarted = false;
 let consecutiveExpiredTargets = 0;
@@ -73,7 +75,28 @@ let recoveryExitQueued = false;
 let recoveryCards = [false,false,false];
 let recoveryScore = createPracticeScore();
 let recoveryExpectedHits = [];
+let latencyCompensation = loadLatencyCompensation();
+let calibrationRun = null;
+let patternPaint = null;
 const screenWakeLock = createScreenWakeLock();
+
+function loadLatencyCompensation() {
+  try {
+    const saved = Number(localStorage.getItem(LATENCY_COMPENSATION_KEY));
+    return Number.isFinite(saved) ? Math.max(0,Math.min(.5,saved)) : 0;
+  } catch { return 0; }
+}
+function saveLatencyCompensation(value) {
+  latencyCompensation = Math.max(0,Math.min(.5,Number(value) || 0));
+  try { localStorage.setItem(LATENCY_COMPENSATION_KEY,String(latencyCompensation)); } catch {}
+  updateCalibrationLabel();
+}
+function updateCalibrationLabel() {
+  const milliseconds = Math.round(latencyCompensation*1000);
+  $('#calibrate').title = milliseconds
+    ? `Calibrate audio and input latency (currently ${milliseconds} ms)`
+    : 'Calibrate audio and input latency';
+}
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
 function extendedLabel(index) {
@@ -306,6 +329,33 @@ function changeEnabledPatterns(event) {
   populateEmphasis();
   setStatus('');
 }
+function beginPatternPaint(event) {
+  if (!event.isPrimary || (event.button !== undefined && event.button !== 0)) return;
+  const input = event.target.closest('label')?.querySelector('input[type="checkbox"]');
+  if (!input || !$('#melody-filter-options').contains(input)) return;
+  event.preventDefault();
+  patternPaint = { pointerId:event.pointerId, checked:!input.checked, visited:new Set() };
+  $('#melody-filter-options').setPointerCapture?.(event.pointerId);
+  paintPatternInput(input);
+}
+function paintPatternInput(input) {
+  if (!patternPaint || !input || patternPaint.visited.has(input)) return;
+  patternPaint.visited.add(input);
+  if (input.checked === patternPaint.checked) return;
+  input.checked = patternPaint.checked;
+  changeEnabledPatterns({ target:input });
+}
+function continuePatternPaint(event) {
+  if (!patternPaint || event.pointerId !== patternPaint.pointerId) return;
+  event.preventDefault();
+  const target = document.elementFromPoint(event.clientX,event.clientY);
+  const input = target?.closest?.('label')?.querySelector('input[type="checkbox"]');
+  if (input && $('#melody-filter-options').contains(input)) paintPatternInput(input);
+}
+function endPatternPaint(event) {
+  if (!patternPaint || event.pointerId !== patternPaint.pointerId) return;
+  patternPaint = null;
+}
 function initializeAutoShuffle() {
   try {
     const saved = localStorage.getItem(AUTO_SHUFFLE_KEY);
@@ -494,7 +544,7 @@ function renderKickCard(slot,target,width) {
     : [...patternGroups.flatMap(group => group.notes),...patternPaddingNotes];
   const grooveNotes = Array.from({ length:4 },(_,beat) => {
     const landing = recovering ? beat >= 2 : beat === 2;
-    const silent = recovering ? beat < 2 : !kick2 && beat === 3;
+    const silent = recovering && beat < 2;
     const keys = silent
       ? ['b/4']
       : recovering
@@ -692,7 +742,7 @@ function randomizeAll() {
 function requestRandomize() {
   if (playing) {
     queuedRandomize = true;
-    $('#randomize').textContent = 'Shuffle queued';
+    $('#randomize').textContent = 'Scramble queued';
     setStatus('');
   } else { randomizeAll(); setStatus(''); }
 }
@@ -792,7 +842,7 @@ function expirePracticeScore(now = audioContext?.currentTime ?? 0) {
 }
 function registerPracticeHit(source = 'tap',hitTime = null) {
   if (!playing || !audioContext || phraseStartTime === null) return;
-  const time = hitTime ?? audioContext.currentTime;
+  const time = (hitTime ?? audioContext.currentTime)-latencyCompensation;
   const windowSeconds = practiceTimingWindows(eventDuration());
   if (time < phraseStartTime-windowSeconds.early) return;
   practiceHasStarted = true;
@@ -828,6 +878,20 @@ function scheduleFallbackSnare(time, velocity) {
   gain.gain.setValueAtTime(Math.max(.015, velocity/127*.32), time);
   source.connect(filter).connect(gain).connect(boostedAudioOutput(audioContext)); source.start(time);
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
+}
+function scheduleCalibrationClick(time) {
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(880,time);
+  gain.gain.setValueAtTime(.0001,time);
+  gain.gain.exponentialRampToValueAtTime(.24,time+.004);
+  gain.gain.exponentialRampToValueAtTime(.0001,time+.055);
+  oscillator.connect(gain).connect(boostedAudioOutput(audioContext));
+  oscillator.start(time);
+  oscillator.stop(time+.06);
+  oscillator.onended = () => calibrationSources.delete(oscillator);
+  calibrationSources.add(oscillator);
 }
 function scheduleHat(time, velocity, midiNote = 44) {
   if (midiOutput) { scheduleMidi(midiNote, velocity, time, .045); return; }
@@ -901,7 +965,7 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
     return;
   }
   if (previousSlot === activeCardCount()-1 && queuedRandomize) {
-    queuedRandomize = false; $('#randomize').textContent = 'Shuffle'; randomizeAll();
+    queuedRandomize = false; $('#randomize').textContent = 'Scramble'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
     const nextPattern = trainerMode === 'triplets'
       ? randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis())
@@ -974,7 +1038,7 @@ function scheduleEvent() {
     if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
     else scheduleSnare(nextEventTime,velocity);
   }
-  if (kickVocabulary && step%3 === 0 && (trainerMode === 'kick2' || step < 9)) {
+  if (kickVocabulary && step%3 === 0) {
     scheduleHat(nextEventTime,currentVelocities[1],42);
   }
   if ($('#metronome').checked && !kickVocabulary && step%3 === 0) {
@@ -1142,6 +1206,7 @@ function attachMidiInput(nextInput) {
     });
     if (!accepted) return;
     showMidiActivity();
+    if (calibrationRun) { recordCalibrationTap(); return; }
     registerPracticeHit('midi');
   };
 }
@@ -1150,6 +1215,64 @@ function showMidiActivity() {
   clearTimeout(midiActivityTimer);
   indicator.classList.add('is-active');
   midiActivityTimer = setTimeout(() => indicator.classList.remove('is-active'),90);
+}
+function calibrationStatus(message) { $('#calibration-status').textContent = message; }
+function cancelCalibrationRun() {
+  if (!calibrationRun) return;
+  clearTimeout(calibrationRun.finishTimer);
+  calibrationSources.forEach(source => { try { source.stop(); } catch {} });
+  calibrationSources.clear();
+  calibrationRun = null;
+  $('#calibration-tap').classList.remove('is-listening');
+  $('#calibration-start').textContent = 'Start';
+}
+async function startCalibration() {
+  cancelCalibrationRun();
+  if (playing) stop();
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error('Web Audio is unavailable in this browser.');
+    audioContext ||= new AudioContextClass({ latencyHint:'interactive' });
+    await audioContext.resume();
+    const interval = .8;
+    const firstTime = audioContext.currentTime+.45;
+    const clickTimes = Array.from({ length:10 },(_,index) => firstTime+index*interval);
+    clickTimes.forEach(scheduleCalibrationClick);
+    calibrationRun = { clickTimes, used:new Set(), offsets:[], finishTimer:null };
+    calibrationRun.finishTimer = setTimeout(finishCalibration,Math.ceil((clickTimes.at(-1)-audioContext.currentTime+.75)*1000));
+    $('#calibration-tap').classList.add('is-listening');
+    $('#calibration-start').textContent = 'Restart';
+    calibrationStatus('Listen, then tap with each click');
+  } catch (error) { calibrationStatus(error.message || 'Calibration could not start'); }
+}
+function recordCalibrationTap(time = audioContext?.currentTime) {
+  if (!calibrationRun || !Number.isFinite(time)) return;
+  const candidates = calibrationRun.clickTimes
+    .map((clickTime,index) => ({ index,difference:time-clickTime }))
+    .filter(candidate => !calibrationRun.used.has(candidate.index) && candidate.difference >= -.2 && candidate.difference <= .65)
+    .sort((a,b) => Math.abs(a.difference)-Math.abs(b.difference));
+  const match = candidates[0];
+  if (!match) return;
+  calibrationRun.used.add(match.index);
+  if (match.index < 2) {
+    calibrationStatus('Get ready…');
+    return;
+  }
+  calibrationRun.offsets.push(match.difference);
+  calibrationStatus(`${calibrationRun.offsets.length} of 8 taps captured`);
+  if (calibrationRun.offsets.length === 8) finishCalibration();
+}
+function finishCalibration() {
+  if (!calibrationRun) return;
+  const offsets = calibrationRun.offsets;
+  cancelCalibrationRun();
+  if (offsets.length < 5) {
+    calibrationStatus('Not enough taps — try again');
+    return;
+  }
+  const offset = calibrationOffsetSeconds(offsets);
+  saveLatencyCompensation(offset);
+  calibrationStatus(`Saved ${Math.round(offset*1000)} ms`);
 }
 function refreshMidiPorts() {
   const outputSelect = $('#midi-output');
@@ -1203,9 +1326,15 @@ initializeDisplayOptions();
 initializeSelectors();
 initializeTempo();
 initializeVelocities();
+updateCalibrationLabel();
 randomizeTripletCards();
 updateModeUI();
 $('#melody-filter-options').addEventListener('change',changeEnabledPatterns);
+$('#melody-filter-options').addEventListener('pointerdown',beginPatternPaint);
+$('#melody-filter-options').addEventListener('pointermove',continuePatternPaint);
+$('#melody-filter-options').addEventListener('pointerup',endPatternPaint);
+$('#melody-filter-options').addEventListener('pointercancel',endPatternPaint);
+$('#melody-filter-options').addEventListener('lostpointercapture',() => { patternPaint = null; });
 $('#emphasis').addEventListener('change',event => {
   emphasisByMode[trainerMode] = event.target.value;
   saveEmphasis();
@@ -1241,6 +1370,23 @@ document.querySelectorAll('.card-audition').forEach(button => button.addEventLis
   auditionCard(Number(event.currentTarget.dataset.slot));
 }));
 $('#randomize').addEventListener('click', requestRandomize);
+$('#calibrate').addEventListener('click',() => {
+  if (playing) stop();
+  calibrationStatus(latencyCompensation ? `Current: ${Math.round(latencyCompensation*1000)} ms` : 'Ready');
+  $('#calibration-dialog').showModal();
+});
+$('#calibration-start').addEventListener('click',startCalibration);
+$('#calibration-tap').addEventListener('pointerdown',event => {
+  event.preventDefault();
+  recordCalibrationTap();
+});
+$('#calibration-clear').addEventListener('click',() => {
+  cancelCalibrationRun();
+  saveLatencyCompensation(0);
+  calibrationStatus('Calibration cleared');
+});
+$('#calibration-close').addEventListener('click',() => $('#calibration-dialog').close());
+$('#calibration-dialog').addEventListener('close',cancelCalibrationRun);
 $('#auto-randomize').addEventListener('change', event => {
   try { localStorage.setItem(AUTO_SHUFFLE_KEY, String(event.target.checked)); } catch {}
 });
@@ -1381,6 +1527,11 @@ dedicatedTapPad.addEventListener('pointerdown',event => {
 });
 document.addEventListener('keydown',event => {
   if (event.code !== 'Space' || event.repeat) return;
+  if (calibrationRun) {
+    event.preventDefault();
+    recordCalibrationTap();
+    return;
+  }
   if (!playing) return;
   const editingControl = event.target.closest?.('input,select,textarea,a,[contenteditable="true"]');
   if (editingControl && event.target !== practicePad) return;
@@ -1400,6 +1551,13 @@ $('#theme-toggle').addEventListener('click', () => {
   document.documentElement.dataset.theme = theme; localStorage.setItem('personal-wiki-theme', theme); renderAll();
 });
 window.addEventListener('resize', () => { clearTimeout(window.tripletResizeTimer); window.tripletResizeTimer = setTimeout(renderAll,120); });
-document.addEventListener('visibilitychange', () => { if (document.hidden && playing) stop(); });
-window.addEventListener('blur', () => { if (playing) stop(); });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) return;
+  if (playing) stop();
+  cancelCalibrationRun();
+});
+window.addEventListener('blur', () => {
+  if (playing) stop();
+  cancelCalibrationRun();
+});
 populateSampleKits();
