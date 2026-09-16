@@ -78,6 +78,7 @@ let recoveryExpectedHits = [];
 let latencyCompensation = loadLatencyCompensation();
 let calibrationRun = null;
 let patternPaint = null;
+let suppressPatternClick = false;
 const screenWakeLock = createScreenWakeLock();
 
 function loadLatencyCompensation() {
@@ -334,6 +335,7 @@ function beginPatternPaint(event) {
   const input = event.target.closest('label')?.querySelector('input[type="checkbox"]');
   if (!input || !$('#melody-filter-options').contains(input)) return;
   event.preventDefault();
+  suppressPatternClick = true;
   patternPaint = { pointerId:event.pointerId, checked:!input.checked, visited:new Set() };
   $('#melody-filter-options').setPointerCapture?.(event.pointerId);
   paintPatternInput(input);
@@ -353,8 +355,13 @@ function continuePatternPaint(event) {
   if (input && $('#melody-filter-options').contains(input)) paintPatternInput(input);
 }
 function endPatternPaint(event) {
-  if (!patternPaint || event.pointerId !== patternPaint.pointerId) return;
+  if (!patternPaint || event.pointerId !== patternPaint.pointerId) {
+    if (event.type === 'pointercancel') suppressPatternClick = false;
+    return;
+  }
   patternPaint = null;
+  if (event.type === 'pointercancel') suppressPatternClick = false;
+  else setTimeout(() => { suppressPatternClick = false; },0);
 }
 function initializeAutoShuffle() {
   try {
@@ -1335,6 +1342,17 @@ $('#melody-filter-options').addEventListener('pointermove',continuePatternPaint)
 $('#melody-filter-options').addEventListener('pointerup',endPatternPaint);
 $('#melody-filter-options').addEventListener('pointercancel',endPatternPaint);
 $('#melody-filter-options').addEventListener('lostpointercapture',() => { patternPaint = null; });
+$('#melody-filter-options').addEventListener('click',event => {
+  if (!suppressPatternClick || !event.target.closest('label')) return;
+  event.preventDefault();
+  suppressPatternClick = false;
+});
+$('#melody-filter-options').addEventListener('keydown',event => {
+  if (!['Space','Enter'].includes(event.code) || !event.target.matches('input[type="checkbox"]')) return;
+  event.preventDefault();
+  event.target.checked = !event.target.checked;
+  changeEnabledPatterns({ target:event.target });
+});
 $('#emphasis').addEventListener('change',event => {
   emphasisByMode[trainerMode] = event.target.value;
   saveEmphasis();
