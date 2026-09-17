@@ -1,4 +1,5 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
+import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20260916-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
@@ -43,6 +44,9 @@ const wikiDrumSampleLibrary = new DrumSampleLibrary(
 let wikiSnareKitId = DEFAULT_WIKI_SNARE_KIT_ID;
 let wikiSnareSampleKit = null;
 let wikiSnareSampleKitPromise = null;
+const wikiKickSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.kickCenter, kit: null, promise: null };
+const wikiClosedHatTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatTip, kit: null, promise: null };
+const wikiClosedHatEdgeSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatEdge, kit: null, promise: null };
 let drumSampleWarningShown = false;
 let pianoScoreAudioContext;
 let activePianoScore = null;
@@ -2256,10 +2260,22 @@ function drumTone(context, time, frequency, duration, volume, type = 'sine', end
   trackDrumNode(oscillator);
 }
 
-function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0, velocityProfile) {
+function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0, velocityProfile, hiHatArticulation = null) {
   const velocity = velocityFromStrengthProfile(strength, velocityProfile);
   const adjustedStrength = velocity / 82;
-  if (instrument === 'bd') drumTone(context, time, 145, 0.18, 0.8 * adjustedStrength, 'sine', 48, pan);
+  if (instrument === 'bd') {
+    const sampleSource = wikiKickSampleState.kit?.schedule(context, {
+      velocity,
+      time,
+      pan,
+      destination: boostedAudioOutput(context)
+    });
+    if (sampleSource) {
+      trackDrumNode(sampleSource);
+      return;
+    }
+    drumTone(context, time, 145, 0.18, 0.8 * adjustedStrength, 'sine', 48, pan);
+  }
   if (instrument === 'sn') {
     const sampleSource = wikiSnareSampleKit?.schedule(context, {
       velocity,
@@ -2274,6 +2290,21 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
     drumNoise(context, time, 0.13, 900, 0.38 * adjustedStrength, pan);
     drumTone(context, time, 180, 0.08, 0.18 * adjustedStrength, 'triangle', 120, pan);
   }
+  if (instrument === 'hh' && token.kind !== 'o') {
+    const state = hiHatArticulation === 'closed-edge'
+      ? wikiClosedHatEdgeSampleState
+      : wikiClosedHatTipSampleState;
+    const sampleSource = state.kit?.schedule(context, {
+      velocity,
+      time,
+      pan,
+      destination: boostedAudioOutput(context)
+    });
+    if (sampleSource) {
+      trackDrumNode(sampleSource);
+      return;
+    }
+  }
   if (['hh', 'ph'].includes(instrument)) {
     drumNoise(context, time, token.kind === 'o' ? 0.32 : 0.055, 6500, 0.18 * adjustedStrength, pan);
   }
@@ -2285,8 +2316,8 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
   if (instrument === 'wb') drumTone(context, time, 920, 0.07, 0.24 * adjustedStrength, 'square', 720, pan);
 }
 
-function drumMidiNote(instrument, token, sticking = '.') {
-  if (instrument === 'hh') return token.kind === 'o' ? 46 : 42;
+function drumMidiNote(instrument, token, sticking = '.', hiHatArticulation = null) {
+  if (instrument === 'hh') return token.kind === 'o' ? 46 : closedHiHatMidiNote(hiHatArticulation);
   if (instrument === 'sn') return sticking === 'L' ? 125 : 38;
   return {
     bd: 36,
@@ -2302,8 +2333,8 @@ function drumMidiNote(instrument, token, sticking = '.') {
   }[instrument];
 }
 
-function scheduleDrumMidiSound(context, output, instrument, token, time, strength = 1, sticking = '.', velocityProfile) {
-  const note = drumMidiNote(instrument, token, sticking);
+function scheduleDrumMidiSound(context, output, instrument, token, time, strength = 1, sticking = '.', velocityProfile, hiHatArticulation = null) {
+  const note = drumMidiNote(instrument, token, sticking, hiHatArticulation);
   if (note === undefined) return;
   const channel = 9;
   const velocity = velocityFromStrengthProfile(strength, velocityProfile);
@@ -2331,15 +2362,14 @@ function drumStrengthsForToken(rawToken) {
   return strengths;
 }
 
-function drumSnareVelocities(pattern, block) {
-  const velocityProfile = drumVelocityProfile(block);
-  return (pattern.rows.sn || [])
-    .flatMap(drumStrengthsForToken)
+function drumRowVelocities(pattern, row, velocityProfile, tokenFilter = () => true) {
+  return (pattern.rows[row] || [])
+    .flatMap(rawToken => tokenFilter(parseDrumToken(rawToken)) ? drumStrengthsForToken(rawToken) : [])
     .map(strength => velocityFromStrengthProfile(strength, velocityProfile));
 }
 
-async function prepareWikiSnareSamples(context, pattern, block) {
-  const velocities = drumSnareVelocities(pattern, block);
+async function prepareWikiSnareSamples(context, pattern, block, velocityProfile = drumVelocityProfile(block)) {
+  const velocities = drumRowVelocities(pattern, 'sn', velocityProfile);
   if (!velocities.length) return;
   try {
     if (!wikiSnareSampleKitPromise) {
@@ -2364,8 +2394,49 @@ async function prepareWikiSnareSamples(context, pattern, block) {
   }
 }
 
+async function prepareWikiFixedDrumSamples(context, state, velocities, block, label) {
+  if (!velocities.length) return;
+  try {
+    if (!state.promise) {
+      prepareDrumButton(block, true);
+      state.promise = wikiDrumSampleLibrary.getKit({ kitId: state.kitId })
+        .then(kit => {
+          state.kit = kit;
+          return kit;
+        })
+        .catch(error => {
+          state.promise = null;
+          throw error;
+        });
+    }
+    const kit = await state.promise;
+    await kit.prepare(context, velocities, { onLoadStart: () => prepareDrumButton(block, true) });
+  } catch (error) {
+    if (!state.warningShown) {
+      console.warn(`${label} samples could not be prepared; using the synthesized fallback.`, error);
+      state.warningShown = true;
+    }
+  }
+}
+
+async function prepareWikiDrumSamples(context, pattern, block, velocityProfile = drumVelocityProfile(block)) {
+  const kickVelocities = drumRowVelocities(pattern, 'bd', velocityProfile);
+  const closedHatVelocities = drumRowVelocities(
+    pattern,
+    'hh',
+    velocityProfile,
+    token => token.hit && token.kind !== 'o'
+  );
+  await Promise.all([
+    prepareWikiSnareSamples(context, pattern, block, velocityProfile),
+    prepareWikiFixedDrumSamples(context, wikiKickSampleState, kickVelocities, block, 'Kick'),
+    prepareWikiFixedDrumSamples(context, wikiClosedHatTipSampleState, closedHatVelocities, block, 'Hi-hat tip'),
+    prepareWikiFixedDrumSamples(context, wikiClosedHatEdgeSampleState, closedHatVelocities, block, 'Hi-hat edge')
+  ]);
+}
+
 function prepareLiveDrumVelocitySamples(block) {
-  if (block.dataset.playing !== 'true' || block.drumMidiOutput || !drumAudioContext || !wikiSnareSampleKit) return;
+  if (block.dataset.playing !== 'true' || block.drumMidiOutput || !drumAudioContext) return;
   block.drumVelocityPendingProfile = drumVelocityProfile(block);
   if (block.drumVelocityPrepareTimer || block.drumVelocityPrepareInFlight) return;
 
@@ -2382,10 +2453,7 @@ function prepareLiveDrumVelocitySamples(block) {
     block.drumVelocityPrepareInFlight = true;
     try {
       const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
-      const velocities = (pattern.rows.sn || [])
-        .flatMap(drumStrengthsForToken)
-        .map(strength => velocityFromStrengthProfile(strength, requestedProfile));
-      await wikiSnareSampleKit.prepare(drumAudioContext, velocities);
+      await prepareWikiDrumSamples(drumAudioContext, pattern, block, requestedProfile);
       if (
         block.dataset.playing === 'true'
         && !block.drumMidiOutput
@@ -2415,7 +2483,7 @@ function prepareLiveDrumVelocitySamples(block) {
   block.drumVelocityPrepareTimer = setTimeout(prepareNextProfile, 50);
 }
 
-function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile) {
+function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile, hiHatArticulation = null) {
   const token = parseDrumToken(rawToken);
   const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
   const graceStrength = token.ghost ? 0.35 : 1;
@@ -2423,23 +2491,23 @@ function scheduleDrumMidiHit(context, output, instrument, rawToken, time, stepDu
   const dragOffset = Math.min(0.075, stepDuration * 0.3);
   const graceSticking = oppositeDrumSticking(sticking);
 
-  if (token.kind === 'f') scheduleDrumMidiSound(context, output, instrument, token, time - flamOffset, graceStrength * 0.55, graceSticking, velocityProfile);
+  if (token.kind === 'f') scheduleDrumMidiSound(context, output, instrument, token, time - flamOffset, graceStrength * 0.55, graceSticking, velocityProfile, hiHatArticulation);
   if (token.kind === 'd') {
-    scheduleDrumMidiSound(context, output, instrument, token, time - dragOffset, graceStrength * 0.45, graceSticking, velocityProfile);
-    scheduleDrumMidiSound(context, output, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, graceSticking, velocityProfile);
+    scheduleDrumMidiSound(context, output, instrument, token, time - dragOffset, graceStrength * 0.45, graceSticking, velocityProfile, hiHatArticulation);
+    scheduleDrumMidiSound(context, output, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, graceSticking, velocityProfile, hiHatArticulation);
   }
-  scheduleDrumMidiSound(context, output, instrument, token, time, strength, sticking, velocityProfile);
-  if (token.tremolo === 1) scheduleDrumMidiSound(context, output, instrument, token, time + (stepDuration / 2), strength, sticking, velocityProfile);
+  scheduleDrumMidiSound(context, output, instrument, token, time, strength, sticking, velocityProfile, hiHatArticulation);
+  if (token.tremolo === 1) scheduleDrumMidiSound(context, output, instrument, token, time + (stepDuration / 2), strength, sticking, velocityProfile, hiHatArticulation);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
       const bounceTime = time + ((stepDuration * 0.72 * bounce) / (bounceCount + 1));
-      scheduleDrumMidiSound(context, output, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), sticking, velocityProfile);
+      scheduleDrumMidiSound(context, output, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), sticking, velocityProfile, hiHatArticulation);
     }
   }
 }
 
-function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile) {
+function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, sticking = '.', velocityProfile, hiHatArticulation = null) {
   const token = parseDrumToken(rawToken);
   const strength = (token.accent ? 3 : 1) * (token.ghost ? 0.35 : 1);
   const graceStrength = token.ghost ? 0.35 : 1;
@@ -2448,18 +2516,18 @@ function scheduleDrumHit(context, instrument, rawToken, time, stepDuration, stic
   const mainPan = drumPanForSticking(sticking);
   const gracePan = drumPanForSticking(oppositeDrumSticking(sticking));
 
-  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - flamOffset, graceStrength * 0.55, gracePan, velocityProfile);
+  if (token.kind === 'f') scheduleDrumSound(context, instrument, token, time - flamOffset, graceStrength * 0.55, gracePan, velocityProfile, hiHatArticulation);
   if (token.kind === 'd') {
-    scheduleDrumSound(context, instrument, token, time - dragOffset, graceStrength * 0.45, gracePan, velocityProfile);
-    scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, gracePan, velocityProfile);
+    scheduleDrumSound(context, instrument, token, time - dragOffset, graceStrength * 0.45, gracePan, velocityProfile, hiHatArticulation);
+    scheduleDrumSound(context, instrument, token, time - (dragOffset * 0.5), graceStrength * 0.55, gracePan, velocityProfile, hiHatArticulation);
   }
-  scheduleDrumSound(context, instrument, token, time, strength, mainPan, velocityProfile);
-  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength, mainPan, velocityProfile);
+  scheduleDrumSound(context, instrument, token, time, strength, mainPan, velocityProfile, hiHatArticulation);
+  if (token.tremolo === 1) scheduleDrumSound(context, instrument, token, time + (stepDuration / 2), strength, mainPan, velocityProfile, hiHatArticulation);
   if (token.tremolo > 1) {
     const bounceCount = token.tremolo === 2 ? 3 : 5;
     for (let bounce = 1; bounce <= bounceCount; bounce += 1) {
       const bounceTime = time + ((stepDuration * 0.72 * bounce) / (bounceCount + 1));
-      scheduleDrumSound(context, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), mainPan, velocityProfile);
+      scheduleDrumSound(context, instrument, token, bounceTime, strength * Math.max(0.25, 0.7 - (bounce * 0.08)), mainPan, velocityProfile, hiHatArticulation);
     }
   }
 }
@@ -2477,11 +2545,20 @@ function drumMidiTailMilliseconds(pattern, stepDuration) {
   return Math.ceil((DRUM_MIDI_LOOKAHEAD_SECONDS + longestOffset + 0.06) * 1000);
 }
 
+function nextClosedHiHatArticulation(block, instrument, rawToken) {
+  const token = parseDrumToken(rawToken);
+  if (instrument !== 'hh' || !token.hit || token.kind === 'o') return null;
+  const stroke = block.drumClosedHiHatStroke || 0;
+  block.drumClosedHiHatStroke = stroke + 1;
+  return alternatingClosedHiHatArticulation(stroke);
+}
+
 function scheduleDrumMidiPattern(block, pattern, startTime, stepDuration) {
   activeDrumHighlightTimers.forEach(clearTimeout);
   activeDrumHighlightTimers = [];
   block.drumMidiNextStep = 0;
   block.drumMidiNextTime = startTime;
+  block.drumClosedHiHatStroke = 0;
   block.drumMidiSwingRatio = drumSwingRatio(block);
   block.drumMidiTailMs = drumMidiTailMilliseconds(pattern, drumSwungStepDuration(0, stepDuration, block.drumMidiSwingRatio));
   setDrumButton(block, 'playing');
@@ -2502,7 +2579,8 @@ function scheduleDrumMidiPattern(block, pattern, startTime, stepDuration) {
       Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
         const token = tokens[step];
         if (parseDrumToken(token).hit) {
-          scheduleDrumMidiHit(drumAudioContext, block.drumMidiOutput, instrument, token, time, swungDuration, pattern.sticking[step], velocityProfile);
+          const hiHatArticulation = nextClosedHiHatArticulation(block, instrument, token);
+          scheduleDrumMidiHit(drumAudioContext, block.drumMidiOutput, instrument, token, time, swungDuration, pattern.sticking[step], velocityProfile, hiHatArticulation);
         }
       });
 
@@ -2527,6 +2605,7 @@ function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
   activeDrumHighlightTimers = [];
   block.drumAudioNextStep = 0;
   block.drumAudioNextTime = startTime;
+  block.drumClosedHiHatStroke = 0;
   block.drumAudioSwingRatio = drumSwingRatio(block);
   setDrumButton(block, 'playing');
 
@@ -2546,7 +2625,8 @@ function scheduleDrumPattern(block, pattern, startTime, stepDuration) {
       Object.entries(pattern.rows).forEach(([instrument, tokens]) => {
         const token = tokens[step];
         if (parseDrumToken(token).hit) {
-          scheduleDrumHit(drumAudioContext, instrument, token, time, swungDuration, pattern.sticking[step], velocityProfile);
+          const hiHatArticulation = nextClosedHiHatArticulation(block, instrument, token);
+          scheduleDrumHit(drumAudioContext, instrument, token, time, swungDuration, pattern.sticking[step], velocityProfile, hiHatArticulation);
         }
       });
 
@@ -2571,7 +2651,7 @@ async function playDrumBlock(block) {
 
   const pattern = parseDrumPattern(decodeURIComponent(block.dataset.drumSource || ''));
   if (!block.drumMidiOutput) {
-    await prepareWikiSnareSamples(drumAudioContext, pattern, block);
+    await prepareWikiDrumSamples(drumAudioContext, pattern, block);
     block.drumActiveVelocityProfile = drumVelocityProfile(block);
   }
   // Sample and MIDI setup can finish after the user has switched tabs. Do not

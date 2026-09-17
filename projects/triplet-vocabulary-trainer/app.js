@@ -3,6 +3,7 @@ import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, r
 import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
+import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
 import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260915-adaptive-recovery-calibration';
 
 const MELODIES = [
@@ -16,8 +17,6 @@ const selectors = cards.map(card => card.querySelector('.card-pattern-first'));
 const extendedSecondSelectors = cards.map(card => card.querySelector('.card-pattern-second'));
 const sampleLibrary = new DrumSampleLibrary('../rhythm-explorer/assets/drums/library.json');
 const DEFAULT_SAMPLE_KIT_ID = 'ludwig-black-beauty-snare-center';
-const KICK_SAMPLE_KIT_ID = 'kick-center';
-const CLOSED_HAT_SAMPLE_KIT_ID = 'hi-hat-closed-tip';
 const ENABLED_MELODIES_KEY = 'triplet-vocabulary-enabled-melodies';
 const ENABLED_TRIPLETS_KEY = 'triplet-vocabulary-enabled-triplets';
 const ENABLED_EXTENDED_KEY = 'triplet-vocabulary-enabled-extended';
@@ -37,7 +36,8 @@ const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
 const ALL_EXTENDED_INDEXES = EXTENDED_PATTERNS.map((_,index) => index);
 let sampleKit = null;
 let kickSampleKit = null;
-let closedHatSampleKit = null;
+let closedHatTipSampleKit = null;
+let closedHatEdgeSampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
 let trainerMode = loadTrainerMode();
@@ -960,10 +960,10 @@ function trackScheduledSource(source) {
   source.onended = () => scheduledSources.delete(source);
   return true;
 }
-function scheduleHat(time, velocity, midiNote = 44, useKickModeSample = false) {
+function scheduleHat(time, velocity, midiNote = 44, acousticKit = null) {
   if (velocity <= 0) return;
   if (midiOutput) { scheduleMidi(midiNote, velocity, time, .045); return; }
-  if (useKickModeSample && trackScheduledSource(closedHatSampleKit?.schedule(audioContext, {
+  if (trackScheduledSource(acousticKit?.schedule(audioContext, {
     velocity,
     time,
     destination:boostedAudioOutput(audioContext)
@@ -1115,7 +1115,13 @@ function scheduleEvent() {
     else scheduleSnare(nextEventTime,velocity);
   }
   if (kickVocabulary && step%3 === 0) {
-    scheduleHat(nextEventTime,midiOutput ? currentVelocities[1] : activeVelocities.normal,42,true);
+    const articulation = alternatingClosedHiHatArticulation(Math.floor(eventNumber/3));
+    scheduleHat(
+      nextEventTime,
+      midiOutput ? currentVelocities[1] : activeVelocities.normal,
+      closedHiHatMidiNote(articulation),
+      articulation === 'closed-edge' ? closedHatEdgeSampleKit : closedHatTipSampleKit
+    );
   }
   if ($('#metronome').checked && !kickVocabulary && step%3 === 0) {
     const quarterBeat = Math.floor(eventNumber/3);
@@ -1135,18 +1141,25 @@ function schedulerTick() {
 async function prepareKickModeSamples(normalVelocity) {
   if (midiOutput || (trainerMode !== 'kick' && trainerMode !== 'kick2')) return;
   try {
-    kickSampleKit ||= await sampleLibrary.getKit({ kitId:KICK_SAMPLE_KIT_ID });
+    kickSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.kickCenter });
     await kickSampleKit.prepare(audioContext,[normalVelocity]);
   } catch (error) {
     kickSampleKit = null;
     console.warn('Using synthesized kick fallback.',error);
   }
   try {
-    closedHatSampleKit ||= await sampleLibrary.getKit({ kitId:CLOSED_HAT_SAMPLE_KIT_ID });
-    await closedHatSampleKit.prepare(audioContext,[normalVelocity]);
+    closedHatTipSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatTip });
+    await closedHatTipSampleKit.prepare(audioContext,[normalVelocity]);
   } catch (error) {
-    closedHatSampleKit = null;
-    console.warn('Using synthesized hi-hat fallback.',error);
+    closedHatTipSampleKit = null;
+    console.warn('Using synthesized hi-hat tip fallback.',error);
+  }
+  try {
+    closedHatEdgeSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatEdge });
+    await closedHatEdgeSampleKit.prepare(audioContext,[normalVelocity]);
+  } catch (error) {
+    closedHatEdgeSampleKit = null;
+    console.warn('Using synthesized hi-hat edge fallback.',error);
   }
 }
 async function prepareAudio() {

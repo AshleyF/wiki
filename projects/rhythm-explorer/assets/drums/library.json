@@ -8,6 +8,12 @@
       "model": null,
       "articulations": [
         {
+          "name": "closed-edge",
+          "midi_note": 22,
+          "kit_id": "hi-hat-closed-edge",
+          "manifest": "hi-hats/closed-edge/kit.json"
+        },
+        {
           "name": "closed-tip",
           "midi_note": 42,
           "kit_id": "hi-hat-closed-tip",

@@ -2,6 +2,37 @@
 
 The drum renderer favors a consistent, compact spelling of rhythm. The priorities are clarity, using as little notation as necessary, and writing the same rhythm the same way every time.
 
+## Sample auditions
+
+These isolated patterns make the acoustic sample families easy to check. Closed hi-hat playback alternates an edge/shank stroke with a bow/tip stroke; that sound orchestration is automatic and does not add extra marks to the notation.
+
+### Hi-hat — shank and tip
+
+```drums
+tempo 90
+meter 4/4
+division 8
+hh: x x x x x x x x
+```
+
+### Kick — center
+
+```drums
+tempo 90
+meter 4/4
+division 8
+bd: x . x . x . x .
+```
+
+### Snare — center
+
+```drums
+tempo 90
+meter 4/4
+division 8
+sn: x . x . x . x .
+```
+
 For a sixteenth-note grid in 4/4, each quarter-note beat is treated as a four-slot cell: `1 e & a`. Notes are beamed within that beat whenever possible, but beams do not cross the quarter-note boundary. Silent slots are combined into the longest conventional rest or note value that preserves the rhythm. This avoids chains of unnecessary sixteenth rests and avoids separate flags when notes can communicate their grouping with beams.
 
 The following reference exhausts the 16 possible hit patterns in one four-slot cell. `1` means a stroke and `0` means silence. Each cell is repeated on all four beats so its canonical engraving is easy to inspect and hear.
