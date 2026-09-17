@@ -10,8 +10,8 @@
         {
           "name": "closed-tip",
           "midi_note": 42,
-          "kit_id": "superior-drummer-current-hihat-closed-tip",
-          "manifest": "hi-hats/superior-drummer-current/closed-tip/kit.json"
+          "kit_id": "hi-hat-closed-tip",
+          "manifest": "hi-hats/closed-tip/kit.json"
         }
       ]
     },
@@ -23,8 +23,8 @@
         {
           "name": "center",
           "midi_note": 36,
-          "kit_id": "superior-drummer-current-kick-center",
-          "manifest": "kicks/superior-drummer-current/center/kit.json"
+          "kit_id": "kick-center",
+          "manifest": "kicks/center/kit.json"
         }
       ]
     },
