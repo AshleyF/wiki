@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, tripletMasksForRoles } from './trainer-core.js?v=20260915-adaptive-recovery-calibration';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerPlaybackPlan, tripletMasksForRoles } from './trainer-core.js?v=20260917-metronome-only';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -24,6 +24,7 @@ const EMPHASIS_KEY = 'triplet-vocabulary-emphasis';
 const TRAINER_MODE_KEY = 'triplet-vocabulary-trainer-mode';
 const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
+const DRUMS_KEY = 'triplet-vocabulary-drums';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
 const IGNORE_FEET_KEY = 'triplet-vocabulary-ignore-feet';
@@ -388,6 +389,7 @@ function initializeDisplayOptions() {
   $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
+  $('#drums').checked = loadBooleanPreference(DRUMS_KEY,true);
   $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
@@ -1110,11 +1112,18 @@ function scheduleEvent() {
     else expectedPracticeHits.push(expected);
   }
   const kickVocabulary = (trainerMode === 'kick' || trainerMode === 'kick2') && !recoveryCards[slot];
-  if (role !== 'R') {
+  const playbackPlan = trainerPlaybackPlan({
+    role,
+    step,
+    kickVocabulary,
+    drumsEnabled:$('#drums').checked,
+    metronomeEnabled:$('#metronome').checked
+  });
+  if (playbackPlan.pattern) {
     if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
     else scheduleSnare(nextEventTime,velocity);
   }
-  if (kickVocabulary && step%3 === 0) {
+  if (playbackPlan.grooveHat) {
     const articulation = alternatingClosedHiHatArticulation(Math.floor(eventNumber/3));
     scheduleHat(
       nextEventTime,
@@ -1123,7 +1132,7 @@ function scheduleEvent() {
       articulation === 'closed-edge' ? closedHatEdgeSampleKit : closedHatTipSampleKit
     );
   }
-  if ($('#metronome').checked && !kickVocabulary && step%3 === 0) {
+  if (playbackPlan.metronome) {
     const quarterBeat = Math.floor(eventNumber/3);
     scheduleHat(nextEventTime,quarterBeat%4 === 0 ? currentVelocities[2] : currentVelocities[1]);
   }
@@ -1170,6 +1179,10 @@ async function prepareAudio() {
   if (midiOutput) return;
   const [ghost, normal, accent] = velocityValues();
   const requested = { ghost, normal, accent };
+  if (!$('#drums').checked) {
+    activeVelocities = requested;
+    return;
+  }
   try {
     sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
     await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
@@ -1513,6 +1526,13 @@ $('#auto-randomize').addEventListener('change', event => {
 $('#metronome').addEventListener('change',event => {
   try { localStorage.setItem(METRONOME_KEY,String(event.target.checked)); } catch {}
   if (playing) { stop(); start(); }
+});
+$('#drums').addEventListener('change',event => {
+  try { localStorage.setItem(DRUMS_KEY,String(event.target.checked)); } catch {}
+  if (!event.target.checked && !$('#metronome').checked) {
+    $('#metronome').checked = true;
+    try { localStorage.setItem(METRONOME_KEY,'true'); } catch {}
+  }
 });
 [$('#ignore-feet'),$('#ignore-ghosts')].forEach(input => input.addEventListener('change',event => {
   const key = event.target.id === 'ignore-feet' ? IGNORE_FEET_KEY : IGNORE_GHOSTS_KEY;

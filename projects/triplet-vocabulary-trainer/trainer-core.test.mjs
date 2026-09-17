@@ -22,6 +22,7 @@ import {
   rolesForKickVocabulary,
   rolesForKickVocabulary2,
   rolesForTripletMasks,
+  trainerPlaybackPlan,
   tripletMasksForRoles,
   scorePracticeTap
 } from './trainer-core.js';
@@ -173,4 +174,19 @@ test('touch classification distinguishes a tap from a scrolling drag', () => {
   assert.equal(practiceTouchExceededThreshold(100,100,110,110),false);
   assert.equal(practiceTouchExceededThreshold(100,100,118,100),true);
   assert.equal(practiceTouchExceededThreshold(100,100,90,85),true);
+});
+
+test('metronome-only playback suppresses drums without stopping the cursor pulse', () => {
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'A',step:0,kickVocabulary:false,drumsEnabled:false,metronomeEnabled:true
+  }),{ pattern:false,grooveHat:false,metronome:true });
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'K',step:0,kickVocabulary:true,drumsEnabled:false,metronomeEnabled:true
+  }),{ pattern:false,grooveHat:false,metronome:true });
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'K',step:0,kickVocabulary:true,drumsEnabled:true,metronomeEnabled:true
+  }),{ pattern:true,grooveHat:true,metronome:false });
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'B',step:1,kickVocabulary:false,drumsEnabled:true,metronomeEnabled:true
+  }),{ pattern:true,grooveHat:false,metronome:false });
 });

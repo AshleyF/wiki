@@ -56,6 +56,21 @@ export function recoveryPulseRoles(stepCount) {
   return Array.from({ length:stepCount },(_,step) => step%3 === 0 ? 'A' : 'R');
 }
 
+export function trainerPlaybackPlan({
+  role = 'R',
+  step = 0,
+  kickVocabulary = false,
+  drumsEnabled = true,
+  metronomeEnabled = false
+} = {}) {
+  const pulse = Math.max(0,Math.floor(Number(step) || 0)) % 3 === 0;
+  return {
+    pattern: Boolean(drumsEnabled && role !== 'R'),
+    grooveHat: Boolean(drumsEnabled && kickVocabulary && pulse),
+    metronome: Boolean(metronomeEnabled && pulse && (!kickVocabulary || !drumsEnabled))
+  };
+}
+
 export function recoveryHitTarget(stepCount) {
   return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
