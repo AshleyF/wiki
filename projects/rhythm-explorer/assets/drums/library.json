@@ -3,6 +3,32 @@
   "library_id": "superior-drummer-local-captures",
   "drums": [
     {
+      "instrument": "hi-hat",
+      "manufacturer": null,
+      "model": null,
+      "articulations": [
+        {
+          "name": "closed-tip",
+          "midi_note": 42,
+          "kit_id": "superior-drummer-current-hihat-closed-tip",
+          "manifest": "hi-hats/superior-drummer-current/closed-tip/kit.json"
+        }
+      ]
+    },
+    {
+      "instrument": "kick",
+      "manufacturer": null,
+      "model": null,
+      "articulations": [
+        {
+          "name": "center",
+          "midi_note": 36,
+          "kit_id": "superior-drummer-current-kick-center",
+          "manifest": "kicks/superior-drummer-current/center/kit.json"
+        }
+      ]
+    },
+    {
       "instrument": "practice-pad",
       "manufacturer": "Evans",
       "model": "Practice Pad",

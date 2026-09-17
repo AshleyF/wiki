@@ -16,6 +16,8 @@ const selectors = cards.map(card => card.querySelector('.card-pattern-first'));
 const extendedSecondSelectors = cards.map(card => card.querySelector('.card-pattern-second'));
 const sampleLibrary = new DrumSampleLibrary('../rhythm-explorer/assets/drums/library.json');
 const DEFAULT_SAMPLE_KIT_ID = 'ludwig-black-beauty-snare-center';
+const KICK_SAMPLE_KIT_ID = 'superior-drummer-current-kick-center';
+const CLOSED_HAT_SAMPLE_KIT_ID = 'superior-drummer-current-hihat-closed-tip';
 const ENABLED_MELODIES_KEY = 'triplet-vocabulary-enabled-melodies';
 const ENABLED_TRIPLETS_KEY = 'triplet-vocabulary-enabled-triplets';
 const ENABLED_EXTENDED_KEY = 'triplet-vocabulary-enabled-extended';
@@ -34,6 +36,8 @@ const DEFAULT_VELOCITIES = Object.freeze([16,64,111]);
 const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
 const ALL_EXTENDED_INDEXES = EXTENDED_PATTERNS.map((_,index) => index);
 let sampleKit = null;
+let kickSampleKit = null;
+let closedHatSampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
 let trainerMode = loadTrainerMode();
@@ -950,8 +954,20 @@ function scheduleCalibrationClick(time) {
   oscillator.onended = () => calibrationSources.delete(oscillator);
   calibrationSources.add(oscillator);
 }
-function scheduleHat(time, velocity, midiNote = 44) {
+function trackScheduledSource(source) {
+  if (!source) return false;
+  scheduledSources.add(source);
+  source.onended = () => scheduledSources.delete(source);
+  return true;
+}
+function scheduleHat(time, velocity, midiNote = 44, useKickModeSample = false) {
+  if (velocity <= 0) return;
   if (midiOutput) { scheduleMidi(midiNote, velocity, time, .045); return; }
+  if (useKickModeSample && trackScheduledSource(closedHatSampleKit?.schedule(audioContext, {
+    velocity,
+    time,
+    destination:boostedAudioOutput(audioContext)
+  }))) return;
   const length = Math.ceil(audioContext.sampleRate*.055);
   const buffer = audioContext.createBuffer(1,length,audioContext.sampleRate);
   const data = buffer.getChannelData(0);
@@ -966,7 +982,13 @@ function scheduleHat(time, velocity, midiNote = 44) {
   source.onended = () => scheduledSources.delete(source); scheduledSources.add(source);
 }
 function scheduleKick(time,velocity) {
+  if (velocity <= 0) return;
   if (midiOutput) { scheduleMidi(36,velocity,time,.08); return; }
+  if (trackScheduledSource(kickSampleKit?.schedule(audioContext, {
+    velocity,
+    time,
+    destination:boostedAudioOutput(audioContext)
+  }))) return;
   const oscillator = audioContext.createOscillator();
   const gain = audioContext.createGain();
   oscillator.type = 'sine';
@@ -985,10 +1007,7 @@ function scheduleSnare(time, velocity) {
   if (midiOutput) scheduleMidi(38, velocity, time);
   else {
     const source = sampleKit?.schedule(audioContext, { velocity, time, destination: boostedAudioOutput(audioContext) });
-    if (source) {
-      scheduledSources.add(source);
-      source.onended = () => scheduledSources.delete(source);
-    } else scheduleFallbackSnare(time, velocity);
+    if (!trackScheduledSource(source)) scheduleFallbackSnare(time, velocity);
   }
 }
 function showStep(slot, step, time) {
@@ -1096,7 +1115,7 @@ function scheduleEvent() {
     else scheduleSnare(nextEventTime,velocity);
   }
   if (kickVocabulary && step%3 === 0) {
-    scheduleHat(nextEventTime,currentVelocities[1],42);
+    scheduleHat(nextEventTime,midiOutput ? currentVelocities[1] : activeVelocities.normal,42,true);
   }
   if ($('#metronome').checked && !kickVocabulary && step%3 === 0) {
     const quarterBeat = Math.floor(eventNumber/3);
@@ -1113,19 +1132,37 @@ function schedulerTick() {
     if (!scheduleEvent()) break;
   }
 }
+async function prepareKickModeSamples(normalVelocity) {
+  if (midiOutput || (trainerMode !== 'kick' && trainerMode !== 'kick2')) return;
+  try {
+    kickSampleKit ||= await sampleLibrary.getKit({ kitId:KICK_SAMPLE_KIT_ID });
+    await kickSampleKit.prepare(audioContext,[normalVelocity]);
+  } catch (error) {
+    kickSampleKit = null;
+    console.warn('Using synthesized kick fallback.',error);
+  }
+  try {
+    closedHatSampleKit ||= await sampleLibrary.getKit({ kitId:CLOSED_HAT_SAMPLE_KIT_ID });
+    await closedHatSampleKit.prepare(audioContext,[normalVelocity]);
+  } catch (error) {
+    closedHatSampleKit = null;
+    console.warn('Using synthesized hi-hat fallback.',error);
+  }
+}
 async function prepareAudio() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) throw new Error('Web Audio is unavailable in this browser.');
   audioContext ||= new AudioContextClass({ latencyHint:'interactive' });
   await audioContext.resume();
   if (midiOutput) return;
+  const [ghost, normal, accent] = velocityValues();
+  const requested = { ghost, normal, accent };
   try {
     sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
-    const [ghost, normal, accent] = velocityValues();
-    const requested = { ghost, normal, accent };
     await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
-    activeVelocities = requested;
   } catch (error) { console.warn('Using synthesized snare fallback.', error); }
+  await prepareKickModeSamples(normal);
+  activeVelocities = requested;
 }
 function setTransportState(state) {
   const loading = state === 'loading';
@@ -1369,11 +1406,13 @@ async function enableMidi() {
   } catch { setStatus('MIDI unavailable'); }
 }
 async function prepareChangedVelocities() {
-  if (!audioContext || !sampleKit || midiOutput) return;
+  if (!audioContext || midiOutput) return;
   const [ghost, normal, accent] = velocityValues();
   const requested = { ghost, normal, accent };
   try {
+    sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
     await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
+    await prepareKickModeSamples(normal);
     activeVelocities = requested;
     setStatus('');
   } catch { setStatus('Velocity samples unavailable'); }
