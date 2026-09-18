@@ -367,7 +367,12 @@ function endPatternPaint(event) {
   }
   patternPaint = null;
   if (event.type === 'pointercancel') suppressPatternClick = false;
-  else setTimeout(() => { suppressPatternClick = false; },0);
+  else {
+    // Touch browsers may dispatch the compatibility click well after pointerup.
+    // Keep it suppressed long enough that it cannot toggle the checkbox back to
+    // its original value after pointer painting handled the tap.
+    setTimeout(() => { suppressPatternClick = false; },700);
+  }
 }
 function initializeAutoShuffle() {
   try {
