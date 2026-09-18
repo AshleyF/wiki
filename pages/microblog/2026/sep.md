@@ -72,6 +72,16 @@ I spent the day drumming (learning tripplet patterns on the kick), and I went to
 
 Took a load to the dump. And packed for our trip to Portland. Drummed late at night.
 
-## 15 SEP 2026 Tue - Portland
+## 15 SEP 2026 Tue - Portland Day 1
 
 We spent the day driving to Portland! Free solar, free charging. Stopped at some taco trucks for lunch. Charged and settled into the hotel. That's it. Oh yeah, got my final bonus!
+
+## 16 SEP 2026 Wed - Portland Day 2
+
+We went to Powel's and Coava and walked around the shops downtown. I like how weird people are here. It's like you're wierd if you're normal here. Silly things like a toy horse hitched to the curb. Everyone has a unique style.
+
+## 17 SEP 2026 Thu - Astoria Day 1
+
+We had one last coffee in Portland at a place called Never Coffee. It was recommended by a youtuber who was in turn recommended by Matt Lind. Very unique drinks (e.g. tumeric, ginger, orange blossom water, cherry wood smoked honey, sea salt and tellicherry pepper latte!). Then we drove to Astoria and met Jaws and Teagan for lunch and visited the bunkers and the ship wreck at the beach.
+
+## 18 SEP 2026 Fri - 
