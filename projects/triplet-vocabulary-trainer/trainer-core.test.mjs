@@ -24,6 +24,7 @@ import {
   rolesForTripletMasks,
   trainerPlaybackPlan,
   tripletMasksForRoles,
+  updateAuditionQueue,
   scorePracticeTap
 } from './trainer-core.js';
 
@@ -189,4 +190,12 @@ test('metronome-only playback suppresses drums without stopping the cursor pulse
   assert.deepEqual(trainerPlaybackPlan({
     role:'B',step:1,kickVocabulary:false,drumsEnabled:true,metronomeEnabled:true
   }),{ pattern:true,grooveHat:false,metronome:false });
+});
+
+test('card auditions queue in click order and cap the sequence at three patterns', () => {
+  assert.deepEqual(updateAuditionQueue([],{ activeSlot:2,slot:0 }),{ action:'queued',queue:[0] });
+  assert.deepEqual(updateAuditionQueue([0],{ activeSlot:2,slot:1 }),{ action:'queued',queue:[0,1] });
+  assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:0 }),{ action:'removed',queue:[1] });
+  assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:2 }),{ action:'stop',queue:[0,1] });
+  assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:3 }),{ action:'full',queue:[0,1] });
 });

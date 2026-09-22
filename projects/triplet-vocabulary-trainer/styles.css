@@ -63,6 +63,7 @@ main { display: grid; gap: .55rem; width: 100%; max-width: 1250px; box-sizing: b
 .card-audition:hover { border-color: var(--notation-ink); background: color-mix(in srgb,var(--accent) 8%,transparent); }
 .card-audition:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .card-audition.is-playing { border-color: var(--accent); color: var(--accent); }
+.card-audition.is-queued { border-color: color-mix(in srgb,var(--accent) 65%,var(--notation-button-border)); color: var(--accent); background: color-mix(in srgb,var(--accent) 8%,transparent); }
 .calibration-dialog { width: min(27rem,calc(100vw - 2rem)); border: 1px solid var(--rule); padding: 0; color: var(--notation-ink); background: var(--notation-paper); }
 .calibration-dialog::backdrop { background: rgb(0 0 0 / .66); }
 .calibration-content { display: grid; gap: .8rem; padding: 1rem; }

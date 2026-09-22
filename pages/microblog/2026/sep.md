@@ -80,8 +80,24 @@ We spent the day driving to Portland! Free solar, free charging. Stopped at some
 
 We went to Powel's and Coava and walked around the shops downtown. I like how weird people are here. It's like you're wierd if you're normal here. Silly things like a toy horse hitched to the curb. Everyone has a unique style.
 
-## 17 SEP 2026 Thu - Astoria Day 1
+## 17 SEP 2026 Thu - Astoria Day 1 (Shipwreck)
 
-We had one last coffee in Portland at a place called Never Coffee. It was recommended by a youtuber who was in turn recommended by Matt Lind. Very unique drinks (e.g. tumeric, ginger, orange blossom water, cherry wood smoked honey, sea salt and tellicherry pepper latte!). Then we drove to Astoria and met Jaws and Teagan for lunch and visited the bunkers and the ship wreck at the beach.
+We had one last coffee in Portland at a place called Never Coffee. It was recommended by a youtuber who was in turn recommended by Matt Lind. Very unique drinks (e.g. tumeric, ginger, orange blossom water, cherry wood smoked honey, sea salt and tellicherry pepper latte!). Then we drove to Astoria and met Jaws and Teagan for lunch and visited the bunkers and the Peter Iredale ship wreck at the beach.
 
-## 18 SEP 2026 Fri - 
+## 18 SEP 2026 Fri - Astoria Day 2 (Elk)
+
+We met up with Jaws and Teagan again for tacos at a food truck. Pretty yummy. Then we went on a wild drive to a wildlife area with tons of Elk. The drive was on this hairpin turn road. They swapped cars so they could drive crazy. I put the truck in Mad Max mode and it kept up no problem! There were lots of Elk and I got some good photos, including of them mating.
+
+## 19 SEP 2026 Sat - Astoria Day 3 (No Jaws)
+
+We basically spent the whole day trying to make a plan with Jaws. We got hungry enough to go eat breakfast without them. The Greek place on the peer was closed and the coffee shop still had their kitchen closed, so we left. We went to a little cafe and that was the one place the whole time in Astoria that had excellent food. Jaws just didn't reply for hours, then had some excuse about the shower being worked on, then said it was fixed and she'd get ready and come. But hours went by and nothing. We went back to the hotel to hang out. Finally at 20:00, she said she could come. It was late and dark out by then. I went and charged the truck and we went to bed... bummer.
+
+## 20 SEP 2026 Sun - Kirkland (dinner w/kids)
+
+We drove across the super-tall bridge across to Washington and headed up to Seattle area. We got there at 17:00 and had dinner with the kids an hour later at Cheesecake Factory. It was a fun time. Madi has some fallout with her mom and I worry about their current arrangment now. Nathan starts a new quarter at school! He's taking sociology and psych and some "curreny morality" class. Kaitlyn has her first councelling client and has had several sessons now! Kyle seems to be doing good and mentioned that he's *finally* making use of AI at work. We had a bunch of wide-ranging conversations. Fun, fun.
+
+## 21 SEP 2026 Mon - Home
+
+We got one last coffee at the Urban Coffee place in Kirkland, then hit the road. One stop in Moses Lake and home by a little after 16:00. Ahh... home is nice.
+
+## 22 SEP 2026 Tue - 

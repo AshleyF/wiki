@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerPlaybackPlan, tripletMasksForRoles } from './trainer-core.js?v=20260917-metronome-only';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260921-card-queue';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -55,6 +55,7 @@ let midiOutput = null;
 let playing = false;
 let playbackScope = null;
 let auditionSlot = null;
+let auditionQueue = [];
 let auditionEndTimer = null;
 let scheduler = null;
 let nextEventTime = 0;
@@ -1088,11 +1089,8 @@ function scheduleEvent() {
     clearInterval(scheduler);
     scheduler = null;
     const delay = Math.max(0,(nextEventTime-audioContext.currentTime)*1000);
-    const timer = setTimeout(() => {
-      visualTimers.delete(timer);
-      finishAudition();
-    },delay);
-    visualTimers.add(timer);
+    clearTimeout(auditionEndTimer);
+    auditionEndTimer = setTimeout(finishAudition,delay);
     return false;
   }
   const step = eventNumber%cardSteps;
@@ -1210,11 +1208,14 @@ function setCardAuditionState(state = 'idle',slot = null) {
     const button = card.querySelector('.card-audition');
     const active = index === slot && state === 'playing';
     const loading = index === slot && state === 'loading';
-    button.textContent = loading ? '…' : active ? '■' : '▶';
+    const queuedIndex = state === 'playing' ? auditionQueue.indexOf(index) : -1;
+    const queued = queuedIndex >= 0;
+    button.textContent = loading ? '…' : active ? '■' : queued ? String(queuedIndex+2) : '▶';
     button.classList.toggle('is-playing',active);
+    button.classList.toggle('is-queued',queued);
     button.disabled = loading;
-    button.setAttribute('aria-label',loading ? `Loading card ${index+1}` : active ? `Stop card ${index+1}` : `Play card ${index+1}`);
-    button.title = loading ? 'Loading' : active ? 'Stop' : 'Play this card';
+    button.setAttribute('aria-label',loading ? `Loading card ${index+1}` : active ? `Stop all card playback` : queued ? `Remove card ${index+1} from queue position ${queuedIndex+2}` : `Play card ${index+1}`);
+    button.title = loading ? 'Loading' : active ? 'Stop all' : queued ? `Queued ${queuedIndex+2}` : 'Play this card';
   });
 }
 function setTapMode(enabled) {
@@ -1227,9 +1228,8 @@ function scrollToTapPad() {
 }
 async function start({ tapMode = false } = {}) {
   if (playing) {
-    const switchingFromAudition = playbackScope === 'card';
     stop();
-    if (!switchingFromAudition) return;
+    return;
   }
   setTapMode(tapMode);
   if (tapMode) scrollToTapPad();
@@ -1240,17 +1240,26 @@ async function start({ tapMode = false } = {}) {
     const withMetronome = $('#metronome').checked;
     resetRecoveryState();
     resetPracticeSession();
-    playing = true; playbackScope = 'session'; auditionSlot = null; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
+    playing = true; playbackScope = 'session'; auditionSlot = null; auditionQueue = []; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
     void screenWakeLock.setActive(true);
     setTransportState('stop'); updatePositions(0); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
   } catch (error) { setTapMode(false); setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
 async function auditionCard(slot) {
+  if (playing && playbackScope === 'card') {
+    const update = updateAuditionQueue(auditionQueue,{ activeSlot:auditionSlot,slot,maxPatterns:3 });
+    if (update.action === 'stop') {
+      stop();
+      return;
+    }
+    auditionQueue = update.queue;
+    setCardAuditionState('playing',auditionSlot);
+    setStatus(update.action === 'full' ? 'The audition queue holds three patterns.' : '');
+    return;
+  }
   if (playing) {
-    const sameCard = playbackScope === 'card' && auditionSlot === slot;
     stop();
-    if (sameCard) return;
   }
   setTapMode(false);
   setCardAuditionState('loading',slot);
@@ -1261,15 +1270,14 @@ async function auditionCard(slot) {
     expectedPracticeHits = [];
     playbackScope = 'card';
     auditionSlot = slot;
+    auditionQueue = [];
     playing = true;
     eventNumber = 0;
     countInBeat = 0;
     countInBeatsRemaining = 0;
     nextEventTime = audioContext.currentTime+.08;
-    const auditionDurationMs = 80+stepsPerCard()*eventDuration()*1000;
-    auditionEndTimer = setTimeout(finishAudition,auditionDurationMs);
     void screenWakeLock.setActive(true);
-    setTransportState('play');
+    setTransportState('stop');
     setCardAuditionState('playing',slot);
     updatePositions(slot);
     setStatus('');
@@ -1284,15 +1292,29 @@ async function auditionCard(slot) {
 }
 function finishAudition() {
   if (playbackScope !== 'card') return;
-  playing = false;
   clearInterval(scheduler);
   scheduler = null;
   clearTimeout(auditionEndTimer);
   auditionEndTimer = null;
+  if (auditionQueue.length) {
+    auditionSlot = auditionQueue.shift();
+    eventNumber = 0;
+    countInBeat = 0;
+    countInBeatsRemaining = 0;
+    nextEventTime = Math.max(nextEventTime,audioContext.currentTime+.005);
+    setCardAuditionState('playing',auditionSlot);
+    updatePositions(auditionSlot);
+    scheduler = setInterval(schedulerTick,25);
+    schedulerTick();
+    return;
+  }
+  playing = false;
   playbackScope = null;
   auditionSlot = null;
+  auditionQueue = [];
   void screenWakeLock.setActive(false);
   cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  setTransportState('play');
   setCardAuditionState();
 }
 function stop() {
@@ -1300,6 +1322,7 @@ function stop() {
   clearTimeout(auditionEndTimer); auditionEndTimer = null;
   playbackScope = null;
   auditionSlot = null;
+  auditionQueue = [];
   void screenWakeLock.setActive(false);
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();

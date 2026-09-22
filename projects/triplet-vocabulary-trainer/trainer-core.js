@@ -71,6 +71,19 @@ export function trainerPlaybackPlan({
   };
 }
 
+export function updateAuditionQueue(queue,{ activeSlot,slot,maxPatterns = 3 } = {}) {
+  const next = [...queue];
+  if (slot === activeSlot) return { action:'stop',queue:next };
+  const queuedIndex = next.indexOf(slot);
+  if (queuedIndex >= 0) {
+    next.splice(queuedIndex,1);
+    return { action:'removed',queue:next };
+  }
+  if (next.length+1 >= maxPatterns) return { action:'full',queue:next };
+  next.push(slot);
+  return { action:'queued',queue:next };
+}
+
 export function recoveryHitTarget(stepCount) {
   return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
