@@ -1,6 +1,6 @@
 # AUG 2026 - Jaws, Fires, Flux, Piano, Redmond/Sequim, Cubing, Grandma
 
-Jaws is packing up and moving to Oregon. We had big fires in Spokane and just north of us. Almost 1000 homes were burned to the ground! I spent some days playing with my friend Graham's "Flux" app and making my own drum machine prototypes. We got a piano delivered to the house! Tracey is going to take lessons and learn to play. We went to Redmond and Sequim and visited friends (Greg, Graham, Fred), kids and Tracey's mom. I stayed in Greg's mom's place. I went to a cubing competition. I spent a day watching grandma and looking at wild turkeys with her for an hour+.
+Jaws is packing up and moving to Oregon. We had big fires in Spokane and just north of us. Almost 1000 homes were burned to the ground! I spent some days playing with my friend Graham's "Flux" app and making my own drum machine prototypes. We got a piano delivered to the house! Tracey is going to take lessons and learn to play. We went to Redmond and Sequim and visited friends (Greg, Graham, Fred), kids and Tracey's mom. I stayed in Greg's mom's place. I went to a cubing competition. I spent a day watching Grandma and looking at wild turkeys with her for an hour+.
 
 ## 01 AUG 2026 Sat - Jaws
 
@@ -12,11 +12,11 @@ Spokane is on fire! Hundreds of homes have been lost. The videos coming out of t
 
 ## 03 AUG 2026 Mon - Graham's Flux
 
-Graham sent me a copy of his Flux software that he's been working on for some months (I think) and has been heavily into since we retired a month ago. It's super cool and fun to play with. It's kind of a generative music tool with lots of controls. I think the customer he imagines is a DJ or live music creator at a rave or something. Very punchy, four-on-the-floor techno dance music. I hooked it up to Superior Drummer and have been trying to get decent beats out of it. Some of the percussion stuff seems pretty monotonous (e.g., four on the floor plus 1/16th note hi-hat, pretty much always). I was telling him though that it feels like I imagine non-devs writing software. I can't play an instrument but I feel like I'm "making" my own music, kind of. Tomorrow's our anniversary of our first date (04 AUG 2013). Yep, we celebrate that and also 31 JAN 2016 when we "eloped" in Vegas. Nothing too big. I got her flowers and wrote something sweet in a card. We watched Bobby Fischer Against the World tonight. It's about the rise and fall of Bobby Fischer of course. His match with Spassky and rematch in Yugoslavia in 1992 and his decline into paranoia and pretty much insanity.
+Graham sent me a copy of his Flux software that he's been working on for some months (I think) and has been heavily into since we retired a month ago. It's super cool and fun to play with. It's kind of a generative music tool with lots of controls. I think the customer he imagines is a DJ or live music creator at a rave or something. Very punchy, four-on-the-floor techno dance music. I hooked it up to Superior Drummer and have been trying to get decent beats out of it. Some of the percussion stuff seems pretty monotonous (e.g., four on the floor plus 1/16th note hi-hat, pretty much always). I was telling him, though, that it feels like I imagine non-devs writing software. I can't play an instrument, but I feel like I'm "making" my own music, kind of. Tomorrow's our anniversary of our first date (04 AUG 2013). Yep, we celebrate that and also 31 JAN 2016 when we "eloped" in Vegas. Nothing too big. I got her flowers and wrote something sweet in a card. We watched Bobby Fischer Against the World tonight. It's about the rise and fall of Bobby Fischer, of course. His match with Spassky and rematch in Yugoslavia in 1992 and his decline into paranoia and pretty much insanity.
 
 ## 04 AUG 2026 Tue - Anniversary
 
-We got going pretty early (for us) and drove down to the Tri-Cities for the day. It's just a couple of hours' drive. We went to the Manhattan Project museum, which really didn't have much. There were a bunch of posters talking about the project and there was going to be an hour-long lecture about it. There was a Geiger counter and a bunch of little radioactive things like Fiestaware, uranium glassware, a radium watch, etc. The Fiestaware was by far the most radioactive, causing the counter to max out above 500 CPM. I have no idea what that equates to in millisieverts or whatever. We then went and got some food and coffee. And we went to a bookstore that turned out to be an LDS store! Drove back home and Tracey was sick for some reason. We thought maybe food poisoning but she never threw up or anything and it was fine by morning. Maybe it was the salt in the pumpkin seeds we munched on during the trip.
+We got going pretty early (for us) and drove down to the Tri-Cities for the day. It's just a couple of hours' drive. We went to the Manhattan Project museum, which really didn't have much. There were a bunch of posters talking about the project and there was going to be an hour-long lecture about it. There was a Geiger counter and a bunch of little radioactive things like Fiestaware, uranium glassware, a radium watch, etc. The Fiestaware was by far the most radioactive, causing the counter to max out above 500 CPM. I have no idea what that equates to in millisieverts or whatever. We then went and got some food and coffee. And we went to a bookstore that turned out to be an LDS store! Drove back home and Tracey was sick for some reason. We thought maybe food poisoning, but she never threw up or anything and it was fine by morning. Maybe it was the salt in the pumpkin seeds we munched on during the trip.
 
 ## 05 AUG 2026 Wed - Lazy
 
@@ -26,7 +26,7 @@ We just sat around and played chess and watched TV. More chess stuff: The Queen 
 
 I went to lunch with Calvin. He immediately played a LoTR song on his ocarina. Pretty cool! I recorded him. He's also exercising. And he has a new "policy" of not complaining about anything that he can't actually change. He just keeps improving himself incrementally, day by day. Pretty awesome to see.
 
-I'm starting to get used to doing doubles with my feet using "heel-toe" technique. It's weird that it starts to "just work" after a while. When it doesn't work, it's a shock, as if you lost your mind-body control momentarily. I also had the AI come up with all the possible eighth-note kick grooves against a snare on 2 and 4. That is, simply treat it as bits in an 8-bit number. Then group them by with/without unisons between kick and snare, then by 4-note vs. 8-note grooves, and by doubles vs. no doubles and finally sorted by number of kick notes. The result is pretty interesting to explore.
+I'm starting to get used to doing doubles with my feet using the "heel-toe" technique. It's weird that it starts to "just work" after a while. When it doesn't work, it's a shock, as if you lost your mind-body control momentarily. I also had the AI come up with all the possible eighth-note kick grooves against a snare on 2 and 4. That is, simply treat it as bits in an 8-bit number. Then group them by with/without unisons between kick and snare, then by 4-note vs. 8-note grooves, then by doubles vs. no doubles, and finally sort them by number of kick notes. The result is pretty interesting to explore.
 
 ## 07 AUG 2026 Fri - Piano!
 
@@ -48,7 +48,7 @@ When I got home, Tracey had written a song on the piano! Her "Sahara" idea she h
 
 ## 10 AUG 2026 Mon - Dump
 
-I made a run to the dump. It's not too hard to gather up our trash and run it out there. I always get funny looks showing up in the Cybertruck. We have our waste management account on a permanent "vacation hold." We got sick of not being able to put it on short holds for vacations and just told them to put it on an indefinite hold. We'll call you when we want to reinstate it. That was years ago! The dump is easy and only $20 every couple of months. There's some law that you *must* have trash service within the city limits. So we do. We just never use it and they charge us nothing. The rest of the day I spent drumming, reading, cubing, ... Oh, I started listening to JP Bouvet's "On Drumming" book. Quite good actually. Oh, I also started the rock climbing master class by Alex Honnold and his climbing partner.
+I made a run to the dump. It's not too hard to gather up our trash and run it out there. I always get funny looks showing up in the Cybertruck. We have our waste management account on a permanent "vacation hold." We got sick of not being able to put it on short holds for vacations and just told them to put it on an indefinite hold. We'll call you when we want to reinstate it. That was years ago! The dump is easy and only $20 every couple of months. There's some law that you *must* have trash service within the city limits. So we do. We just never use it and they charge us nothing. The rest of the day I spent drumming, reading, cubing, ... Oh, I started listening to JP Bouvet's "On Drumming" book. Quite good actually. Oh, I also started the rock climbing MasterClass by Alex Honnold and his climbing partner.
 
 ## 11 AUG 2026 Tue - Calvin
 
@@ -84,15 +84,15 @@ Great to see Tracey again! We're so silly. We can't even be apart for a few days
 
 ## 18 AUG 2026 Tue - Drum Samples
 
-I've been generating a library of drum samples. Currently I have the Ludwig Black Beauty and the Slingerland Radio King 50s. These are integrated into the wiki rendering for drum rudiments. Sounds great. I can see now how I can relatively easily (with AI doing the heavy lifting), split a recording of hits at various velocities. One recording, split, anomalies discarded, organized by velocity, some as round-robin samples for diversity at the same velocity, with gain values to then support 1-127 MIDI velocity values. I also recorded hundreds of hits on the Evans practice pad and added that to the library (I'll rerecord in the studio later). Pretty cool!
+I've been generating a library of drum samples. Currently I have the Ludwig Black Beauty and the Slingerland Radio King 50s. These are integrated into the wiki rendering for drum rudiments. Sounds great. I can see now how I can relatively easily (with AI doing the heavy lifting) split a recording of hits at various velocities. One recording, split, anomalies discarded, organized by velocity, some as round-robin samples for diversity at the same velocity, with gain values to then support 1-127 MIDI velocity values. I also recorded hundreds of hits on the Evans practice pad and added that to the library (I'll rerecord in the studio later). Pretty cool!
 
 ## 19 AUG 2026 Wed - Port Townsend
 
-Tracey and I went and had a day in Port Townsend. We kind of retraced our first date; starting at the pier where she almost jumped! Then coffee, a walk on North Beach, ... It was a very nice day.
+Tracey and I went and had a day in Port Townsend. We kind of retraced our first date, starting at the pier where she almost jumped! Then coffee, a walk on North Beach, ... It was a very nice day.
 
 ## 20 AUG 2026 Thu - Kaitlyn
 
-We drove to Bothell today. Tracey took the ferry and I drove around through Olympia. She ended up beating me by just 15 minutes. Mainly because she had to wait for the next boat after driving past the boarding pass thing, thinking that her return ticket was good enough. We had dinner with Kaitlyn and talked a lot about her schooling and internship and her developing "philosophy" around therapy. It was nice.
+We drove to Bothell today. Tracey took the ferry and I drove around through Olympia. She ended up beating me by just 15 minutes, mainly because she had to wait for the next boat after driving past the boarding pass thing, thinking that her return ticket was good enough. We had dinner with Kaitlyn and talked a lot about her schooling and internship and her developing "philosophy" around therapy. It was nice.
 
 ## 21 AUG 2026 Fri - Home
 
@@ -124,7 +124,7 @@ Tracey and I had a little date at Emma Roux's. The David Larson jazz band was th
 
 ## 28 AUG 2026 Fri - Microphone
 
-Nothing super exciting today. About the most exciting is that I went into town and picked up an SM57 mic and boom stand. I'm going to use it to record all kinds of things. I started with recording pad hits and replacing the samples I have at the site that were sampled with the MacBook mic. Doing it with a proper mic and in the studio room sounds much better. Sometime I'll have to rent a snare or something and make my own samples of that to replace the Superior Drummer stuff.
+Nothing super exciting today. The most exciting thing is that I went into town and picked up an SM57 mic and boom stand. I'm going to use it to record all kinds of things. I started by recording pad hits and replacing the samples I have at the site that were sampled with the MacBook mic. Doing it with a proper mic and in the studio room sounds much better. Sometime I'll have to rent a snare or something and make my own samples of that to replace the Superior Drummer stuff.
 
 ## 29 AUG 2026 Sat - Football Game
 

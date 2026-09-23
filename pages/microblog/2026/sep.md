@@ -6,7 +6,7 @@ I'm really digging JP's drumming course. I'm on to the "Triplet Vocabulary" cour
 
 ## 02 SEP 2026 Wed - Calvin
 
-I went to lunch with Calvin this afternoon. We had a bunch of fun conversations with hypothetical situations. Like, "Do you think a Minority Report kind of thing, with precogs and arrests for crimes not committed yet, is a good thing?" I think it depends on first believing in determinism and then it's okay. And the arrests are less about punishment, because you were destined to do it, and more about simply preventing the crime. Another question was around eugenics. Anyway, he was coming up with the questions and it was fun.
+I went to lunch with Calvin this afternoon. We had a bunch of fun conversations about hypothetical situations. Like, "Do you think a Minority Report kind of thing, with precogs and arrests for crimes not committed yet, is a good thing?" I think it depends on first believing in determinism and then it's okay. And the arrests are less about punishment, because you were destined to do it, and more about simply preventing the crime. Another question was about eugenics. Anyway, he was coming up with the questions and it was fun.
 
 Once I got home, I drummed for a couple of hours. Did the Drumeo method and practiced some things from the JP Bouvet class I'm on. I'm really liking the JP stuff. I think it's much more "coherent" than Drumeo and structured much more like a weekly (online) drum instructor, with a lesson introducing a lot, but then a week's worth of "homework" to do on your own. And I like the idea of assigned mentors and progress videos.
 
@@ -48,7 +48,7 @@ We went to lunch with Amy, to a new place downtown, and gave her (very late) bir
 
 I really think that the future of software is this kind of bespoke, vibe-coded thing. I used to get derailed from my hobbies by programming them. I'm learning CMLLs for solving cubes with Roux, so I make [briefcubing.com](http://briefcubing.com). I'm learning Morse code for POTA over ham radio, so I make [didahdit.com](http://didahdit.com). Now I'm learning to be comfortable with triplet drumming and so I make tools for myself. This time though, instead of spending weeks on the project, I start out making something useful in about 5 minutes! Then, as I use it, I keep thinking of new features and things and incrementally improve it, 5 minutes at a time. I probably have a couple of hours into it at this point. But I will literally be sitting at the kit and will think of something, speak it to the AI, and go back to drumming. Then refresh the page and voilà! It's much more like having an AI drum tutor that can make content and "games" to help me learn. In fact, it could be framed that way as a product: an initial site that is geared toward drums, knows the notation and such, knows about MIDI integration, ... and it acts like a tutor that can simply offer things to study and exercises. But it's making them up on the fly to fit your needs perfectly. And if there's anything you don't like about it, just say the word and it can be changed. This is the future of software. Not my little drumming thing, but this agent-mediated interface to malleable bespoke software.
 
-Another example might be the temperature-controlled shower we have now. We can say, "Alexa, turn on the shower," and, "Alexa, set the shower to 100 degrees (Fahrenheit)." But if it's approached as more of a "smart shower" that you can talk to... My wife likes to adjust the temperature down at the end. She might assume that she can say, "Alexa, turn the shower down 10 degrees slowly over the course of a minute," and then later, "Alexa, cool down the shower the way I like." She has no idea that the API is "shower on", "shower off", "set temperature X." She has no idea that what she's asking for is a little program. It just feels like a "smart shower" that can do anything you ask. People will "vibe code" without even knowing it has anything to do with code. Every app will have an agent mediating the UI surface for you. Even simple things like, "Print this, but don't include the title page." "Double-sided in color?" "Yeah, sure." Much easier than searching the menus and print dialog box. The agent will span many apps. You'll state your objective (e.g., book a flight, find a hotel, ...) and the agent will use whatever tools it needs. People already rarely use Google. I think half the apps will disappear and should really be just API surfaces for the AI.
+Another example might be the temperature-controlled shower we have now. We can say, "Alexa, turn on the shower," and, "Alexa, set the shower to 100 degrees (Fahrenheit)." But if it's approached as more of a "smart shower" that you can talk to... My wife likes to adjust the temperature down at the end. She might assume that she can say, "Alexa, turn the shower down 10 degrees slowly over the course of a minute," and then later, "Alexa, cool down the shower the way I like." She has no idea that the API is "shower on," "shower off," "set temperature X." She has no idea that what she's asking for is a little program. It just feels like a "smart shower" that can do anything you ask. People will "vibe code" without even knowing it has anything to do with code. Every app will have an agent mediating the UI surface for you. Even simple things like, "Print this, but don't include the title page." "Double-sided in color?" "Yeah, sure." Much easier than searching the menus and print dialog box. The agent will span many apps. You'll state your objective (e.g., book a flight, find a hotel, ...) and the agent will use whatever tools it needs. People already rarely use Google. I think half the apps will disappear and should really be just API surfaces for the AI.
 
 ## 11 SEP 2026 Fri - Chelsea
 
@@ -62,11 +62,11 @@ Oh yeah, we got an iPad Air for the piano.
 
 ## 12 SEP 2026 Sat - Soccer
 
-We went into town to watch Aurora's soccer game. She almost scored a couple of times. Then we went to Zulee for yummy Greek food. And home to drum, piano, etc. Then watched the movie United 93, about the plane that was destined for the White House on 9/11 (we should have watched it yesterday). Mark Bingham is played by Cheyane Jackson. We went to school with him. He was Chris' brother; the guy I went to Europe with. Anyway, pretty good movie. That day was pretty incredible.
+We went into town to watch Aurora's soccer game. She almost scored a couple of times. Then we went to Zulee for yummy Greek food. And home to drum, piano, etc. Then watched the movie United 93, about the plane that was destined for the White House on 9/11 (we should have watched it yesterday). Mark Bingham is played by Cheyenne Jackson. We went to school with him. He was Chris' brother; the guy I went to Europe with. Anyway, pretty good movie. That day was pretty incredible.
 
 ## 13 SEP 2026 Sun - Apples
 
-I spent the day drumming (learning tripplet patterns on the kick), and I went to the store for some things Tracey needed and helped peel and core apples. Tracey made a bunch of apple sause. Yum! Oh yeah, I also made a little two minute YouTube video on adding a virtual tambourine to the hi-hat on the Roland module.
+I spent the day drumming (learning triplet patterns on the kick), and I went to the store for some things Tracey needed and helped peel and core apples. Tracey made a bunch of applesauce. Yum! Oh yeah, I also made a little two-minute YouTube video on adding a virtual tambourine to the hi-hat on the Roland module.
 
 ## 14 SEP 2026 Mon - Dump
 
@@ -78,26 +78,32 @@ We spent the day driving to Portland! Free solar, free charging. Stopped at some
 
 ## 16 SEP 2026 Wed - Portland Day 2
 
-We went to Powel's and Coava and walked around the shops downtown. I like how weird people are here. It's like you're wierd if you're normal here. Silly things like a toy horse hitched to the curb. Everyone has a unique style.
+We went to Powell's and Coava and walked around the shops downtown. I like how weird people are here. It's like you're weird if you're normal here. Silly things like a toy horse hitched to the curb. Everyone has a unique style.
 
 ## 17 SEP 2026 Thu - Astoria Day 1 (Shipwreck)
 
-We had one last coffee in Portland at a place called Never Coffee. It was recommended by a youtuber who was in turn recommended by Matt Lind. Very unique drinks (e.g. tumeric, ginger, orange blossom water, cherry wood smoked honey, sea salt and tellicherry pepper latte!). Then we drove to Astoria and met Jaws and Teagan for lunch and visited the bunkers and the Peter Iredale ship wreck at the beach.
+We had one last coffee in Portland at a place called Never Coffee. It was recommended by a YouTuber who was in turn recommended by Matt Lind. Very unique drinks (e.g., turmeric, ginger, orange blossom water, cherry wood smoked honey, sea salt and Tellicherry pepper latte!). Then we drove to Astoria and met Jaws and Teagan for lunch and visited the bunkers and the Peter Iredale shipwreck at the beach.
 
 ## 18 SEP 2026 Fri - Astoria Day 2 (Elk)
 
-We met up with Jaws and Teagan again for tacos at a food truck. Pretty yummy. Then we went on a wild drive to a wildlife area with tons of Elk. The drive was on this hairpin turn road. They swapped cars so they could drive crazy. I put the truck in Mad Max mode and it kept up no problem! There were lots of Elk and I got some good photos, including of them mating.
+We met up with Jaws and Teagan again for tacos at a food truck. Pretty yummy. Then we went on a wild drive to a wildlife area with tons of elk. The drive was on this hairpin-turn road. They swapped cars so they could drive crazy. I put the truck in Mad Max mode and it kept up no problem! There were lots of elk and I got some good photos, including of them mating.
 
 ## 19 SEP 2026 Sat - Astoria Day 3 (No Jaws)
 
-We basically spent the whole day trying to make a plan with Jaws. We got hungry enough to go eat breakfast without them. The Greek place on the peer was closed and the coffee shop still had their kitchen closed, so we left. We went to a little cafe and that was the one place the whole time in Astoria that had excellent food. Jaws just didn't reply for hours, then had some excuse about the shower being worked on, then said it was fixed and she'd get ready and come. But hours went by and nothing. We went back to the hotel to hang out. Finally at 20:00, she said she could come. It was late and dark out by then. I went and charged the truck and we went to bed... bummer.
+We basically spent the whole day trying to make a plan with Jaws. We got hungry enough to go eat breakfast without them. The Greek place on the pier was closed and the coffee shop still had its kitchen closed, so we left. We went to a little cafe and that was the one place the whole time in Astoria that had excellent food. Jaws just didn't reply for hours, then had some excuse about the shower being worked on, then said it was fixed and she'd get ready and come. But hours went by and nothing. We went back to the hotel to hang out. Finally at 20:00, she said she could come. It was late and dark out by then. I went and charged the truck and we went to bed... bummer.
 
 ## 20 SEP 2026 Sun - Kirkland (dinner w/kids)
 
-We drove across the super-tall bridge across to Washington and headed up to Seattle area. We got there at 17:00 and had dinner with the kids an hour later at Cheesecake Factory. It was a fun time. Madi has some fallout with her mom and I worry about their current arrangment now. Nathan starts a new quarter at school! He's taking sociology and psych and some "curreny morality" class. Kaitlyn has her first councelling client and has had several sessons now! Kyle seems to be doing good and mentioned that he's *finally* making use of AI at work. We had a bunch of wide-ranging conversations. Fun, fun.
+We had breakfast at the place Jaws recommended (Arnie's). While waiting for a table, we were standing by this old man who scooted over for Tracey to sit. She talked to him a bit. Super nice guy. He saw me solving a cube and said, "That'd take me 100 years!" Funny enough, while eating later, the restaurant led the whole place in singing happy birthday to him. It was his 100th birthday! Amazing. He was so sharp. I wished him happy birthday on the way out too. His voice and mannerisms reminded Tracey of Bob and she was afraid she'd start crying.
+
+We then drove across the super-tall bridge across to Washington and headed up to the Seattle area. We got there at 17:00 and had dinner with the kids an hour later at Cheesecake Factory. It was a fun time. Madi has had some fallout with her mom and I worry about their current arrangement now. Nathan starts a new quarter at school! He's taking sociology and psych and some "current morality" class. Kaitlyn has her first counseling client and has had several sessions now! Kyle seems to be doing well and mentioned that he's *finally* making use of AI at work. We had a bunch of wide-ranging conversations. Fun, fun.
 
 ## 21 SEP 2026 Mon - Home
 
 We got one last coffee at the Urban Coffee place in Kirkland, then hit the road. One stop in Moses Lake and home by a little after 16:00. Ahh... home is nice.
 
-## 22 SEP 2026 Tue - 
+## 22 SEP 2026 Tue - Goonies
+
+I worked on a Roux solver for part of the day and Tracey worked on future (dream) house plans. The solver is a web-based incarnation of some old F# code that I'd written years ago. I love how AI can bring old projects to life again. It even decided to use Fable to generate JavaScript for the site. Pretty damn smart AI. I spent a bit over an hour drumming, doing the kick patterns and the Drumeo method.
+
+Then we watched Goonies. I haven't seen it since the '80s. Tracey has it on DVD. Old school. Funny to recognize a bunch of the locations from Astoria. Cheesy movie, but fun.

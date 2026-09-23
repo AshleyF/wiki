@@ -1,8 +1,12 @@
 # Movies
 
+## Goonies (22 SEP 2026)
+
+We just got back from Astoria, where the movie takes place. It's funny to recognize lots of the locations. The movie is super cheesy, like most 1980s movies. Everything is outrageous and impossible. But you can maintain suspension of disbelief long enough to enjoy it. Good, wholesome movie.
+
 ## United 93 (12 SEP 2026)
 
-I had seen this before, but Tracey hadn't. It's pretty good and quite accurate. Chilling how everyone (except the hijackers) went about their day like normal. We've boarded planes like this so many times. That day was astonishing. I remember seeing it on CNN after the first tower was hit, then watched the second, and then watched them collapse. This was all before I went to work for the day. There, everyone was freaking out because the MSN site was down from all the traffic. We did some emergency things to push out a static homepage that would be less load on the servers. And later we changed things to have a "big red switch" in case of something like this in the future. I felt weird being surrounded by people whose main concern was some website. On a day like this. One of the guys on my team had a sister working in the Pentagon and he didn't hear from her for days. Assumed she was dead, but it turned out that she was disallowed from contacting anyone. Weird. Anyway, the movie is quite good. Tracey enjoyed it. The Mark Bingham character is played by Cheyane Jackson, who we went to school with. He's Chris' brother; the guy I went to Europe with.
+I had seen this before, but Tracey hadn't. It's pretty good and quite accurate. Chilling how everyone (except the hijackers) went about their day like normal. We've boarded planes like this so many times. That day was astonishing. I remember seeing it on CNN after the first tower was hit, then watching the second, and then watching them collapse. This was all before I went to work for the day. There, everyone was freaking out because the MSN site was down from all the traffic. We did some emergency things to push out a static homepage that would put less load on the servers. And later we changed things to have a "big red switch" in case of something like this in the future. I felt weird being surrounded by people whose main concern was some website. On a day like this. One of the guys on my team had a sister working in the Pentagon and he didn't hear from her for days. Assumed she was dead, but it turned out that she was disallowed from contacting anyone. Weird. Anyway, the movie is quite good. Tracey enjoyed it. The Mark Bingham character is played by Cheyenne Jackson, who we went to school with. He's Chris' brother; the guy I went to Europe with.
 
 ## War of the Worlds (07 SEP 2026)
 
@@ -18,7 +22,7 @@ A La Femme Nikita kind of thing with our favorite redheaded actress. Lots of act
 
 ## The Queen of Chess - Judit Polgar (05 AUG 2026)
 
-This was an hour and a half documentary on Judit Polgar, who was an up-and-coming female player in the eighties and nineties. She even beat Kasparov once. She was ranked twenty-something in the world, but by far the highest-ranked woman and broke barriers for women players. Just social ones. Obviously there's no reason that women couldn't play as well as men, except that it's a smaller talent pool simply because there are fewer women interested in it. That part is partially social, but also it seems universal that women are as into these weird things that guys get into; cubing, chess, etc. It was a pretty good show, with a nice buildup to her finally beating Kasparov. There was apparently an earlier game in which it would have been a draw, but Kasparov moved a piece and then changed his mind. I mean he let go of a knight after moving and then regripped and moved it somewhere else. It would have been legal if he hadn't let go. Nobody noticed, except Polgar and the camera caught it. But she let it slide at the time and signed the game sheet at the end, making it irreversible. A big scandal back then. But later she beat him with exceptionally brilliant play.
+This was an hour-and-a-half documentary on Judit Polgar, who was an up-and-coming female player in the eighties and nineties. She even beat Kasparov once. She was ranked twenty-something in the world, but by far the highest-ranked woman and broke barriers for women players. Just social ones. Obviously there's no reason that women couldn't play as well as men, except that it's a smaller talent pool simply because there are fewer women interested in it. That part is partially social, but it also seems universal that fewer women are into these weird things that guys get into: cubing, chess, etc. It was a pretty good show, with a nice buildup to her finally beating Kasparov. There was apparently an earlier game in which it would have been a draw, but Kasparov moved a piece and then changed his mind. I mean, he let go of a knight after moving and then regripped and moved it somewhere else. It would have been legal if he hadn't let go. Nobody noticed, except Polgar and the camera caught it. But she let it slide at the time and signed the game sheet at the end, making it irreversible. A big scandal back then. But later she beat him with exceptionally brilliant play.
 
 ## Bobby Fischer Against the World (03 AUG 2026)
 
@@ -26,7 +30,7 @@ About the rise and fall of Bobby Fischer of course. His match with Spassky and r
 
 ## Fool's Gold (30 JUL 2026)
 
-Goofy rom-com. That is all. (Nah, it was fun to watch)
+Goofy rom-com. That is all. (Nah, it was fun to watch.)
 
 ## The Odyssey (28 JUL 2026, IMAX, River Park Square)
 
