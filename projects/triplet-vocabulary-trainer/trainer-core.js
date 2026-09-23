@@ -121,6 +121,12 @@ export function calibrationOffsetSeconds(offsets, maximum = .5) {
   return values.length%2 ? values[middle] : (values[middle-1]+values[middle])/2;
 }
 
+export function calibratedVisualTime(eventTime, calibrationOffset = 0, maximum = .5) {
+  const time = Number(eventTime) || 0;
+  const offset = Math.max(0,Math.min(maximum,Number(calibrationOffset) || 0));
+  return time+offset;
+}
+
 export function consistentCalibrationOffset(offsets, tolerance = .06, minimumCount = 3) {
   const values = offsets.map(Number).filter(Number.isFinite);
   if (values.length < minimumCount) return null;

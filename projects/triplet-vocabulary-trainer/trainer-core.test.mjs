@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   EXTENDED_PATTERNS,
   calibrationOffsetSeconds,
+  calibratedVisualTime,
   consistentCalibrationOffset,
   commitPracticeMisses,
   createPracticeScore,
@@ -152,6 +153,12 @@ test('latency calibration uses a robust median and stays within its safe range',
   assert.ok(Math.abs(calibrationOffsetSeconds([.1,.2])-.15) < 1e-12);
   assert.equal(calibrationOffsetSeconds([-.05]),0);
   assert.equal(calibrationOffsetSeconds([]),0);
+});
+
+test('calibrated visuals follow the saved audible-latency offset', () => {
+  assert.equal(calibratedVisualTime(4,.25),4.25);
+  assert.equal(calibratedVisualTime(4,-.1),4);
+  assert.equal(calibratedVisualTime(4,.8),4.5);
 });
 
 test('implicit calibration requires three consistently offset recovery hits', () => {

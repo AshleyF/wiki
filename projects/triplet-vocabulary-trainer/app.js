@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260921-card-queue';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260923-calibrated-visuals';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -102,8 +102,8 @@ function saveLatencyCompensation(value) {
 function updateCalibrationLabel() {
   const milliseconds = Math.round(latencyCompensation*1000);
   $('#calibrate').title = milliseconds
-    ? `Calibrate audio and input latency (currently ${milliseconds} ms)`
-    : 'Calibrate audio and input latency';
+    ? `Calibrate audio, visuals, and input latency (currently ${milliseconds} ms)`
+    : 'Calibrate audio, visuals, and input latency';
 }
 
 function melodyLabel(index) { return `${index + 1} · ${MELODIES[index].slice(0,3).join('')}-${MELODIES[index].slice(3).join('')}`; }
@@ -804,11 +804,14 @@ function queueNotationRender() {
   },0);
   visualTimers.add(timer);
 }
-function queueCardRender(slot) {
+function queueCardRender(slot, time = null) {
+  const delay = time === null || !audioContext
+    ? 0
+    : Math.max(0,(calibratedVisualTime(time,latencyCompensation)-audioContext.currentTime)*1000);
   const timer = setTimeout(() => {
     visualTimers.delete(timer);
     renderCard(slot);
-  },0);
+  },delay);
   visualTimers.add(timer);
 }
 function enterRecovery(currentSlot = activeSlot) {
@@ -1019,7 +1022,8 @@ function scheduleSnare(time, velocity) {
   }
 }
 function showStep(slot, step, time) {
-  const delay = Math.max(0, (time-audioContext.currentTime)*1000);
+  const visualTime = calibratedVisualTime(time,latencyCompensation);
+  const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
   const timer = setTimeout(() => {
     visualTimers.delete(timer);
     cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
@@ -1044,7 +1048,7 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
       if (!recoveryCards.some(Boolean)) leaveRecovery();
     } else if (!recoveryCards[previousSlot]) {
       recoveryCards[previousSlot] = true;
-      queueCardRender(previousSlot);
+      queueCardRender(previousSlot,nextEventTime);
     }
     return;
   }
@@ -1056,7 +1060,8 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
       : trainerMode === 'extended'
         ? randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis())
         : String(randomMelody());
-    const delay = Math.max(0, (nextEventTime-audioContext.currentTime)*1000);
+    const visualTime = calibratedVisualTime(nextEventTime,latencyCompensation);
+    const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);
       if (trainerMode === 'triplets') tripletCards[previousSlot] = nextPattern;
