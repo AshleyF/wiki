@@ -1,6 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-notation';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-countdown';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
@@ -525,9 +525,11 @@ function renderKickCard(slot,target,width) {
     stave.setEndBarType(VF.Barline.type.REPEAT_END);
   }
   stave.setContext(context).draw();
-  const repeatLabel = repeatCount() > 2 ? document.createElementNS('http://www.w3.org/2000/svg','text') : null;
+  const repeatLabel = repeatCount() > 1 ? document.createElementNS('http://www.w3.org/2000/svg','text') : null;
   if (repeatLabel) {
     repeatLabel.classList.add('trainer-repeat-count');
+    if (repeatCount() === 2) repeatLabel.classList.add('trainer-repeat-count-implicit');
+    repeatLabel.dataset.repeatTotal = String(repeatCount());
     repeatLabel.setAttribute('x',String(width-12));
     repeatLabel.setAttribute('y',String(24));
     repeatLabel.setAttribute('text-anchor','end');
@@ -682,7 +684,8 @@ function renderKickCard(slot,target,width) {
     }
   });
   cards[slot].stepElements = stepElements;
-  cards[slot].repeatElements = [...target.querySelectorAll('.vf-stavebarline')].slice(-1).concat(repeatLabel ? [repeatLabel] : []);
+  cards[slot].repeatBarlineElements = [...target.querySelectorAll('.vf-stavebarline')].slice(-1);
+  cards[slot].repeatLabel = repeatLabel;
 }
 function renderCard(slot) {
   const VF = vexflow();
@@ -734,7 +737,8 @@ function renderCard(slot) {
     }
   });
   cards[slot].stepElements = stepElements;
-  cards[slot].repeatElements = rendered.repeatElements;
+  cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
+  cards[slot].repeatLabel = rendered.repeatLabel;
 }
 function renderAll() {
   cards.forEach((card,slot) => {
@@ -742,7 +746,8 @@ function renderAll() {
     else {
       card.querySelector('.notation').replaceChildren();
       card.stepElements = [];
-      card.repeatElements = [];
+      card.repeatBarlineElements = [];
+      card.repeatLabel = null;
     }
   });
   updatePositions(activeSlot);
@@ -1094,28 +1099,48 @@ function scheduleSnare(time, velocity) {
 function clearNotationHighlights() {
   cards.forEach(card => {
     card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note'));
-    card.repeatElements?.forEach(element => element?.classList.remove('drum-current-note'));
+    card.repeatBarlineElements?.forEach(element => element?.classList.remove('drum-current-note'));
+    card.repeatLabel?.classList.remove('drum-current-note','is-active');
+    if (card.repeatLabel) card.repeatLabel.textContent = `×${card.repeatLabel.dataset.repeatTotal}`;
   });
 }
-function showRepeatCue(slot,time) {
+function clearTransientNotationHighlights() {
+  cards.forEach(card => {
+    card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note'));
+    card.repeatBarlineElements?.forEach(element => element?.classList.remove('drum-current-note'));
+  });
+}
+function resetRepeatIndicators() {
+  cards.forEach(card => {
+    card.repeatLabel?.classList.remove('drum-current-note','is-active');
+    if (card.repeatLabel) card.repeatLabel.textContent = `×${card.repeatLabel.dataset.repeatTotal}`;
+  });
+}
+function showRepeatCue(slot,time,remaining) {
   const visualTime = calibratedVisualTime(time,latencyCompensation);
   const delay = Math.max(0,(visualTime-audioContext.currentTime)*1000);
   const timer = setTimeout(() => {
     visualTimers.delete(timer);
-    clearNotationHighlights();
+    clearTransientNotationHighlights();
     updatePositions(slot);
     if ($('#follow-highlighting').checked) {
-      cards[slot].repeatElements?.forEach(element => element.classList.add('drum-current-note'));
+      cards[slot].repeatBarlineElements?.forEach(element => element.classList.add('drum-current-note'));
+      const label = cards[slot].repeatLabel;
+      if (label) {
+        label.textContent = `×${remaining}`;
+        label.classList.add('drum-current-note','is-active');
+      }
     }
   },delay);
   visualTimers.add(timer);
 }
-function showStep(slot, step, time) {
+function showStep(slot, step, time, repetition) {
   const visualTime = calibratedVisualTime(time,latencyCompensation);
   const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
   const timer = setTimeout(() => {
     visualTimers.delete(timer);
-    clearNotationHighlights();
+    clearTransientNotationHighlights();
+    if (step === 0 && repetition === 0) resetRepeatIndicators();
     updatePositions(slot);
     if ($('#follow-highlighting').checked) {
       cards[slot].stepElements?.[step]?.forEach(element => element.classList.add('drum-current-note'));
@@ -1242,9 +1267,9 @@ function scheduleEvent() {
   }
   const duration = eventDuration(eventNumber);
   if (step === cardSteps-1 && position.repetition < repeatCount()-1) {
-    showRepeatCue(slot,nextEventTime+duration-Math.min(.1,duration*.3));
+    showRepeatCue(slot,nextEventTime+duration-Math.min(.1,duration*.3),repeatCount()-position.repetition-1);
   }
-  showStep(slot, step, nextEventTime);
+  showStep(slot, step, nextEventTime, position.repetition);
   nextEventTime += duration; eventNumber += 1;
   return true;
 }

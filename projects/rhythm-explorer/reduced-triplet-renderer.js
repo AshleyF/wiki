@@ -70,9 +70,11 @@ function appendAnnotation(svg, text, x, y) {
 }
 
 function appendRepeatCount(svg, count, x, y) {
-  if (count < 3) return null;
+  if (count < 2) return null;
   const label = document.createElementNS(SVG_NAMESPACE,'text');
   label.classList.add('trainer-repeat-count');
+  if (count === 2) label.classList.add('trainer-repeat-count-implicit');
+  label.dataset.repeatTotal = String(count);
   label.setAttribute('x',String(x));
   label.setAttribute('y',String(y));
   label.setAttribute('text-anchor','end');
@@ -167,6 +169,7 @@ export function renderReducedTripletSequence({
     stave,
     cells,
     notes:cells.flatMap((cell) => cell.notes),
-    repeatElements:[...target.querySelectorAll('.vf-stavebarline')].slice(-1).concat(repeatLabel ? [repeatLabel] : [])
+    repeatBarlineElements:[...target.querySelectorAll('.vf-stavebarline')].slice(-1),
+    repeatLabel
   };
 }
