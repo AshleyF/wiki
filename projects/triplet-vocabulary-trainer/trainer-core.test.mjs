@@ -24,6 +24,7 @@ import {
   rolesForKickVocabulary12,
   rolesForKickVocabulary2,
   rolesForTripletMasks,
+  trainerEventPosition,
   trainerPlaybackPlan,
   tripletMasksForRoles,
   updateAuditionQueue,
@@ -80,6 +81,21 @@ test('recovery uses quarter-note pulses and mode-sized re-entry targets', () => 
   assert.equal(recoveryHitTarget(6),2);
   assert.equal(recoveryHitTarget(9),3);
   assert.equal(recoveryHitTarget(12),4);
+});
+
+test('repeat mode traverses each card twice before advancing', () => {
+  assert.deepEqual(trainerEventPosition(0,6,3,true),{
+    step:0,slot:0,repetition:0,cardBoundary:false,eventsPerCard:12
+  });
+  assert.deepEqual(trainerEventPosition(6,6,3,true),{
+    step:0,slot:0,repetition:1,cardBoundary:false,eventsPerCard:12
+  });
+  assert.deepEqual(trainerEventPosition(12,6,3,true),{
+    step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:12
+  });
+  assert.deepEqual(trainerEventPosition(6,6,3,false),{
+    step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:6
+  });
 });
 
 test('rests do not become missed practice targets', () => {

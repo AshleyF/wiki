@@ -92,6 +92,21 @@ export function recoveryHitTarget(stepCount) {
   return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
 
+export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatPattern = false) {
+  const event = Math.max(0,Math.floor(Number(eventNumber) || 0));
+  const steps = Math.max(1,Math.floor(Number(cardSteps) || 1));
+  const cards = Math.max(1,Math.floor(Number(cardCount) || 1));
+  const repetitions = repeatPattern ? 2 : 1;
+  const eventsPerCard = steps*repetitions;
+  return {
+    step:event%steps,
+    slot:Math.floor(event/eventsPerCard)%cards,
+    repetition:Math.floor((event%eventsPerCard)/steps),
+    cardBoundary:event > 0 && event%eventsPerCard === 0,
+    eventsPerCard
+  };
+}
+
 export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null) {
   if (!enabledMasks.length) throw new Error('At least one triplet must be enabled.');
   return Array.from({ length:count },() => randomChoiceWithEmphasis(enabledMasks,emphasized,random));

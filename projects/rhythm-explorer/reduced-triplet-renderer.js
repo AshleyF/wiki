@@ -84,12 +84,16 @@ export function renderReducedTripletSequence({
   gridLeft,
   gridRight,
   cellGap = 0,
-  annotationForStep = null
+  annotationForStep = null,
+  repeatEnd = false
 }) {
   const renderer = new Flow.Renderer(target,Flow.Renderer.Backends.SVG);
   renderer.resize(width,height);
   const context = renderer.getContext();
   const stave = new Flow.Stave(4,staveY,width-8,singleLineDrumStaveOptions());
+  if (repeatEnd && Flow.Barline?.type?.REPEAT_END && typeof stave.setEndBarType === 'function') {
+    stave.setEndBarType(Flow.Barline.type.REPEAT_END);
+  }
   stave.setContext(context).draw();
 
   const geometry = reducedTripletGridGeometry(gridLeft,gridRight,masks.length,cellGap);
