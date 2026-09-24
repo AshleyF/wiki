@@ -83,17 +83,17 @@ test('recovery uses quarter-note pulses and mode-sized re-entry targets', () => 
   assert.equal(recoveryHitTarget(12),4);
 });
 
-test('repeat mode traverses each card twice before advancing', () => {
-  assert.deepEqual(trainerEventPosition(0,6,3,true),{
-    step:0,slot:0,repetition:0,cardBoundary:false,eventsPerCard:12
+test('repeat count traverses each card the requested number of times before advancing', () => {
+  assert.deepEqual(trainerEventPosition(0,6,3,3),{
+    step:0,slot:0,repetition:0,cardBoundary:false,eventsPerCard:18
   });
-  assert.deepEqual(trainerEventPosition(6,6,3,true),{
-    step:0,slot:0,repetition:1,cardBoundary:false,eventsPerCard:12
+  assert.deepEqual(trainerEventPosition(12,6,3,3),{
+    step:0,slot:0,repetition:2,cardBoundary:false,eventsPerCard:18
   });
-  assert.deepEqual(trainerEventPosition(12,6,3,true),{
-    step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:12
+  assert.deepEqual(trainerEventPosition(18,6,3,3),{
+    step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:18
   });
-  assert.deepEqual(trainerEventPosition(6,6,3,false),{
+  assert.deepEqual(trainerEventPosition(6,6,3,1),{
     step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:6
   });
 });

@@ -5,6 +5,7 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .header-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .45rem; }
 .view-option { display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .view-option input { margin: 0; accent-color: var(--accent); }
+.repeat-control select { min-height: 2rem; border: 1px solid var(--notation-button-border); padding: .25rem 1.4rem .25rem .4rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
 .header-tempo { gap: .25rem; }
 .header-tempo .drum-tempo { width: 3.7rem; padding: .42rem; }
 .header-tempo .drum-tempo-step { min-width: 2rem; border: 1px solid var(--notation-button-border); padding: .45rem; color: var(--notation-ink); background: transparent; font: 700 .72rem/1 monospace; cursor: pointer; }

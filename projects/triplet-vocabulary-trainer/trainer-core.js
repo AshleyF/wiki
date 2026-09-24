@@ -92,11 +92,11 @@ export function recoveryHitTarget(stepCount) {
   return Math.max(2,Math.ceil(Number(stepCount)/3));
 }
 
-export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatPattern = false) {
+export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount = 1) {
   const event = Math.max(0,Math.floor(Number(eventNumber) || 0));
   const steps = Math.max(1,Math.floor(Number(cardSteps) || 1));
   const cards = Math.max(1,Math.floor(Number(cardCount) || 1));
-  const repetitions = repeatPattern ? 2 : 1;
+  const repetitions = Math.max(1,Math.min(5,Math.floor(Number(repeatCount) || 1)));
   const eventsPerCard = steps*repetitions;
   return {
     step:event%steps,

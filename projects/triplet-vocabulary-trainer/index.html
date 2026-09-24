@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260923-mobile-filter-layout">
+    <link rel="stylesheet" href="styles.css?v=20260924-repeat-count">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -22,7 +22,7 @@
       <div class="header-actions" aria-label="Display options">
         <label class="view-option" title="Show the triplet count beneath each printed note"><input id="show-counting" type="checkbox"> <span>Count</span></label>
         <label class="view-option" title="Highlight each written note or rest as it plays"><input id="follow-highlighting" type="checkbox" checked> <span>Follow</span></label>
-        <label class="view-option" title="Play every displayed pattern twice before advancing"><input id="repeat-pattern" type="checkbox"> <span>Repeat</span></label>
+        <label class="view-option repeat-control" title="Choose how many times each displayed pattern plays before advancing"><span>Repeat</span><select id="repeat-count" aria-label="Pattern repetitions"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
         <label class="view-option" title="Play a four-beat count-in and a 4/4 pedal-hi-hat metronome, with the downbeat accented"><input id="metronome" type="checkbox"> <span>Metronome</span></label>
         <label class="view-option" title="Play the written drum pattern and ghost notes. Turn this off for metronome-only practice."><input id="drums" type="checkbox" checked> <span>Drums</span></label>
         <label class="view-option" title="Ignore incoming kick and pedal-hi-hat MIDI notes when scoring"><input id="ignore-feet" type="checkbox" checked> <span>Ignore feet</span></label>
@@ -94,6 +94,6 @@
         </div>
       </div>
     </dialog>
-    <script type="module" src="app.js?v=20260924-repeat-patterns"></script>
+    <script type="module" src="app.js?v=20260924-repeat-count"></script>
   </body>
 </html>

@@ -1,10 +1,10 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-patterns';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-count';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260924-repeat-patterns';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260924-repeat-count';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -413,11 +413,19 @@ function loadBooleanPreference(key, fallback = true) {
 function initializeDisplayOptions() {
   $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
-  $('#repeat-pattern').checked = loadBooleanPreference(REPEAT_PATTERN_KEY,false);
+  try {
+    const saved = localStorage.getItem(REPEAT_PATTERN_KEY);
+    $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(5,Number(saved) || 1)));
+  } catch {
+    $('#repeat-count').value = '1';
+  }
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
   $('#drums').checked = loadBooleanPreference(DRUMS_KEY,true);
   $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
+}
+function repeatCount() {
+  return Math.max(1,Math.min(5,Number($('#repeat-count').value) || 1));
 }
 function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
@@ -513,7 +521,7 @@ function renderKickCard(slot,target,width) {
   const context = renderer.getContext();
   const stave = new VF.Stave(8,20,width-16);
   stave.addClef('percussion').addTimeSignature('4/4');
-  if ($('#repeat-pattern').checked && VF.Barline?.type?.REPEAT_END && typeof stave.setEndBarType === 'function') {
+  if (repeatCount() > 1 && VF.Barline?.type?.REPEAT_END && typeof stave.setEndBarType === 'function') {
     stave.setEndBarType(VF.Barline.type.REPEAT_END);
   }
   stave.setContext(context).draw();
@@ -695,7 +703,7 @@ function renderCard(slot) {
     gridRight:gridLeft+gridWidth,
     cellGap,
     annotationForStep:$('#show-counting').checked ? tripletCountForStep : null,
-    repeatEnd:$('#repeat-pattern').checked
+    repeatEnd:repeatCount() > 1
   });
   const notes = rendered.notes;
   const stepCount = masks.length*3;
@@ -1145,7 +1153,7 @@ function scheduleEvent() {
   }
   const cardSteps = stepsPerCard();
   const cardCount = activeCardCount();
-  const position = trainerEventPosition(eventNumber,cardSteps,cardCount,$('#repeat-pattern').checked);
+  const position = trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount());
   if (playbackScope === 'card' && eventNumber >= position.eventsPerCard) {
     clearInterval(scheduler);
     scheduler = null;
@@ -1640,8 +1648,8 @@ $('#follow-highlighting').addEventListener('change', event => {
     cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
   }
 });
-$('#repeat-pattern').addEventListener('change',event => {
-  try { localStorage.setItem(REPEAT_PATTERN_KEY,String(event.target.checked)); } catch {}
+$('#repeat-count').addEventListener('change',event => {
+  try { localStorage.setItem(REPEAT_PATTERN_KEY,String(repeatCount())); } catch {}
   renderAll();
   if (playing) { stop(); start(); }
 });
