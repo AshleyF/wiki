@@ -21,6 +21,7 @@ import {
   recoveryPulseRoles,
   rolesForExtendedBar,
   rolesForKickVocabulary,
+  rolesForKickVocabulary12,
   rolesForKickVocabulary2,
   rolesForTripletMasks,
   trainerPlaybackPlan,
@@ -58,6 +59,16 @@ test('second kick vocabulary fills the opening grid with ghosts and replaces the
   assert.deepEqual(
     rolesForKickVocabulary2(['A','B','A','A','B','B']),
     ['K','B','B','B','B','B','S','B','A','A','B','B']
+  );
+});
+
+test('combined kick vocabulary joins Kick 1 and Kick 2 pattern halves', () => {
+  assert.deepEqual(
+    rolesForKickVocabulary12(
+      ['A','B','A','A','B','B'],
+      ['A','A','B','A','B','A']
+    ),
+    ['A','B','A','A','B','B','S','A','B','A','B','A']
   );
 });
 

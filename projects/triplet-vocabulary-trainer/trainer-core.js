@@ -46,6 +46,10 @@ export function rolesForKickVocabulary2(melody) {
   return ['K','B','B','B','B','B','S',...melody.slice(1)];
 }
 
+export function rolesForKickVocabulary12(firstMelody,secondMelody) {
+  return [...firstMelody,'S',...secondMelody.slice(1)];
+}
+
 export function tripletMasksForRoles(roles) {
   return Array.from({ length:Math.floor(roles.length/3) },(_,group) => (
     roles.slice(group*3,group*3+3).map(role => role === 'A' ? '1' : '0').join('')
