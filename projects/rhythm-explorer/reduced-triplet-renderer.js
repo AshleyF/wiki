@@ -69,6 +69,18 @@ function appendAnnotation(svg, text, x, y) {
   svg.append(annotation);
 }
 
+function appendRepeatCount(svg, count, x, y) {
+  if (count < 3) return null;
+  const label = document.createElementNS(SVG_NAMESPACE,'text');
+  label.classList.add('trainer-repeat-count');
+  label.setAttribute('x',String(x));
+  label.setAttribute('y',String(y));
+  label.setAttribute('text-anchor','end');
+  label.textContent = `×${count}`;
+  svg.append(label);
+  return label;
+}
+
 function glyphCenterOffset(event) {
   if (!event.rest) return GLYPH_CENTER_OFFSETS.note;
   return event.duration === '4' ? GLYPH_CENTER_OFFSETS.quarterRest : GLYPH_CENTER_OFFSETS.eighthRest;
@@ -85,7 +97,8 @@ export function renderReducedTripletSequence({
   gridRight,
   cellGap = 0,
   annotationForStep = null,
-  repeatEnd = false
+  repeatEnd = false,
+  repeatCount = repeatEnd ? 2 : 1
 }) {
   const renderer = new Flow.Renderer(target,Flow.Renderer.Backends.SVG);
   renderer.resize(width,height);
@@ -131,6 +144,7 @@ export function renderReducedTripletSequence({
   cells.flatMap((cell) => cell.notes).forEach((note) => note.draw());
   cells.forEach((cell) => cell.beam?.setContext(context).draw());
   const svg = target.querySelector('svg');
+  const repeatLabel = appendRepeatCount(svg,repeatCount,width-12,staveY+4);
   const bracketY = staveY-11;
   cells.forEach((cell,cellIndex) => {
     if (cell.mask === '111') appendNumber(svg,cell.geometry.center,bracketY+4);
@@ -152,6 +166,7 @@ export function renderReducedTripletSequence({
     context,
     stave,
     cells,
-    notes:cells.flatMap((cell) => cell.notes)
+    notes:cells.flatMap((cell) => cell.notes),
+    repeatElements:[...target.querySelectorAll('.vf-stavebarline')].slice(-1).concat(repeatLabel ? [repeatLabel] : [])
   };
 }

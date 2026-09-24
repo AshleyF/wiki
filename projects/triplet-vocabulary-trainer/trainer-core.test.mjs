@@ -96,6 +96,9 @@ test('repeat count traverses each card the requested number of times before adva
   assert.deepEqual(trainerEventPosition(6,6,3,1),{
     step:0,slot:1,repetition:0,cardBoundary:true,eventsPerCard:6
   });
+  assert.deepEqual(trainerEventPosition(47,6,3,8),{
+    step:5,slot:0,repetition:7,cardBoundary:false,eventsPerCard:48
+  });
 });
 
 test('rests do not become missed practice targets', () => {

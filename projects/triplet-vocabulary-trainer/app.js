@@ -1,10 +1,10 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-count';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-notation';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260924-repeat-count';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260924-repeat-notation';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -415,7 +415,7 @@ function initializeDisplayOptions() {
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
   try {
     const saved = localStorage.getItem(REPEAT_PATTERN_KEY);
-    $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(5,Number(saved) || 1)));
+    $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(8,Number(saved) || 1)));
   } catch {
     $('#repeat-count').value = '1';
   }
@@ -425,7 +425,7 @@ function initializeDisplayOptions() {
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
 function repeatCount() {
-  return Math.max(1,Math.min(5,Number($('#repeat-count').value) || 1));
+  return Math.max(1,Math.min(8,Number($('#repeat-count').value) || 1));
 }
 function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
@@ -525,6 +525,15 @@ function renderKickCard(slot,target,width) {
     stave.setEndBarType(VF.Barline.type.REPEAT_END);
   }
   stave.setContext(context).draw();
+  const repeatLabel = repeatCount() > 2 ? document.createElementNS('http://www.w3.org/2000/svg','text') : null;
+  if (repeatLabel) {
+    repeatLabel.classList.add('trainer-repeat-count');
+    repeatLabel.setAttribute('x',String(width-12));
+    repeatLabel.setAttribute('y',String(24));
+    repeatLabel.setAttribute('text-anchor','end');
+    repeatLabel.textContent = `×${repeatCount()}`;
+    target.querySelector('svg')?.append(repeatLabel);
+  }
   if (slot > 0) {
     target.querySelectorAll('.vf-clef,.vf-timesignature').forEach(element => {
       element.style.visibility = 'hidden';
@@ -673,6 +682,7 @@ function renderKickCard(slot,target,width) {
     }
   });
   cards[slot].stepElements = stepElements;
+  cards[slot].repeatElements = [...target.querySelectorAll('.vf-stavebarline')].slice(-1).concat(repeatLabel ? [repeatLabel] : []);
 }
 function renderCard(slot) {
   const VF = vexflow();
@@ -703,7 +713,8 @@ function renderCard(slot) {
     gridRight:gridLeft+gridWidth,
     cellGap,
     annotationForStep:$('#show-counting').checked ? tripletCountForStep : null,
-    repeatEnd:repeatCount() > 1
+    repeatEnd:repeatCount() > 1,
+    repeatCount:repeatCount()
   });
   const notes = rendered.notes;
   const stepCount = masks.length*3;
@@ -723,6 +734,7 @@ function renderCard(slot) {
     }
   });
   cards[slot].stepElements = stepElements;
+  cards[slot].repeatElements = rendered.repeatElements;
 }
 function renderAll() {
   cards.forEach((card,slot) => {
@@ -730,6 +742,7 @@ function renderAll() {
     else {
       card.querySelector('.notation').replaceChildren();
       card.stepElements = [];
+      card.repeatElements = [];
     }
   });
   updatePositions(activeSlot);
@@ -1078,12 +1091,31 @@ function scheduleSnare(time, velocity) {
     if (!trackScheduledSource(source)) scheduleFallbackSnare(time, velocity);
   }
 }
+function clearNotationHighlights() {
+  cards.forEach(card => {
+    card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note'));
+    card.repeatElements?.forEach(element => element?.classList.remove('drum-current-note'));
+  });
+}
+function showRepeatCue(slot,time) {
+  const visualTime = calibratedVisualTime(time,latencyCompensation);
+  const delay = Math.max(0,(visualTime-audioContext.currentTime)*1000);
+  const timer = setTimeout(() => {
+    visualTimers.delete(timer);
+    clearNotationHighlights();
+    updatePositions(slot);
+    if ($('#follow-highlighting').checked) {
+      cards[slot].repeatElements?.forEach(element => element.classList.add('drum-current-note'));
+    }
+  },delay);
+  visualTimers.add(timer);
+}
 function showStep(slot, step, time) {
   const visualTime = calibratedVisualTime(time,latencyCompensation);
   const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
   const timer = setTimeout(() => {
     visualTimers.delete(timer);
-    cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+    clearNotationHighlights();
     updatePositions(slot);
     if ($('#follow-highlighting').checked) {
       cards[slot].stepElements?.[step]?.forEach(element => element.classList.add('drum-current-note'));
@@ -1208,8 +1240,12 @@ function scheduleEvent() {
     const quarterBeat = Math.floor(eventNumber/3);
     scheduleHat(nextEventTime,quarterBeat%4 === 0 ? currentVelocities[2] : currentVelocities[1]);
   }
+  const duration = eventDuration(eventNumber);
+  if (step === cardSteps-1 && position.repetition < repeatCount()-1) {
+    showRepeatCue(slot,nextEventTime+duration-Math.min(.1,duration*.3));
+  }
   showStep(slot, step, nextEventTime);
-  nextEventTime += eventDuration(eventNumber); eventNumber += 1;
+  nextEventTime += duration; eventNumber += 1;
   return true;
 }
 function schedulerTick() {
@@ -1382,7 +1418,7 @@ function finishAudition() {
   auditionSlot = null;
   auditionQueue = [];
   void screenWakeLock.setActive(false);
-  cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  clearNotationHighlights();
   setTransportState('play');
   setCardAuditionState();
 }
@@ -1395,7 +1431,7 @@ function stop() {
   void screenWakeLock.setActive(false);
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();
-  cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+  clearNotationHighlights();
   expectedPracticeHits = [];
   phraseStartTime = null;
   const wasRecovering = recoveryMode;
@@ -1645,7 +1681,7 @@ $('#show-counting').addEventListener('change', event => {
 $('#follow-highlighting').addEventListener('change', event => {
   try { localStorage.setItem(FOLLOW_HIGHLIGHTING_KEY, String(event.target.checked)); } catch {}
   if (!event.target.checked) {
-    cards.forEach(card => card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note')));
+    clearNotationHighlights();
   }
 });
 $('#repeat-count').addEventListener('change',event => {
