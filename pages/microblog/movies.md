@@ -1,8 +1,12 @@
 # Movies
 
+## Short Circuit (24 SEP 2026)
+
+Another movie shot in Astoria. We went to the Short Circuit house too. Pretty good storyline, really. Entertaining. Super cheesy. Super 1980s.
+
 ## Goonies (22 SEP 2026)
 
-We just got back from Astoria, where the movie takes place. It's funny to recognize lots of the locations. The movie is super cheesy, like most 1980s movies. Everything is outrageous and impossible. But you can maintain suspension of disbelief long enough to enjoy it. Good, wholesome movie.
+We just got back from Astoria, where the movie takes place. It's funny to recognize lots of the locations. We saw the house. The movie is super cheesy, like most 1980s movies. Everything is outrageous and impossible. But you can maintain suspension of disbelief long enough to enjoy it. Good, wholesome movie.
 
 ## United 93 (12 SEP 2026)
 

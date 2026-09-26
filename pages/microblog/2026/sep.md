@@ -107,3 +107,27 @@ We got one last coffee at the Urban Coffee place in Kirkland, then hit the road.
 I worked on a Roux solver for part of the day and Tracey worked on future (dream) house plans. The solver is a web-based incarnation of some old F# code that I'd written years ago. I love how AI can bring old projects to life again. It even decided to use Fable to generate JavaScript for the site. Pretty damn smart AI. I spent a bit over an hour drumming, doing the kick patterns and the Drumeo method.
 
 Then we watched Goonies. I haven't seen it since the '80s. Tracey has it on DVD. Old school. Funny to recognize a bunch of the locations from Astoria. Cheesy movie, but fun.
+
+## 23 SEP 2026 - Music & Cubing
+
+I spent the day drumming and actualy got started with the "Method" on Pianote too. I think Tracey is worried that I'll "run ahead" of her on the piano. I seriously doubt it. I'm sticking to the drums, but dabbling a bit with the piano.
+
+I also spent a bit of time on the Roux solver. That's coming along and now has a "God-level" LSE solver; perfect full search.
+
+Tracey went grocery shopping at Winco and Fred Meyer. Tons of food. Hundreds of dollars. And suppies for canning. Funny though, that when we had burgers in the afternoon, she can just run out to the garden for tomatoes. How cool is that!
+
+## 24 SEP 2026 - Boobies!
+
+We went to the Greek Festival. Apparently they've been doing this for 90 years! Decent food. We brought home some bakalava.
+
+Afterwards, Tracey routed the truck to a coffee place. We get there and it's a drivethrough stand?! What? Okay... We get up to the window and this half-naked girl comes up, wearing a thong and pasties on her nipples! OMG. "She routed me here!", I said, pointing at Tracey. Sheesh... I wasn't expecting boobs with my coffee. I guess Tracey had been planning that for a long time, thinking of how to get me into town on a Tuesday or Thursday (naked days), and get me to drive, etc. What a crazy wife I have. The drinks were actually pretty good.
+
+In the evening, we watcheg Short Circuit. I guess we're on a little kick to watch the movies that were shot in Astoria.
+
+## 25 SEP 2026 - Nathan
+
+I talked with Nathan for a couple of hours today. He's doing pretty good. They can weather the problems with Madi's mom. Financially, I mean. I'm sure the drama itself is harder to get over. He's enjoying school. And we talked about politics and AI and all kinds of things. Fun as usual!
+
+I watched an hour and a half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of I think is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of it's mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman saying that, "Human beings are just energy with a reinforcement learning loop." ... Jenson just writes off that stupidity saying, "Whatever... So anyway..."
+
+I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4).

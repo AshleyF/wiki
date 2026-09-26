@@ -26,6 +26,7 @@ import {
   rolesForTripletMasks,
   trainerEventPosition,
   trainerPlaybackPlan,
+  choosePatternAvoiding,
   tripletMasksForRoles,
   updateAuditionQueue,
   scorePracticeTap
@@ -99,6 +100,18 @@ test('repeat count traverses each card the requested number of times before adva
   assert.deepEqual(trainerEventPosition(47,6,3,8),{
     step:5,slot:0,repetition:7,cardBoundary:false,eventsPerCard:48
   });
+  assert.deepEqual(trainerEventPosition(95,6,3,16),{
+    step:5,slot:0,repetition:15,cardBoundary:false,eventsPerCard:96
+  });
+});
+
+test('repeated practice avoids an adjacent duplicate when another pattern exists', () => {
+  assert.equal(choosePatternAvoiding('A',['A','B'],['A'],() => 0),'B');
+  assert.deepEqual(
+    choosePatternAvoiding(['100','100'],[['100','100'],['100','101']], [['100','100']],() => 0),
+    ['100','101']
+  );
+  assert.equal(choosePatternAvoiding('A',['A'],['A'],() => 0),'A');
 });
 
 test('rests do not become missed practice targets', () => {

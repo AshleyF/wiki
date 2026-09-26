@@ -20,6 +20,15 @@ export function randomChoiceWithEmphasis(choices,emphasized = null,random = Math
   return alternatives[Math.floor(random()*alternatives.length)];
 }
 
+export function choosePatternAvoiding(preferred,candidates,forbidden = [],random = Math.random) {
+  const forbiddenKeys = new Set(forbidden.map(value => JSON.stringify(value)));
+  if (!forbiddenKeys.has(JSON.stringify(preferred))) return preferred;
+  const alternatives = candidates.filter(value => !forbiddenKeys.has(JSON.stringify(value)));
+  return alternatives.length
+    ? alternatives[Math.floor(random()*alternatives.length)]
+    : preferred;
+}
+
 export function randomExtendedPatternPair(enabledIndexes,random = Math.random,emphasized = null) {
   const firstHalf = enabledIndexes.filter(index => index >= 0 && index < 3);
   const secondHalf = enabledIndexes.filter(index => index >= 3 && index < EXTENDED_PATTERNS.length);
@@ -96,7 +105,7 @@ export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount
   const event = Math.max(0,Math.floor(Number(eventNumber) || 0));
   const steps = Math.max(1,Math.floor(Number(cardSteps) || 1));
   const cards = Math.max(1,Math.floor(Number(cardCount) || 1));
-  const repetitions = Math.max(1,Math.min(8,Math.floor(Number(repeatCount) || 1)));
+  const repetitions = Math.max(1,Math.min(16,Math.floor(Number(repeatCount) || 1)));
   const eventsPerCard = steps*repetitions;
   return {
     step:event%steps,

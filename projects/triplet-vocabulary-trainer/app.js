@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260924-repeat-notation';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260926-repeat-16';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -415,7 +415,7 @@ function initializeDisplayOptions() {
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
   try {
     const saved = localStorage.getItem(REPEAT_PATTERN_KEY);
-    $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(8,Number(saved) || 1)));
+    $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(16,Number(saved) || 1)));
   } catch {
     $('#repeat-count').value = '1';
   }
@@ -425,7 +425,7 @@ function initializeDisplayOptions() {
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
 function repeatCount() {
-  return Math.max(1,Math.min(8,Number($('#repeat-count').value) || 1));
+  return Math.max(1,Math.min(16,Number($('#repeat-count').value) || 1));
 }
 function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
@@ -752,7 +752,7 @@ function renderAll() {
   });
   updatePositions(activeSlot);
 }
-function updateModeUI({ randomizeTriplets = false } = {}) {
+function updateModeUI() {
   document.body.dataset.trainerMode = trainerMode;
   $('#trainer-mode').value = trainerMode;
   const ignoreFeet = $('#ignore-feet');
@@ -780,7 +780,6 @@ function updateModeUI({ randomizeTriplets = false } = {}) {
   else selectors.forEach(select => { select.disabled = false; });
   activeSlot = Math.min(activeSlot,activeCardCount()-1);
   initializePatternFilter();
-  if (trainerMode === 'triplets' && randomizeTriplets) randomizeTripletCards();
   requestAnimationFrame(renderAll);
 }
 function updatePositions(slot) {
@@ -792,46 +791,75 @@ function updatePositions(slot) {
 function randomMelody() {
   return randomChoiceWithEmphasis(enabledMelodyIndexes(),currentEmphasis());
 }
-function randomizeTripletCards() {
-  const twelveTriplets = randomTripletMasks(enabledTripletMasks(),12,Math.random,currentEmphasis());
-  tripletCards = Array.from({ length:3 },(_,slot) => twelveTriplets.slice(slot*4,slot*4+4));
-}
-function randomizeExtendedCards() {
-  extendedCards = Array.from({ length:3 },() => randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis()));
-  populateExtendedSelectors();
-}
 function randomKick12Pair() {
   return [randomMelody(),randomMelody()];
 }
-function randomizeKick12Cards() {
-  kick12Cards = Array.from({ length:3 },() => randomKick12Pair());
-  populateKick12Selectors();
+function cardPattern(slot) {
+  if (trainerMode === 'triplets') return tripletCards[slot];
+  if (trainerMode === 'extended') return extendedCards[slot];
+  if (trainerMode === 'kick12') return kick12Cards[slot];
+  return String(selectors[slot].value);
 }
-function randomizeSlot(slot) {
-  if (trainerMode === 'triplets') tripletCards[slot] = randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis());
-  else if (trainerMode === 'extended') {
-    extendedCards[slot] = randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
-    populateExtendedSelectors();
+function patternCandidates() {
+  if (trainerMode === 'triplets') {
+    const masks = enabledTripletMasks();
+    return masks.flatMap(a => masks.flatMap(b => masks.flatMap(c => masks.map(d => [a,b,c,d]))));
   }
-  else if (trainerMode === 'kick12') {
-    kick12Cards[slot] = randomKick12Pair();
-    populateKick12Selectors();
+  if (trainerMode === 'extended') {
+    const enabled = enabledExtendedIndexes();
+    const first = enabled.filter(index => index < 3);
+    const second = enabled.filter(index => index >= 3);
+    return first.flatMap(a => second.map(b => [a,b]));
   }
-  else selectors[slot].value = String(randomMelody());
+  if (trainerMode === 'kick12') {
+    const enabled = enabledMelodyIndexes();
+    return enabled.flatMap(a => enabled.map(b => [a,b]));
+  }
+  return enabledMelodyIndexes().map(String);
+}
+function preferredRandomPattern() {
+  if (trainerMode === 'triplets') return randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis());
+  if (trainerMode === 'extended') return randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
+  if (trainerMode === 'kick12') return randomKick12Pair();
+  return String(randomMelody());
+}
+function randomPatternAvoiding(forbidden = []) {
+  const preferred = preferredRandomPattern();
+  if (repeatCount() <= 1 || !forbidden.length) return preferred;
+  return choosePatternAvoiding(preferred,patternCandidates(),forbidden);
+}
+function applyCardPattern(slot,pattern) {
+  if (trainerMode === 'triplets') tripletCards[slot] = pattern;
+  else if (trainerMode === 'extended') extendedCards[slot] = pattern;
+  else if (trainerMode === 'kick12') kick12Cards[slot] = pattern;
+  else selectors[slot].value = String(pattern);
+}
+function adjacentPatterns(slot) {
+  if (repeatCount() <= 1) return [];
+  const count = activeCardCount();
+  return [cardPattern((slot+count-1)%count),cardPattern((slot+1)%count)];
+}
+function refreshPatternSelectors() {
+  if (trainerMode === 'extended') populateExtendedSelectors();
+  else if (trainerMode === 'kick12') populateKick12Selectors();
+}
+function randomizeSlot(slot,forbidden = adjacentPatterns(slot)) {
+  applyCardPattern(slot,randomPatternAvoiding(forbidden));
+  refreshPatternSelectors();
   renderCard(slot);
 }
 function randomizeAll() {
-  if (trainerMode === 'extended') {
-    randomizeExtendedCards();
-    renderAll();
-    return;
+  const count = activeCardCount();
+  const patterns = [];
+  for (let slot = 0; slot < count; slot += 1) {
+    patterns.push(randomPatternAvoiding(repeatCount() > 1 && slot ? [patterns[slot-1]] : []));
   }
-  if (trainerMode === 'kick12') {
-    randomizeKick12Cards();
-    renderAll();
-    return;
+  if (repeatCount() > 1 && count > 1 && JSON.stringify(patterns.at(-1)) === JSON.stringify(patterns[0])) {
+    patterns[count-1] = randomPatternAvoiding([patterns[count-2],patterns[0]]);
   }
-  cards.slice(0,activeCardCount()).forEach((_,slot) => randomizeSlot(slot));
+  patterns.forEach((pattern,slot) => applyCardPattern(slot,pattern));
+  refreshPatternSelectors();
+  renderAll();
   updatePositions(activeSlot);
 }
 function requestRandomize() {
@@ -1169,27 +1197,13 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
   if (previousSlot === activeCardCount()-1 && queuedRandomize) {
     queuedRandomize = false; $('#randomize').textContent = 'Scramble'; randomizeAll();
   } else if ($('#auto-randomize').checked) {
-    const nextPattern = trainerMode === 'triplets'
-      ? randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis())
-      : trainerMode === 'extended'
-        ? randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis())
-        : trainerMode === 'kick12'
-          ? randomKick12Pair()
-        : String(randomMelody());
+    const nextPattern = randomPatternAvoiding(adjacentPatterns(previousSlot));
     const visualTime = calibratedVisualTime(nextEventTime,latencyCompensation);
     const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);
-      if (trainerMode === 'triplets') tripletCards[previousSlot] = nextPattern;
-      else if (trainerMode === 'extended') {
-        extendedCards[previousSlot] = nextPattern;
-        populateExtendedSelectors();
-      }
-      else if (trainerMode === 'kick12') {
-        kick12Cards[previousSlot] = nextPattern;
-        populateKick12Selectors();
-      }
-      else selectors[previousSlot].value = nextPattern;
+      applyCardPattern(previousSlot,nextPattern);
+      refreshPatternSelectors();
       renderCard(previousSlot);
     }, delay);
     visualTimers.add(timer);
@@ -1607,8 +1621,8 @@ initializeSelectors();
 initializeTempo();
 initializeVelocities();
 updateCalibrationLabel();
-randomizeTripletCards();
 updateModeUI();
+randomizeAll();
 $('#melody-filter-options').addEventListener('change',changeEnabledPatterns);
 $('#melody-filter-options').addEventListener('pointerdown',beginPatternPaint);
 $('#melody-filter-options').addEventListener('pointermove',continuePatternPaint);
@@ -1645,9 +1659,8 @@ $('#trainer-mode').addEventListener('change',event => {
   if (playing) stop();
   trainerMode = ['vocabulary','extended','triplets','kick','kick2','kick12'].includes(event.target.value) ? event.target.value : 'vocabulary';
   try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
-  if (trainerMode === 'extended') randomizeExtendedCards();
-  if (trainerMode === 'kick12') randomizeKick12Cards();
-  updateModeUI({ randomizeTriplets:trainerMode === 'triplets' });
+  updateModeUI();
+  randomizeAll();
   setStatus('');
 });
 $('#play').addEventListener('click',event => {
