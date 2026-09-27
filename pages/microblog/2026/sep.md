@@ -130,4 +130,18 @@ I talked with Nathan for a couple of hours today. He's doing pretty good. They c
 
 I watched an hour and a half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of I think is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of it's mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman saying that, "Human beings are just energy with a reinforcement learning loop." ... Jenson just writes off that stupidity saying, "Whatever... So anyway..."
 
-I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4).
+I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4). Very good. They basically brought in a bunch of drummers (Chad Smith, Stewart Copland, ...) and had them play a song with the rest of the Rush band and interviewed them about Neil. Funny that Chad Smith improvised (did the "Chad Smith thing") while the others very meticulously tried to play note for note as Neil did. Very sad life story, with his daughter and then wife within 10 months dying. I'm going to read Ghost Rider now, about his 22,000km motorcycle trip after their deaths.
+
+## 26 SEP 2026 - Calvin + Parents
+
+I went to lunch with Calvin. Tracey went to Aurora's game and then to lunch with the grandkids. I went out to my parent's place afterword. Tracey did some piano practice while I was gone. That took up the whole day from 11:00 onward. I drummed in the morning.
+
+Calvin's doing fine. He's kind of fallen off the wagon as far as his diet and exercise, but not by far. He'll probably spin it back up soon. His current obsession is a new release of the old World of Warcraft. The new graphics and environment (rain, lighting, etc.) look pretty amazing, while keeping all the nostalgic game play the same. He's loving it.
+
+My parents are doing fine. My dad has another blood test in a week. Hopefully still going down. My mom had an emergency last week that I hadn't even heard about. Her blood sugar went up to 500+ (off the scale) and when went to the hospital. Now she's diagnosed with diabetes and is taking insulin. That was sudden! Or at least, unknown until now suddenly. They're still moving along with their plans to replace the stairs and that whole side of the house and need to put up a fence to keep the deer out of their new landscaping--they're eating everything. The spending though, crazy. The porch, the vacations, the landscaping, the new stairs and elevator, the fence, then finishing off the inside of the house. Everything going over budget. I have no idea how they have enough money to do all that and still survive another quarter century (hopefully)...
+
+## 27 SEP 2026 - 
+
+I tuned into the JP Bouvet AMA this morning. Really interesting. The depth of his knowledge and experience is astonishing. He can whip out quintuplets and septuplets and demo grooves and fills. The thought put into the structure of the courses. Good questions from the students. Great, in depth answers and expounding in different directions. It seems that he has this deep well of information and, with a little prompt, he can start spilling out information like a faucet.
+
+Now I'm in the mood to spend some hours drumming.
