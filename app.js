@@ -1159,6 +1159,7 @@ const drumRows = {
 
 function parseDrumToken(rawToken) {
   if (rawToken === '.') return { hit: false, visible: false, kind: '.', accent: false, ghost: false, tremolo: 0 };
+  if (rawToken === 'r') return { hit: false, visible: true, kind: 'r', accent: false, ghost: false, tremolo: 0 };
   if (rawToken === '_') return { hit: true, visible: false, kind: 'x', accent: false, ghost: true, tremolo: 0 };
   if (rawToken === '~' || rawToken === '~>') {
     return { hit: true, visible: false, kind: 'x', accent: rawToken.endsWith('>'), ghost: false, tremolo: 0 };
@@ -1176,7 +1177,7 @@ function parseDrumToken(rawToken) {
   if (tremolo > 3) throw new Error(`Too many tremolo slashes in "${rawToken}". Use x/, x//, or x///.`);
   if (tremolo) token = token.slice(0, -tremolo);
   if (!['x', 'o', 'f', 'd'].includes(token)) {
-    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, ~, ~>, or .`);
+    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, ~, ~>, r, or .`);
   }
   return { hit: true, visible: true, kind: token, accent, ghost, tremolo };
 }
@@ -1219,7 +1220,10 @@ function parseDrumPattern(source) {
   const lengths = Object.values(pattern.rows).map((tokens) => tokens.length);
   if (!lengths.length) throw new Error('Add at least one drum row such as "hh: x x x x x x x x".');
   const steps = Math.max(...lengths);
-  if (![8, 12, 16, 24].includes(pattern.division)) throw new Error('Drum division must be 8, 12, 16, or 24.');
+  const meter = drumMeter(pattern);
+  const validDivision = [8, 12, 16, 24].includes(pattern.division)
+    || (pattern.division === 18 && meter.beats === 6 && meter.value === 8);
+  if (!validDivision) throw new Error('Drum division must be 8, 12, 16, or 24; division 18 is also available for a 6/8 sixteenth-triplet grid.');
   if (!Number.isFinite(pattern.swing) || pattern.swing < 50 || pattern.swing > 83.333) {
     throw new Error('Drum swing must be between 50 and 83.333 percent.');
   }
@@ -1257,14 +1261,22 @@ function parseDrumPattern(source) {
 }
 
 function drumVexDuration(pattern) {
-  if (pattern.division === 12) return 8;
-  if (pattern.division === 24) return 16;
+  const tupletSpec = drumTupletSpec(pattern);
+  if (tupletSpec) return tupletSpec.noteDuration;
   return drumDurationForSlots(pattern, 1) || pattern.division;
 }
 
 function drumTupletSpec(pattern) {
-  if (pattern.division === 12) return { size: 3, notesOccupied: 2 };
-  if (pattern.division === 24) return { size: 6, notesOccupied: 4 };
+  const meter = drumMeter(pattern);
+  if (meter.beats === 4 && meter.value === 4 && pattern.division === 12) {
+    return { size: 3, notesOccupied: 2, noteDuration: 8, collapsedDuration: 4 };
+  }
+  if (meter.beats === 4 && meter.value === 4 && pattern.division === 24) {
+    return { size: 6, notesOccupied: 4, noteDuration: 16, collapsedDuration: 4 };
+  }
+  if (meter.beats === 6 && meter.value === 8 && pattern.division === 18) {
+    return { size: 3, notesOccupied: 2, noteDuration: 16, collapsedDuration: 8 };
+  }
   return null;
 }
 
@@ -1284,6 +1296,16 @@ function drumSlotsPerQuarter(pattern) {
   const quarterNotesPerBar = meter.beats * (4 / meter.value);
   const slots = pattern.division / quarterNotesPerBar;
   return Number.isInteger(slots) ? slots : null;
+}
+
+function drumSlotsPerBeamGroup(pattern) {
+  const meter = drumMeter(pattern);
+  if (meter.value === 8 && meter.beats >= 6 && meter.beats % 3 === 0) {
+    const compoundBeats = meter.beats / 3;
+    const slots = pattern.division / compoundBeats;
+    return Number.isInteger(slots) ? slots : null;
+  }
+  return drumSlotsPerQuarter(pattern);
 }
 
 function drumStepDuration(pattern, tempo) {
@@ -1419,6 +1441,10 @@ function drumStepHasHiddenHits(pattern, index, rowNames = Object.keys(drumRows))
     const token = parseDrumToken(pattern.rows[row][index]);
     return token.hit && !token.visible;
   });
+}
+
+function drumStepHasVisibleRest(pattern, index, rowNames = Object.keys(drumRows)) {
+  return rowNames.some((row) => parseDrumToken(pattern.rows[row][index]).kind === 'r');
 }
 
 function renderedDrumSticking(sticking, tokens) {
@@ -1601,7 +1627,9 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
 
     for (let groupStart = 0; groupStart < pattern.steps; groupStart += tupletSpec.size) {
       const groupSteps = Array.from({ length: tupletSpec.size }, (_, offset) => groupStart + offset);
-      if (tupletSpec.size === 3 && groupSteps.some((step) => drumStepHasHiddenHits(pattern, step, rowNames))) {
+      if (tupletSpec.collapsedDuration === 4
+        && tupletSpec.size === 3
+        && groupSteps.some((step) => drumStepHasHiddenHits(pattern, step, rowNames))) {
         const hiddenGroup = makeHiddenTripletGroup(pattern, groupStart, rowNames, stemDirection);
         notes.push(...hiddenGroup.notes);
         if (hiddenGroup.tuplet) tuplets.push(hiddenGroup.tuplet);
@@ -1616,16 +1644,24 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
         ));
 
       if (shouldCollapseToBeat) {
-        const note = makeDrumHit(drumActiveRowsAt(pattern, groupStart, rowNames), groupStart, pattern, 4, stemDirection);
-        note.wikiCollapsedToBeat = true;
+        const note = makeDrumHit(
+          drumActiveRowsAt(pattern, groupStart, rowNames),
+          groupStart,
+          pattern,
+          tupletSpec.collapsedDuration,
+          stemDirection
+        );
+        note.wikiCollapsedToBeat = tupletSpec.collapsedDuration < 8;
         note.wikiConsumedSlots = tupletSpec.size;
+        note.wikiBeamGroup = Math.floor(groupStart / (drumSlotsPerBeamGroup(pattern) || tupletSpec.size));
         notes.push(note);
         continue;
       }
 
       if (!activeSteps.length) {
-        const rest = makeDrumRestNote(4, false,pattern.notationLayout?.singleLine);
+        const rest = makeDrumRestNote(tupletSpec.collapsedDuration, false,pattern.notationLayout?.singleLine);
         rest.wikiStep = groupStart;
+        rest.wikiConsumedSlots = tupletSpec.size;
         notes.push(rest);
         continue;
       }
@@ -1639,7 +1675,7 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
             ? makeDrumHiddenHitNote(pattern, index, rowNames, duration, stemDirection)
             : makeDrumRestNote(duration, true,pattern.notationLayout?.singleLine);
         note.wikiStep = index;
-        note.wikiTupletGroup = groupStart;
+        note.wikiTupletGroup = Math.floor(index / (drumSlotsPerBeamGroup(pattern) || tupletSpec.size));
         return note;
       });
       notes.push(...groupNotes);
@@ -1663,19 +1699,20 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
   }
 
   const notes = [];
-  const quarterSlots = drumSlotsPerQuarter(pattern);
+  const beamGroupSlots = drumSlotsPerBeamGroup(pattern);
   for (let index = 0; index < pattern.steps; index += 1) {
     const step = index;
     const activeRows = drumActiveRowsAt(pattern, index, rowNames);
     let note;
     if (activeRows.length) {
       let availableSlots = 1;
-      const groupEnd = quarterSlots
-        ? Math.min(pattern.steps, index + quarterSlots - (index % quarterSlots))
+      const groupEnd = beamGroupSlots
+        ? Math.min(pattern.steps, index + beamGroupSlots - (index % beamGroupSlots))
         : pattern.steps;
       while (
         index + availableSlots < groupEnd
         && drumStepIsSilent(pattern, index + availableSlots, rowNames)
+        && !drumStepHasVisibleRest(pattern, index + availableSlots, rowNames)
       ) {
         availableSlots += 1;
       }
@@ -1687,10 +1724,34 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
       note = makeDrumHit(activeRows, index, pattern, collapsedDuration, stemDirection);
       note.wikiConsumedSlots = consumedSlots;
       if (consumedSlots > 1 && collapsedDuration < 8) note.wikiCollapsedToBeat = true;
-      if (quarterSlots) note.wikiBeamGroup = Math.floor(step / quarterSlots);
+      if (beamGroupSlots) note.wikiBeamGroup = Math.floor(step / beamGroupSlots);
       index += consumedSlots - 1;
     } else {
-      note = makeDrumRestNote(duration, false,pattern.notationLayout?.singleLine);
+      const visibleRest = drumStepHasVisibleRest(pattern, index, rowNames);
+      let consumedSlots = 1;
+      if (visibleRest) {
+        const groupEnd = beamGroupSlots
+          ? Math.min(pattern.steps, index + beamGroupSlots - (index % beamGroupSlots))
+          : pattern.steps;
+        let availableSlots = 1;
+        while (
+          index + availableSlots < groupEnd
+          && drumStepIsSilent(pattern, index + availableSlots, rowNames)
+          && !drumStepHasVisibleRest(pattern, index + availableSlots, rowNames)
+        ) {
+          availableSlots += 1;
+        }
+        for (let candidateSlots = 2; candidateSlots <= availableSlots; candidateSlots += 1) {
+          if (drumDurationForSlots(pattern, candidateSlots)) consumedSlots = candidateSlots;
+        }
+      }
+      note = makeDrumRestNote(
+        visibleRest ? drumDurationForSlots(pattern, consumedSlots) || duration : duration,
+        visibleRest,
+        pattern.notationLayout?.singleLine
+      );
+      note.wikiConsumedSlots = consumedSlots;
+      index += consumedSlots - 1;
     }
     note.wikiStep = step;
     notes.push(note);

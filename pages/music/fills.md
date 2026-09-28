@@ -91,6 +91,38 @@ ht: . . . . . . . . . . . . . . . . . . . . . . . . x> . . . . . . .
 bd: x . . . . . x . . . x . . . . . x . . . . . x . . . . . . . x .
 ```
 
+## 6/8 fills
+
+### Thirty-second-note descent
+
+The first bar establishes the 6/8 groove. In bar two, four 32nd notes descend from snare through high tom and floor tom to kick, followed by an eighth rest and a final snare landing.
+
+```drums
+tempo 120
+meter 6/8
+division 24
+hh: x . . . x . . . x . . . x . . . x . . . x . . . x . . . x . . . x . . . . . . . . . . . . . . .
+sn: . . . . . . . . . . . . x . . . . . . . . . . . . . . . . . . . . . . . x . . . r . . . x . . .
+ht: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . . .
+ft: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . .
+bd: x . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . . . . . . . x . . . . . . . .
+```
+
+### Flam into a triplet descent
+
+The second compound beat begins with a snare flam, moves through a snare–high-tom–floor-tom 16th-note triplet, and lands on kick.
+
+```drums
+tempo 120
+meter 6/8
+division 18
+hh: x . . x . . x . . . . . . . . . . .
+sn: . . . . . . . . . f . . x . . . . .
+ht: . . . . . . . . . . . . . x . . . .
+ft: . . . . . . . . . . . . . . x . . .
+bd: x . . . . . . . . . . . . . . x . .
+```
+
 ## One-beat eighth-note fills
 
 Two evenly spaced strokes on beat 4 leave plenty of air before the downbeat.
