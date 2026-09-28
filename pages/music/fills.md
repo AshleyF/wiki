@@ -93,19 +93,19 @@ bd: x . . . . . x . . . x . . . . . x . . . . . x . . . . . . . x .
 
 ## 6/8 fills
 
-### Thirty-second-note descent
+### Sixteenth-note descent into a flam
 
-The first bar establishes the 6/8 groove. In bar two, four 32nd notes descend from snare through high tom and floor tom to kick, followed by an eighth rest and a final snare landing.
+The first bar establishes the 6/8 groove. In bar two, four 16th notes descend from snare through high tom and floor tom to kick, followed by an eighth-note snare flam.
 
 ```drums
 tempo 120
 meter 6/8
-division 24
-hh: x . . . x . . . x . . . x . . . x . . . x . . . x . . . x . . . x . . . . . . . . . . . . . . .
-sn: . . . . . . . . . . . . x . . . . . . . . . . . . . . . . . . . . . . . x . . . r . . . x . . .
-ht: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . . .
-ft: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . .
-bd: x . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . . . . . . . x . . . . . . . .
+division 12
+hh: x . x . x . x . x . x . x . x . x . . . . . . .
+sn: . . . . . . x . . . . . . . . . . . x . . . f .
+ht: . . . . . . . . . . . . . . . . . . . x . . . .
+ft: . . . . . . . . . . . . . . . . . . . . x . . .
+bd: x . . . . . . . . . . . x . . . . . . . . x . .
 ```
 
 ### Flam into a triplet descent

@@ -1159,7 +1159,6 @@ const drumRows = {
 
 function parseDrumToken(rawToken) {
   if (rawToken === '.') return { hit: false, visible: false, kind: '.', accent: false, ghost: false, tremolo: 0 };
-  if (rawToken === 'r') return { hit: false, visible: true, kind: 'r', accent: false, ghost: false, tremolo: 0 };
   if (rawToken === '_') return { hit: true, visible: false, kind: 'x', accent: false, ghost: true, tremolo: 0 };
   if (rawToken === '~' || rawToken === '~>') {
     return { hit: true, visible: false, kind: 'x', accent: rawToken.endsWith('>'), ghost: false, tremolo: 0 };
@@ -1177,7 +1176,7 @@ function parseDrumToken(rawToken) {
   if (tremolo > 3) throw new Error(`Too many tremolo slashes in "${rawToken}". Use x/, x//, or x///.`);
   if (tremolo) token = token.slice(0, -tremolo);
   if (!['x', 'o', 'f', 'd'].includes(token)) {
-    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, ~, ~>, r, or .`);
+    throw new Error(`Unknown drum hit "${rawToken}". Use x, o, x>, (x), x/, x//, x///, f, d, _, ~, ~>, or .`);
   }
   return { hit: true, visible: true, kind: token, accent, ghost, tremolo };
 }
@@ -1441,10 +1440,6 @@ function drumStepHasHiddenHits(pattern, index, rowNames = Object.keys(drumRows))
     const token = parseDrumToken(pattern.rows[row][index]);
     return token.hit && !token.visible;
   });
-}
-
-function drumStepHasVisibleRest(pattern, index, rowNames = Object.keys(drumRows)) {
-  return rowNames.some((row) => parseDrumToken(pattern.rows[row][index]).kind === 'r');
 }
 
 function renderedDrumSticking(sticking, tokens) {
@@ -1712,7 +1707,6 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
       while (
         index + availableSlots < groupEnd
         && drumStepIsSilent(pattern, index + availableSlots, rowNames)
-        && !drumStepHasVisibleRest(pattern, index + availableSlots, rowNames)
       ) {
         availableSlots += 1;
       }
@@ -1727,31 +1721,7 @@ function makeDrumVoice(pattern, rowNames = Object.keys(drumRows), stemDirection 
       if (beamGroupSlots) note.wikiBeamGroup = Math.floor(step / beamGroupSlots);
       index += consumedSlots - 1;
     } else {
-      const visibleRest = drumStepHasVisibleRest(pattern, index, rowNames);
-      let consumedSlots = 1;
-      if (visibleRest) {
-        const groupEnd = beamGroupSlots
-          ? Math.min(pattern.steps, index + beamGroupSlots - (index % beamGroupSlots))
-          : pattern.steps;
-        let availableSlots = 1;
-        while (
-          index + availableSlots < groupEnd
-          && drumStepIsSilent(pattern, index + availableSlots, rowNames)
-          && !drumStepHasVisibleRest(pattern, index + availableSlots, rowNames)
-        ) {
-          availableSlots += 1;
-        }
-        for (let candidateSlots = 2; candidateSlots <= availableSlots; candidateSlots += 1) {
-          if (drumDurationForSlots(pattern, candidateSlots)) consumedSlots = candidateSlots;
-        }
-      }
-      note = makeDrumRestNote(
-        visibleRest ? drumDurationForSlots(pattern, consumedSlots) || duration : duration,
-        visibleRest,
-        pattern.notationLayout?.singleLine
-      );
-      note.wikiConsumedSlots = consumedSlots;
-      index += consumedSlots - 1;
+      note = makeDrumRestNote(duration, false,pattern.notationLayout?.singleLine);
     }
     note.wikiStep = step;
     notes.push(note);
