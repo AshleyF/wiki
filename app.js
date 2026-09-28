@@ -1867,6 +1867,39 @@ function positionDrumAccents(target, notes) {
   });
 }
 
+function drawDrumMeasureBarlines(target, notes, pattern, stave) {
+  if (pattern.bars <= 1) return;
+  const svg = target.querySelector('svg');
+  if (!svg) return;
+
+  for (let bar = 1; bar < pattern.bars; bar += 1) {
+    const boundaryStep = bar * pattern.division;
+    // Include spacer rests here: a measure can begin silently, but its first
+    // rhythmic position still gives us the correct horizontal boundary.
+    const nextNotes = notes.filter((note) => note.wikiStep === boundaryStep);
+    const previousNotes = notes.filter((note) => (
+      Number.isInteger(note.wikiStep)
+      && note.wikiStep < boundaryStep
+    ));
+    const nextX = Math.min(...nextNotes.map((note) => note.getAbsoluteX?.()).filter(Number.isFinite));
+    const previousX = Math.max(...previousNotes.map((note) => note.getAbsoluteX?.()).filter(Number.isFinite));
+    if (!Number.isFinite(nextX) || !Number.isFinite(previousX)) continue;
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    const x = (previousX + nextX) / 2;
+    line.classList.add('drum-measure-barline');
+    line.setAttribute('x1', String(x));
+    line.setAttribute('x2', String(x));
+    line.setAttribute('y1', String(stave.getYForLine(0)));
+    line.setAttribute('y2', String(
+      pattern.notationLayout?.singleLine
+        ? stave.getYForLine(0) + 14
+        : stave.getYForLine(4)
+    ));
+    svg.appendChild(line);
+  }
+}
+
 function renderDrumNotation(target, pattern) {
   const Flow = window.Vex.Flow;
   target.innerHTML = '';
@@ -1896,6 +1929,7 @@ function renderDrumNotation(target, pattern) {
 
   voices.forEach((voice) => voice.draw(context, stave));
   beams.forEach((beam) => beam.setContext(context).draw());
+  drawDrumMeasureBarlines(target, notes, pattern, stave);
   positionDrumAccents(target, notes);
   drumParts.flatMap((part) => part.tuplets).filter((tuplet) => tuplet.isWikiVisible).forEach((tuplet) => {
     const groupCount = target.querySelectorAll('.vf-tuplet').length;

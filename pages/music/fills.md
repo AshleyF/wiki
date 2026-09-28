@@ -110,17 +110,17 @@ bd: x . . . . . . . . . . . x . . . . . . . . x . .
 
 ### Flam into a triplet descent
 
-The second compound beat begins with a snare flam, moves through a snare–high-tom–floor-tom 16th-note triplet, and lands on kick.
+The first bar establishes the same 6/8 groove. In bar two, the second compound beat begins with a snare flam, moves through a snare–high-tom–floor-tom 16th-note triplet, and lands on kick.
 
 ```drums
 tempo 120
 meter 6/8
 division 18
-hh: x . . x . . x . . . . . . . . . . .
-sn: . . . . . . . . . f . . x . . . . .
-ht: . . . . . . . . . . . . . x . . . .
-ft: . . . . . . . . . . . . . . x . . .
-bd: x . . . . . . . . . . . . . . x . .
+hh: x . . x . . x . . x . . x . . x . . x . . x . . x . . . . . . . . . . .
+sn: . . . . . . . . . x . . . . . . . . . . . . . . . . . f . . x . . . . .
+ht: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . .
+ft: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . .
+bd: x . . . . . . . . . . . . . . . . . x . . . . . . . . . . . . . . x . .
 ```
 
 ## One-beat eighth-note fills
