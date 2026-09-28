@@ -1,6 +1,6 @@
 # AUG 2026 - Jaws, Fires, Flux, Piano, Redmond/Sequim, Cubing, Grandma
 
-Jaws is packing up and moving to Oregon. We had big fires in Spokane and just north of us. Almost 1000 homes were burned to the ground! I spent some days playing with my friend Graham's "Flux" app and making my own drum machine prototypes. We got a piano delivered to the house! Tracey is going to take lessons and learn to play. We went to Redmond and Sequim and visited friends (Greg, Graham, Fred), kids and Tracey's mom. I stayed in Greg's mom's place. I went to a cubing competition. I spent a day watching Grandma and looking at wild turkeys with her for an hour+.
+Jaws is packing up and moving to Oregon. We had big fires in Spokane and just north of us. Almost 1,000 homes were burned to the ground! I spent some days playing with my friend Graham's "Flux" app and making my own drum machine prototypes. We got a piano delivered to the house! Tracey is going to take lessons and learn to play. We went to Redmond and Sequim and visited friends (Greg, Graham, Fred), kids and Tracey's mom. I stayed in Greg's mom's place. I went to a cubing competition. I spent a day watching Grandma and looking at wild turkeys with her for an hour+.
 
 ## 01 AUG 2026 Sat - Jaws
 
@@ -24,7 +24,7 @@ We just sat around and played chess and watched TV. More chess stuff: The Queen 
 
 ## 06 AUG 2026 Thu - Calvin
 
-I went to lunch with Calvin. He immediately played a LoTR song on his ocarina. Pretty cool! I recorded him. He's also exercising. And he has a new "policy" of not complaining about anything that he can't actually change. He just keeps improving himself incrementally, day by day. Pretty awesome to see.
+I went to lunch with Calvin. He immediately played a LOTR song on his ocarina. Pretty cool! I recorded him. He's also exercising. And he has a new "policy" of not complaining about anything that he can't actually change. He just keeps improving himself incrementally, day by day. Pretty awesome to see.
 
 I'm starting to get used to doing doubles with my feet using the "heel-toe" technique. It's weird that it starts to "just work" after a while. When it doesn't work, it's a shock, as if you lost your mind-body control momentarily. I also had the AI come up with all the possible eighth-note kick grooves against a snare on 2 and 4. That is, simply treat it as bits in an 8-bit number. Then group them by with/without unisons between kick and snare, then by 4-note vs. 8-note grooves, then by doubles vs. no doubles, and finally sort them by number of kick notes. The result is pretty interesting to explore.
 
@@ -42,7 +42,7 @@ We've been having a lot of lazy days! I suppose it's fine... sometimes. We got u
 
 ## 09 AUG 2026 Sun - Parents
 
-I worked on the Rhythm Explorer some, and I went out to my parents' place for half the day. They have the front dug out now; five feet deep for more foundation to be poured. A bunch of rocks have been moved around, including the giant boulder that used to be in front when I was a kid. It was buried for a couple of decades and now it's back. Dad finished the mantle, which apparently took several days. He's really not doing anything about his cancer for now. Just waiting for future blood tests and monitoring it. Very strange feeling...
+I worked on the Rhythm Explorer some, and I went out to my parents' place for half the day. They have the front dug out now; five feet deep for more foundation to be poured. A bunch of rocks have been moved around, including the giant boulder that used to be in front when I was a kid. It was buried for a couple of decades and now it's back. Dad finished the mantel, which apparently took several days. He's really not doing anything about his cancer for now. Just waiting for future blood tests and monitoring it. Very strange feeling...
 
 When I got home, Tracey had written a song on the piano! Her "Sahara" idea she had been humming down in Vegas. I recorded it (MIDI) on the laptop and printed it out for her. A dang songwriter!
 

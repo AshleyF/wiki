@@ -1,5 +1,13 @@
 # Movies
 
+## Platoon (27 SEP 2026)
+
+I've seen this a bunch of times. Tracey had never seen it. We're on a Willem Dafoe kick currently. It's one of his best performances. Charlie Sheen was not bad. Funny that Johnny Depp was in it, but as a very minor character with only one or two lines. We both liked it. Gritty. Real depiction of war. At least of the morality and internal politics. You know... Dafoe's death scene is a little cheesy. I think the D-Day scene in Saving Private Ryan is about the best war scene in any movie.
+
+## Magnolia (25 SEP 2026)
+
+This is a very good character study, with a moral message about relationships and hurting each other. Everyone is so messed up, with the exception of the cop. The frogs! What a freaking weird "reset" moment. Artsy. Strange. Over-the-top characters (Tom Cruise's crazy-misogynistic dude) and intertwined storylines.
+
 ## Short Circuit (24 SEP 2026)
 
 Another movie shot in Astoria. We went to the Short Circuit house too. Pretty good storyline, really. Entertaining. Super cheesy. Super 1980s.
@@ -48,7 +56,7 @@ The movie doesn't match the book. For example, in the book Ellie's dad dies and 
 
 I read the book this week (20-24 JUL 2026) and then we watched the movie a few hours later. It was a bit of a letdown, as is often the case when you've read the book. There was a ton of detail that was left out! I'm surprised that people who only watched the movie could even understand what was happening. Tracey had a hard time until I filled in some for her. Obviously, they had to leave out the math and the long time scale of events. But man, in the first five minutes of the movie, he's already awake and figured out everything and is arriving at the star and knows where he is. Too easy! They did a pretty great job with Rocky and with all the artifacts and models. They made Strat much, much less "hard." They actually showed the people on Earth receiving the beetles. It was pretty good though. I'll watch it a couple more times on plane flights and such, I'm sure.
 
-## The Wind that Shakes the Barley (13 JUL 2026)
+## The Wind That Shakes the Barley (13 JUL 2026)
 
 An early Cillian Murphy film. Set in Ireland in 1919-1921 during the end of the British occupation. First, brothers fight the British, and later, after the treaty, brothers fight each other. Quite good and with a non-Hollywood vibe.
 

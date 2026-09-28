@@ -108,40 +108,46 @@ I worked on a Roux solver for part of the day and Tracey worked on future (dream
 
 Then we watched Goonies. I haven't seen it since the '80s. Tracey has it on DVD. Old school. Funny to recognize a bunch of the locations from Astoria. Cheesy movie, but fun.
 
-## 23 SEP 2026 - Music & Cubing
+## 23 SEP 2026 Wed - Music & Cubing
 
-I spent the day drumming and actualy got started with the "Method" on Pianote too. I think Tracey is worried that I'll "run ahead" of her on the piano. I seriously doubt it. I'm sticking to the drums, but dabbling a bit with the piano.
+I spent the day drumming and actually got started with the "Method" on Pianote too. I think Tracey is worried that I'll "run ahead" of her on the piano. I seriously doubt it. I'm sticking to the drums, but dabbling a bit with the piano.
 
 I also spent a bit of time on the Roux solver. That's coming along and now has a "God-level" LSE solver; perfect full search.
 
-Tracey went grocery shopping at Winco and Fred Meyer. Tons of food. Hundreds of dollars. And suppies for canning. Funny though, that when we had burgers in the afternoon, she can just run out to the garden for tomatoes. How cool is that!
+Tracey went grocery shopping at Winco and Fred Meyer. Tons of food. Hundreds of dollars. And supplies for canning. Funny though, that when we had burgers in the afternoon, she can just run out to the garden for tomatoes. How cool is that!
 
-## 24 SEP 2026 - Boobies!
+## 24 SEP 2026 Thu - Boobies!
 
-We went to the Greek Festival. Apparently they've been doing this for 90 years! Decent food. We brought home some bakalava.
+We went to the Greek Festival. Apparently they've been doing this for 90 years! Decent food. We brought home some baklava.
 
-Afterwards, Tracey routed the truck to a coffee place. We get there and it's a drivethrough stand?! What? Okay... We get up to the window and this half-naked girl comes up, wearing a thong and pasties on her nipples! OMG. "She routed me here!", I said, pointing at Tracey. Sheesh... I wasn't expecting boobs with my coffee. I guess Tracey had been planning that for a long time, thinking of how to get me into town on a Tuesday or Thursday (naked days), and get me to drive, etc. What a crazy wife I have. The drinks were actually pretty good.
+Afterwards, Tracey routed the truck to a coffee place. We get there and it's a drive-through stand?! What? Okay... We get up to the window and this half-naked girl comes up, wearing a thong and pasties on her nipples! OMG. "She routed me here!" I said, pointing at Tracey. Sheesh... I wasn't expecting boobs with my coffee. I guess Tracey had been planning that for a long time, thinking of how to get me into town on a Tuesday or Thursday (naked days), and get me to drive, etc. What a crazy wife I have. The drinks were actually pretty good.
 
-In the evening, we watcheg Short Circuit. I guess we're on a little kick to watch the movies that were shot in Astoria.
+In the evening, we watched Short Circuit. I guess we're on a little kick to watch the movies that were shot in Astoria.
 
-## 25 SEP 2026 - Nathan
+## 25 SEP 2026 Fri - Nathan
 
 I talked with Nathan for a couple of hours today. He's doing pretty good. They can weather the problems with Madi's mom. Financially, I mean. I'm sure the drama itself is harder to get over. He's enjoying school. And we talked about politics and AI and all kinds of things. Fun as usual!
 
-I watched an hour and a half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of I think is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of it's mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman saying that, "Human beings are just energy with a reinforcement learning loop." ... Jenson just writes off that stupidity saying, "Whatever... So anyway..."
+I watched an hour and a half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of I think is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of its mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman saying that, "Human beings are just energy with a reinforcement learning loop." ... Jensen just writes off that stupidity saying, "Whatever... So anyway..."
 
-I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4). Very good. They basically brought in a bunch of drummers (Chad Smith, Stewart Copland, ...) and had them play a song with the rest of the Rush band and interviewed them about Neil. Funny that Chad Smith improvised (did the "Chad Smith thing") while the others very meticulously tried to play note for note as Neil did. Very sad life story, with his daughter and then wife within 10 months dying. I'm going to read Ghost Rider now, about his 22,000km motorcycle trip after their deaths.
+I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4). Very good. They basically brought in a bunch of drummers (Chad Smith, Stewart Copland, ...) and had them play a song with the rest of the Rush band and interviewed them about Neil. Funny that Chad Smith improvised (did the "Chad Smith thing") while the others very meticulously tried to play note for note as Neil did. Very sad life story, with his daughter and then his wife dying within 10 months. I'm going to read Ghost Rider now, about his 22,000 km motorcycle trip after their deaths.
 
-## 26 SEP 2026 - Calvin + Parents
+In the evening, we watched Magnolia. Very good character study movie with a moral message about relationships and pretty pessimistic about people hurting each other. The frogs! What a freaking weird "reset."
 
-I went to lunch with Calvin. Tracey went to Aurora's game and then to lunch with the grandkids. I went out to my parent's place afterword. Tracey did some piano practice while I was gone. That took up the whole day from 11:00 onward. I drummed in the morning.
+## 26 SEP 2026 Sat - Calvin + Parents + Kaitlyn
 
-Calvin's doing fine. He's kind of fallen off the wagon as far as his diet and exercise, but not by far. He'll probably spin it back up soon. His current obsession is a new release of the old World of Warcraft. The new graphics and environment (rain, lighting, etc.) look pretty amazing, while keeping all the nostalgic game play the same. He's loving it.
+I went to lunch with Calvin. Tracey went to Aurora's game and then to lunch with the grandkids. I went out to my parents' place afterward. Tracey did some piano practice while I was gone. That took up the whole day from 11:00 onward. I drummed in the morning.
 
-My parents are doing fine. My dad has another blood test in a week. Hopefully still going down. My mom had an emergency last week that I hadn't even heard about. Her blood sugar went up to 500+ (off the scale) and when went to the hospital. Now she's diagnosed with diabetes and is taking insulin. That was sudden! Or at least, unknown until now suddenly. They're still moving along with their plans to replace the stairs and that whole side of the house and need to put up a fence to keep the deer out of their new landscaping--they're eating everything. The spending though, crazy. The porch, the vacations, the landscaping, the new stairs and elevator, the fence, then finishing off the inside of the house. Everything going over budget. I have no idea how they have enough money to do all that and still survive another quarter century (hopefully)...
+Calvin's doing fine. He's kind of fallen off the wagon as far as his diet and exercise, but not by far. He'll probably spin it back up soon. His current obsession is a new release of the old World of Warcraft. The new graphics and environment (rain, lighting, etc.) look pretty amazing, while keeping all the nostalgic gameplay the same. He's loving it.
 
-## 27 SEP 2026 - 
+My parents are doing fine. My dad has another blood test in a week. Hopefully still going down. My mom had an emergency last week that I hadn't even heard about. Her blood sugar went up to 500+ (off the scale) and she went to the hospital. Now she's diagnosed with diabetes and is taking insulin. That was sudden! Or at least, apparently unknown until now. They're still moving along with their plans to replace the stairs and that whole side of the house and need to put up a fence to keep the deer out of their new landscaping—they're eating everything. The spending though, crazy. The porch, the vacations, the landscaping, the new stairs and elevator, the fence, then finishing off the inside of the house. Everything going over budget. I have no idea how they have enough money to do all that and still survive another quarter century (hopefully)...
 
-I tuned into the JP Bouvet AMA this morning. Really interesting. The depth of his knowledge and experience is astonishing. He can whip out quintuplets and septuplets and demo grooves and fills. The thought put into the structure of the courses. Good questions from the students. Great, in depth answers and expounding in different directions. It seems that he has this deep well of information and, with a little prompt, he can start spilling out information like a faucet.
+Oh yeah, I got a text from Kaitlyn: she presented her poster at a conference and won for best student research paper! How freaking cool! It's a pretty interesting idea inspired by Taylor Swift's "Eras Tour" in which she took fans on a journey through her past selves, and of course tied it to her music of the time. Kaitlyn's thing is an "Eras Assessment" where clients map their life to a timeline of phases and compare with other family members to find, I think, inflection points in whole family dynamics. I'm not completely sure. I need to talk with her about it. I just read the abstract on the poster.
 
-Now I'm in the mood to spend some hours drumming.
+## 27 SEP 2026 Sun - Green Bluff
+
+I tuned into the JP Bouvet AMA this morning. Really interesting. The depth of his knowledge and experience is astonishing. He can whip out quintuplets and septuplets and demo grooves and fills. The thought put into the structure of the courses. Good questions from the students. Great, in-depth answers and expounding in different directions. It seems that he has this deep well of information and, with a little prompt, he can start spilling out information like a faucet.
+
+Now I'm in the mood to spend some hours drumming... I did just an hour, actually, and Tracey wanted to go for a drive. So, I showered and drove to Green Bluff to get doughnuts! And we walked through the orchard.
+
+In the evening, we watched Platoon. Pretty good movie. We're going to be on a Willem Dafoe kick for a while.

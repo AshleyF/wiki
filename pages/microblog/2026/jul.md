@@ -32,7 +32,7 @@ We ate at the Cheesecake Factory, got some shirts at the Columbia store, and wen
 
 ## 05 JUL 2026 Sun - Vegas Day 7 - Mob Museum
 
-We had In-n-Out again and we went to Fremont Street (I lost $94 at the tables). We went to the Mob Museum, which was pretty cool history and several floors of exhibits. In the basement was a "speakeasy." The whiskey came inside of a hollowed-out book alongside a glass of ice. At first I was thinking it was some clear liquor, and then realized when the waitress said, "And here's some light reading." Afterward, they collected the books to "take back to the library." It was fun. #vegas
+We had In-N-Out again and we went to Fremont Street (I lost $94 at the tables). We went to the Mob Museum, which was pretty cool history and several floors of exhibits. In the basement was a "speakeasy." The whiskey came inside of a hollowed-out book alongside a glass of ice. At first I was thinking it was some clear liquor, and then realized when the waitress said, "And here's some light reading." Afterward, they collected the books to "take back to the library." It was fun. #vegas
 
 ## 06 JUL 2026 Mon - Vegas Day 8️
 
@@ -64,7 +64,7 @@ Home sweet home. We love our house! I gained a kilo in Vegas. We had shakshuka f
 
 ## 13 JUL 2026 Mon - Panels
 
-I finally got the last three decorative panels for the drum room. I spent a couple of hours hanging them with a laser level and all. Then I drummed for an hour (with sound blasting) while Tracey was gone, visiting Joscelyn. We watched The Wind that Shakes the Barley with Cillian Murphy -- pretty good, about the 1919-1921 period in Ireland, culminating in a treaty with the British and a civil war over it, with brothers killing brothers.
+I finally got the last three decorative panels for the drum room. I spent a couple of hours hanging them with a laser level and all. Then I drummed for an hour (with sound blasting) while Tracey was gone, visiting Joscelyn. We watched The Wind That Shakes the Barley with Cillian Murphy -- pretty good, about the 1919-1921 period in Ireland, culminating in a treaty with the British and a civil war over it, with brothers killing brothers.
 
 ## 14 JUL 2026 Tue - Calvin
 
