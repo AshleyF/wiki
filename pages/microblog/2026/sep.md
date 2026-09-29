@@ -128,7 +128,7 @@ In the evening, we watched Short Circuit. I guess we're on a little kick to watc
 
 I talked with Nathan for a couple of hours today. He's doing pretty good. They can weather the problems with Madi's mom. Financially, I mean. I'm sure the drama itself is harder to get over. He's enjoying school. And we talked about politics and AI and all kinds of things. Fun as usual!
 
-I watched an hour and a half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of I think is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of its mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman saying that, "Human beings are just energy with a reinforcement learning loop." ... Jensen just writes off that stupidity saying, "Whatever... So anyway..."
+I watched an hour-and-a-half interview with Jensen Huang too. He's more nationalistic than I had thought. America first. But his take on how AI is "just software" and nothing to be afraid of, I think, is grounded. I liked one little bit that he said. The interviewer was saying things like, "Smart, capable, relentless, and the workings of its mind we don't understand." Jensen said, "Software is not relentless. They made it that way. That's not persistence, it's just on. There's no willpower here, there's just electrical power." Then the interviewer quotes Sam Altman as saying, "Human beings are just energy with a reinforcement learning loop." ... Jensen just writes off that stupidity saying, "Whatever... So anyway..."
 
 I'm also watching this [Neil Peart documentary](https://youtu.be/-LXbnS0RmM4). Very good. They basically brought in a bunch of drummers (Chad Smith, Stewart Copland, ...) and had them play a song with the rest of the Rush band and interviewed them about Neil. Funny that Chad Smith improvised (did the "Chad Smith thing") while the others very meticulously tried to play note for note as Neil did. Very sad life story, with his daughter and then his wife dying within 10 months. I'm going to read Ghost Rider now, about his 22,000 km motorcycle trip after their deaths.
 
@@ -152,7 +152,9 @@ Now I'm in the mood to spend some hours drumming... I did just an hour, actually
 
 In the evening, we watched Platoon. Pretty good movie. We're going to be on a Willem Dafoe kick for a while.
 
-## 28 SEP 2026 Mon - Freeze
+## 28 SEP 2026 Mon - Liftoff!
+
+I woke up early to watch the SpaceX launch of Starship 14. Pretty exciting. One engine failed on the way up (a vacuum engine). They didn't need it to return (just the sea-level engines), but they were concerned enough to first announce that they were bailing on attempting orbit! ... But about 15 minutes later they decided to go for it. Everything else went perfectly and they deployed 26 Starlink V3 satellites. Huge things with 1TB bandwidth and physically much too big to be delivered by Falcon. Humans are cool. SpaceX is doing meaningful work for humanity.
 
 It froze last night! Tracey lost a bunch of tomatoes. She spent a couple of hours salvaging what she could; quite a lot actually. Bummer.
 
