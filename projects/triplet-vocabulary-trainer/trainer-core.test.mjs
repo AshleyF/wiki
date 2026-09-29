@@ -105,7 +105,7 @@ test('repeat count traverses each card the requested number of times before adva
   });
 });
 
-test('repeated practice avoids an adjacent duplicate when another pattern exists', () => {
+test('pattern choice avoids an adjacent duplicate when another pattern exists', () => {
   assert.equal(choosePatternAvoiding('A',['A','B'],['A'],() => 0),'B');
   assert.deepEqual(
     choosePatternAvoiding(['100','100'],[['100','100'],['100','101']], [['100','100']],() => 0),
@@ -123,11 +123,15 @@ test('rests do not become missed practice targets', () => {
   assert.equal(expirePracticeTargets(expectedHits,20,{ early:.05,late:.1 }),0);
 });
 
-test('twelve random cells are independently selected from the enabled set', () => {
-  const values = [.01,.99,.01,.99,.99,.01,.01,.99,.99,.01,.99,.01];
-  assert.deepEqual(randomTripletMasks(['001','110'],12,() => values.shift()),[
-    '001','110','001','110','110','001','001','110','110','001','110','001'
+test('random cells avoid adjacent duplicates when another mask is enabled', () => {
+  assert.deepEqual(randomTripletMasks(['001','110'],6,() => .01),[
+    '001','110','001','110','001','110'
   ]);
+  assert.deepEqual(randomTripletMasks(['001'],3,() => .01),['001','001','001']);
+  assert.deepEqual(
+    randomTripletMasks(['001','010','100'],2,() => .01,null,{ before:'001',after:'001' }),
+    ['010','100']
+  );
 });
 
 test('an emphasized choice receives exactly half of the random range', () => {

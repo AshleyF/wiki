@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20260916-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260926-repeat-16';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20260929-no-adjacent';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -817,15 +817,21 @@ function patternCandidates() {
   }
   return enabledMelodyIndexes().map(String);
 }
-function preferredRandomPattern() {
-  if (trainerMode === 'triplets') return randomTripletMasks(enabledTripletMasks(),4,Math.random,currentEmphasis());
+function preferredRandomPattern(forbidden = []) {
+  if (trainerMode === 'triplets') return randomTripletMasks(
+    enabledTripletMasks(),
+    4,
+    Math.random,
+    currentEmphasis(),
+    { before:forbidden[0]?.at(-1) ?? null,after:forbidden[1]?.[0] ?? null }
+  );
   if (trainerMode === 'extended') return randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
   if (trainerMode === 'kick12') return randomKick12Pair();
   return String(randomMelody());
 }
 function randomPatternAvoiding(forbidden = []) {
-  const preferred = preferredRandomPattern();
-  if (repeatCount() <= 1 || !forbidden.length) return preferred;
+  const preferred = preferredRandomPattern(forbidden);
+  if (trainerMode === 'triplets' || !forbidden.length) return preferred;
   return choosePatternAvoiding(preferred,patternCandidates(),forbidden);
 }
 function applyCardPattern(slot,pattern) {
@@ -835,7 +841,6 @@ function applyCardPattern(slot,pattern) {
   else selectors[slot].value = String(pattern);
 }
 function adjacentPatterns(slot) {
-  if (repeatCount() <= 1) return [];
   const count = activeCardCount();
   return [cardPattern((slot+count-1)%count),cardPattern((slot+1)%count)];
 }
@@ -850,11 +855,20 @@ function randomizeSlot(slot,forbidden = adjacentPatterns(slot)) {
 }
 function randomizeAll() {
   const count = activeCardCount();
+  if (trainerMode === 'triplets') {
+    const sequence = randomTripletMasks(enabledTripletMasks(),count*4,Math.random,currentEmphasis());
+    for (let slot = 0; slot < count; slot += 1) {
+      applyCardPattern(slot,sequence.slice(slot*4,slot*4+4));
+    }
+    renderAll();
+    updatePositions(activeSlot);
+    return;
+  }
   const patterns = [];
   for (let slot = 0; slot < count; slot += 1) {
-    patterns.push(randomPatternAvoiding(repeatCount() > 1 && slot ? [patterns[slot-1]] : []));
+    patterns.push(randomPatternAvoiding(slot ? [patterns[slot-1]] : []));
   }
-  if (repeatCount() > 1 && count > 1 && JSON.stringify(patterns.at(-1)) === JSON.stringify(patterns[0])) {
+  if (count > 1 && JSON.stringify(patterns.at(-1)) === JSON.stringify(patterns[0])) {
     patterns[count-1] = randomPatternAvoiding([patterns[count-2],patterns[0]]);
   }
   patterns.forEach((pattern,slot) => applyCardPattern(slot,pattern));

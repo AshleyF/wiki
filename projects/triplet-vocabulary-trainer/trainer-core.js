@@ -116,9 +116,18 @@ export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount
   };
 }
 
-export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null) {
+export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null,{ before = null,after = null } = {}) {
   if (!enabledMasks.length) throw new Error('At least one triplet must be enabled.');
-  return Array.from({ length:count },() => randomChoiceWithEmphasis(enabledMasks,emphasized,random));
+  const masks = [];
+  for (let index = 0; index < count; index += 1) {
+    const preferred = randomChoiceWithEmphasis(enabledMasks,emphasized,random);
+    const forbidden = [];
+    const previous = masks.at(-1) ?? before;
+    if (previous !== null) forbidden.push(previous);
+    if (index === count-1 && after !== null) forbidden.push(after);
+    masks.push(choosePatternAvoiding(preferred,enabledMasks,forbidden,random));
+  }
+  return masks;
 }
 
 export function createPracticeScore() {
