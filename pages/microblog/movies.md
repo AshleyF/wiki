@@ -1,5 +1,9 @@
 # Movies
 
+## Inside (28 SEP 2026)
+
+Continuing our Willem Dafoe kick, this looked like it could be good. It's pretty much a solo performance by him. But it was stupid! Think Castaway, but without a backstory. Without knowing who the character is other than a thief. I didn't know if I should root for him. I never really had a reason to care about him. And without him talking to himself (very few lines in the whole movie) and without a "Wilson" or any attachment to anything or anyone except a lady on the security monitor (who we don't know) and a pigeon (on the other side of glass, that dies). He wasn't much of a MacGyver either. He did stupid things and just thrashed around trying to get out without doing anything particularly clever. Tracey thought it was just "Okay." I think it plain sucked.
+
 ## Platoon (27 SEP 2026)
 
 I've seen this a bunch of times. Tracey had never seen it. We're on a Willem Dafoe kick currently. It's one of his best performances. Charlie Sheen was not bad. Funny that Johnny Depp was in it, but as a very minor character with only one or two lines. We both liked it. Gritty. Real depiction of war. At least of the morality and internal politics. You know... Dafoe's death scene is a little cheesy. I think the D-Day scene in Saving Private Ryan is about the best war scene in any movie.

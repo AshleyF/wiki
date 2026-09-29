@@ -151,3 +151,11 @@ I tuned into the JP Bouvet AMA this morning. Really interesting. The depth of hi
 Now I'm in the mood to spend some hours drumming... I did just an hour, actually, and Tracey wanted to go for a drive. So, I showered and drove to Green Bluff to get doughnuts! And we walked through the orchard.
 
 In the evening, we watched Platoon. Pretty good movie. We're going to be on a Willem Dafoe kick for a while.
+
+## 28 SEP 2026 Mon - Freeze
+
+It froze last night! Tracey lost a bunch of tomatoes. She spent a couple of hours salvaging what she could; quite a lot actually. Bummer.
+
+I drummed as usual, and messed with the equipment (module firmware and such). Tracey practiced piano. I also worked more on the Roux solver. It's coming up with some [very cool solutions](https://alg.cubing.net/?setup=B2_D2_L-_B2_L-_U2_D-_L_F-_D2_U_D_L2_R_D-_L2_R-_D-_B-_F2&alg=z2_%2F%2F_orient%0Au_U2_M-_B_M_F-_%2F%2F_FB%0Ar-_U2_R-_U-_r-_R-_%2F%2F_SB%0AF_R_U-_R-_U-_R_U_R-_F-_%2F%2F_CMLL%0AM_U_M2-_U_M_U_M-_U2_M-_%2F%2F_LSE) sometimes.
+
+In the evening, we continued our Willem Dafoe kick with a movie called Inside. It sucked. It was like Castaway, but with no backstory (I never knew him), no dialog, no "Wilson", nothing to care about, and he didn't do anything particularly clever to get out.
