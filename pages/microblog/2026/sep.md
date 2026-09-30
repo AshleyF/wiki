@@ -162,9 +162,12 @@ I drummed as usual, and messed with the equipment (module firmware and such). Tr
 
 In the evening, we continued our Willem Dafoe kick with a movie called Inside. It sucked. It was like Castaway, but with no backstory (I never knew him), no dialog, no "Wilson", nothing to care about, and he didn't do anything particularly clever to get out.
 
-## 29 SEP 2026 Tue - 
+## 29 SEP 2026 Tue - Car Wash
 
-Roux
-Drumming
-Washed cars
-Movie
+I worked on the Roux solver some more, adding search filters and now looking for full LSE skips, a 1:22500 chance! It may take a month. I drummed in the morning. I'm enjoying getting my kick up to speed and coordinated. Doing more JP patterns and doing linear fills that involve a kick.
+
+I spent several hours washing the cars. Tracey's car had bugs on the front from our Vegas trip *two years ago*! Now I'm sore. I've gotta work out more.
+
+In the evening, we watched The Hunter. Another WIllem Dafoe movie. It's not too bad. Much better than Inside from yesterday.
+
+## 30 SEP 2026 Wed - 
