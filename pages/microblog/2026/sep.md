@@ -1,5 +1,7 @@
 # SEP 2026
 
+Portland, Astoria, Kirkland trip. Drumming (JP), Roux solver, astro photography. Vibe coding apps.
+
 ## 01 SEP 2026 Tue - JP Bouvet
 
 I'm really digging JP's drumming course. I'm on to the "Triplet Vocabulary" course and can totally see how this will lead to endless flow, and I'm loving the triplet feel. Not even doing swing yet, but still... I've made [my own loops of building blocks](https://ashleyf.github.io/wiki/#/music/triplet-vocabulary). ❤️
@@ -170,4 +172,12 @@ I spent several hours washing the cars. Tracey's car had bugs on the front from 
 
 In the evening, we watched The Hunter. Another WIllem Dafoe movie. It's not too bad. Much better than Inside from yesterday.
 
-## 30 SEP 2026 Wed - 
+## 30 SEP 2026 Wed - Astro
+
+You never know what hobbie of mine will come back to life. I've been thinking about what to take to Austrailia next year to caputer the southern hemosphere sky. I'm thinking that one of the "smart scopes" like the S30 or S50 or the Draco might be best. The S50 looks like about the best balance of size/features. One requirement is being able to pack it to the other side of the planet. Being easier to setup is secondary, but nice. I could technically bring my whole rig. I have a Pelican case for it. I was thinking the ASI Air plus a regular camera and tripod. I might still do that.
+
+I've been processing some old data from last October of the Heart nebula. Getting back up to speed with PixInsight and such. I spent the entire day processing one image! I learned a lot and the image is pretty amazing. 24.5 hours of exposure that I did over a couple of weeks in October 2023 and it's just been sitting on my laptop since then.
+
+I've been continuing to work on the Roux solver. It hasn't found any LSE skips yet, but it found [this nice 29 STM nearly EO skip](https://alg.cubing.net/?setup=R-_F-_D_R2_D-_R2_U_D2_U_L_U-_R2_U_R2_U2_B2_L-_U2_L-_F2&alg=x_z-_%2F%2F_orient_(green-yellow)%0AM2-_U_M-_F-_M-_B-_%2F%2F_FB_(6_moves_%E2%80%93_front_pair_first)%0Ar-_U-_R-_U-_M2-_U_r2_U_R_%2F%2F_SB_(9_moves_%E2%80%93_front_pair_first)%0AU2-_R-_U-_F_U_R_U-_R-_F-_%2F%2F_CMLL_(9_moves_%E2%80%93_EO_influence)%0Ar_U-_M-_U_M2-_%2F%2F_LSE_(5_moves_%E2%80%93_optimal)) and [this other 29 STM solve with a 3-move first block](https://alg.cubing.net/?setup=B2_F2_U2_D_L2_U_L2_R-_F2_R_F_R-_U-_R_B2_U2_F2_D_F-_U&alg=y_%2F%2F_orient_(red-yellow)%0Ad-_r_B2_%2F%2F_FB_(3_moves)%0Ar_U-_R-_U2-_R-_U2-_R_U_R-_%2F%2F_SB_(9_moves)%0AL-_U-_L_U-_L-_U2-_%2F%2F_CMLL_(6_moves)%0Al_U2-_M-_U-_M-_U-_M_U_M-_U-_M-_%2F%2F_LSE_(11_moves_%E2%80%93_optimal)) and then [this 28 STM CMLL skip](https://alg.cubing.net/?setup=D2_F-_U_B_U_B-_R2_B-_F-_B_L2_U_B-_F-_B-_R2_L_F2_R2_U&alg=z2_%2F%2F_orient_(green-yellow)%0Au_U2-_R-_U_F-_M2-_R-_B-_%2F%2F_FB_(8_moves_%E2%80%93_front_pair_first)%0Ar_U_R-_U_R-_r-_U_M-_U-_r_%2F%2F_SB_(10_moves_%E2%80%93_front_pair_first)%0A%2F%2F_CMLL_(0_moves_%E2%80%93_skipped)%0AM-_U-_M_U-_M_U-_M2-_U-_M-_U-_%2F%2F_LSE_(10_moves_%E2%80%93_optimal)).
+
+Tracey went garden shopping today. I drummed while she was gone.
