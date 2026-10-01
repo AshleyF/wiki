@@ -1,5 +1,6 @@
 # Projects
 
+- [RouxLab](https://ashleyf.github.io/cubing/site/lab/#cube-workbench) — explore Roux solves with various pattern sets and optimizations, search for cases
 - [Rhythm Explorer](projects/rhythm-explorer/) — generate, edit, orchestrate, and perform layered drum parts
 - [Euclidean Rhythm Explorer](projects/euclidean-rhythm-explorer/) — build drum tracks from layered Euclidean rhythms and Boolean operations
 - [Piano Reading Trainer](projects/piano/) — practice sight-reading with an on-screen keyboard or MIDI piano

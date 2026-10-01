@@ -4,6 +4,7 @@ import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstru
 import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260910-2';
+import { renderInlineMarkdown } from './markdown-inline.js?v=20261001-balanced-links';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
@@ -135,19 +136,7 @@ function parseFenceOptions(text = '') {
 }
 
 function inline(text) {
-  let result = escapeHtml(text);
-  result = result.replace(/`([^`]+)`/g, '<code>$1</code>');
-  result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  result = result.replace(/(^|[^\w])__([^_\n]+?)__(?=[^\w]|$)/g, '$1<strong>$2</strong>');
-  result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  result = result.replace(/(^|[^\w])_([^_\n]+?)_(?=[^\w]|$)/g, '$1<em>$2</em>');
-  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
-    const projectLink = /^projects\/[a-z0-9][a-z0-9/-]*\/?$/.test(href);
-    const safeHref = /^(https?:|mailto:|#)/.test(href) || projectLink ? href : '#';
-    const external = /^https?:/.test(safeHref) || projectLink ? ' target="_blank" rel="noopener noreferrer"' : '';
-    return `<a href="${escapeHtml(safeHref)}"${external}>${label}</a>`;
-  });
-  return result;
+  return renderInlineMarkdown(text);
 }
 
 const fenceRenderers = {
