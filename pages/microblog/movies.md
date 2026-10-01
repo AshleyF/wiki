@@ -1,5 +1,7 @@
 # Movies
 
+## Digger (01 OCT 2026)
+
 ## The Hunter (29 SEP 2026)
 
 Yet another Willem Dafoe movie. Pretty good drama. The story unfolds very slowly, but you do care about the character (unlike Inside, below). I didn't really understand his mission though; why it was so important. It felt like a "McGuffin." And in the end his just shoots the McGuffin and it's over. Weird. But you can make sense of it.
