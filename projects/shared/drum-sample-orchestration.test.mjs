@@ -10,7 +10,8 @@ test('fixed acoustic drum kits use stable manifest IDs', () => {
   assert.deepEqual(FIXED_DRUM_SAMPLE_KIT_IDS, {
     kickCenter: 'kick-center',
     closedHiHatTip: 'hi-hat-closed-tip',
-    closedHiHatEdge: 'hi-hat-closed-edge'
+    closedHiHatEdge: 'hi-hat-closed-edge',
+    highTomCenter: 'high-tom-center'
   });
 });
 

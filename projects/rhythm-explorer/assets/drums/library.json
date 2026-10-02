@@ -10,14 +10,14 @@
         {
           "name": "closed-edge",
           "midi_note": 22,
-          "kit_id": "hi-hat-closed-edge",
-          "manifest": "hi-hats/closed-edge/kit.json"
+          "kit_id": "superior-drummer-current-hihat-closed-edge",
+          "manifest": "hi-hats/superior-drummer-current/closed-edge/kit.json"
         },
         {
           "name": "closed-tip",
           "midi_note": 42,
-          "kit_id": "hi-hat-closed-tip",
-          "manifest": "hi-hats/closed-tip/kit.json"
+          "kit_id": "superior-drummer-current-hihat-closed-tip",
+          "manifest": "hi-hats/superior-drummer-current/closed-tip/kit.json"
         }
       ]
     },
@@ -29,8 +29,8 @@
         {
           "name": "center",
           "midi_note": 36,
-          "kit_id": "kick-center",
-          "manifest": "kicks/center/kit.json"
+          "kit_id": "superior-drummer-current-kick-center",
+          "manifest": "kicks/superior-drummer-current/center/kit.json"
         }
       ]
     },
@@ -83,6 +83,19 @@
           "midi_note": 38,
           "kit_id": "slingerland-radio-king-50s-snare-center",
           "manifest": "snares/slingerland-radio-king-50s/center/kit.json"
+        }
+      ]
+    },
+    {
+      "instrument": "tom",
+      "manufacturer": null,
+      "model": null,
+      "articulations": [
+        {
+          "name": "high-center",
+          "midi_note": 48,
+          "kit_id": "high-tom-center",
+          "manifest": "toms/high/center/kit.json"
         }
       ]
     }

@@ -258,6 +258,13 @@ export class DrumSampleKit {
     await Promise.all([...sampleIds].map(sampleId => this.loadBuffer(context, sampleId)));
   }
 
+  async prepareAll(context, { onLoadStart } = {}) {
+    const manifest = await this.loadManifest();
+    const sampleIds = manifest.samples.map(sample => sample.id);
+    if (sampleIds.some(sampleId => !this.buffers.has(sampleId))) onLoadStart?.();
+    await Promise.all(sampleIds.map(sampleId => this.loadBuffer(context, sampleId)));
+  }
+
   schedule(context, { velocity, time, pan = 0, destination = context.destination } = {}) {
     const variants = this.variantsByVelocity.get(clampVelocity(velocity));
     const readyVariants = variants?.filter(variant => this.buffers.has(variant.sample_id)) || [];
