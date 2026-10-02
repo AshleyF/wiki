@@ -1231,8 +1231,8 @@ function parseDrumPattern(source) {
   if (pattern.sticking.length !== steps) throw new Error(`The stick row must have ${steps} slots.`);
   pattern.sticking = pattern.sticking.map((token) => {
     const normalized = token.toUpperCase();
-    if (!['R', 'L', 'RL', 'LR', '.'].includes(normalized)) {
-      throw new Error(`Unknown sticking "${token}". Use R, L, RL, LR, or .`);
+    if (!['R', 'L', 'RL', 'LR', 'K', '.'].includes(normalized)) {
+      throw new Error(`Unknown sticking "${token}". Use R, L, RL, LR, K, or .`);
     }
     return normalized;
   });
