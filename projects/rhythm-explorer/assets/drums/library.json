@@ -96,6 +96,12 @@
           "midi_note": 48,
           "kit_id": "high-tom-center",
           "manifest": "toms/high/center/kit.json"
+        },
+        {
+          "name": "mid-center",
+          "midi_note": 47,
+          "kit_id": "mid-tom-center",
+          "manifest": "toms/mid/center/kit.json"
         }
       ]
     }

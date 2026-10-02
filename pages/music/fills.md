@@ -95,7 +95,7 @@ bd: x . . . . . x . . . x . . . . . x . . . . . x . . . . . . . x .
 
 ### Sixteenth-note descent into a flam
 
-The first bar establishes the 6/8 groove. In bar two, four 16th notes descend from snare through high tom and floor tom to kick, played R–L–R–K, followed by an eighth-note snare flam.
+The first bar establishes the 6/8 groove. In bar two, four 16th notes move from snare through high tom and mid tom to kick, played R–L–R–K, followed by an eighth-note snare flam.
 
 ```drums
 tempo 120
@@ -104,14 +104,14 @@ division 12
 hh: x . x . x . x . x . x . x . x . x . . . . . . .
 sn: . . . . . . x . . . . . . . . . . . x . . . f .
 ht: . . . . . . . . . . . . . . . . . . . x . . . .
-ft: . . . . . . . . . . . . . . . . . . . . x . . .
+mt: . . . . . . . . . . . . . . . . . . . . x . . .
 bd: x . . . . . . . . . . . x . . . . . . . . x . .
 stick: . . . . . . . . . . . . . . . . . . R L R K . .
 ```
 
 ### Flam into a triplet descent
 
-The first bar establishes the same 6/8 groove. In bar two, the second compound beat begins with a snare flam, then moves through an R–L–R–K snare–high-tom–floor-tom–kick figure.
+The first bar establishes the same 6/8 groove. In bar two, the second compound beat begins with a snare flam, then moves through an R–L–R–K snare–high-tom–mid-tom–kick figure.
 
 ```drums
 tempo 120
@@ -120,7 +120,7 @@ division 18
 hh: x . . x . . x . . x . . x . . x . . x . . x . . x . . . . . . . . . . .
 sn: . . . . . . . . . x . . . . . . . . . . . . . . . . . f . . x . . . . .
 ht: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . .
-ft: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . .
+mt: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . .
 bd: x . . . . . . . . . . . . . . . . . x . . . . . . . . . . . . . . x . .
 stick: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . R L R K . .
 ```

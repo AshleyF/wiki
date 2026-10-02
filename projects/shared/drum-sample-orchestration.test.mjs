@@ -11,7 +11,8 @@ test('fixed acoustic drum kits use stable manifest IDs', () => {
     kickCenter: 'kick-center',
     closedHiHatTip: 'hi-hat-closed-tip',
     closedHiHatEdge: 'hi-hat-closed-edge',
-    highTomCenter: 'high-tom-center'
+    highTomCenter: 'high-tom-center',
+    midTomCenter: 'mid-tom-center'
   });
 });
 
