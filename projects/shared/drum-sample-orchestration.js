@@ -2,8 +2,10 @@ export const FIXED_DRUM_SAMPLE_KIT_IDS = Object.freeze({
   kickCenter: 'kick-center',
   closedHiHatTip: 'hi-hat-closed-tip',
   closedHiHatEdge: 'hi-hat-closed-edge',
+  crashBow: 'crash-cymbal-bow',
   highTomCenter: 'high-tom-center',
-  midTomCenter: 'mid-tom-center'
+  midTomCenter: 'mid-tom-center',
+  floorTomCenter: 'floor-tom-center'
 });
 
 export function alternatingClosedHiHatArticulation(strokeIndex) {

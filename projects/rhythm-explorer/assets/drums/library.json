@@ -3,6 +3,19 @@
   "library_id": "superior-drummer-local-captures",
   "drums": [
     {
+      "instrument": "cymbal",
+      "manufacturer": null,
+      "model": null,
+      "articulations": [
+        {
+          "name": "crash-bow",
+          "midi_note": 50,
+          "kit_id": "crash-cymbal-bow",
+          "manifest": "cymbals/crash/bow/kit.json"
+        }
+      ]
+    },
+    {
       "instrument": "hi-hat",
       "manufacturer": null,
       "model": null,
@@ -10,14 +23,14 @@
         {
           "name": "closed-edge",
           "midi_note": 22,
-          "kit_id": "superior-drummer-current-hihat-closed-edge",
-          "manifest": "hi-hats/superior-drummer-current/closed-edge/kit.json"
+          "kit_id": "hi-hat-closed-edge",
+          "manifest": "hi-hats/closed-edge/kit.json"
         },
         {
           "name": "closed-tip",
           "midi_note": 42,
-          "kit_id": "superior-drummer-current-hihat-closed-tip",
-          "manifest": "hi-hats/superior-drummer-current/closed-tip/kit.json"
+          "kit_id": "hi-hat-closed-tip",
+          "manifest": "hi-hats/closed-tip/kit.json"
         }
       ]
     },
@@ -29,8 +42,8 @@
         {
           "name": "center",
           "midi_note": 36,
-          "kit_id": "superior-drummer-current-kick-center",
-          "manifest": "kicks/superior-drummer-current/center/kit.json"
+          "kit_id": "kick-center",
+          "manifest": "kicks/center/kit.json"
         }
       ]
     },
@@ -91,6 +104,12 @@
       "manufacturer": null,
       "model": null,
       "articulations": [
+        {
+          "name": "floor-center",
+          "midi_note": 43,
+          "kit_id": "floor-tom-center",
+          "manifest": "toms/floor/center/kit.json"
+        },
         {
           "name": "high-center",
           "midi_note": 48,

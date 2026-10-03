@@ -25,3 +25,5 @@ Some of the danger comes from AI finding vulnerabilities in systems today. Takin
 The bigger danger is AI helping humans to create dangerous things. For example, it will find wonderful new medicines, and terrible new bioweapons. There's no way to create such a general purpose tool without it being able to do both. My worry is evil humans with AI. I don't worry much about "evil AI."
 
 So, I agree that this transition period is dangerous and I still don't know what society will look like after the transition. But, I'm very hopeful that we make it through without permanently destroying ourselves and we'll come out the other end in an age of crazy abundance. People in hundred years will certainly not want a time machine to come back to now or any time earlier.
+
+Tracey spent most of the day in the garden, cleaning out beds and such for next year.
