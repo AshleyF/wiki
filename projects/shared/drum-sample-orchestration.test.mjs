@@ -13,6 +13,7 @@ test('fixed acoustic drum kits use stable manifest IDs', () => {
     closedHiHatTip: 'hi-hat-closed-tip',
     closedHiHatEdge: 'hi-hat-closed-edge',
     crashBow: 'crash-cymbal-bow',
+    crashChoke: 'crash-cymbal-choke',
     highTomCenter: 'high-tom-center',
     midTomCenter: 'mid-tom-center',
     floorTomCenter: 'floor-tom-center'

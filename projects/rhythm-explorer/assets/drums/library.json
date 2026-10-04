@@ -9,9 +9,15 @@
       "articulations": [
         {
           "name": "crash-bow",
-          "midi_note": 50,
+          "midi_note": 49,
           "kit_id": "crash-cymbal-bow",
           "manifest": "cymbals/crash/bow/kit.json"
+        },
+        {
+          "name": "crash-choke",
+          "midi_note": 50,
+          "kit_id": "crash-cymbal-choke",
+          "manifest": "cymbals/crash/choke/kit.json"
         }
       ]
     },
