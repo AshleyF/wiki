@@ -17,7 +17,32 @@
 ### Lisp
 
 - Prefix notation, operator, operands, combination e.g. (+ 3 (* 5 6 ) 7 2) -> 42
-- Definitions (DEFINE (SQUARE X) (* X X))
+- Definitions (DEFINE (SQUARE X) (* X X)) or (DEFINE SQUARE (LAMBDA (X) (* X X)))
+
+```lisp
+(DEFINE (ABS X)
+  (COND ((< X 0) (- X))
+       ((= X 0) (0))
+       ((> X 0) (X))))
+
+(DEFINE (ABS X) (IF (< X 0>) (- X) (X)))
+```
+
+```lisp
+(DEFINE (TRY GUESS X)
+  (IF (GOOD-ENOUGH? GUESS X)
+      GUESS
+      (TRY (IMPROVE GUESS X) X)))
+
+(DEFINE (SQRT X) (TRY 1 X))
+
+(DEFINE (IMPROVE GUESS X)
+  (AVERAGE GUESS (/ X GUESS)))
+
+(DEFINE (GOOD-ENOUGH? GUESS X)
+  (< (ABS (- (SQUARE GUESS) X))
+     0.001))
+```
 
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
