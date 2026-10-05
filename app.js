@@ -1,5 +1,5 @@
-import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20260911-pad-dynamics-1';
-import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20261003-crash-floor-tom-1';
+import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
+import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20261005-pedal-hi-hat-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
@@ -24,6 +24,7 @@ let activeAbcTiming = null;
 let activeAbcStopTimer = null;
 let drumAudioContext;
 let activeDrumNodes = [];
+const activeOpenHiHatSources = new Set();
 let activeDrumStopTimer = null;
 let activeDrumHighlightTimers = [];
 let activeDrumMidiTimer = null;
@@ -48,6 +49,8 @@ let wikiSnareSampleKitPromise = null;
 const wikiKickSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.kickCenter, kit: null, promise: null };
 const wikiClosedHatTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatTip, kit: null, promise: null };
 const wikiClosedHatEdgeSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatEdge, kit: null, promise: null };
+const wikiOpenHatTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.openHiHatTip, kit: null, promise: null };
+const wikiPedalHatChickSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.pedalHiHatChick, kit: null, promise: null };
 const wikiCrashSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.crashBow, kit: null, promise: null };
 const wikiHighTomSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.highTomCenter, kit: null, promise: null };
 const wikiMidTomSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.midTomCenter, kit: null, promise: null };
@@ -2197,6 +2200,7 @@ function stopDrumBlocks() {
     try { node.stop(); } catch { /* The source may have already ended. */ }
   });
   activeDrumNodes = [];
+  activeOpenHiHatSources.clear();
   document.querySelectorAll('.drum-current-note').forEach((element) => {
     element.classList.remove('drum-current-note');
   });
@@ -2321,6 +2325,12 @@ function drumTone(context, time, frequency, duration, volume, type = 'sine', end
 function scheduleDrumSound(context, instrument, token, time, strength = 1, pan = 0, velocityProfile, hiHatArticulation = null) {
   const velocity = velocityFromStrengthProfile(strength, velocityProfile);
   const adjustedStrength = velocity / 82;
+  if ((instrument === 'hh' && token.kind !== 'o') || instrument === 'ph') {
+    activeOpenHiHatSources.forEach((source) => {
+      try { source.stop(time); } catch { /* The open sample may already have ended. */ }
+    });
+    activeOpenHiHatSources.clear();
+  }
   if (instrument === 'bd') {
     const sampleSource = wikiKickSampleState.kit?.schedule(context, {
       velocity,
@@ -2353,6 +2363,32 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
       ? wikiClosedHatEdgeSampleState
       : wikiClosedHatTipSampleState;
     const sampleSource = state.kit?.schedule(context, {
+      velocity,
+      time,
+      pan,
+      destination: boostedAudioOutput(context)
+    });
+    if (sampleSource) {
+      trackDrumNode(sampleSource);
+      return;
+    }
+  }
+  if (instrument === 'hh' && token.kind === 'o') {
+    const sampleSource = wikiOpenHatTipSampleState.kit?.schedule(context, {
+      velocity,
+      time,
+      pan,
+      destination: boostedAudioOutput(context)
+    });
+    if (sampleSource) {
+      activeOpenHiHatSources.add(sampleSource);
+      sampleSource.addEventListener?.('ended', () => activeOpenHiHatSources.delete(sampleSource), { once: true });
+      trackDrumNode(sampleSource);
+      return;
+    }
+  }
+  if (instrument === 'ph') {
+    const sampleSource = wikiPedalHatChickSampleState.kit?.schedule(context, {
       velocity,
       time,
       pan,
@@ -2533,6 +2569,13 @@ async function prepareWikiDrumSamples(context, pattern, block, velocityProfile =
     velocityProfile,
     token => token.hit && token.kind !== 'o'
   );
+  const openHatVelocities = drumRowVelocities(
+    pattern,
+    'hh',
+    velocityProfile,
+    token => token.hit && token.kind === 'o'
+  );
+  const pedalHatVelocities = drumRowVelocities(pattern, 'ph', velocityProfile);
   const highTomVelocities = drumRowVelocities(pattern, 'ht', velocityProfile);
   const midTomVelocities = drumRowVelocities(pattern, 'mt', velocityProfile);
   const floorTomVelocities = drumRowVelocities(pattern, 'ft', velocityProfile);
@@ -2542,6 +2585,8 @@ async function prepareWikiDrumSamples(context, pattern, block, velocityProfile =
     prepareWikiFixedDrumSamples(context, wikiKickSampleState, kickVelocities, block, 'Kick'),
     prepareWikiFixedDrumSamples(context, wikiClosedHatTipSampleState, closedHatVelocities, block, 'Hi-hat tip'),
     prepareWikiFixedDrumSamples(context, wikiClosedHatEdgeSampleState, closedHatVelocities, block, 'Hi-hat edge'),
+    prepareWikiFixedDrumSamples(context, wikiOpenHatTipSampleState, openHatVelocities, block, 'Open hi-hat tip'),
+    prepareWikiFixedDrumSamples(context, wikiPedalHatChickSampleState, pedalHatVelocities, block, 'Pedal hi-hat chick'),
     prepareWikiFixedDrumSamples(context, wikiHighTomSampleState, highTomVelocities, block, 'High tom'),
     prepareWikiFixedDrumSamples(context, wikiMidTomSampleState, midTomVelocities, block, 'Mid tom'),
     prepareWikiFixedDrumSamples(context, wikiFloorTomSampleState, floorTomVelocities, block, 'Floor tom'),

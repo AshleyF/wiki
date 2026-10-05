@@ -40,7 +40,7 @@
       "peak_dbfs": -49.7538,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.275125,
       "attack_peak_seconds": 0.276542
     },
     {
@@ -52,7 +52,7 @@
       "peak_dbfs": -49.7682,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.275604,
       "attack_peak_seconds": 0.277021
     },
     {
@@ -64,7 +64,7 @@
       "peak_dbfs": -49.86,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.275271,
       "attack_peak_seconds": 0.276687
     },
     {
@@ -11370,7 +11370,7 @@
     "playback": "Align the musical event to playback_offset_seconds. In Web Audio, call source.start(beatTime, playback_offset_seconds).",
     "file_start": "WAV files retain pre-attack audio; do not assume sample frame zero is the hit onset.",
     "offset_range_seconds": [
-      0.0,
+      0.260271,
       0.275979
     ]
   },

@@ -40,7 +40,7 @@
       "peak_dbfs": -62.3289,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.291583,
       "attack_peak_seconds": 0.293542
     },
     {
@@ -52,7 +52,7 @@
       "peak_dbfs": -51.611,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281125,
       "attack_peak_seconds": 0.283562
     },
     {
@@ -64,7 +64,7 @@
       "peak_dbfs": -62.9876,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.277021,
       "attack_peak_seconds": 0.299771
     },
     {
@@ -76,7 +76,7 @@
       "peak_dbfs": -60.7216,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279667,
       "attack_peak_seconds": 0.292146
     },
     {
@@ -88,7 +88,7 @@
       "peak_dbfs": -62.3756,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271146,
       "attack_peak_seconds": 0.292896
     },
     {
@@ -100,7 +100,7 @@
       "peak_dbfs": -62.96,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.273208,
       "attack_peak_seconds": 0.295667
     },
     {
@@ -112,7 +112,7 @@
       "peak_dbfs": -62.2814,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292,
       "attack_peak_seconds": 0.293979
     },
     {
@@ -124,7 +124,7 @@
       "peak_dbfs": -62.6966,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272937,
       "attack_peak_seconds": 0.295396
     },
     {
@@ -136,7 +136,7 @@
       "peak_dbfs": -52.1706,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280042,
       "attack_peak_seconds": 0.292875
     },
     {
@@ -148,7 +148,7 @@
       "peak_dbfs": -53.2027,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.293438,
       "attack_peak_seconds": 0.295375
     },
     {
@@ -160,7 +160,7 @@
       "peak_dbfs": -62.3528,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.27275,
       "attack_peak_seconds": 0.295042
     },
     {
@@ -172,7 +172,7 @@
       "peak_dbfs": -62.1809,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.263729,
       "attack_peak_seconds": 0.285458
     },
     {
@@ -184,7 +184,7 @@
       "peak_dbfs": -62.9218,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271104,
       "attack_peak_seconds": 0.294042
     },
     {
@@ -196,7 +196,7 @@
       "peak_dbfs": -62.2704,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271792,
       "attack_peak_seconds": 0.293563
     },
     {
@@ -208,7 +208,7 @@
       "peak_dbfs": -62.5374,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272313,
       "attack_peak_seconds": 0.294812
     },
     {
@@ -220,7 +220,7 @@
       "peak_dbfs": -60.8571,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281646,
       "attack_peak_seconds": 0.294479
     },
     {
@@ -232,7 +232,7 @@
       "peak_dbfs": -61.7938,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292896,
       "attack_peak_seconds": 0.294854
     },
     {
@@ -244,7 +244,7 @@
       "peak_dbfs": -58.6284,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280729,
       "attack_peak_seconds": 0.283167
     },
     {
@@ -256,7 +256,7 @@
       "peak_dbfs": -62.5718,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272667,
       "attack_peak_seconds": 0.295125
     },
     {
@@ -268,7 +268,7 @@
       "peak_dbfs": -60.0316,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.26975,
       "attack_peak_seconds": 0.282604
     },
     {
@@ -280,7 +280,7 @@
       "peak_dbfs": -62.398,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270417,
       "attack_peak_seconds": 0.293146
     },
     {
@@ -292,7 +292,7 @@
       "peak_dbfs": -61.8908,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.283562,
       "attack_peak_seconds": 0.285521
     },
     {
@@ -304,7 +304,7 @@
       "peak_dbfs": -62.3083,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.290979,
       "attack_peak_seconds": 0.292271
     },
     {
@@ -316,7 +316,7 @@
       "peak_dbfs": -61.3335,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292187,
       "attack_peak_seconds": 0.294146
     },
     {
@@ -328,7 +328,7 @@
       "peak_dbfs": -62.7558,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270104,
       "attack_peak_seconds": 0.292583
     },
     {
@@ -340,7 +340,7 @@
       "peak_dbfs": -62.1421,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.291563,
       "attack_peak_seconds": 0.293521
     },
     {
@@ -352,7 +352,7 @@
       "peak_dbfs": -58.6465,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279396,
       "attack_peak_seconds": 0.282271
     },
     {
@@ -364,7 +364,7 @@
       "peak_dbfs": -62.818,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272146,
       "attack_peak_seconds": 0.294896
     },
     {
@@ -376,7 +376,7 @@
       "peak_dbfs": -61.7962,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.293729,
       "attack_peak_seconds": 0.295167
     },
     {
@@ -388,7 +388,7 @@
       "peak_dbfs": -60.39,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281375,
       "attack_peak_seconds": 0.29425
     },
     {
@@ -400,7 +400,7 @@
       "peak_dbfs": -55.2962,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271583,
       "attack_peak_seconds": 0.294083
     },
     {
@@ -412,7 +412,7 @@
       "peak_dbfs": -58.3185,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280833,
       "attack_peak_seconds": 0.283521
     },
     {
@@ -424,7 +424,7 @@
       "peak_dbfs": -62.16,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.273,
       "attack_peak_seconds": 0.295292
     },
     {
@@ -436,7 +436,7 @@
       "peak_dbfs": -61.8194,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292875,
       "attack_peak_seconds": 0.294229
     },
     {
@@ -448,7 +448,7 @@
       "peak_dbfs": -55.3931,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.290896,
       "attack_peak_seconds": 0.292854
     },
     {
@@ -460,7 +460,7 @@
       "peak_dbfs": -62.0972,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270167,
       "attack_peak_seconds": 0.292646
     },
     {
@@ -472,7 +472,7 @@
       "peak_dbfs": -62.4877,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272937,
       "attack_peak_seconds": 0.295625
     },
     {
@@ -484,7 +484,7 @@
       "peak_dbfs": -60.562,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281604,
       "attack_peak_seconds": 0.293958
     },
     {
@@ -496,7 +496,7 @@
       "peak_dbfs": -62.383,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270646,
       "attack_peak_seconds": 0.293125
     },
     {
@@ -508,7 +508,7 @@
       "peak_dbfs": -61.7284,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292187,
       "attack_peak_seconds": 0.294125
     },
     {
@@ -520,7 +520,7 @@
       "peak_dbfs": -62.3912,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292583,
       "attack_peak_seconds": 0.293896
     },
     {
@@ -532,7 +532,7 @@
       "peak_dbfs": -62.126,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.291271,
       "attack_peak_seconds": 0.292563
     },
     {
@@ -544,7 +544,7 @@
       "peak_dbfs": -61.3793,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.292604,
       "attack_peak_seconds": 0.294021
     },
     {
@@ -556,7 +556,7 @@
       "peak_dbfs": -61.4841,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281104,
       "attack_peak_seconds": 0.282542
     },
     {
@@ -568,7 +568,7 @@
       "peak_dbfs": -61.7514,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272396,
       "attack_peak_seconds": 0.294854
     },
     {
@@ -580,7 +580,7 @@
       "peak_dbfs": -61.3267,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272604,
       "attack_peak_seconds": 0.293833
     },
     {
@@ -592,7 +592,7 @@
       "peak_dbfs": -61.4717,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271521,
       "attack_peak_seconds": 0.294
     },
     {
@@ -604,7 +604,7 @@
       "peak_dbfs": -48.8017,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.283521,
       "attack_peak_seconds": 0.284917
     },
     {
@@ -616,7 +616,7 @@
       "peak_dbfs": -61.3744,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271062,
       "attack_peak_seconds": 0.292396
     },
     {
@@ -628,7 +628,7 @@
       "peak_dbfs": -59.9751,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279375,
       "attack_peak_seconds": 0.281104
     },
     {
@@ -640,7 +640,7 @@
       "peak_dbfs": -61.5288,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270896,
       "attack_peak_seconds": 0.293833
     },
     {
@@ -652,7 +652,7 @@
       "peak_dbfs": -61.2422,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281042,
       "attack_peak_seconds": 0.293542
     },
     {
@@ -664,7 +664,7 @@
       "peak_dbfs": -49.2915,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281042,
       "attack_peak_seconds": 0.375188
     },
     {
@@ -676,7 +676,7 @@
       "peak_dbfs": -61.2187,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.27075,
       "attack_peak_seconds": 0.291979
     },
     {
@@ -688,7 +688,7 @@
       "peak_dbfs": -61.5605,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271667,
       "attack_peak_seconds": 0.294146
     },
     {
@@ -700,7 +700,7 @@
       "peak_dbfs": -61.509,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281,
       "attack_peak_seconds": 0.283313
     },
     {
@@ -712,7 +712,7 @@
       "peak_dbfs": -59.9914,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280687,
       "attack_peak_seconds": 0.283313
     },
     {
@@ -724,7 +724,7 @@
       "peak_dbfs": -61.4577,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.283125,
       "attack_peak_seconds": 0.294417
     },
     {
@@ -736,7 +736,7 @@
       "peak_dbfs": -60.4645,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281229,
       "attack_peak_seconds": 0.283896
     },
     {
@@ -748,7 +748,7 @@
       "peak_dbfs": -61.4758,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279667,
       "attack_peak_seconds": 0.2815
     },
     {
@@ -760,7 +760,7 @@
       "peak_dbfs": -59.3605,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271646,
       "attack_peak_seconds": 0.274333
     },
     {
@@ -772,7 +772,7 @@
       "peak_dbfs": -61.1491,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.2825,
       "attack_peak_seconds": 0.295
     },
     {
@@ -784,7 +784,7 @@
       "peak_dbfs": -61.0165,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281979,
       "attack_peak_seconds": 0.293938
     },
     {
@@ -796,7 +796,7 @@
       "peak_dbfs": -60.5643,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271062,
       "attack_peak_seconds": 0.272854
     },
     {
@@ -808,7 +808,7 @@
       "peak_dbfs": -58.8219,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271792,
       "attack_peak_seconds": 0.365896
     },
     {
@@ -820,7 +820,7 @@
       "peak_dbfs": -60.6084,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271708,
       "attack_peak_seconds": 0.294187
     },
     {
@@ -832,7 +832,7 @@
       "peak_dbfs": -59.9275,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.277917,
       "attack_peak_seconds": 0.290479
     },
     {
@@ -844,7 +844,7 @@
       "peak_dbfs": -60.0543,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280958,
       "attack_peak_seconds": 0.293521
     },
     {
@@ -856,7 +856,7 @@
       "peak_dbfs": -60.2495,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272208,
       "attack_peak_seconds": 0.294687
     },
     {
@@ -868,7 +868,7 @@
       "peak_dbfs": -58.9944,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.262813,
       "attack_peak_seconds": 0.284604
     },
     {
@@ -880,7 +880,7 @@
       "peak_dbfs": -58.889,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.281562,
       "attack_peak_seconds": 0.293917
     },
     {
@@ -892,7 +892,7 @@
       "peak_dbfs": -57.72,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.283062,
       "attack_peak_seconds": 0.377188
     },
     {
@@ -904,7 +904,7 @@
       "peak_dbfs": -56.1363,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272333,
       "attack_peak_seconds": 0.284875
     },
     {
@@ -916,7 +916,7 @@
       "peak_dbfs": -58.2326,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279604,
       "attack_peak_seconds": 0.292479
     },
     {
@@ -928,7 +928,7 @@
       "peak_dbfs": -55.8165,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.272146,
       "attack_peak_seconds": 0.294625
     },
     {
@@ -964,7 +964,7 @@
       "peak_dbfs": -54.7251,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.279229,
       "attack_peak_seconds": 0.280646
     },
     {
@@ -976,7 +976,7 @@
       "peak_dbfs": -53.9713,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.271813,
       "attack_peak_seconds": 0.284375
     },
     {
@@ -988,7 +988,7 @@
       "peak_dbfs": -51.7544,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280083,
       "attack_peak_seconds": 0.281479
     },
     {
@@ -1024,7 +1024,7 @@
       "peak_dbfs": -52.4042,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.304146,
       "attack_peak_seconds": 0.306063
     },
     {
@@ -1036,7 +1036,7 @@
       "peak_dbfs": -50.5365,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280896,
       "attack_peak_seconds": 0.282833
     },
     {
@@ -1048,7 +1048,7 @@
       "peak_dbfs": -51.7443,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.306917,
       "attack_peak_seconds": 0.308833
     },
     {
@@ -1060,7 +1060,7 @@
       "peak_dbfs": -50.0732,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.280104,
       "attack_peak_seconds": 0.281938
     },
     {
@@ -14158,8 +14158,8 @@
     "playback": "Align the musical event to playback_offset_seconds. In Web Audio, call source.start(beatTime, playback_offset_seconds).",
     "file_start": "WAV files retain pre-attack audio; do not assume sample frame zero is the hit onset.",
     "offset_range_seconds": [
-      0.0,
-      0.280813
+      0.261042,
+      0.306917
     ]
   },
   "audio": {
@@ -14170,7 +14170,7 @@
   "audition": {
     "file": "audition.wav",
     "purpose": "Human reference; plays every distinct sample once in samples-array order.",
-    "interval_seconds": 2.0,
+    "interval_seconds": 1.0,
     "sample_rate": 48000,
     "sample_count": 140,
     "applies_playback_offsets": true,
@@ -14184,559 +14184,559 @@
         "sample_id": "crash-cymbal-bow-001"
       },
       {
-        "time_seconds": 2.0,
+        "time_seconds": 1.0,
         "sample_id": "crash-cymbal-bow-002"
       },
       {
-        "time_seconds": 4.0,
+        "time_seconds": 2.0,
         "sample_id": "crash-cymbal-bow-003"
       },
       {
-        "time_seconds": 6.0,
+        "time_seconds": 3.0,
         "sample_id": "crash-cymbal-bow-004"
       },
       {
-        "time_seconds": 8.0,
+        "time_seconds": 4.0,
         "sample_id": "crash-cymbal-bow-005"
       },
       {
-        "time_seconds": 10.0,
+        "time_seconds": 5.0,
         "sample_id": "crash-cymbal-bow-006"
       },
       {
-        "time_seconds": 12.0,
+        "time_seconds": 6.0,
         "sample_id": "crash-cymbal-bow-007"
       },
       {
-        "time_seconds": 14.0,
+        "time_seconds": 7.0,
         "sample_id": "crash-cymbal-bow-008"
       },
       {
-        "time_seconds": 16.0,
+        "time_seconds": 8.0,
         "sample_id": "crash-cymbal-bow-009"
       },
       {
-        "time_seconds": 18.0,
+        "time_seconds": 9.0,
         "sample_id": "crash-cymbal-bow-010"
       },
       {
-        "time_seconds": 20.0,
+        "time_seconds": 10.0,
         "sample_id": "crash-cymbal-bow-011"
       },
       {
-        "time_seconds": 22.0,
+        "time_seconds": 11.0,
         "sample_id": "crash-cymbal-bow-012"
       },
       {
-        "time_seconds": 24.0,
+        "time_seconds": 12.0,
         "sample_id": "crash-cymbal-bow-013"
       },
       {
-        "time_seconds": 26.0,
+        "time_seconds": 13.0,
         "sample_id": "crash-cymbal-bow-014"
       },
       {
-        "time_seconds": 28.0,
+        "time_seconds": 14.0,
         "sample_id": "crash-cymbal-bow-015"
       },
       {
-        "time_seconds": 30.0,
+        "time_seconds": 15.0,
         "sample_id": "crash-cymbal-bow-016"
       },
       {
-        "time_seconds": 32.0,
+        "time_seconds": 16.0,
         "sample_id": "crash-cymbal-bow-017"
       },
       {
-        "time_seconds": 34.0,
+        "time_seconds": 17.0,
         "sample_id": "crash-cymbal-bow-018"
       },
       {
-        "time_seconds": 36.0,
+        "time_seconds": 18.0,
         "sample_id": "crash-cymbal-bow-019"
       },
       {
-        "time_seconds": 38.0,
+        "time_seconds": 19.0,
         "sample_id": "crash-cymbal-bow-020"
       },
       {
-        "time_seconds": 40.0,
+        "time_seconds": 20.0,
         "sample_id": "crash-cymbal-bow-021"
       },
       {
-        "time_seconds": 42.0,
+        "time_seconds": 21.0,
         "sample_id": "crash-cymbal-bow-022"
       },
       {
-        "time_seconds": 44.0,
+        "time_seconds": 22.0,
         "sample_id": "crash-cymbal-bow-023"
       },
       {
-        "time_seconds": 46.0,
+        "time_seconds": 23.0,
         "sample_id": "crash-cymbal-bow-024"
       },
       {
-        "time_seconds": 48.0,
+        "time_seconds": 24.0,
         "sample_id": "crash-cymbal-bow-025"
       },
       {
-        "time_seconds": 50.0,
+        "time_seconds": 25.0,
         "sample_id": "crash-cymbal-bow-026"
       },
       {
-        "time_seconds": 52.0,
+        "time_seconds": 26.0,
         "sample_id": "crash-cymbal-bow-027"
       },
       {
-        "time_seconds": 54.0,
+        "time_seconds": 27.0,
         "sample_id": "crash-cymbal-bow-028"
       },
       {
-        "time_seconds": 56.0,
+        "time_seconds": 28.0,
         "sample_id": "crash-cymbal-bow-029"
       },
       {
-        "time_seconds": 58.0,
+        "time_seconds": 29.0,
         "sample_id": "crash-cymbal-bow-030"
       },
       {
-        "time_seconds": 60.0,
+        "time_seconds": 30.0,
         "sample_id": "crash-cymbal-bow-031"
       },
       {
-        "time_seconds": 62.0,
+        "time_seconds": 31.0,
         "sample_id": "crash-cymbal-bow-032"
       },
       {
-        "time_seconds": 64.0,
+        "time_seconds": 32.0,
         "sample_id": "crash-cymbal-bow-033"
       },
       {
-        "time_seconds": 66.0,
+        "time_seconds": 33.0,
         "sample_id": "crash-cymbal-bow-034"
       },
       {
-        "time_seconds": 68.0,
+        "time_seconds": 34.0,
         "sample_id": "crash-cymbal-bow-035"
       },
       {
-        "time_seconds": 70.0,
+        "time_seconds": 35.0,
         "sample_id": "crash-cymbal-bow-036"
       },
       {
-        "time_seconds": 72.0,
+        "time_seconds": 36.0,
         "sample_id": "crash-cymbal-bow-037"
       },
       {
-        "time_seconds": 74.0,
+        "time_seconds": 37.0,
         "sample_id": "crash-cymbal-bow-038"
       },
       {
-        "time_seconds": 76.0,
+        "time_seconds": 38.0,
         "sample_id": "crash-cymbal-bow-039"
       },
       {
-        "time_seconds": 78.0,
+        "time_seconds": 39.0,
         "sample_id": "crash-cymbal-bow-040"
       },
       {
-        "time_seconds": 80.0,
+        "time_seconds": 40.0,
         "sample_id": "crash-cymbal-bow-041"
       },
       {
-        "time_seconds": 82.0,
+        "time_seconds": 41.0,
         "sample_id": "crash-cymbal-bow-042"
       },
       {
-        "time_seconds": 84.0,
+        "time_seconds": 42.0,
         "sample_id": "crash-cymbal-bow-043"
       },
       {
-        "time_seconds": 86.0,
+        "time_seconds": 43.0,
         "sample_id": "crash-cymbal-bow-044"
       },
       {
-        "time_seconds": 88.0,
+        "time_seconds": 44.0,
         "sample_id": "crash-cymbal-bow-045"
       },
       {
-        "time_seconds": 90.0,
+        "time_seconds": 45.0,
         "sample_id": "crash-cymbal-bow-046"
       },
       {
-        "time_seconds": 92.0,
+        "time_seconds": 46.0,
         "sample_id": "crash-cymbal-bow-047"
       },
       {
-        "time_seconds": 94.0,
+        "time_seconds": 47.0,
         "sample_id": "crash-cymbal-bow-048"
       },
       {
-        "time_seconds": 96.0,
+        "time_seconds": 48.0,
         "sample_id": "crash-cymbal-bow-049"
       },
       {
-        "time_seconds": 98.0,
+        "time_seconds": 49.0,
         "sample_id": "crash-cymbal-bow-050"
       },
       {
-        "time_seconds": 100.0,
+        "time_seconds": 50.0,
         "sample_id": "crash-cymbal-bow-051"
       },
       {
-        "time_seconds": 102.0,
+        "time_seconds": 51.0,
         "sample_id": "crash-cymbal-bow-052"
       },
       {
-        "time_seconds": 104.0,
+        "time_seconds": 52.0,
         "sample_id": "crash-cymbal-bow-053"
       },
       {
-        "time_seconds": 106.0,
+        "time_seconds": 53.0,
         "sample_id": "crash-cymbal-bow-054"
       },
       {
-        "time_seconds": 108.0,
+        "time_seconds": 54.0,
         "sample_id": "crash-cymbal-bow-055"
       },
       {
-        "time_seconds": 110.0,
+        "time_seconds": 55.0,
         "sample_id": "crash-cymbal-bow-056"
       },
       {
-        "time_seconds": 112.0,
+        "time_seconds": 56.0,
         "sample_id": "crash-cymbal-bow-057"
       },
       {
-        "time_seconds": 114.0,
+        "time_seconds": 57.0,
         "sample_id": "crash-cymbal-bow-058"
       },
       {
-        "time_seconds": 116.0,
+        "time_seconds": 58.0,
         "sample_id": "crash-cymbal-bow-059"
       },
       {
-        "time_seconds": 118.0,
+        "time_seconds": 59.0,
         "sample_id": "crash-cymbal-bow-060"
       },
       {
-        "time_seconds": 120.0,
+        "time_seconds": 60.0,
         "sample_id": "crash-cymbal-bow-061"
       },
       {
-        "time_seconds": 122.0,
+        "time_seconds": 61.0,
         "sample_id": "crash-cymbal-bow-062"
       },
       {
-        "time_seconds": 124.0,
+        "time_seconds": 62.0,
         "sample_id": "crash-cymbal-bow-063"
       },
       {
-        "time_seconds": 126.0,
+        "time_seconds": 63.0,
         "sample_id": "crash-cymbal-bow-064"
       },
       {
-        "time_seconds": 128.0,
+        "time_seconds": 64.0,
         "sample_id": "crash-cymbal-bow-065"
       },
       {
-        "time_seconds": 130.0,
+        "time_seconds": 65.0,
         "sample_id": "crash-cymbal-bow-066"
       },
       {
-        "time_seconds": 132.0,
+        "time_seconds": 66.0,
         "sample_id": "crash-cymbal-bow-067"
       },
       {
-        "time_seconds": 134.0,
+        "time_seconds": 67.0,
         "sample_id": "crash-cymbal-bow-068"
       },
       {
-        "time_seconds": 136.0,
+        "time_seconds": 68.0,
         "sample_id": "crash-cymbal-bow-069"
       },
       {
-        "time_seconds": 138.0,
+        "time_seconds": 69.0,
         "sample_id": "crash-cymbal-bow-070"
       },
       {
-        "time_seconds": 140.0,
+        "time_seconds": 70.0,
         "sample_id": "crash-cymbal-bow-071"
       },
       {
-        "time_seconds": 142.0,
+        "time_seconds": 71.0,
         "sample_id": "crash-cymbal-bow-072"
       },
       {
-        "time_seconds": 144.0,
+        "time_seconds": 72.0,
         "sample_id": "crash-cymbal-bow-073"
       },
       {
-        "time_seconds": 146.0,
+        "time_seconds": 73.0,
         "sample_id": "crash-cymbal-bow-074"
       },
       {
-        "time_seconds": 148.0,
+        "time_seconds": 74.0,
         "sample_id": "crash-cymbal-bow-075"
       },
       {
-        "time_seconds": 150.0,
+        "time_seconds": 75.0,
         "sample_id": "crash-cymbal-bow-076"
       },
       {
-        "time_seconds": 152.0,
+        "time_seconds": 76.0,
         "sample_id": "crash-cymbal-bow-077"
       },
       {
-        "time_seconds": 154.0,
+        "time_seconds": 77.0,
         "sample_id": "crash-cymbal-bow-078"
       },
       {
-        "time_seconds": 156.0,
+        "time_seconds": 78.0,
         "sample_id": "crash-cymbal-bow-079"
       },
       {
-        "time_seconds": 158.0,
+        "time_seconds": 79.0,
         "sample_id": "crash-cymbal-bow-080"
       },
       {
-        "time_seconds": 160.0,
+        "time_seconds": 80.0,
         "sample_id": "crash-cymbal-bow-081"
       },
       {
-        "time_seconds": 162.0,
+        "time_seconds": 81.0,
         "sample_id": "crash-cymbal-bow-082"
       },
       {
-        "time_seconds": 164.0,
+        "time_seconds": 82.0,
         "sample_id": "crash-cymbal-bow-083"
       },
       {
-        "time_seconds": 166.0,
+        "time_seconds": 83.0,
         "sample_id": "crash-cymbal-bow-084"
       },
       {
-        "time_seconds": 168.0,
+        "time_seconds": 84.0,
         "sample_id": "crash-cymbal-bow-085"
       },
       {
-        "time_seconds": 170.0,
+        "time_seconds": 85.0,
         "sample_id": "crash-cymbal-bow-086"
       },
       {
-        "time_seconds": 172.0,
+        "time_seconds": 86.0,
         "sample_id": "crash-cymbal-bow-087"
       },
       {
-        "time_seconds": 174.0,
+        "time_seconds": 87.0,
         "sample_id": "crash-cymbal-bow-088"
       },
       {
-        "time_seconds": 176.0,
+        "time_seconds": 88.0,
         "sample_id": "crash-cymbal-bow-089"
       },
       {
-        "time_seconds": 178.0,
+        "time_seconds": 89.0,
         "sample_id": "crash-cymbal-bow-090"
       },
       {
-        "time_seconds": 180.0,
+        "time_seconds": 90.0,
         "sample_id": "crash-cymbal-bow-091"
       },
       {
-        "time_seconds": 182.0,
+        "time_seconds": 91.0,
         "sample_id": "crash-cymbal-bow-092"
       },
       {
-        "time_seconds": 184.0,
+        "time_seconds": 92.0,
         "sample_id": "crash-cymbal-bow-093"
       },
       {
-        "time_seconds": 186.0,
+        "time_seconds": 93.0,
         "sample_id": "crash-cymbal-bow-094"
       },
       {
-        "time_seconds": 188.0,
+        "time_seconds": 94.0,
         "sample_id": "crash-cymbal-bow-095"
       },
       {
-        "time_seconds": 190.0,
+        "time_seconds": 95.0,
         "sample_id": "crash-cymbal-bow-096"
       },
       {
-        "time_seconds": 192.0,
+        "time_seconds": 96.0,
         "sample_id": "crash-cymbal-bow-097"
       },
       {
-        "time_seconds": 194.0,
+        "time_seconds": 97.0,
         "sample_id": "crash-cymbal-bow-098"
       },
       {
-        "time_seconds": 196.0,
+        "time_seconds": 98.0,
         "sample_id": "crash-cymbal-bow-099"
       },
       {
-        "time_seconds": 198.0,
+        "time_seconds": 99.0,
         "sample_id": "crash-cymbal-bow-100"
       },
       {
-        "time_seconds": 200.0,
+        "time_seconds": 100.0,
         "sample_id": "crash-cymbal-bow-101"
       },
       {
-        "time_seconds": 202.0,
+        "time_seconds": 101.0,
         "sample_id": "crash-cymbal-bow-102"
       },
       {
-        "time_seconds": 204.0,
+        "time_seconds": 102.0,
         "sample_id": "crash-cymbal-bow-103"
       },
       {
-        "time_seconds": 206.0,
+        "time_seconds": 103.0,
         "sample_id": "crash-cymbal-bow-104"
       },
       {
-        "time_seconds": 208.0,
+        "time_seconds": 104.0,
         "sample_id": "crash-cymbal-bow-105"
       },
       {
-        "time_seconds": 210.0,
+        "time_seconds": 105.0,
         "sample_id": "crash-cymbal-bow-106"
       },
       {
-        "time_seconds": 212.0,
+        "time_seconds": 106.0,
         "sample_id": "crash-cymbal-bow-107"
       },
       {
-        "time_seconds": 214.0,
+        "time_seconds": 107.0,
         "sample_id": "crash-cymbal-bow-108"
       },
       {
-        "time_seconds": 216.0,
+        "time_seconds": 108.0,
         "sample_id": "crash-cymbal-bow-109"
       },
       {
-        "time_seconds": 218.0,
+        "time_seconds": 109.0,
         "sample_id": "crash-cymbal-bow-110"
       },
       {
-        "time_seconds": 220.0,
+        "time_seconds": 110.0,
         "sample_id": "crash-cymbal-bow-111"
       },
       {
-        "time_seconds": 222.0,
+        "time_seconds": 111.0,
         "sample_id": "crash-cymbal-bow-112"
       },
       {
-        "time_seconds": 224.0,
+        "time_seconds": 112.0,
         "sample_id": "crash-cymbal-bow-113"
       },
       {
-        "time_seconds": 226.0,
+        "time_seconds": 113.0,
         "sample_id": "crash-cymbal-bow-114"
       },
       {
-        "time_seconds": 228.0,
+        "time_seconds": 114.0,
         "sample_id": "crash-cymbal-bow-115"
       },
       {
-        "time_seconds": 230.0,
+        "time_seconds": 115.0,
         "sample_id": "crash-cymbal-bow-116"
       },
       {
-        "time_seconds": 232.0,
+        "time_seconds": 116.0,
         "sample_id": "crash-cymbal-bow-117"
       },
       {
-        "time_seconds": 234.0,
+        "time_seconds": 117.0,
         "sample_id": "crash-cymbal-bow-118"
       },
       {
-        "time_seconds": 236.0,
+        "time_seconds": 118.0,
         "sample_id": "crash-cymbal-bow-119"
       },
       {
-        "time_seconds": 238.0,
+        "time_seconds": 119.0,
         "sample_id": "crash-cymbal-bow-120"
       },
       {
-        "time_seconds": 240.0,
+        "time_seconds": 120.0,
         "sample_id": "crash-cymbal-bow-121"
       },
       {
-        "time_seconds": 242.0,
+        "time_seconds": 121.0,
         "sample_id": "crash-cymbal-bow-122"
       },
       {
-        "time_seconds": 244.0,
+        "time_seconds": 122.0,
         "sample_id": "crash-cymbal-bow-123"
       },
       {
-        "time_seconds": 246.0,
+        "time_seconds": 123.0,
         "sample_id": "crash-cymbal-bow-124"
       },
       {
-        "time_seconds": 248.0,
+        "time_seconds": 124.0,
         "sample_id": "crash-cymbal-bow-125"
       },
       {
-        "time_seconds": 250.0,
+        "time_seconds": 125.0,
         "sample_id": "crash-cymbal-bow-126"
       },
       {
-        "time_seconds": 252.0,
+        "time_seconds": 126.0,
         "sample_id": "crash-cymbal-bow-127"
       },
       {
-        "time_seconds": 254.0,
+        "time_seconds": 127.0,
         "sample_id": "crash-cymbal-bow-128"
       },
       {
-        "time_seconds": 256.0,
+        "time_seconds": 128.0,
         "sample_id": "crash-cymbal-bow-129"
       },
       {
-        "time_seconds": 258.0,
+        "time_seconds": 129.0,
         "sample_id": "crash-cymbal-bow-130"
       },
       {
-        "time_seconds": 260.0,
+        "time_seconds": 130.0,
         "sample_id": "crash-cymbal-bow-131"
       },
       {
-        "time_seconds": 262.0,
+        "time_seconds": 131.0,
         "sample_id": "crash-cymbal-bow-132"
       },
       {
-        "time_seconds": 264.0,
+        "time_seconds": 132.0,
         "sample_id": "crash-cymbal-bow-133"
       },
       {
-        "time_seconds": 266.0,
+        "time_seconds": 133.0,
         "sample_id": "crash-cymbal-bow-134"
       },
       {
-        "time_seconds": 268.0,
+        "time_seconds": 134.0,
         "sample_id": "crash-cymbal-bow-135"
       },
       {
-        "time_seconds": 270.0,
+        "time_seconds": 135.0,
         "sample_id": "crash-cymbal-bow-136"
       },
       {
-        "time_seconds": 272.0,
+        "time_seconds": 136.0,
         "sample_id": "crash-cymbal-bow-137"
       },
       {
-        "time_seconds": 274.0,
+        "time_seconds": 137.0,
         "sample_id": "crash-cymbal-bow-138"
       },
       {
-        "time_seconds": 276.0,
+        "time_seconds": 138.0,
         "sample_id": "crash-cymbal-bow-139"
       },
       {
-        "time_seconds": 278.0,
+        "time_seconds": 139.0,
         "sample_id": "crash-cymbal-bow-140"
       }
     ]

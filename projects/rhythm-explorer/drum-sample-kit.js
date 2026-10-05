@@ -1,5 +1,7 @@
 const clampVelocity = value => Math.max(1, Math.min(127, Math.round(Number(value) || 1)));
 
+export const DRUM_MANIFEST_FETCH_OPTIONS = Object.freeze({ cache: 'no-store' });
+
 export function velocityFromStrength(strength, referenceVelocity = 82) {
   return clampVelocity(referenceVelocity * Math.max(0, Number(strength) || 0));
 }
@@ -78,6 +80,11 @@ export function playbackVelocityGain(manifest, velocity) {
   return 10 ** ((minimumGainDb*distance)/20);
 }
 
+export function playbackKitGain(manifest) {
+  const gainDb = Number(manifest?.gain?.playback_gain_db) || 0;
+  return 10 ** (gainDb / 20);
+}
+
 export function conformSampleBufferChannels(context, buffer, sample = {}) {
   const declaredMono = Number(sample.channel_count) === 1 || sample.channel_layout === 'mono';
   if (!declaredMono || buffer?.numberOfChannels === 1) return buffer;
@@ -144,7 +151,10 @@ export class DrumSampleLibrary {
 
   async load() {
     if (!this.libraryPromise) {
-      this.libraryPromise = fetch(this.libraryUrl, { cache: 'no-cache' })
+      // Discovery and leaf manifests are small and may be regenerated at the
+      // same URL when timing analysis changes. Never reuse stale metadata;
+      // decoded WAVs still keep their separate in-memory/browser cache path.
+      this.libraryPromise = fetch(this.libraryUrl, DRUM_MANIFEST_FETCH_OPTIONS)
         .then(response => {
           if (!response.ok) throw new Error(`Could not load drum sample library (${response.status}).`);
           return response.json();
@@ -197,7 +207,7 @@ export class DrumSampleKit {
 
   async loadManifest() {
     if (!this.manifestPromise) {
-      this.manifestPromise = fetch(this.manifestUrl, { cache: 'no-cache' })
+      this.manifestPromise = fetch(this.manifestUrl, DRUM_MANIFEST_FETCH_OPTIONS)
         .then(response => {
           if (!response.ok) throw new Error(`Could not load drum sample manifest (${response.status}).`);
           return response.json();
@@ -277,7 +287,7 @@ export class DrumSampleKit {
     const playbackOffset = Math.max(0, Number(sample?.playback_offset_seconds) || 0);
     source.buffer = this.buffers.get(variant.sample_id);
     const mappedGain = Math.max(0,Number(variant.gain_linear) || 0);
-    gain.gain.setValueAtTime(mappedGain*playbackVelocityGain(this.manifest,velocity),time);
+    gain.gain.setValueAtTime(mappedGain*playbackVelocityGain(this.manifest,velocity)*playbackKitGain(this.manifest),time);
     source.connect(gain);
 
     if (pan && typeof context.createStereoPanner === 'function') {

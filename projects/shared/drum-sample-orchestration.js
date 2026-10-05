@@ -1,7 +1,9 @@
 export const FIXED_DRUM_SAMPLE_KIT_IDS = Object.freeze({
-  kickCenter: 'kick-center',
-  closedHiHatTip: 'hi-hat-closed-tip',
-  closedHiHatEdge: 'hi-hat-closed-edge',
+  kickCenter: 'superior-drummer-current-kick-center',
+  closedHiHatTip: 'superior-drummer-current-hihat-closed-tip',
+  closedHiHatEdge: 'superior-drummer-current-hihat-closed-edge',
+  openHiHatTip: 'superior-drummer-current-hihat-open-tip',
+  pedalHiHatChick: 'superior-drummer-current-hihat-pedal-chick',
   crashBow: 'crash-cymbal-bow',
   crashChoke: 'crash-cymbal-choke',
   highTomCenter: 'high-tom-center',

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
-import { chooseWeightedVariant, conformSampleBufferChannels, DrumSampleKit, findKitDefinition, listKitDefinitions, playbackVelocityGain, pushOrderedVelocities, velocityFromStrength, velocityFromStrengthProfile } from './drum-sample-kit.js';
+import { chooseWeightedVariant, conformSampleBufferChannels, DRUM_MANIFEST_FETCH_OPTIONS, DrumSampleKit, findKitDefinition, listKitDefinitions, playbackKitGain, playbackVelocityGain, pushOrderedVelocities, velocityFromStrength, velocityFromStrengthProfile } from './drum-sample-kit.js';
+
+assert.deepEqual(DRUM_MANIFEST_FETCH_OPTIONS, { cache: 'no-store' });
 
 assert.equal(velocityFromStrength(1), 82);
 assert.equal(velocityFromStrength(0.35), 29);
@@ -28,6 +30,9 @@ assert.ok(Math.abs(playbackVelocityGain(expandedDynamics,1)-(10**(-12/20))) < 1e
 assert.ok(playbackVelocityGain(expandedDynamics,16) < 0.36);
 assert.equal(playbackVelocityGain(expandedDynamics,64),1);
 assert.equal(playbackVelocityGain(expandedDynamics,111),1);
+assert.equal(playbackKitGain({}),1);
+assert.ok(Math.abs(playbackKitGain({ gain:{ playback_gain_db:20 } })-10) < 1e-12);
+assert.ok(Math.abs(playbackKitGain({ gain:{ playback_gain_db:-6 } })-(10**(-6/20))) < 1e-12);
 
 const quietChannel = new Float32Array([0, 0.01, 0]);
 const signalChannel = new Float32Array([0.2, -0.5, 0.1]);
@@ -59,6 +64,7 @@ assert.deepEqual([...renderedMonoData], [...signalChannel]);
 assert.equal(conformSampleBufferChannels(channelContext, stereoBuffer, { channel_count: 2 }), stereoBuffer);
 
 const timedKit = new DrumSampleKit(new URL('file:///timed-kit.json'), { random: () => 0 });
+timedKit.manifest = { gain:{ playback_gain_db:6 } };
 timedKit.sampleById.set('timed-sample', { playback_offset_seconds: 0.125 });
 timedKit.variantsByVelocity.set(82, [{ sample_id: 'timed-sample', gain_linear: 0.75, weight: 1 }]);
 timedKit.buffers.set('timed-sample', { duration: 1 });
@@ -79,7 +85,8 @@ const fakeContext = {
 };
 timedKit.schedule(fakeContext, { velocity: 82, time: 2 });
 assert.deepEqual(scheduledStart, [2, 0.125]);
-assert.deepEqual(scheduledGain, [0.75, 2]);
+assert.ok(Math.abs(scheduledGain[0]-(0.75*(10**(6/20)))) < 1e-12);
+assert.equal(scheduledGain[1],2);
 
 const libraryUrl = new URL('./assets/drums/library.json', import.meta.url);
 const library = JSON.parse(await readFile(libraryUrl, 'utf8'));

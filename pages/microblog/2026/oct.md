@@ -27,3 +27,17 @@ The bigger danger is AI helping humans to create dangerous things. For example, 
 So, I agree that this transition period is dangerous and I still don't know what society will look like after the transition. But, I'm very hopeful that we make it through without permanently destroying ourselves and we'll come out the other end in an age of crazy abundance. People in hundred years will certainly not want a time machine to come back to now or any time earlier.
 
 Tracey spent most of the day in the garden, cleaning out beds and such for next year.
+
+## 03 OCT 2026 - Soccer + Calvin + Sushi
+
+We went to Aurora's game in the morning, then Tracey went to Kayden's game while I went to (already planned) lunch with Calvin. He's doing fine. We had a fun conversation about the future of humans once they can't produce value. He, funny enough, thinks that there will be an *increase* in innovation. Maybe. Imagine how many potential "Einsteins" there are out there that are stuck being truck drivers, or whatever else. After lunch with Calvin, I joined Tracey for a second lunch at Izumi's. ❤️
+
+## 04 OCT 2026 - Caligraphy + Apples
+
+You never know when an old hobbie will have a resurgance. We got an pencil for the iPad last week and today I played with ProCreate. I had learned caligraphy years ago from some YouTube channel and today I spent practically all day getting back up to speed with a copperplate miniscule & majiscule alphabet and writing all kinds of things to practice. The pencil has pressure, tilt and rotation sensors. So it's very expressive and ProCreate has all kinds of nifty controls. I like having a two-color pen that changes depending on pressure. Just as a guide so that I can see where I'm applying pressure. I learned initially on the Kindle Scribe, which automatically does thick/thin strokes based on direction. That's cheating. Controlling pressure is much more difficult, but more expressive too. For example an 'x' can't be done correctly on the Scribe.
+
+In the afternoon, Tracey was making apple butter. I pealed and cored a bunch of apples, with the little invention from the 1800s.
+
+## 05 OCT 2026 - 
+
+I started (re)watching the SICP lectures from the 80s. Funny that I said that I would be rereading SICP in my retirement farewell email, but only now am I actually doing it!

@@ -41,7 +41,7 @@
       "peak_dbfs": -49.9081,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.264771,
       "attack_peak_seconds": 0.265646
     },
     {
@@ -53,7 +53,7 @@
       "peak_dbfs": -50.4517,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.265583,
       "attack_peak_seconds": 0.266479
     },
     {
@@ -65,7 +65,7 @@
       "peak_dbfs": -50.024,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266104,
       "attack_peak_seconds": 0.266896
     },
     {
@@ -77,7 +77,7 @@
       "peak_dbfs": -50.5572,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.267125,
       "attack_peak_seconds": 0.268021
     },
     {
@@ -89,7 +89,7 @@
       "peak_dbfs": -50.7198,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.265729,
       "attack_peak_seconds": 0.266583
     },
     {
@@ -101,7 +101,7 @@
       "peak_dbfs": -49.0462,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.262104,
       "attack_peak_seconds": 0.262896
     },
     {
@@ -113,7 +113,7 @@
       "peak_dbfs": -53.8029,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.260542,
       "attack_peak_seconds": 0.261625
     },
     {
@@ -125,7 +125,7 @@
       "peak_dbfs": -49.2744,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266125,
       "attack_peak_seconds": 0.266937
     },
     {
@@ -137,7 +137,7 @@
       "peak_dbfs": -53.7182,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.262083,
       "attack_peak_seconds": 0.263146
     },
     {
@@ -149,7 +149,7 @@
       "peak_dbfs": -50.2919,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266375,
       "attack_peak_seconds": 0.267229
     },
     {
@@ -161,7 +161,7 @@
       "peak_dbfs": -49.6106,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.265896,
       "attack_peak_seconds": 0.266667
     },
     {
@@ -173,7 +173,7 @@
       "peak_dbfs": -51.1092,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.265271,
       "attack_peak_seconds": 0.266167
     },
     {
@@ -185,7 +185,7 @@
       "peak_dbfs": -53.7115,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266354,
       "attack_peak_seconds": 0.267437
     },
     {
@@ -197,7 +197,7 @@
       "peak_dbfs": -50.2919,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.262854,
       "attack_peak_seconds": 0.263708
     },
     {
@@ -209,7 +209,7 @@
       "peak_dbfs": -49.2744,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.267583,
       "attack_peak_seconds": 0.268396
     },
     {
@@ -221,7 +221,7 @@
       "peak_dbfs": -49.3025,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.270333,
       "attack_peak_seconds": 0.271146
     },
     {
@@ -233,7 +233,7 @@
       "peak_dbfs": -50.383,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.261937,
       "attack_peak_seconds": 0.262792
     },
     {
@@ -245,7 +245,7 @@
       "peak_dbfs": -50.0847,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.265875,
       "attack_peak_seconds": 0.266708
     },
     {
@@ -257,7 +257,7 @@
       "peak_dbfs": -50.2832,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.261833,
       "attack_peak_seconds": 0.262708
     },
     {
@@ -269,7 +269,7 @@
       "peak_dbfs": -48.3812,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.267729,
       "attack_peak_seconds": 0.268437
     },
     {
@@ -281,7 +281,7 @@
       "peak_dbfs": -46.5776,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.268104,
       "attack_peak_seconds": 0.268813
     },
     {
@@ -401,7 +401,7 @@
       "peak_dbfs": -46.7304,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266167,
       "attack_peak_seconds": 0.266875
     },
     {
@@ -413,7 +413,7 @@
       "peak_dbfs": -45.8629,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266688,
       "attack_peak_seconds": 0.267396
     },
     {
@@ -437,7 +437,7 @@
       "peak_dbfs": -49.1985,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.266771,
       "attack_peak_seconds": 0.267625
     },
     {
@@ -521,7 +521,7 @@
       "peak_dbfs": -46.4792,
       "channel_count": 2,
       "channel_layout": "stereo",
-      "playback_offset_seconds": 0.0,
+      "playback_offset_seconds": 0.267229,
       "attack_peak_seconds": 0.267958
     },
     {
@@ -27192,7 +27192,7 @@
     "playback": "Align the musical event to playback_offset_seconds. In Web Audio, call source.start(beatTime, playback_offset_seconds).",
     "file_start": "WAV files retain pre-attack audio; do not assume sample frame zero is the hit onset.",
     "offset_range_seconds": [
-      0.0,
+      0.257458,
       0.276521
     ]
   },
