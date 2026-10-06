@@ -163,6 +163,12 @@ To add a language:
 
 Renderers are synchronous HTML producers at present. Expensive libraries should initialize lazily on first interaction where practical. If a renderer needs asynchronous transformation, add an explicit post-render enhancement phase rather than making `renderMarkdown()` itself perform network work.
 
+## Math notation integration
+
+`index.html` loads the pinned `katex@0.19.0` browser CSS and JavaScript from jsDelivr before `app.js`. A `math` fence accepts LaTeX-style source and renders one centered display expression. Authors write LaTeX-like notation, not MathML; `renderMathBlocks()` deliberately requests KaTeX's HTML-only output.
+
+Math rendering is progressive enhancement. `renderMarkdown()` creates a placeholder and a collapsed copy of the escaped source, then `loadPage()` calls `renderMathBlocks()` after replacing `#content`. If KaTeX is unavailable or parsing fails, show a concise error and open the Source section so the canonical text remains readable. Do not add `$...$` or `$$...$$` parsing to the small inline Markdown renderer as a side effect of this fence; inline-math syntax would be a separate parser feature with its own escaping and delimiter rules.
+
 ## ABC notation integration
 
 `index.html` loads the pinned `abcjs@6.6.3` browser bundle from jsDelivr before `app.js`. An `abc` fence renders a notation panel with a target `<div>` for generated SVG, a single Play/Stop button, and a collapsible copy of the raw source.
@@ -404,8 +410,9 @@ There is no automated test suite yet. For every behavioral change:
 6. At a narrow viewport, verify the Menu control and article layout.
 7. For Strudel changes, verify the Play/Stop toggle, playback replacement, navigation cleanup, and retry state when the runtime or pattern fails.
 8. For ABC changes, verify an `abc` fence renders staff notation and the Source section still shows readable text if the library fails.
-9. For drum sample changes, run `node projects/rhythm-explorer/drum-sample-kit.test.mjs`, verify only required velocity layers load, and confirm Play/Stop plus MIDI bypass still work.
-10. Check the browser console for unexpected errors.
+9. For math changes, verify a `math` fence renders in both themes and its escaped Source section opens automatically when KaTeX is unavailable or the expression is invalid.
+10. For drum sample changes, run `node projects/rhythm-explorer/drum-sample-kit.test.mjs`, verify only required velocity layers load, and confirm Play/Stop plus MIDI bypass still work.
+11. Check the browser console for unexpected errors.
 
 If parser behavior grows, add isolated automated fixtures before expanding syntax further. Important fixtures should cover HTML escaping, rejected link protocols, unclosed fences, list transitions, and extension dispatch.
 

@@ -38,6 +38,12 @@ You never know when an old hobbie will have a resurgance. We got an pencil for t
 
 In the afternoon, Tracey was making apple butter. I pealed and cored a bunch of apples, with the little invention from the 1800s.
 
-## 05 OCT 2026 - 
+## 05 OCT 2026 - SICP
 
-I started (re)watching the SICP lectures from the 80s. Funny that I said that I would be rereading SICP in my retirement farewell email, but only now am I actually doing it!
+I started (re)watching the SICP lectures from the 80s. Funny that I said that I would be rereading SICP in my retirement farewell email, but only now am I actually doing it! I watched the 1A intro to the class and Lisp (1:15) and 2A substitution model (0:58) lectures.
+
+Tracey canned all the apple butter. Gallons of it! Yum!
+
+I drummed for an hour and a half! Longest single-day practice time since retiring. I should do more of that.
+
+In the evening, we watched another Wilem Dafoe movie, To Live and Die in LA.

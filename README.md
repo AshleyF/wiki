@@ -56,6 +56,12 @@ wb: . . . . . . x .
 ````
 
 ````md
+```math
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+```
+````
+
+````md
 ```cube-cmll edges=hide center=hide
 R U R' U R U2 R'
 ```
@@ -64,6 +70,8 @@ R U R' U R U2 R'
 Add renderers to `fenceRenderers` in `app.js`. Unknown labels fall back to escaped code. The `strudel` renderer shows a Play button that toggles to Stop during playback, plus a collapsible Source section. It uses the pinned `@strudel/web@1.0.3` browser build from unpkg, so playback requires a network connection unless that dependency is vendored locally. Browsers also require the user to press Play before audio can begin.
 
 The `abc` renderer uses the pinned `abcjs@6.6.3` browser build from jsDelivr to render ABC notation as SVG sheet music and play it through abcjs's synthesized audio. During playback, the current note or chord is highlighted in the score, and playback repeats until stopped. The raw ABC remains available in a collapsible Source section. Ordinary notation defaults to acoustic grand piano playback. ABC is plain-text music notation, so the source remains readable even without the renderer.
+
+The `math` renderer uses the pinned `katex@0.19.0` browser build from jsDelivr. A `math` fence accepts LaTeX-style source and renders it as centered display math using KaTeX's HTML output. The original expression remains available in a collapsible Source section, which opens automatically if the dependency fails to load or the expression is invalid.
 
 The `drums` renderer uses the pinned `vexflow@4.2.2` browser build from jsDelivr to render a small human-friendly drum notation DSL. The `division` value is the number of source slots in one bar: in 4/4, `division 8` produces eighth-note slots, `division 12` eighth-note-triplet slots, `division 16` sixteenth-note slots, and `division 24` sixteenth-triplet/sextuplet slots; in 6/8, `division 18` produces sixteenth-note-triplet slots and `division 24` produces 32nd-note slots. Simultaneous kit parts share one upward stem and beam, matching compact drum-set notation without filler rests. Its Play button schedules the parsed hits through a dependency-free Web Audio drum synth, highlights the current chord as it plays, and repeats until stopped.
 

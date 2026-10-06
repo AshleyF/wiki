@@ -147,6 +147,16 @@ function inline(text) {
 }
 
 const fenceRenderers = {
+  math(source) {
+    const encodedSource = encodeURIComponent(source);
+    return `<section class="math-block" data-math-source="${encodedSource}">
+      <div class="math-render" aria-label="Rendered mathematical expression"></div>
+      <details class="math-source">
+        <summary>Source</summary>
+        <pre><code>${escapeHtml(source)}</code></pre>
+      </details>
+    </section>`;
+  },
   'piano-score'(source) {
     const encodedSource = encodeURIComponent(source);
     const targetId = `piano-score-${pianoScoreBlockId += 1}`;
@@ -638,6 +648,32 @@ function renderAbcBlocks() {
     } catch (error) {
       console.error(error);
       target.innerHTML = '<p class="abc-error">Could not render this notation. Open Source below to read the ABC text.</p>';
+    }
+  });
+}
+
+function renderMathBlocks() {
+  document.querySelectorAll('.math-block').forEach((block) => {
+    const target = block.querySelector('.math-render');
+    const source = decodeURIComponent(block.dataset.mathSource || '');
+    const sourceDetails = block.querySelector('.math-source');
+
+    if (!window.katex || typeof window.katex.render !== 'function') {
+      target.innerHTML = '<p class="math-error">Could not load the math renderer. Open Source below to read the expression.</p>';
+      if (sourceDetails) sourceDetails.open = true;
+      return;
+    }
+
+    try {
+      window.katex.render(source, target, {
+        displayMode: true,
+        output: 'html',
+        throwOnError: true
+      });
+    } catch (error) {
+      console.error(error);
+      target.innerHTML = '<p class="math-error">Could not render this expression. Open Source below to inspect the LaTeX.</p>';
+      if (sourceDetails) sourceDetails.open = true;
     }
   });
 }
@@ -3197,6 +3233,7 @@ async function loadPage() {
     const response = await fetch(pagePath(page), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Page returned ${response.status}`);
     content.innerHTML = renderMarkdown(await response.text());
+    renderMathBlocks();
     renderPianoScoreBlocks();
     renderAbcBlocks();
     renderDrumBlocks();
