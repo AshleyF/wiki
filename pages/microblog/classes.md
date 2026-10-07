@@ -360,6 +360,129 @@ Pairs from thin air! "Pure abstraction" as Hal says. Really, it's closures of co
 
 ### [Lecture 3A: Henderson Escher Example](https://youtu.be/PEwZL3H2oKg?si=JxcuP_xLKqLLBfdI)
 
+```lisp
+(define (make-vector x y) (cons x y))
+(define (xcor p) (car p))
+(define (ycor p) (cdr p))
+
+(define (make-seg p q) (cons p q))
+(define (seg-start s) (car s))
+(define (seg-end s) (cdr s))
+```
+
+Or simpler!
+
+```lisp
+(define make-vector cons)
+(define xcor car)
+(define ycor cdr)
+
+(define make-seg cons p q)
+(define seg-start car s)
+(define seg-end cdr s)
+```
+
+"Closure" under means of combination (e.g. Basic & Fortran can make arrays of numbers, but not arrays of arrays).
+
+A "List" in Lisp is a conventional representation of a sequence of data stored in pairs (`car` is data, `cdr` in next pair or nil ... `(cons 1 (cons 2 (cons 3 nil)))` -> `(list 1 2 3)`).
+
+CDR-ing down a list:
+
+```lisp
+(define (scale-list s l)
+  (if (null? l)
+      nil
+      (cons (* (car l) s)
+            (scale-list s (cdr l)))))
+```
+
+Higher-order:
+
+```lisp
+(define (map p l)
+  (if (null? l)
+      nil
+      (cons (p (car l))
+            (map p (cdr l)))))
+
+(define (scale-list s l)
+  (map (λ (item) (* item s)))) 
+```
+
+Man, partial applicaton would be nice (map over `* s`).
+
+Henderson Escher pictures:
+
+```lisp
+(define (coord-map rect)
+  (λ (point)
+    (+vect
+      (+vect (scale (xcor point)
+                    (horiz rect))
+             (scale (ycor point)
+                    (vert rect)))
+      (origin rect))))
+
+(define (make-picture seglist)
+  (λ (rect)
+    (for-each
+      (λ (s)
+        ((coord-map rect) (seg-start s))
+        ((coord-map rect) (seg-end s))))
+    seglist))
+
+(define (beside p1 p2 a)
+  (λ (rect)
+    (p1 (make-rect
+          (origin rect)
+          (scale a (horiz rect))
+          (vert rect)))
+    (p2 (make-rect
+          (+vert (origin rect)
+                 (scale a (horiz rect)))
+          (scale (- 1 a) (horiz rect))
+          (vert rect)))))
+
+(define (rotate90 pict)
+  (λ (rect)
+    (pict (make-rect
+            (+vect (origin rect)
+                   (horiz rect))
+            (vert rect)
+            (scale -1 (horiz rect))))))
+```
+
+Language-level embedding with pictures as procedures is powerful. Example, recursion comes for free:
+
+```lisp
+(define (right-push n p a)
+  (if (= n 0)
+      p
+      (beside p
+              (right-push
+                p
+                (- n 1)
+                a)
+              a)))
+```
+
+Generalized:
+
+```lisp
+(define (push comb)
+  (λ (pict n a)
+    ((repeated
+      (λ (p) (comb pict p a))
+      n)
+    pict)))
+
+(define right-push (push beside))
+```
+
+Ending statement was about how language-oriented design is inherently more general. Built in layers instead of a tree. Each layer is a general language. Example: language of pictures, language of transformations, language of schemes (e.g. recursive push). Much more like "Lego" bricks of functionality. And embedded within Lisp so that all the more general facilities (like recursive procedures) are available.
+
+### [Lecture 3B: Symbolic Differentiation; Quotation](https://youtu.be/bV87UzKMRtE?si=wEPDKLk4e5Ekl_OI)
+
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
 He spends a lot of time just telling stories, while following a loose curriculum.

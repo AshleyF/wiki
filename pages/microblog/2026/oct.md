@@ -51,3 +51,7 @@ In the evening, we watched another Wilem Dafoe movie, To Live and Die in LA.
 ## 06 OCT 2026 Tue - Haircut
 
 I watched another two SICP lecture, and went to town to get my hair cut by Chris. Tracey and I had Kuni's before and coffee after. That's the whole day!
+
+## 07 OCT 2026 Wed - 
+
+I went and got breakfast from Zip's. Not too bad, actually. The burrito is great and Tracey's egg/sausage/cheese muffin thing was good. Then we went for a walk around the neighborhood. And I watched another 1:15 SICP lecture. These are so enlightening. I remember watching for the first time and having my mind blown by each one. And the intro music is a core memory now... I tweeted: "I can't play in Lisp without humming Bach's “Jesu, Joy of Man’s Desiring” #sicp".
