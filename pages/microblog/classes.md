@@ -6,17 +6,17 @@
 
 - "Computer Science" is not really about computers and it's not a science (confusing the essence with the tools)
   - Fomalizing declarative knowledge about process ("how to" knowledge)
-  - Example: Square root of X: Make a guess (G), improve the guess (average G and X/G), repeate until "good enough."
+  - Example: Square root of x: Make a guess (g), improve the guess (average g and x/g), repeate until "good enough."
 - Controlling complexity is the essence
   - Software is made with "idealized components" (e.g. electrical engineer can't make a million-stage amplifier, but software can recurse infinitely)
-  - Black box abstraction (modularity, eg. SQRT(A) + SQRT(B))
-  - Example: Fixed point of F, such that F(X)=X, guess X, apply F until "good enough"
-    - Fixed point of F->avg Y and X/Y, produces SQRT function (HOF)
+  - Black box abstraction (modularity, eg. `sqrt(a) + sqrt(b)`)
+  - Example: Fixed point of f, such that f(x)=x, guess x, apply f until "good enough"
+    - Fixed point of f->AVG y AND x/y, produces `sqrt` function (HOF)
   - Conventional interfaces (plug things together, generics)
   - OOP, streams (operations on aggregates), language-oriented programming
 - Language: primitives (data/procedures), means of abstraction, means of combination
-- Prefix notation, operator, operands, combination e.g. (+ 3 (* 5 6 ) 7 2) -> 42
-- Definitions (DEFINE (SQUARE X) (* X X)) or (DEFINE SQUARE (LAMBDA (X) (* X X)))
+- Prefix notation, operator, operands, combination e.g. `(+ 3 (* 5 6 ) 7 2)` -> 42
+- Definitions `(define (square x) (* x x))` or `(define square (lambda (x) (* x x)))`
 
 ```lisp
 (define (abs x)
@@ -186,6 +186,179 @@ Almost the same code:
          (pi-sum (+ a 4) b))))
 ```
 
+Using HOF:
+
+```lisp
+(define (sum term a next b)
+  (if (> a b)
+      0
+      (+ (term a)
+         (sum term (next a) next b))))
+
+(define (sum-int a b)
+  (define (identity a) a)
+  (sum identity a 1+ b))
+
+(define (sum-sq a b)
+  (sum square a 1+ b))
+
+(define (pi-sum a b)
+  (sum (λ (i) (/ 1 (* i (+ i 2)))
+    a
+    (λ (i) (+ i 4))
+    b)))
+```
+
+Iterative implementation ("pluggable" implementations, same `sum-int`/`sum-sq`/`pi-sum`):
+
+```lisp
+(define (sum term a next b)
+  (define (iter j ans)
+    if (> j b)
+       ans
+       (iter (next j)
+             (+ (term j) ans)))
+  (iter a 0))
+```
+
+Note: passing procedures by name (e.g. `term`, `next`, `identity`, `square`, `1+`) or anonomously (e.g. `(λ (i) (+ i 4))`)
+
+Fixed point: f(x) = x. Herron of Alexandria's method is essentially repeated application of function to find fixed point.
+
+
+```lisp
+(define (sqrt x)
+  (fixed-point
+     (λ (y) (average-damp (λ (y) (/ x y)))
+     1)))
+
+(define (fixed-point f start)
+  (define tolerance 0.00001)
+  (define (close-enough? u v)
+    (< (abs (- u v)) tolerance))
+  (define (iter old new)
+    (if (close-enough? old new)
+        new
+        (iter new (f new))))
+  (iter start (f start)))
+
+(define (average-damp f)
+  (λ (x) (average (f x) x)))
+```
+
+HOF can _take_ a procedure, but can also _return_ a new procedure (e.g. `average-damp`).
+
+Newton's method: Find y such that f(y)=0
+* Start with guess
+* Iterate this:
+
+```math
+y_{n+1} = y_n - \frac{f(y_n)}{f'(y_n)}
+```
+
+```lisp
+(define (sqrt x)
+  (newton (λ (y) (- x (square y))) 1))
+
+(define (newton f guess)
+  (define df (deriv f))
+  (fixed-point
+    (λ (x) (- x (/ (f x) (df x))))
+    guess))
+
+(define deriv
+  (λ (f)
+    (λ (x)
+      (/ (- (f (+ x dx))
+            (f x))
+         dx))))
+
+(define dx 0.00001)
+```
+
+Rights and Privileges of First-class Citizens (in a programming language):
+* To be named by variables
+* To be passed as arguments to procedures
+* To be returned as values of procedures
+* To be incorporated into data structures
+
+### [Lecture 2B: Compound Data](https://youtu.be/DrFkf-T-6Co?si=FmS7pKKEsDNmjYY3)
+
+All about data abstraction. George doesn't know, doesn't want to know. Example was a system of rationals. Issolate use (`+rat`, `*rat`) from representation (pairs, closures) via an "abstraction layer" (`make-rat`, `numer`, `denom`).
+
+```lisp
+(define (+rat x y)
+  (make-rat
+    (+ (* (numer x) (denom y))
+       (* (numer y) (denom x)))))
+
+(define (*rat x y)
+  (make-rat
+    (* (numer x) (numer y))
+    (* (denom y) (denom x))))
+```
+* `cons` constructs pair
+* `car` selects first
+* `cdr` selects second
+
+```lisp
+(define (make-rat n d) (cons n d))
+(define (numer r) (car r))
+(define (denom r) (cdr r))
+```
+
+Better `make-rat`:
+
+```lisp
+(define (make-rat n d)
+  (let ((g (gcd n d)))
+    (cons (/ n g)
+          (/ d g))))
+```
+
+I liked Hal's quip about how people who religiously espouse designing everything upfront, are people who haven't built very complicated things.
+
+Another example (line segments):
+
+```lisp
+(define (make-vector x y) (cons x y))
+(define (xcor p) (car p))
+(define (ycor p) (cdr p))
+
+(define (make-seg p q) (cons p q))
+(define (seg-start s) (car s))
+(define (seg-end s) (cdr s))
+
+(define (midpoint s)
+  (let ((a (seg-start s))
+        (b (seg-end s))
+    (make-vector
+      (average (xcor a) (xcor b))
+      (average (ycor a) (ycor b))))))
+
+(define (length s)
+  (let
+    ((dx (- (xcor (seg-end s))
+            (xcor (seg-start s))))
+     (dy (- (ycor (seg-end s))
+            (ycor (seg-start s)))))
+    (sqrt (+ (square dx)
+             (square dy)))))
+```
+
+Pairs from thin air! "Pure abstraction" as Hal says. Really, it's closures of course, but nice trick!
+
+```lisp
+(define (cons a b)
+  (λ (pick)
+    (cond ((= pick 1) a)
+          ((= pick 2) b))))
+
+(define (car x) (x 1))
+(define (cdr x) (x 2))
+```
+
+### [Lecture 3A: Henderson Escher Example](https://youtu.be/PEwZL3H2oKg?si=JxcuP_xLKqLLBfdI)
 
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 

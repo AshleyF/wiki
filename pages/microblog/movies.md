@@ -1,6 +1,12 @@
 # Movies
 
+## To Live and Die in LA (06 OCT 2026)
+
+Another Willem Dafoe movie. He plays an evil criminal (counterfeitning money ["funny money"]). He's great at playing villians. But the movie was very predictable and simplistic. It has quite the cheesy 80s vibe and all cop shows back then had the same straight forward storyline. Anyway, fine that we watched it but I wouldn't recommend.
+
 ## Digger (01 OCT 2026)
+
+The novelty of Tom Cruise playing 
 
 ## The Hunter (29 SEP 2026)
 

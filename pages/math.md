@@ -26,4 +26,10 @@ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 \sum_{\substack{i=1 \\ \text{by }4}}^{\infty}\frac{1}{i(i+2)} = \frac{\pi}{8}
 ```
 
+**Newton's method**
+
+```math
+y_{n+1} = y_n - \frac{f(y_n)}{f'(y_n)}
+```
+
 Open Source beneath an expression to copy or inspect the original notation.
