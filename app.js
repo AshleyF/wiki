@@ -5,6 +5,7 @@ import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260910-2';
 import { renderInlineMarkdown } from './markdown-inline.js?v=20261001-balanced-links';
+import { highlightLisp } from './lisp-highlighter.js?v=20261007-lisp-1';
 
 const content = document.querySelector('#content');
 const sidebar = document.querySelector('#sidebar');
@@ -147,6 +148,12 @@ function inline(text) {
 }
 
 const fenceRenderers = {
+  lisp(source) {
+    return `<pre class="code-block lisp-code-block" data-language="lisp"><code>${highlightLisp(source)}</code></pre>`;
+  },
+  scheme(source) {
+    return `<pre class="code-block lisp-code-block" data-language="scheme"><code>${highlightLisp(source)}</code></pre>`;
+  },
   math(source) {
     const encodedSource = encodeURIComponent(source);
     return `<section class="math-block" data-math-source="${encodedSource}">

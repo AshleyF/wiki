@@ -169,6 +169,10 @@ Renderers are synchronous HTML producers at present. Expensive libraries should 
 
 Math rendering is progressive enhancement. `renderMarkdown()` creates a placeholder and a collapsed copy of the escaped source, then `loadPage()` calls `renderMathBlocks()` after replacing `#content`. If KaTeX is unavailable or parsing fails, show a concise error and open the Source section so the canonical text remains readable. Do not add `$...$` or `$$...$$` parsing to the small inline Markdown renderer as a side effect of this fence; inline-math syntax would be a separate parser feature with its own escaping and delimiter rules.
 
+## Lisp syntax highlighting
+
+`lisp` and `scheme` fences share the DOM-independent tokenizer in `lisp-highlighter.js`. Keep it small and Scheme-oriented rather than adding a general highlighting runtime: delimiters are intentionally subdued, `lambda` and `λ` receive their own emphasis, and special forms, common built-ins, numbers, constants, strings, and comments are distinguished without coloring every identifier. All source fragments must pass through the module's HTML escaper before it emits `<span>` markup. Run `node lisp-highlighter.test.mjs` after changing tokenization or token classes.
+
 ## ABC notation integration
 
 `index.html` loads the pinned `abcjs@6.6.3` browser bundle from jsDelivr before `app.js`. An `abc` fence renders a notation panel with a target `<div>` for generated SVG, a single Play/Stop button, and a collapsible copy of the raw source.
