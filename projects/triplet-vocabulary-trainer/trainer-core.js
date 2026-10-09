@@ -39,6 +39,29 @@ export function randomExtendedPatternPair(enabledIndexes,random = Math.random,em
   ];
 }
 
+export function systematicPatternCombinations(mode,{ melodyIndexes = [],extendedIndexes = [] } = {}) {
+  if (mode === 'extended') {
+    const first = extendedIndexes.filter(index => index >= 0 && index < 3);
+    const second = extendedIndexes.filter(index => index >= 3 && index < EXTENDED_PATTERNS.length);
+    return first.flatMap(firstIndex => second.map(secondIndex => [firstIndex,secondIndex]));
+  }
+  if (mode === 'kick12') {
+    return melodyIndexes.flatMap(firstIndex => melodyIndexes.map(secondIndex => [firstIndex,secondIndex]));
+  }
+  if (['vocabulary','kick','kick2'].includes(mode)) return melodyIndexes.map(String);
+  return [];
+}
+
+export function systematicPatternStep(patterns,index = 0) {
+  if (!patterns.length) throw new Error('Systematic order needs at least one pattern.');
+  const position = ((Math.floor(Number(index) || 0)%patterns.length)+patterns.length)%patterns.length;
+  const selected = patterns[position];
+  return {
+    pattern:Array.isArray(selected) ? [...selected] : selected,
+    nextIndex:(position+1)%patterns.length
+  };
+}
+
 export function rolesForExtendedBar(patternIndexes) {
   return patternIndexes.flatMap(index => EXTENDED_PATTERNS[index]);
 }

@@ -1,5 +1,9 @@
 # Movies
 
+## Good Will Hunting (07 OCT 2026)
+
+We've both seen it before, of course. But it's a great moving. Robin Williams is excellent and Matt, Ben and Minnie are great. I'll probably watch it ten more times in my life.
+
 ## To Live and Die in LA (06 OCT 2026)
 
 Another Willem Dafoe movie. He plays an evil criminal (counterfeitning money ["funny money"]). He's great at playing villians. But the movie was very predictable and simplistic. It has quite the cheesy 80s vibe and all cop shows back then had the same straight forward storyline. Anyway, fine that we watched it but I wouldn't recommend.

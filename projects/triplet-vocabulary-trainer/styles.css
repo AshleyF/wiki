@@ -37,6 +37,9 @@ main { display: grid; gap: .55rem; width: 100%; max-width: 1250px; box-sizing: b
 .controls.drum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; border-top: 1px solid var(--rule); background: var(--notation-paper); }
 .controls .auto-control { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .controls .auto-control input { accent-color: var(--accent); }
+.order-control { display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .68rem/1 monospace; }
+.order-control select { min-height: 2rem; border: 1px solid var(--notation-button-border); padding: .25rem .4rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
+.order-control:has(select:disabled), .emphasis-control:has(select:disabled) { opacity: .48; }
 .midi-port-control { display: inline-flex; align-items: center; gap: .3rem; color: var(--notation-muted); font: 700 .68rem/1 monospace; }
 .midi-input-label { display: inline-flex; align-items: center; gap: .28rem; }
 .midi-activity { width: .38rem; height: .38rem; border-radius: 50%; background: var(--notation-button-border); transition: background-color 80ms ease-out, box-shadow 80ms ease-out; }

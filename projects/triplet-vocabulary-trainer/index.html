@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20260924-repeat-countdown">
+    <link rel="stylesheet" href="styles.css?v=20261008-systematic-order-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -46,6 +46,7 @@
       <section class="controls drum-controls panel" aria-label="Trainer controls">
         <button id="play" class="drum-toggle" type="button">▶ Play</button>
         <button id="randomize" type="button">Scramble</button>
+        <label class="order-control" title="Choose random cards or cycle through every enabled combination in order"><span>Order</span><select id="pattern-order" aria-label="Pattern order"><option value="random">Random</option><option value="systematic">Systematic</option></select></label>
         <label class="auto-control" title="Replace each completed card with a fresh random choice."><input id="auto-randomize" type="checkbox" checked> <span>Auto</span></label>
         <div class="velocity-control drum-velocity-control" role="group" aria-label="Drum velocities" title="Ghost, normal, and accent velocity">
           <span>Vel</span>
@@ -94,6 +95,6 @@
         </div>
       </div>
     </dialog>
-    <script type="module" src="app.js?v=20261005-pedal-hi-hat-2"></script>
+    <script type="module" src="app.js?v=20261008-systematic-order-1"></script>
   </body>
 </html>

@@ -24,12 +24,14 @@ import {
   rolesForKickVocabulary12,
   rolesForKickVocabulary2,
   rolesForTripletMasks,
+  scorePracticeTap,
+  systematicPatternCombinations,
+  systematicPatternStep,
   trainerEventPosition,
   trainerPlaybackPlan,
   choosePatternAvoiding,
   tripletMasksForRoles,
-  updateAuditionQueue,
-  scorePracticeTap
+  updateAuditionQueue
 } from './trainer-core.js';
 
 test('extended vocabulary builds each four-triplet bar from its two pattern groups', () => {
@@ -41,6 +43,23 @@ test('extended vocabulary builds each four-triplet bar from its two pattern grou
     'A','B','B','A','B','A','R','A','B','A','B','B'
   ]);
   assert.throws(() => randomExtendedPatternPair([0,1,2]),/each group/);
+});
+
+test('systematic order enumerates each eligible mode combination and wraps', () => {
+  assert.deepEqual(systematicPatternCombinations('vocabulary',{ melodyIndexes:[0,2,8] }),['0','2','8']);
+  assert.deepEqual(systematicPatternCombinations('kick',{ melodyIndexes:[0,1] }),['0','1']);
+  assert.deepEqual(systematicPatternCombinations('kick2',{ melodyIndexes:[0,1] }),['0','1']);
+  assert.deepEqual(systematicPatternCombinations('extended',{ extendedIndexes:[0,2,3,8] }),[
+    [0,3],[0,8],[2,3],[2,8]
+  ]);
+  assert.deepEqual(systematicPatternCombinations('kick12',{ melodyIndexes:[0,1,2] }),[
+    [0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]
+  ]);
+  assert.equal(systematicPatternCombinations('extended',{ extendedIndexes:[0,1,2,3,4,5,6,7,8] }).length,18);
+  assert.equal(systematicPatternCombinations('kick12',{ melodyIndexes:[0,1,2,3,4,5,6,7,8] }).length,81);
+  assert.deepEqual(systematicPatternCombinations('triplets',{ melodyIndexes:[0,1] }),[]);
+  assert.deepEqual(systematicPatternStep([[0,0],[0,1]],0),{ pattern:[0,0],nextIndex:1 });
+  assert.deepEqual(systematicPatternStep([[0,0],[0,1]],1),{ pattern:[0,1],nextIndex:0 });
 });
 
 test('triplet masks become sounded A strokes and ghosted B strokes', () => {
