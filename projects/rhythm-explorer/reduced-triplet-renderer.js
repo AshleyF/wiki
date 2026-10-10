@@ -98,6 +98,7 @@ export function renderReducedTripletSequence({
   gridLeft,
   gridRight,
   cellGap = 0,
+  notehead = '',
   annotationForStep = null,
   repeatEnd = false,
   repeatCount = repeatEnd ? 2 : 1
@@ -119,7 +120,7 @@ export function renderReducedTripletSequence({
       const globalStep = (cellIndex*3)+event.step;
       const note = new Flow.StaveNote({
         clef:'percussion',
-        keys:[singleLineDrumKey()],
+        keys:[singleLineDrumKey('.',event.rest ? '' : notehead)],
         duration:`${event.duration}${event.rest ? 'r' : ''}`,
         stem_direction:Flow.StaveNote.STEM_UP
       });

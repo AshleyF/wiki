@@ -1,10 +1,10 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20260924-repeat-countdown';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20261009-noteheads-2';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
-import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261005-pedal-hi-hat-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rolesForExtendedBar, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261008-systematic-order-1';
+import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261010-mode-mix-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -26,6 +26,7 @@ const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
 const PATTERN_ORDER_KEY = 'triplet-vocabulary-pattern-order';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
 const DRUMS_KEY = 'triplet-vocabulary-drums';
+const FAT_LEAD_IN_KEY = 'triplet-vocabulary-fat-lead-in';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
 const REPEAT_PATTERN_KEY = 'triplet-vocabulary-repeat-pattern';
@@ -42,6 +43,7 @@ let kickSampleKit = null;
 let closedHatTipSampleKit = null;
 let closedHatEdgeSampleKit = null;
 let pedalHatChickSampleKit = null;
+let rideTipSampleKit = null;
 let sampleKitId = DEFAULT_SAMPLE_KIT_ID;
 try { sampleKitId = localStorage.getItem('personal-wiki-drum-snare-kit') || DEFAULT_SAMPLE_KIT_ID; } catch {}
 let trainerMode = loadTrainerMode();
@@ -52,6 +54,8 @@ let enabledExtended = loadEnabledExtended();
 let emphasisByMode = loadEmphasis();
 let tripletCards = Array.from({ length:3 },() => ['100','100','100','100']);
 let extendedCards = Array.from({ length:3 },() => [0,3]);
+let fatBeatCards = Array.from({ length:3 },() => [0,3]);
+let rideCards = Array.from({ length:3 },(_,slot) => [slot%MELODIES.length,(slot+1)%MELODIES.length]);
 let kick12Cards = Array.from({ length:3 },(_,slot) => [slot%MELODIES.length,(slot+1)%MELODIES.length]);
 let audioContext = null;
 let midiAccess = null;
@@ -92,6 +96,7 @@ let calibrationRun = null;
 let patternPaint = null;
 let suppressPatternClick = false;
 let systematicPatternIndex = 0;
+let pausedSessionEventNumber = null;
 const screenWakeLock = createScreenWakeLock();
 
 function loadLatencyCompensation() {
@@ -120,7 +125,7 @@ function extendedLabel(index) {
 function loadTrainerMode() {
   try {
     const saved = localStorage.getItem(TRAINER_MODE_KEY);
-    return ['vocabulary','extended','triplets','kick','kick2','kick12'].includes(saved) ? saved : 'vocabulary';
+    return ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12'].includes(saved) ? saved : 'vocabulary';
   } catch { return 'vocabulary'; }
 }
 function loadPatternOrder() {
@@ -208,14 +213,20 @@ function initializeSelectors() {
   });
 }
 function populateExtendedSelectors() {
+  populateExtendedPatternSelectors(extendedCards);
+}
+function populateFatBeatSelectors() {
+  populateExtendedPatternSelectors(fatBeatCards);
+}
+function populateExtendedPatternSelectors(cardPatterns) {
   const firstChoices = enabledExtendedIndexes().filter(index => index < 3);
   const secondChoices = enabledExtendedIndexes().filter(index => index >= 3);
   selectors.forEach((firstSelect,slot) => {
     const secondSelect = extendedSecondSelectors[slot];
-    const preferred = extendedCards[slot] || [];
+    const preferred = cardPatterns[slot] || [];
     const first = firstChoices.includes(preferred[0]) ? preferred[0] : firstChoices[0];
     const second = secondChoices.includes(preferred[1]) ? preferred[1] : secondChoices[0];
-    extendedCards[slot] = [first,second];
+    cardPatterns[slot] = [first,second];
     firstSelect.replaceChildren(...firstChoices.map(index => new Option(extendedLabel(index),String(index))));
     secondSelect.replaceChildren(...secondChoices.map(index => new Option(extendedLabel(index),String(index))));
     firstSelect.value = String(first);
@@ -224,14 +235,14 @@ function populateExtendedSelectors() {
     secondSelect.disabled = false;
   });
 }
-function populateKick12Selectors() {
+function populateMelodyPairSelectors(cardPairs) {
   const choices = enabledMelodyIndexes();
   selectors.forEach((firstSelect,slot) => {
     const secondSelect = extendedSecondSelectors[slot];
-    const preferred = kick12Cards[slot] || [];
+    const preferred = cardPairs[slot] || [];
     const first = choices.includes(preferred[0]) ? preferred[0] : choices[0];
     const second = choices.includes(preferred[1]) ? preferred[1] : choices[Math.min(1,choices.length-1)];
-    kick12Cards[slot] = [first,second];
+    cardPairs[slot] = [first,second];
     firstSelect.replaceChildren(...choices.map(index => new Option(melodyLabel(index),String(index))));
     secondSelect.replaceChildren(...choices.map(index => new Option(melodyLabel(index),String(index))));
     firstSelect.value = String(first);
@@ -240,6 +251,8 @@ function populateKick12Selectors() {
     secondSelect.disabled = false;
   });
 }
+function populateRideSelectors() { populateMelodyPairSelectors(rideCards); }
+function populateKick12Selectors() { populateMelodyPairSelectors(kick12Cards); }
 function renderTripletFilterNotations() {
   const VF = vexflow();
   if (!VF) return;
@@ -288,7 +301,7 @@ function patternFilterOption(value,labelText,checked,tripletMask = '',displayTex
 function initializePatternFilter() {
   const container = $('#melody-filter-options');
   const isTriplets = trainerMode === 'triplets';
-  const isExtended = trainerMode === 'extended';
+  const isExtended = trainerMode === 'extended' || trainerMode === 'fat';
   $('.melody-filter-label').textContent = isTriplets ? 'Triplets' : isExtended ? 'Patterns' : 'Melodies';
   container.setAttribute('aria-label',isTriplets ? 'Enabled triplet cells' : isExtended ? 'Enabled extended patterns' : 'Enabled triplet melodies');
   const options = isTriplets
@@ -311,7 +324,7 @@ function emphasisChoices() {
     value,
     label:`${value} · ${[...value].map(bit => bit === '1' ? 'A' : 'B').join('')}`
   }));
-  if (trainerMode === 'extended') return enabledExtendedIndexes().map(value => ({ value:String(value),label:extendedLabel(value) }));
+  if (trainerMode === 'extended' || trainerMode === 'fat') return enabledExtendedIndexes().map(value => ({ value:String(value),label:extendedLabel(value) }));
   return enabledMelodyIndexes().map(value => ({ value:String(value),label:melodyLabel(value) }));
 }
 function currentEmphasis() {
@@ -334,12 +347,13 @@ function populateEmphasis() {
 function changeEnabledPatterns(event) {
   const input = event.target.closest('input[type="checkbox"]');
   if (!input) return;
-  const enabled = trainerMode === 'triplets' ? enabledTriplets : trainerMode === 'extended' ? enabledExtended : enabledMelodies;
-  const extendedGroupWouldBeEmpty = trainerMode === 'extended' && !input.checked &&
+  const extendedMode = trainerMode === 'extended' || trainerMode === 'fat';
+  const enabled = trainerMode === 'triplets' ? enabledTriplets : extendedMode ? enabledExtended : enabledMelodies;
+  const extendedGroupWouldBeEmpty = extendedMode && !input.checked &&
     enabledExtendedIndexes().filter(index => Number(input.value) < 3 ? index < 3 : index >= 3).length === 1;
   if ((!input.checked && enabled.size === 1) || extendedGroupWouldBeEmpty) {
     input.checked = true;
-    setStatus(`Keep at least one ${trainerMode === 'triplets' ? 'triplet' : trainerMode === 'extended' ? 'pattern in each group' : 'melody'} enabled.`);
+    setStatus(`Keep at least one ${trainerMode === 'triplets' ? 'triplet' : extendedMode ? 'pattern in each group' : 'melody'} enabled.`);
     return;
   }
   if (playing) stop();
@@ -347,17 +361,19 @@ function changeEnabledPatterns(event) {
     if (input.checked) enabledTriplets.add(input.value); else enabledTriplets.delete(input.value);
     saveEnabledTriplets();
     generateAll();
-  } else if (trainerMode === 'extended') {
+  } else if (extendedMode) {
     const index = Number(input.value);
     if (input.checked) enabledExtended.add(index); else enabledExtended.delete(index);
     saveEnabledExtended();
-    populateExtendedSelectors();
+    if (trainerMode === 'fat') populateFatBeatSelectors();
+    else populateExtendedSelectors();
     generateAll();
   } else {
     const index = Number(input.value);
     if (input.checked) enabledMelodies.add(index); else enabledMelodies.delete(index);
     saveEnabledMelodies();
-    if (trainerMode === 'kick12') populateKick12Selectors();
+    if (trainerMode === 'ride') populateRideSelectors();
+    else if (trainerMode === 'kick12') populateKick12Selectors();
     else selectors.forEach(select => populateSelector(select,Number(select.value)));
     if (systematicOrderActive()) generateAll();
     else renderAll();
@@ -430,6 +446,7 @@ function initializeDisplayOptions() {
   }
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
   $('#drums').checked = loadBooleanPreference(DRUMS_KEY,true);
+  $('#fat-lead-in').checked = loadBooleanPreference(FAT_LEAD_IN_KEY,true);
   $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
@@ -440,9 +457,14 @@ function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
   if (trainerMode === 'triplets') return rolesForTripletMasks(tripletCards[slot]);
   if (trainerMode === 'extended') return rolesForExtendedBar(extendedCards[slot]);
+  if (trainerMode === 'fat') return rolesForFatBeats(fatBeatCards[slot],{ leadIn:fatLeadInEnabled() });
   if (trainerMode === 'kick12') {
     const [first,second] = kick12Cards[slot];
     return rolesForKickVocabulary12(MELODIES[first] || MELODIES[0],MELODIES[second] || MELODIES[0]);
+  }
+  if (trainerMode === 'ride') {
+    const [first,second] = rideCards[slot];
+    return rolesForRideVocabulary(MELODIES[first] || MELODIES[0],MELODIES[second] || MELODIES[0]);
   }
   const melody = MELODIES[Number(selectors[slot].value)] || MELODIES[0];
   if (trainerMode === 'kick') return rolesForKickVocabulary(melody);
@@ -453,7 +475,8 @@ function selectedMasks(slot) {
   return tripletMasksForRoles(selectedPattern(slot));
 }
 function activeCardCount() { return 3; }
-function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : 12; }
+function fatLeadInEnabled() { return $('#fat-lead-in').checked; }
+function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : trainerMode === 'fat' && fatLeadInEnabled() ? 24 : 12; }
 function tripletCountForStep(step) {
   return step%3 === 0 ? String(Math.floor(step/3)+1) : step%3 === 1 ? '&' : 'a';
 }
@@ -522,7 +545,12 @@ function positionKick2SnareAccents(target,notes) {
     if (shift) accent.setAttribute('transform',`translate(0 ${shift})`);
   });
 }
-function renderKickCard(slot,target,width) {
+function renderKickCard(slot,target,width,{
+  roles = selectedPattern(slot),
+  showSignature = slot === 0,
+  repeatEnd = repeatCount() > 1,
+  fullPattern = false
+} = {}) {
   const VF = vexflow();
   const height = $('#show-counting').checked ? 168 : 148;
   const renderer = new VF.Renderer(target,VF.Renderer.Backends.SVG);
@@ -530,11 +558,12 @@ function renderKickCard(slot,target,width) {
   const context = renderer.getContext();
   const stave = new VF.Stave(8,20,width-16);
   stave.addClef('percussion').addTimeSignature('4/4');
-  if (repeatCount() > 1 && VF.Barline?.type?.REPEAT_END && typeof stave.setEndBarType === 'function') {
+  if (repeatEnd && VF.Barline?.type?.REPEAT_END && typeof stave.setEndBarType === 'function') {
     stave.setEndBarType(VF.Barline.type.REPEAT_END);
   }
   stave.setContext(context).draw();
-  const repeatLabel = repeatCount() > 1 ? document.createElementNS('http://www.w3.org/2000/svg','text') : null;
+  const renderedSvg = [...target.querySelectorAll('svg')].at(-1);
+  const repeatLabel = repeatEnd ? document.createElementNS('http://www.w3.org/2000/svg','text') : null;
   if (repeatLabel) {
     repeatLabel.classList.add('trainer-repeat-count');
     if (repeatCount() === 2) repeatLabel.classList.add('trainer-repeat-count-implicit');
@@ -543,24 +572,24 @@ function renderKickCard(slot,target,width) {
     repeatLabel.setAttribute('y',String(24));
     repeatLabel.setAttribute('text-anchor','end');
     repeatLabel.textContent = `×${repeatCount()}`;
-    target.querySelector('svg')?.append(repeatLabel);
+    renderedSvg?.append(repeatLabel);
   }
-  if (slot > 0) {
-    target.querySelectorAll('.vf-clef,.vf-timesignature').forEach(element => {
+  if (!showSignature) {
+    renderedSvg?.querySelectorAll('.vf-clef,.vf-timesignature').forEach(element => {
       element.style.visibility = 'hidden';
     });
   }
 
-  const roles = selectedPattern(slot);
   const recovering = recoveryCards[slot];
+  const fatBeats = trainerMode === 'fat' && !recovering;
   const kick2 = trainerMode === 'kick2' && !recovering;
   const kick12 = trainerMode === 'kick12' && !recovering;
   const snareInPattern = kick2 || kick12;
   const patternStartStep = kick2 ? 6 : 0;
-  const patternRoles = kick2 ? roles.slice(6,12) : kick12 ? roles : roles.slice(0,6);
+  const patternRoles = fullPattern || kick12 ? roles : kick2 ? roles.slice(6,12) : roles.slice(0,6);
   const masks = Array.from({ length:patternRoles.length/3 },(_,group) => patternRoles
     .slice(group*3,group*3+3)
-    .map(role => role === 'A' || (snareInPattern && role === 'S') ? '1' : '0')
+    .map(role => role === 'A' || role === 'K' || (snareInPattern && role === 'S') ? '1' : '0')
     .join(''));
   const patternGroups = masks.map((mask,beat) => {
     const spelling = DRUM_HIDDEN_TRIPLET_SPELLINGS[mask];
@@ -595,7 +624,7 @@ function renderKickCard(slot,target,width) {
       }) : null
     };
   });
-  const patternPaddingNotes = kick12
+  const patternPaddingNotes = fullPattern || kick12 || fatBeats
     ? []
     : kick2
     ? Array.from({ length:2 },(_,beat) => {
@@ -652,7 +681,7 @@ function renderKickCard(slot,target,width) {
   new VF.Formatter().joinVoices(voices).format(voices,Math.max(150,width-112));
   voices.forEach(voice => voice.draw(context,stave));
   patternGroups.forEach(group => group.beam?.setContext(context).draw());
-  positionKick2SnareAccents(target,patternNotes);
+  positionKick2SnareAccents(renderedSvg,patternNotes);
   patternGroups.forEach(group => {
     if (!group.tuplet) return;
     if (typeof context.openGroup === 'function') context.openGroup('tuplet');
@@ -660,7 +689,7 @@ function renderKickCard(slot,target,width) {
     if (typeof context.closeGroup === 'function') context.closeGroup();
   });
   if ($('#show-counting').checked) {
-    const svg = target.querySelector('svg');
+    const svg = renderedSvg;
     [...patternNotes,...grooveNotes].filter(note => note.trainerCount).forEach(note => {
       const annotation = document.createElementNS('http://www.w3.org/2000/svg','text');
       annotation.classList.add('reduced-triplet-annotation');
@@ -675,7 +704,7 @@ function renderKickCard(slot,target,width) {
   }
 
   const stepElements = Array.from({ length:roles.length },() => []);
-  const stems = renderedDrumStems(target,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
+  const stems = renderedDrumStems(renderedSvg,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
   [...patternNotes,...grooveNotes].forEach(note => {
     const element = note.getSVGElement?.();
     if (note.trainerHidden) {
@@ -692,9 +721,11 @@ function renderKickCard(slot,target,width) {
       coveredSteps.forEach(step => addDrumStepElement(stepElements,step,stem));
     }
   });
-  cards[slot].stepElements = stepElements;
-  cards[slot].repeatBarlineElements = [...target.querySelectorAll('.vf-stavebarline')].slice(-1);
-  cards[slot].repeatLabel = repeatLabel;
+  return {
+    stepElements,
+    repeatBarlineElements:[...(renderedSvg?.querySelectorAll('.vf-stavebarline') || [])].slice(-1),
+    repeatLabel
+  };
 }
 function renderCard(slot) {
   const VF = vexflow();
@@ -702,8 +733,37 @@ function renderCard(slot) {
   target.replaceChildren();
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
+  if (trainerMode === 'fat') {
+    const roles = selectedPattern(slot);
+    if (!fatLeadInEnabled()) {
+      const rendered = renderKickCard(slot,target,width,{ roles,fullPattern:true });
+      cards[slot].stepElements = rendered.stepElements;
+      cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
+      cards[slot].repeatLabel = rendered.repeatLabel;
+      return;
+    }
+    const firstMeasure = renderKickCard(slot,target,width,{
+      roles:roles.slice(0,12),
+      showSignature:slot === 0,
+      repeatEnd:false,
+      fullPattern:true
+    });
+    const secondMeasure = renderKickCard(slot,target,width,{
+      roles:roles.slice(12,24),
+      showSignature:false,
+      repeatEnd:repeatCount() > 1,
+      fullPattern:true
+    });
+    cards[slot].stepElements = [...firstMeasure.stepElements,...secondMeasure.stepElements];
+    cards[slot].repeatBarlineElements = secondMeasure.repeatBarlineElements;
+    cards[slot].repeatLabel = secondMeasure.repeatLabel;
+    return;
+  }
   if (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
-    renderKickCard(slot,target,width);
+    const rendered = renderKickCard(slot,target,width);
+    cards[slot].stepElements = rendered.stepElements;
+    cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
+    cards[slot].repeatLabel = rendered.repeatLabel;
     return;
   }
   const masks = selectedMasks(slot);
@@ -724,6 +784,7 @@ function renderCard(slot) {
     gridLeft,
     gridRight:gridLeft+gridWidth,
     cellGap,
+    notehead:trainerMode === 'ride' ? 'x2' : '',
     annotationForStep:$('#show-counting').checked ? tripletCountForStep : null,
     repeatEnd:repeatCount() > 1,
     repeatCount:repeatCount()
@@ -763,9 +824,10 @@ function renderAll() {
 }
 function updateModeUI() {
   document.body.dataset.trainerMode = trainerMode;
+  document.body.dataset.fatLeadIn = String(fatLeadInEnabled());
   $('#trainer-mode').value = trainerMode;
   const ignoreFeet = $('#ignore-feet');
-  if (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
+  if (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
     ignoreFeet.checked = false;
     ignoreFeet.disabled = true;
     ignoreFeet.closest('label').title = 'Kick strokes are scoring input in Kick mode';
@@ -778,9 +840,11 @@ function updateModeUI() {
     card.hidden = slot >= activeCardCount();
     card.querySelector('.card-kind').textContent = trainerMode === 'triplets'
       ? `Bar ${slot+1}`
-      : trainerMode === 'extended' || trainerMode === 'kick12' ? `Bar ${slot+1}` : 'Melody';
+      : trainerMode === 'extended' || trainerMode === 'fat' || trainerMode === 'ride' || trainerMode === 'kick12' ? `Bar ${slot+1}` : 'Melody';
   });
   if (trainerMode === 'extended') populateExtendedSelectors();
+  else if (trainerMode === 'fat') populateFatBeatSelectors();
+  else if (trainerMode === 'ride') populateRideSelectors();
   else if (trainerMode === 'kick12') populateKick12Selectors();
   else if (trainerMode === 'vocabulary' || trainerMode === 'kick' || trainerMode === 'kick2') selectors.forEach(select => {
     select.disabled = false;
@@ -821,12 +885,14 @@ function updatePositions(slot) {
 function randomMelody() {
   return randomChoiceWithEmphasis(enabledMelodyIndexes(),currentEmphasis());
 }
-function randomKick12Pair() {
+function randomMelodyPair() {
   return [randomMelody(),randomMelody()];
 }
 function cardPattern(slot) {
   if (trainerMode === 'triplets') return tripletCards[slot];
   if (trainerMode === 'extended') return extendedCards[slot];
+  if (trainerMode === 'fat') return fatBeatCards[slot];
+  if (trainerMode === 'ride') return rideCards[slot];
   if (trainerMode === 'kick12') return kick12Cards[slot];
   return String(selectors[slot].value);
 }
@@ -848,8 +914,8 @@ function preferredRandomPattern(forbidden = []) {
     currentEmphasis(),
     { before:forbidden[0]?.at(-1) ?? null,after:forbidden[1]?.[0] ?? null }
   );
-  if (trainerMode === 'extended') return randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
-  if (trainerMode === 'kick12') return randomKick12Pair();
+  if (trainerMode === 'extended' || trainerMode === 'fat') return randomExtendedPatternPair(enabledExtendedIndexes(),Math.random,currentEmphasis());
+  if (trainerMode === 'ride' || trainerMode === 'kick12') return randomMelodyPair();
   return String(randomMelody());
 }
 function randomPatternAvoiding(forbidden = []) {
@@ -868,6 +934,8 @@ function nextGeneratedPattern(forbidden = []) {
 function applyCardPattern(slot,pattern) {
   if (trainerMode === 'triplets') tripletCards[slot] = pattern;
   else if (trainerMode === 'extended') extendedCards[slot] = pattern;
+  else if (trainerMode === 'fat') fatBeatCards[slot] = pattern;
+  else if (trainerMode === 'ride') rideCards[slot] = pattern;
   else if (trainerMode === 'kick12') kick12Cards[slot] = pattern;
   else selectors[slot].value = String(pattern);
 }
@@ -877,6 +945,8 @@ function adjacentPatterns(slot) {
 }
 function refreshPatternSelectors() {
   if (trainerMode === 'extended') populateExtendedSelectors();
+  else if (trainerMode === 'fat') populateFatBeatSelectors();
+  else if (trainerMode === 'ride') populateRideSelectors();
   else if (trainerMode === 'kick12') populateKick12Selectors();
 }
 function regenerateSlot(slot,forbidden = adjacentPatterns(slot)) {
@@ -925,7 +995,15 @@ function requestRandomize() {
     queuedRandomize = true;
     $('#randomize').textContent = systematicOrderActive() ? 'Restart queued' : 'Scramble queued';
     setStatus('');
-  } else { generateAll(); setStatus(''); }
+  } else {
+    pausedSessionEventNumber = null;
+    generateAll();
+    updatePositions(0);
+    clearNotationHighlights();
+    resetPracticeSession();
+    setTransportState('play');
+    setStatus('');
+  }
 }
 
 function eventDuration() { return 60 / Math.max(30,Number($('#tempo').value) || 100) / 3; }
@@ -1174,6 +1252,32 @@ function scheduleKick(time,velocity) {
   oscillator.onended = () => scheduledSources.delete(oscillator);
   scheduledSources.add(oscillator);
 }
+function scheduleRide(time,velocity) {
+  if (velocity <= 0) return;
+  if (midiOutput) { scheduleMidi(51,velocity,time,.12); return; }
+  if (trackScheduledSource(rideTipSampleKit?.schedule(audioContext, {
+    velocity,
+    time,
+    destination:boostedAudioOutput(audioContext)
+  }))) return;
+  const length = Math.ceil(audioContext.sampleRate*.32);
+  const buffer = audioContext.createBuffer(1,length,audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let index=0; index<length; index+=1) data[index] = Math.random()*2-1;
+  const source = audioContext.createBufferSource();
+  const highpass = audioContext.createBiquadFilter();
+  const bandpass = audioContext.createBiquadFilter();
+  const gain = audioContext.createGain();
+  source.buffer = buffer;
+  highpass.type = 'highpass'; highpass.frequency.value = 3600;
+  bandpass.type = 'bandpass'; bandpass.frequency.value = 6200; bandpass.Q.value = .65;
+  gain.gain.setValueAtTime(Math.max(.012,velocity/127*.24),time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+.32);
+  source.connect(highpass).connect(bandpass).connect(gain).connect(boostedAudioOutput(audioContext));
+  source.start(time); source.stop(time+.32);
+  source.onended = () => scheduledSources.delete(source);
+  scheduledSources.add(source);
+}
 function scheduleSnare(time, velocity) {
   if (velocity <= 0) return;
   if (midiOutput) scheduleMidi(38, velocity, time);
@@ -1253,13 +1357,21 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
     return;
   }
   if (previousSlot === activeCardCount()-1 && queuedRandomize) {
-    queuedRandomize = false; generateAll(); updatePatternOrderUI();
+    const visualTime = calibratedVisualTime(nextEventTime,latencyCompensation);
+    const delay = Math.max(0,(visualTime-audioContext.currentTime)*1000);
+    const timer = setTimeout(() => {
+      visualTimers.delete(timer);
+      queuedRandomize = false;
+      generateAll();
+      updatePatternOrderUI();
+    },delay);
+    visualTimers.add(timer);
   } else if ($('#auto-randomize').checked) {
-    const nextPattern = nextGeneratedPattern(adjacentPatterns(previousSlot));
     const visualTime = calibratedVisualTime(nextEventTime,latencyCompensation);
     const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
       visualTimers.delete(timer);
+      const nextPattern = nextGeneratedPattern(adjacentPatterns(previousSlot));
       applyCardPattern(previousSlot,nextPattern);
       refreshPatternSelectors();
       renderCard(previousSlot);
@@ -1312,17 +1424,42 @@ function scheduleEvent() {
     if (recoveryCards[slot]) recoveryExpectedHits.push(expected);
     else expectedPracticeHits.push(expected);
   }
-  const kickVocabulary = (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') && !recoveryCards[slot];
+  const kickVocabulary = (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') && !recoveryCards[slot];
+  const fatBeats = trainerMode === 'fat' && !recoveryCards[slot];
+  const rideComping = trainerMode === 'ride' && !recoveryCards[slot];
+  const fatMix = fatBeatsVelocityProfile(midiOutput
+    ? { normal:currentVelocities[1],accent:currentVelocities[2] }
+    : activeVelocities);
+  const rideMix = rideCompingVelocityProfile(midiOutput
+    ? { ghost:currentVelocities[0],normal:currentVelocities[1],accent:currentVelocities[2] }
+    : activeVelocities);
   const playbackPlan = trainerPlaybackPlan({
     role,
     step,
     kickVocabulary,
+    embeddedTimekeeper:kickVocabulary || rideComping,
     drumsEnabled:$('#drums').checked,
     metronomeEnabled:$('#metronome').checked
   });
   if (playbackPlan.pattern) {
-    if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
+    if (trainerMode === 'ride') scheduleRide(nextEventTime,rideMix.ride);
+    else if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
     else scheduleSnare(nextEventTime,velocity);
+  }
+  if (fatBeats && $('#drums').checked && step%12 === 6) {
+    scheduleSnare(nextEventTime,fatMix.snare);
+  }
+  const rideTimekeeper = rideCompingTimekeeper(step);
+  if (rideComping && $('#drums').checked && rideTimekeeper.kick) {
+    scheduleKick(nextEventTime,rideMix.kick);
+    if (rideTimekeeper.pedalHat) {
+      scheduleHat(
+        nextEventTime,
+        rideMix.pedalHat,
+        44,
+        pedalHatChickSampleKit
+      );
+    }
   }
   if (playbackPlan.grooveHat) {
     const articulation = alternatingClosedHiHatArticulation(Math.floor(eventNumber/3));
@@ -1352,14 +1489,25 @@ function schedulerTick() {
     if (!scheduleEvent()) break;
   }
 }
-async function prepareKickModeSamples(normalVelocity) {
-  if (midiOutput || !['kick','kick2','kick12'].includes(trainerMode)) return;
+async function prepareKickModeSamples(normalVelocity,ghostVelocity,accentVelocity) {
+  if (midiOutput || !['fat','ride','kick','kick2','kick12'].includes(trainerMode)) return;
+  const rideMix = rideCompingVelocityProfile({ ghost:ghostVelocity,normal:normalVelocity,accent:accentVelocity });
   try {
     kickSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.kickCenter });
-    await kickSampleKit.prepare(audioContext,[normalVelocity]);
+    await kickSampleKit.prepare(audioContext,[trainerMode === 'ride' ? rideMix.kick : normalVelocity].filter(velocity => velocity > 0));
   } catch (error) {
     kickSampleKit = null;
     console.warn('Using synthesized kick fallback.',error);
+  }
+  if (trainerMode === 'ride') {
+    try {
+      rideTipSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.rideTip });
+      await rideTipSampleKit.prepare(audioContext,[rideMix.ride]);
+    } catch (error) {
+      rideTipSampleKit = null;
+      console.warn('Using synthesized ride fallback.',error);
+    }
+    return;
   }
   try {
     closedHatTipSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatTip });
@@ -1377,7 +1525,7 @@ async function prepareKickModeSamples(normalVelocity) {
   }
 }
 async function preparePedalHatSamples(normalVelocity,accentVelocity) {
-  if (midiOutput || !$('#metronome').checked) return;
+  if (midiOutput || (!$('#metronome').checked && trainerMode !== 'ride')) return;
   try {
     pedalHatChickSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.pedalHiHatChick });
     await pedalHatChickSampleKit.prepare(audioContext,[normalVelocity,accentVelocity]);
@@ -1399,22 +1547,29 @@ async function prepareAudio() {
     activeVelocities = requested;
     return;
   }
-  try {
-    sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
-    await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
-  } catch (error) { console.warn('Using synthesized snare fallback.', error); }
-  await prepareKickModeSamples(normal);
+  if (trainerMode !== 'ride') {
+    try {
+      sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
+      const fatMix = fatBeatsVelocityProfile({ normal,accent });
+      const velocities = trainerMode === 'fat' ? [ghost,normal,accent,fatMix.snare] : [ghost,normal,accent];
+      await sampleKit.prepare(audioContext, velocities.filter(velocity => velocity > 0));
+    } catch (error) { console.warn('Using synthesized snare fallback.', error); }
+  }
+  await prepareKickModeSamples(normal,ghost,accent);
   activeVelocities = requested;
 }
 function setTransportState(state) {
   const loading = state === 'loading';
-  const active = state === 'stop';
-  $('#play').textContent = loading ? 'Loading…' : active ? '■ Stop' : '▶ Play';
+  const stopping = state === 'stop';
+  const pausing = state === 'pause';
+  const resuming = state === 'resume';
+  $('#play').textContent = loading ? 'Loading…' : stopping ? '■ Stop' : pausing ? 'Ⅱ Pause' : resuming ? '▶ Resume' : '▶ Play';
   const compact = $('#play-compact');
-  compact.textContent = loading ? '…' : active ? '■' : '▶';
+  compact.textContent = loading ? '…' : stopping ? '■' : pausing ? 'Ⅱ' : '▶';
   compact.disabled = loading;
-  compact.setAttribute('aria-label',loading ? 'Loading' : active ? 'Stop' : 'Play');
-  compact.title = loading ? 'Loading' : active ? 'Stop' : 'Play';
+  const label = loading ? 'Loading' : stopping ? 'Stop' : pausing ? 'Pause' : resuming ? 'Resume' : 'Play';
+  compact.setAttribute('aria-label',label);
+  compact.title = label;
 }
 function setCardAuditionState(state = 'idle',slot = null) {
   cards.forEach((card,index) => {
@@ -1441,9 +1596,11 @@ function scrollToTapPad() {
 }
 async function start({ tapMode = false } = {}) {
   if (playing) {
-    stop();
+    if (playbackScope === 'session') pauseSession();
+    else stop();
     return;
   }
+  const resuming = pausedSessionEventNumber !== null;
   setTapMode(tapMode);
   if (tapMode) scrollToTapPad();
   setTransportState('loading');
@@ -1451,11 +1608,17 @@ async function start({ tapMode = false } = {}) {
     await prepareAudio();
     if (document.hidden) throw new Error('Return to this tab before starting playback.');
     const withMetronome = $('#metronome').checked;
-    resetRecoveryState();
-    resetPracticeSession();
-    playing = true; playbackScope = 'session'; auditionSlot = null; auditionQueue = []; eventNumber = 0; activeSlot = 0; countInBeat = 0; countInBeatsRemaining = withMetronome ? 4 : 0; nextEventTime = audioContext.currentTime+.08;
+    if (!resuming) {
+      resetRecoveryState();
+      resetPracticeSession();
+    }
+    eventNumber = resuming ? pausedSessionEventNumber : 0;
+    const position = trainerEventPosition(eventNumber,stepsPerCard(),activeCardCount(),repeatCount());
+    activeSlot = position.slot;
+    pausedSessionEventNumber = null;
+    playing = true; playbackScope = 'session'; auditionSlot = null; auditionQueue = []; countInBeat = 0; countInBeatsRemaining = resuming ? 0 : (withMetronome ? 4 : 0); nextEventTime = audioContext.currentTime+.08;
     void screenWakeLock.setActive(true);
-    setTransportState('stop'); updatePositions(0); setStatus('');
+    setTransportState('pause'); updatePositions(activeSlot); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
   } catch (error) { setTapMode(false); setTransportState('play'); setStatus(error.message || 'Could not start playback'); }
 }
@@ -1471,7 +1634,7 @@ async function auditionCard(slot) {
     setStatus(update.action === 'full' ? 'The audition queue holds three patterns.' : '');
     return;
   }
-  if (playing) {
+  if (playing || pausedSessionEventNumber !== null) {
     stop();
   }
   setTapMode(false);
@@ -1536,6 +1699,7 @@ function stop() {
   playbackScope = null;
   auditionSlot = null;
   auditionQueue = [];
+  pausedSessionEventNumber = null;
   void screenWakeLock.setActive(false);
   visualTimers.forEach(clearTimeout); visualTimers.clear();
   scheduledSources.forEach(source => { try { source.stop(); } catch {} }); scheduledSources.clear();
@@ -1548,6 +1712,41 @@ function stop() {
   setTapMode(false);
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
   setTransportState('play'); setCardAuditionState(); setStatus('');
+}
+
+function pauseSession() {
+  if (!playing || playbackScope !== 'session') return;
+  pausedSessionEventNumber = trainerResumeEventNumber(
+    eventNumber,
+    nextEventTime,
+    audioContext?.currentTime ?? nextEventTime,
+    eventDuration()
+  );
+  const position = trainerEventPosition(pausedSessionEventNumber,stepsPerCard(),activeCardCount(),repeatCount());
+  playing = false;
+  clearInterval(scheduler);
+  scheduler = null;
+  clearTimeout(auditionEndTimer);
+  auditionEndTimer = null;
+  playbackScope = null;
+  void screenWakeLock.setActive(false);
+  visualTimers.forEach(clearTimeout);
+  visualTimers.clear();
+  scheduledSources.forEach(source => { try { source.stop(); } catch {} });
+  scheduledSources.clear();
+  expectedPracticeHits = [];
+  recoveryExpectedHits = [];
+  phraseStartTime = null;
+  setTapMode(false);
+  updatePositions(position.slot);
+  if (midiOutput) {
+    try { midiOutput.clear?.(); } catch {}
+    midiOutput.send([0xb9,120,0]);
+    midiOutput.send([0xb9,123,0]);
+  }
+  setTransportState('resume');
+  setCardAuditionState();
+  setStatus('Paused');
 }
 
 function attachMidiInput(nextInput) {
@@ -1677,9 +1876,13 @@ async function prepareChangedVelocities() {
   const [ghost, normal, accent] = velocityValues();
   const requested = { ghost, normal, accent };
   try {
-    sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
-    await sampleKit.prepare(audioContext, [ghost, normal, accent].filter(velocity => velocity > 0));
-    await prepareKickModeSamples(normal);
+    if (trainerMode !== 'ride') {
+      sampleKit ||= await sampleLibrary.getKit({ kitId:sampleKitId });
+      const fatMix = fatBeatsVelocityProfile({ normal,accent });
+      const velocities = trainerMode === 'fat' ? [ghost,normal,accent,fatMix.snare] : [ghost,normal,accent];
+      await sampleKit.prepare(audioContext, velocities.filter(velocity => velocity > 0));
+    }
+    await prepareKickModeSamples(normal,ghost,accent);
     activeVelocities = requested;
     setStatus('');
   } catch { setStatus('Velocity samples unavailable'); }
@@ -1715,18 +1918,22 @@ $('#emphasis').addEventListener('change',event => {
 });
 selectors.forEach((select,slot) => select.addEventListener('change', () => {
   if (trainerMode === 'extended') extendedCards[slot][0] = Number(select.value);
-  if (trainerMode === 'kick12') kick12Cards[slot][0] = Number(select.value);
+  else if (trainerMode === 'fat') fatBeatCards[slot][0] = Number(select.value);
+  else if (trainerMode === 'ride') rideCards[slot][0] = Number(select.value);
+  else if (trainerMode === 'kick12') kick12Cards[slot][0] = Number(select.value);
   if (trainerMode !== 'triplets') renderCard(slot);
 }));
 extendedSecondSelectors.forEach((select,slot) => select.addEventListener('change',() => {
   if (trainerMode === 'extended') extendedCards[slot][1] = Number(select.value);
+  else if (trainerMode === 'fat') fatBeatCards[slot][1] = Number(select.value);
+  else if (trainerMode === 'ride') rideCards[slot][1] = Number(select.value);
   else if (trainerMode === 'kick12') kick12Cards[slot][1] = Number(select.value);
   else return;
   renderCard(slot);
 }));
 $('#trainer-mode').addEventListener('change',event => {
   if (playing) stop();
-  trainerMode = ['vocabulary','extended','triplets','kick','kick2','kick12'].includes(event.target.value) ? event.target.value : 'vocabulary';
+  trainerMode = ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12'].includes(event.target.value) ? event.target.value : 'vocabulary';
   try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
   updateModeUI();
   generateAll();
@@ -1784,6 +1991,12 @@ $('#drums').addEventListener('change',event => {
     $('#metronome').checked = true;
     try { localStorage.setItem(METRONOME_KEY,'true'); } catch {}
   }
+});
+$('#fat-lead-in').addEventListener('change',event => {
+  try { localStorage.setItem(FAT_LEAD_IN_KEY,String(event.target.checked)); } catch {}
+  if (playing || pausedSessionEventNumber !== null) stop();
+  document.body.dataset.fatLeadIn = String(event.target.checked);
+  renderAll();
 });
 [$('#ignore-feet'),$('#ignore-ghosts')].forEach(input => input.addEventListener('change',event => {
   const key = event.target.id === 'ignore-feet' ? IGNORE_FEET_KEY : IGNORE_GHOSTS_KEY;

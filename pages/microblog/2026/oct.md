@@ -59,3 +59,10 @@ I went and got breakfast from Zip's. Not too bad, actually. The burrito is great
 ## 08 OCT 2026 Thu - Loop
 
 We made a little loop through Chewelah, Colville, Cusick, ... and stopped at Crystal Falls and at one of the last RadioShacks in existence (they still have drawers of individual transistors and LEDs and such!). We had breakfast in Chewelah and took photos at the falls.
+
+## 09 OCT 2026 Fri - Singularity
+
+Tracey got up early and went for a walk! Before I was even out of bed. Then she went grocery shopping (and talked to Chelsea on the phone) until the early afternoon. I drummed. Tracey made a yummy spicy pho soup! And at 19:00, I had an interesting meeting with good ol' Jay Beavers and Greg and a couple of other guys (it turned out that only Jay, John Rice and I showed up). Jay started this little "Secret Society" he calls Singularity Rodeo. It was a fun conversation about the future of AI and getting this little group going. My first "meeting" in several months! We're gonna do it every other Friday.
+
+## 10 OCT 2026 Sat - Mike
+

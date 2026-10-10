@@ -9,6 +9,7 @@ import {
   createPracticeScore,
   expirePracticeHits,
   expirePracticeTargets,
+  fatBeatsVelocityProfile,
   midiPracticeHitAccepted,
   practiceAccuracy,
   practiceTimingWindowSeconds,
@@ -19,15 +20,20 @@ import {
   randomTripletMasks,
   recoveryHitTarget,
   recoveryPulseRoles,
+  rideCompingTimekeeper,
+  rideCompingVelocityProfile,
   rolesForExtendedBar,
+  rolesForFatBeats,
   rolesForKickVocabulary,
   rolesForKickVocabulary12,
   rolesForKickVocabulary2,
+  rolesForRideVocabulary,
   rolesForTripletMasks,
   scorePracticeTap,
   systematicPatternCombinations,
   systematicPatternStep,
   trainerEventPosition,
+  trainerResumeEventNumber,
   trainerPlaybackPlan,
   choosePatternAvoiding,
   tripletMasksForRoles,
@@ -55,8 +61,13 @@ test('systematic order enumerates each eligible mode combination and wraps', () 
   assert.deepEqual(systematicPatternCombinations('kick12',{ melodyIndexes:[0,1,2] }),[
     [0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]
   ]);
+  assert.deepEqual(systematicPatternCombinations('ride',{ melodyIndexes:[0,2] }),[
+    [0,0],[0,2],[2,0],[2,2]
+  ]);
   assert.equal(systematicPatternCombinations('extended',{ extendedIndexes:[0,1,2,3,4,5,6,7,8] }).length,18);
+  assert.equal(systematicPatternCombinations('fat',{ extendedIndexes:[0,1,2,3,4,5,6,7,8] }).length,18);
   assert.equal(systematicPatternCombinations('kick12',{ melodyIndexes:[0,1,2,3,4,5,6,7,8] }).length,81);
+  assert.equal(systematicPatternCombinations('ride',{ melodyIndexes:[0,1,2,3,4,5,6,7,8] }).length,81);
   assert.deepEqual(systematicPatternCombinations('triplets',{ melodyIndexes:[0,1] }),[]);
   assert.deepEqual(systematicPatternStep([[0,0],[0,1]],0),{ pattern:[0,0],nextIndex:1 });
   assert.deepEqual(systematicPatternStep([[0,0],[0,1]],1),{ pattern:[0,1],nextIndex:0 });
@@ -67,6 +78,61 @@ test('triplet masks become sounded A strokes and ghosted B strokes', () => {
     'B','B','B','A','B','A','A','A','A'
   ]);
   assert.deepEqual(tripletMasksForRoles(['B','B','B','A','B','A','A','A','A']),['000','101','111']);
+});
+
+test('fat beats apply the extended melody to kick while leaving non-melody slots silent', () => {
+  assert.deepEqual(rolesForFatBeats([1,7]),[
+    'K','R','R','R','R','R','R','R','R','R','R','R',
+    'A','R','A','A','R','A','R','R','A','R','R','A'
+  ]);
+  assert.deepEqual(rolesForFatBeats([1,7],{ leadIn:false }),[
+    'A','R','A','A','R','A','R','R','A','R','R','A'
+  ]);
+});
+
+test('ride vocabulary joins two independent melodies and turns the ghost layer into silence', () => {
+  assert.deepEqual(rolesForRideVocabulary(
+    ['A','B','A','A','B','B'],
+    ['A','A','B','A','B','A']
+  ),[
+    'A','R','A','A','R','R','A','A','R','A','R','A'
+  ]);
+  assert.deepEqual(
+    Array.from({ length:12 },(_,step) => rideCompingTimekeeper(step)),
+    [
+      { kick:true,pedalHat:false },
+      { kick:false,pedalHat:false },
+      { kick:false,pedalHat:false },
+      { kick:true,pedalHat:true },
+      { kick:false,pedalHat:false },
+      { kick:false,pedalHat:false },
+      { kick:true,pedalHat:false },
+      { kick:false,pedalHat:false },
+      { kick:false,pedalHat:false },
+      { kick:true,pedalHat:true },
+      { kick:false,pedalHat:false },
+      { kick:false,pedalHat:false }
+    ]
+  );
+  assert.deepEqual(
+    rideCompingVelocityProfile({ ghost:16,normal:64,accent:111 }),
+    { kick:6,ride:99,pedalHat:64 }
+  );
+  assert.deepEqual(
+    rideCompingVelocityProfile({ ghost:0,normal:127,accent:127 }),
+    { kick:0,ride:127,pedalHat:127 }
+  );
+});
+
+test('fat beats keep the kick normal while moderating the halftime snare', () => {
+  assert.deepEqual(
+    fatBeatsVelocityProfile({ normal:64,accent:111 }),
+    { kick:64,snare:88 }
+  );
+  assert.deepEqual(
+    fatBeatsVelocityProfile({ normal:127,accent:127 }),
+    { kick:127,snare:127 }
+  );
 });
 
 test('kick vocabulary keeps ghost strokes beneath the landing and main-pattern rest', () => {
@@ -122,6 +188,12 @@ test('repeat count traverses each card the requested number of times before adva
   assert.deepEqual(trainerEventPosition(95,6,3,16),{
     step:5,slot:0,repetition:15,cardBoundary:false,eventsPerCard:96
   });
+});
+
+test('pausing resumes at the first event that has not sounded', () => {
+  assert.equal(trainerResumeEventNumber(8,10.8,10.05,.1),1);
+  assert.equal(trainerResumeEventNumber(8,10.8,10.71,.1),8);
+  assert.equal(trainerResumeEventNumber(0,10.8,10.05,.1),0);
 });
 
 test('pattern choice avoids an adjacent duplicate when another pattern exists', () => {
@@ -263,6 +335,15 @@ test('metronome-only playback suppresses drums without stopping the cursor pulse
   assert.deepEqual(trainerPlaybackPlan({
     role:'B',step:1,kickVocabulary:false,drumsEnabled:true,metronomeEnabled:true
   }),{ pattern:true,grooveHat:false,metronome:false });
+});
+
+test('an embedded ride timekeeper avoids doubling the optional metronome', () => {
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'A',step:3,embeddedTimekeeper:true,drumsEnabled:true,metronomeEnabled:true
+  }),{ pattern:true,grooveHat:false,metronome:false });
+  assert.deepEqual(trainerPlaybackPlan({
+    role:'A',step:3,embeddedTimekeeper:true,drumsEnabled:false,metronomeEnabled:true
+  }),{ pattern:false,grooveHat:false,metronome:true });
 });
 
 test('card auditions queue in click order and cap the sequence at three patterns', () => {

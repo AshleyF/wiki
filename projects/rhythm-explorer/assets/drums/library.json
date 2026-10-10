@@ -18,6 +18,12 @@
           "midi_note": 50,
           "kit_id": "crash-cymbal-choke",
           "manifest": "cymbals/crash/choke/kit.json"
+        },
+        {
+          "name": "ride-tip",
+          "midi_note": 51,
+          "kit_id": "ride-tip",
+          "manifest": "cymbals/ride/tip/kit.json"
         }
       ]
     },

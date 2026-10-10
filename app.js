@@ -1,5 +1,5 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
-import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20261005-pedal-hi-hat-1';
+import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
 import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
@@ -52,6 +52,7 @@ const wikiClosedHatTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiH
 const wikiClosedHatEdgeSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.closedHiHatEdge, kit: null, promise: null };
 const wikiOpenHatTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.openHiHatTip, kit: null, promise: null };
 const wikiPedalHatChickSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.pedalHiHatChick, kit: null, promise: null };
+const wikiRideTipSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.rideTip, kit: null, promise: null };
 const wikiCrashSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.crashBow, kit: null, promise: null };
 const wikiHighTomSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.highTomCenter, kit: null, promise: null };
 const wikiMidTomSampleState = { kitId: FIXED_DRUM_SAMPLE_KIT_IDS.midTomCenter, kit: null, promise: null };
@@ -2490,6 +2491,18 @@ function scheduleDrumSound(context, instrument, token, time, strength = 1, pan =
       return;
     }
   }
+  if (instrument === 'rd') {
+    const sampleSource = wikiRideTipSampleState.kit?.schedule(context, {
+      velocity,
+      time,
+      pan,
+      destination: boostedAudioOutput(context)
+    });
+    if (sampleSource) {
+      trackDrumNode(sampleSource);
+      return;
+    }
+  }
   if (['hh', 'ph'].includes(instrument)) {
     drumNoise(context, time, token.kind === 'o' ? 0.32 : 0.055, 6500, 0.18 * adjustedStrength, pan);
   }
@@ -2623,6 +2636,7 @@ async function prepareWikiDrumSamples(context, pattern, block, velocityProfile =
   const midTomVelocities = drumRowVelocities(pattern, 'mt', velocityProfile);
   const floorTomVelocities = drumRowVelocities(pattern, 'ft', velocityProfile);
   const crashVelocities = drumRowVelocities(pattern, 'cr', velocityProfile);
+  const rideVelocities = drumRowVelocities(pattern, 'rd', velocityProfile);
   await Promise.all([
     prepareWikiSnareSamples(context, pattern, block, velocityProfile),
     prepareWikiFixedDrumSamples(context, wikiKickSampleState, kickVelocities, block, 'Kick'),
@@ -2633,6 +2647,7 @@ async function prepareWikiDrumSamples(context, pattern, block, velocityProfile =
     prepareWikiFixedDrumSamples(context, wikiHighTomSampleState, highTomVelocities, block, 'High tom'),
     prepareWikiFixedDrumSamples(context, wikiMidTomSampleState, midTomVelocities, block, 'Mid tom'),
     prepareWikiFixedDrumSamples(context, wikiFloorTomSampleState, floorTomVelocities, block, 'Floor tom'),
+    prepareWikiFixedDrumSamples(context, wikiRideTipSampleState, rideVelocities, block, 'Ride tip'),
     prepareWikiFixedDrumSamples(context, wikiCrashSampleState, crashVelocities, block, 'Crash')
   ]);
 }

@@ -436,6 +436,10 @@ If parser behavior grows, add isolated automated fixtures before expanding synta
 
 ## Known limitations and likely next steps
 
+Ride playback is sample-backed: wiki `rd:` rows and the Triplet Vocabulary Trainer's Ride Comping mode use the fixed `ride-tip` kit (MIDI note 51) from `FIXED_DRUM_SAMPLE_KIT_IDS`. The trainer's synthesized ride remains only as a load-failure fallback. Ride Comping deliberately mixes the melody above its timekeeper: ride velocity is three quarters of the way from normal to accent, its pedal chick stays at normal velocity, and its feathered quarter-note kick uses three eighths of the ghost velocity. Fat Beats similarly keeps its kick melody at normal velocity but places the halftime snare halfway from normal to accent rather than at the full accent value. Apply these profiles to browser samples and MIDI output, and prepare the exact adjusted sample velocities rather than only the raw slider values.
+
+The Triplet Vocabulary Trainer's Fat Beats mode uses the Extended Vocabulary pattern on kick under a halftime groove. Its Fat Beats-only `Lead-in` checkbox defaults on and persists: when enabled, each card has one plain halftime measure with kick on beat 1 followed by the selected pattern measure; when disabled, the card contains only the pattern measure. Every measure keeps quarter-note hi-hat and an accented snare on beat 3. Non-melody kick subdivisions remain silent. The mode shares the Extended Vocabulary filter and its 3-by-6 systematic combination order.
+
 Current limitations are intentional or accepted, not accidental:
 
 - The Markdown parser covers only the documented subset.

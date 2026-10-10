@@ -40,12 +40,12 @@ export function randomExtendedPatternPair(enabledIndexes,random = Math.random,em
 }
 
 export function systematicPatternCombinations(mode,{ melodyIndexes = [],extendedIndexes = [] } = {}) {
-  if (mode === 'extended') {
+  if (mode === 'extended' || mode === 'fat') {
     const first = extendedIndexes.filter(index => index >= 0 && index < 3);
     const second = extendedIndexes.filter(index => index >= 3 && index < EXTENDED_PATTERNS.length);
     return first.flatMap(firstIndex => second.map(secondIndex => [firstIndex,secondIndex]));
   }
-  if (mode === 'kick12') {
+  if (mode === 'ride' || mode === 'kick12') {
     return melodyIndexes.flatMap(firstIndex => melodyIndexes.map(secondIndex => [firstIndex,secondIndex]));
   }
   if (['vocabulary','kick','kick2'].includes(mode)) return melodyIndexes.map(String);
@@ -66,8 +66,48 @@ export function rolesForExtendedBar(patternIndexes) {
   return patternIndexes.flatMap(index => EXTENDED_PATTERNS[index]);
 }
 
+export function rolesForFatBeats(patternIndexes,{ leadIn = true } = {}) {
+  const grooveMeasure = ['K','R','R','R','R','R','R','R','R','R','R','R'];
+  const patternMeasure = rolesForExtendedBar(patternIndexes).map(role => role === 'A' ? 'A' : 'R');
+  return leadIn ? [...grooveMeasure,...patternMeasure] : patternMeasure;
+}
+
 export function rolesForTripletMasks(masks) {
   return masks.flatMap(mask => [...mask].map(bit => bit === '1' ? 'A' : 'B'));
+}
+
+export function rolesForRideVocabulary(firstMelody,secondMelody = firstMelody) {
+  return [firstMelody,secondMelody].flatMap(melody => melody.map(role => role === 'A' ? 'A' : 'R'));
+}
+
+export function rideCompingTimekeeper(step = 0) {
+  const position = Math.max(0,Math.floor(Number(step) || 0)) % 12;
+  return {
+    kick:position%3 === 0,
+    pedalHat:position === 3 || position === 9
+  };
+}
+
+export function rideCompingVelocityProfile({ ghost = 0, normal = 0, accent = 0 } = {}) {
+  const clamp = value => Math.max(0,Math.min(127,Math.round(Number(value) || 0)));
+  const ghostVelocity = clamp(ghost);
+  const normalVelocity = clamp(normal);
+  const accentVelocity = Math.max(normalVelocity,clamp(accent));
+  return {
+    kick:clamp(ghostVelocity*.375),
+    ride:clamp(normalVelocity+(accentVelocity-normalVelocity)*.75),
+    pedalHat:normalVelocity
+  };
+}
+
+export function fatBeatsVelocityProfile({ normal = 0, accent = 0 } = {}) {
+  const clamp = value => Math.max(0,Math.min(127,Math.round(Number(value) || 0)));
+  const normalVelocity = clamp(normal);
+  const accentVelocity = Math.max(normalVelocity,clamp(accent));
+  return {
+    kick:normalVelocity,
+    snare:clamp(normalVelocity+(accentVelocity-normalVelocity)*.5)
+  };
 }
 
 export function rolesForKickVocabulary(melody) {
@@ -96,6 +136,7 @@ export function trainerPlaybackPlan({
   role = 'R',
   step = 0,
   kickVocabulary = false,
+  embeddedTimekeeper = kickVocabulary,
   drumsEnabled = true,
   metronomeEnabled = false
 } = {}) {
@@ -103,7 +144,7 @@ export function trainerPlaybackPlan({
   return {
     pattern: Boolean(drumsEnabled && role !== 'R'),
     grooveHat: Boolean(drumsEnabled && kickVocabulary && pulse),
-    metronome: Boolean(metronomeEnabled && pulse && (!kickVocabulary || !drumsEnabled))
+    metronome: Boolean(metronomeEnabled && pulse && (!embeddedTimekeeper || !drumsEnabled))
   };
 }
 
@@ -137,6 +178,14 @@ export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount
     cardBoundary:event > 0 && event%eventsPerCard === 0,
     eventsPerCard
   };
+}
+
+export function trainerResumeEventNumber(nextEventNumber,nextEventTime,currentTime,subdivisionSeconds) {
+  const nextEvent = Math.max(0,Math.floor(Number(nextEventNumber) || 0));
+  const duration = Math.max(.001,Number(subdivisionSeconds) || .001);
+  const scheduledAhead = Math.max(0,Number(nextEventTime)-Number(currentTime));
+  const unheardEvents = Math.max(0,Math.floor(scheduledAhead/duration+1e-6));
+  return Math.max(0,nextEvent-unheardEvents);
 }
 
 export function randomTripletMasks(enabledMasks,count,random = Math.random,emphasized = null,{ before = null,after = null } = {}) {
