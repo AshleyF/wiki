@@ -5,8 +5,11 @@ h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 2rem); letter-spacing: -.035em; }
 .header-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .45rem; }
 .view-option { display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .view-option input { margin: 0; accent-color: var(--accent); }
-.fat-lead-in-control { display: none; }
+.fat-lead-in-control, .ride-intro-control { display: none; align-items: center; gap: .3rem; flex: 0 0 auto; min-height: 2.25rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; white-space: nowrap; }
+.fat-lead-in-control input { margin: 0; accent-color: var(--accent); }
+.ride-intro-control select { min-height: 2.25rem; border: 1px solid var(--notation-button-border); padding: .35rem .45rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
 body[data-trainer-mode="fat"] .fat-lead-in-control { display: inline-flex; }
+body[data-trainer-mode="ride"] .ride-intro-control { display: inline-flex; }
 .repeat-control select { min-height: 2rem; border: 1px solid var(--notation-button-border); padding: .25rem 1.4rem .25rem .4rem; color: var(--notation-ink); background: var(--notation-panel); font: inherit; }
 .drum-render .trainer-repeat-count { fill: var(--notation-ink); font: 700 10px/1 Arial,sans-serif; }
 .drum-render .trainer-repeat-count-implicit:not(.is-active) { visibility: hidden; }
@@ -101,9 +104,11 @@ body[data-trainer-mode="triplets"] .melody-card header select { display: none; }
 .notation.drum-render { min-height: 90px; padding: .1rem .5rem; }
 body[data-trainer-mode="kick"] .notation.drum-render,
 body[data-trainer-mode="kick2"] .notation.drum-render,
-body[data-trainer-mode="kick12"] .notation.drum-render { min-height: 148px; }
-body[data-trainer-mode="fat"] .notation.drum-render { min-height: 296px; }
-body[data-trainer-mode="fat"][data-fat-lead-in="false"] .notation.drum-render { min-height: 148px; }
+body[data-trainer-mode="kick12"] .notation.drum-render { min-height: 160px; }
+body[data-trainer-mode="fat"] .notation.drum-render { min-height: 320px; }
+body[data-trainer-mode="fat"][data-fat-lead-in="false"] .notation.drum-render { min-height: 160px; }
+body[data-trainer-mode="ride"] .notation.drum-render { min-height: 90px; }
+body[data-trainer-mode="ride"][data-ride-intro-enabled="true"] .notation.drum-render { min-height: 180px; }
 .notation svg { min-width: 290px; }
 @media (max-width: 1180px) { .phrase { grid-template-columns: 1fr; } .notation svg { width: 100%; min-width: 0; } }
 @media (max-width: 1250px) { .melody-filter { flex-wrap: wrap; } .melody-filter-options { flex: 1 1 auto; flex-wrap: wrap; min-width: 0; } }

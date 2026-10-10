@@ -97,6 +97,22 @@ test('ride vocabulary joins two independent melodies and turns the ghost layer i
   ),[
     'A','R','A','A','R','R','A','A','R','A','R','A'
   ]);
+  assert.deepEqual(rolesForRideVocabulary(
+    ['A','B','A','A','B','B'],
+    ['A','A','B','A','B','A'],
+    { intro:'quarters' }
+  ),[
+    'A','R','R','A','R','R','A','R','R','A','R','R',
+    'A','R','A','A','R','R','A','A','R','A','R','A'
+  ]);
+  assert.deepEqual(rolesForRideVocabulary(
+    ['A','B','A','A','B','B'],
+    ['A','A','B','A','B','A'],
+    { intro:'spang' }
+  ),[
+    'A','R','R','A','R','A','A','R','R','A','R','A',
+    'A','R','A','A','R','R','A','A','R','A','R','A'
+  ]);
   assert.deepEqual(
     Array.from({ length:12 },(_,step) => rideCompingTimekeeper(step)),
     [

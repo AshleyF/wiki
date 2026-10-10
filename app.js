@@ -1,7 +1,7 @@
 import { DrumSampleLibrary, pushOrderedVelocities, velocityFromStrengthProfile } from './projects/rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from './projects/shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, classifySingleInstrumentNotation, extendHiddenTripletBracket, renderedDrumStems, renderedStemForNote, singleLineDrumKey, singleLineDrumStaveOptions } from './projects/rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20260908-single-line-2';
+import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced-triplet-renderer.js?v=20261010-multi-measure-1';
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260910-2';
 import { renderInlineMarkdown } from './markdown-inline.js?v=20261001-balanced-links';

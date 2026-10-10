@@ -146,7 +146,7 @@ export function renderReducedTripletSequence({
 
   cells.flatMap((cell) => cell.notes).forEach((note) => note.draw());
   cells.forEach((cell) => cell.beam?.setContext(context).draw());
-  const svg = target.querySelector('svg');
+  const svg = [...target.querySelectorAll('svg')].at(-1);
   const repeatLabel = appendRepeatCount(svg,repeatCount,width-12,staveY+4);
   const bracketY = staveY-11;
   cells.forEach((cell,cellIndex) => {
@@ -170,7 +170,7 @@ export function renderReducedTripletSequence({
     stave,
     cells,
     notes:cells.flatMap((cell) => cell.notes),
-    repeatBarlineElements:[...target.querySelectorAll('.vf-stavebarline')].slice(-1),
+    repeatBarlineElements:[...(svg?.querySelectorAll('.vf-stavebarline') || [])].slice(-1),
     repeatLabel
   };
 }

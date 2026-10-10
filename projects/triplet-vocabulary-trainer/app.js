@@ -1,6 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
 import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20261009-noteheads-2';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20261010-multi-measure-1';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
@@ -27,6 +27,8 @@ const PATTERN_ORDER_KEY = 'triplet-vocabulary-pattern-order';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
 const DRUMS_KEY = 'triplet-vocabulary-drums';
 const FAT_LEAD_IN_KEY = 'triplet-vocabulary-fat-lead-in';
+const RIDE_INTRO_PATTERN_KEY = 'triplet-vocabulary-ride-intro-pattern';
+const LEGACY_RIDE_QUARTER_INTRO_KEY = 'triplet-vocabulary-ride-quarter-intro';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
 const REPEAT_PATTERN_KEY = 'triplet-vocabulary-repeat-pattern';
@@ -435,6 +437,15 @@ function loadBooleanPreference(key, fallback = true) {
     return fallback;
   }
 }
+function loadRideIntroPattern() {
+  try {
+    const saved = localStorage.getItem(RIDE_INTRO_PATTERN_KEY);
+    if (['none','quarters','spang'].includes(saved)) return saved;
+    return localStorage.getItem(LEGACY_RIDE_QUARTER_INTRO_KEY) === 'true' ? 'quarters' : 'none';
+  } catch {
+    return 'none';
+  }
+}
 function initializeDisplayOptions() {
   $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
@@ -447,6 +458,7 @@ function initializeDisplayOptions() {
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
   $('#drums').checked = loadBooleanPreference(DRUMS_KEY,true);
   $('#fat-lead-in').checked = loadBooleanPreference(FAT_LEAD_IN_KEY,true);
+  $('#ride-intro-pattern').value = loadRideIntroPattern();
   $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
   $('#ignore-ghosts').checked = loadBooleanPreference(IGNORE_GHOSTS_KEY,true);
 }
@@ -464,7 +476,11 @@ function selectedPattern(slot) {
   }
   if (trainerMode === 'ride') {
     const [first,second] = rideCards[slot];
-    return rolesForRideVocabulary(MELODIES[first] || MELODIES[0],MELODIES[second] || MELODIES[0]);
+    return rolesForRideVocabulary(
+      MELODIES[first] || MELODIES[0],
+      MELODIES[second] || MELODIES[0],
+      { intro:rideIntroPattern() }
+    );
   }
   const melody = MELODIES[Number(selectors[slot].value)] || MELODIES[0];
   if (trainerMode === 'kick') return rolesForKickVocabulary(melody);
@@ -476,7 +492,14 @@ function selectedMasks(slot) {
 }
 function activeCardCount() { return 3; }
 function fatLeadInEnabled() { return $('#fat-lead-in').checked; }
-function stepsPerCard() { return trainerMode === 'vocabulary' ? 6 : trainerMode === 'fat' && fatLeadInEnabled() ? 24 : 12; }
+function rideIntroPattern() { return ['quarters','spang'].includes($('#ride-intro-pattern').value) ? $('#ride-intro-pattern').value : 'none'; }
+function rideIntroEnabled() { return rideIntroPattern() !== 'none'; }
+function stepsPerCard() {
+  if (trainerMode === 'vocabulary') return 6;
+  if (trainerMode === 'fat' && fatLeadInEnabled()) return 24;
+  if (trainerMode === 'ride' && rideIntroEnabled()) return 24;
+  return 12;
+}
 function tripletCountForStep(step) {
   return step%3 === 0 ? String(Math.floor(step/3)+1) : step%3 === 1 ? '&' : 'a';
 }
@@ -552,7 +575,7 @@ function renderKickCard(slot,target,width,{
   fullPattern = false
 } = {}) {
   const VF = vexflow();
-  const height = $('#show-counting').checked ? 168 : 148;
+  const height = $('#show-counting').checked ? 180 : 160;
   const renderer = new VF.Renderer(target,VF.Renderer.Backends.SVG);
   renderer.resize(width,height);
   const context = renderer.getContext();
@@ -605,6 +628,7 @@ function renderKickCard(slot,target,width,{
       note.trainerStep = step;
       note.trainerSlots = event.slots;
       note.trainerCount = event.rest ? '' : tripletCountForStep(step);
+      note.trainerHidden = fatBeats && event.rest;
       if (patternSnare) {
         note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.BELOW),0);
         note.trainerPatternAccent = true;
@@ -727,6 +751,56 @@ function renderKickCard(slot,target,width,{
     repeatLabel
   };
 }
+function renderReducedCardMeasure(target,width,masks,{
+  notehead = '',
+  repeatEnd = false,
+  desiredGridWidth = 520,
+  cellGap = 8
+} = {}) {
+  const VF = vexflow();
+  const availableLeft = 14;
+  const availableRight = width-10;
+  const gridWidth = Math.min(desiredGridWidth,availableRight-availableLeft);
+  const gridLeft = (width-gridWidth)/2;
+  const rendered = renderReducedTripletSequence({
+    Flow:VF,
+    target,
+    masks,
+    width,
+    height:90,
+    staveY:20,
+    gridLeft,
+    gridRight:gridLeft+gridWidth,
+    cellGap,
+    notehead,
+    annotationForStep:$('#show-counting').checked ? tripletCountForStep : null,
+    repeatEnd,
+    repeatCount:repeatCount()
+  });
+  const stepCount = masks.length*3;
+  const stepElements = Array.from({ length:stepCount }, () => []);
+  const renderedSvg = [...target.querySelectorAll('svg')].at(-1);
+  const stems = renderedDrumStems(renderedSvg,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
+  rendered.notes.forEach(note => {
+    note.trainerEvent = note.reducedTripletEvent;
+    note.trainerStep = note.reducedTripletStep;
+    const element = note.getSVGElement?.();
+    const coveredSteps = Array.from({ length:note.trainerEvent.slots },(_,offset) => note.trainerStep+offset)
+      .filter(step => step < stepCount);
+    element?.classList.add('drum-step');
+    coveredSteps.forEach(step => addDrumStepElement(stepElements,step,element));
+    const stem = renderedStemForNote(stems,note);
+    if (stem) {
+      stem.classList.add('drum-step-stem');
+      coveredSteps.forEach(step => addDrumStepElement(stepElements,step,stem));
+    }
+  });
+  return {
+    stepElements,
+    repeatBarlineElements:rendered.repeatBarlineElements,
+    repeatLabel:rendered.repeatLabel
+  };
+}
 function renderCard(slot) {
   const VF = vexflow();
   const target = cards[slot].querySelector('.notation');
@@ -766,47 +840,39 @@ function renderCard(slot) {
     cards[slot].repeatLabel = rendered.repeatLabel;
     return;
   }
+  if (trainerMode === 'ride') {
+    const masks = selectedMasks(slot);
+    if (!rideIntroEnabled()) {
+      const rendered = renderReducedCardMeasure(target,width,masks,{
+        notehead:'x2',
+        repeatEnd:repeatCount() > 1
+      });
+      cards[slot].stepElements = rendered.stepElements;
+      cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
+      cards[slot].repeatLabel = rendered.repeatLabel;
+      return;
+    }
+    const firstMeasure = renderReducedCardMeasure(target,width,masks.slice(0,4),{
+      notehead:'x2'
+    });
+    const secondMeasure = renderReducedCardMeasure(target,width,masks.slice(4,8),{
+      notehead:'x2',
+      repeatEnd:repeatCount() > 1
+    });
+    cards[slot].stepElements = [...firstMeasure.stepElements,...secondMeasure.stepElements];
+    cards[slot].repeatBarlineElements = secondMeasure.repeatBarlineElements;
+    cards[slot].repeatLabel = secondMeasure.repeatLabel;
+    return;
+  }
   const masks = selectedMasks(slot);
   const fourTripletBar = trainerMode !== 'vocabulary';
-  const cellGap = fourTripletBar ? 8 : 12;
-  const desiredGridWidth = fourTripletBar ? 520 : 308;
-  const availableLeft = 14;
-  const availableRight = width-10;
-  const gridWidth = Math.min(desiredGridWidth,availableRight-availableLeft);
-  const gridLeft = (width-gridWidth)/2;
-  const rendered = renderReducedTripletSequence({
-    Flow:VF,
-    target,
-    masks,
-    width,
-    height:90,
-    staveY:20,
-    gridLeft,
-    gridRight:gridLeft+gridWidth,
-    cellGap,
+  const rendered = renderReducedCardMeasure(target,width,masks,{
     notehead:trainerMode === 'ride' ? 'x2' : '',
-    annotationForStep:$('#show-counting').checked ? tripletCountForStep : null,
     repeatEnd:repeatCount() > 1,
-    repeatCount:repeatCount()
+    desiredGridWidth:fourTripletBar ? 520 : 308,
+    cellGap:fourTripletBar ? 8 : 12
   });
-  const notes = rendered.notes;
-  const stepCount = masks.length*3;
-  const stepElements = Array.from({ length:stepCount }, () => []);
-  const stems = renderedDrumStems(target,VF.StaveNote.STEM_UP,VF.StaveNote.STEM_DOWN);
-  notes.forEach(note => {
-    note.trainerEvent = note.reducedTripletEvent;
-    note.trainerStep = note.reducedTripletStep;
-    const element = note.getSVGElement?.();
-    const coveredSteps = Array.from({ length:note.trainerEvent.slots },(_,offset) => note.trainerStep+offset).filter(step => step < stepCount);
-    element?.classList.add('drum-step');
-    coveredSteps.forEach(step => addDrumStepElement(stepElements,step,element));
-    const stem = renderedStemForNote(stems,note);
-    if (stem) {
-      stem.classList.add('drum-step-stem');
-      coveredSteps.forEach(step => addDrumStepElement(stepElements,step,stem));
-    }
-  });
-  cards[slot].stepElements = stepElements;
+  cards[slot].stepElements = rendered.stepElements;
   cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
   cards[slot].repeatLabel = rendered.repeatLabel;
 }
@@ -825,6 +891,7 @@ function renderAll() {
 function updateModeUI() {
   document.body.dataset.trainerMode = trainerMode;
   document.body.dataset.fatLeadIn = String(fatLeadInEnabled());
+  document.body.dataset.rideIntroEnabled = String(rideIntroEnabled());
   $('#trainer-mode').value = trainerMode;
   const ignoreFeet = $('#ignore-feet');
   if (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
@@ -1996,6 +2063,12 @@ $('#fat-lead-in').addEventListener('change',event => {
   try { localStorage.setItem(FAT_LEAD_IN_KEY,String(event.target.checked)); } catch {}
   if (playing || pausedSessionEventNumber !== null) stop();
   document.body.dataset.fatLeadIn = String(event.target.checked);
+  renderAll();
+});
+$('#ride-intro-pattern').addEventListener('change',event => {
+  try { localStorage.setItem(RIDE_INTRO_PATTERN_KEY,event.target.value); } catch {}
+  if (playing || pausedSessionEventNumber !== null) stop();
+  document.body.dataset.rideIntroEnabled = String(rideIntroEnabled());
   renderAll();
 });
 [$('#ignore-feet'),$('#ignore-ghosts')].forEach(input => input.addEventListener('change',event => {

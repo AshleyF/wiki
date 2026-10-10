@@ -76,8 +76,14 @@ export function rolesForTripletMasks(masks) {
   return masks.flatMap(mask => [...mask].map(bit => bit === '1' ? 'A' : 'B'));
 }
 
-export function rolesForRideVocabulary(firstMelody,secondMelody = firstMelody) {
-  return [firstMelody,secondMelody].flatMap(melody => melody.map(role => role === 'A' ? 'A' : 'R'));
+export function rolesForRideVocabulary(firstMelody,secondMelody = firstMelody,{ intro = 'none' } = {}) {
+  const pattern = [firstMelody,secondMelody].flatMap(melody => melody.map(role => role === 'A' ? 'A' : 'R'));
+  const introRoles = intro === 'quarters'
+    ? ['A','R','R','A','R','R','A','R','R','A','R','R']
+    : intro === 'spang'
+      ? ['A','R','R','A','R','A','A','R','R','A','R','A']
+      : [];
+  return [...introRoles,...pattern];
 }
 
 export function rideCompingTimekeeper(step = 0) {

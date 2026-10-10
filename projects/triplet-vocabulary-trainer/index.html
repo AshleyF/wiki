@@ -13,7 +13,7 @@
       })();
     </script>
     <link rel="stylesheet" href="../../styles.css?v=20260908-shared-triplet-renderer">
-    <link rel="stylesheet" href="styles.css?v=20261010-fat-lead-in-1">
+    <link rel="stylesheet" href="styles.css?v=20261010-ride-clean-engraving-1">
     <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
   </head>
   <body>
@@ -25,7 +25,6 @@
         <label class="view-option repeat-control" title="Choose how many times each displayed pattern plays before advancing"><span>Repeat</span><select id="repeat-count" aria-label="Pattern repetitions"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option></select></label>
         <label class="view-option" title="Play a four-beat count-in and a 4/4 pedal-hi-hat metronome, with the downbeat accented"><input id="metronome" type="checkbox"> <span>Metronome</span></label>
         <label class="view-option" title="Play the written drum pattern and ghost notes. Turn this off for metronome-only practice."><input id="drums" type="checkbox" checked> <span>Drums</span></label>
-        <label class="view-option fat-lead-in-control" title="Precede each Fat Beats pattern with one measure of plain halftime groove"><input id="fat-lead-in" type="checkbox" checked> <span>Lead-in</span></label>
         <label class="view-option" title="Ignore incoming kick and pedal-hi-hat MIDI notes when scoring"><input id="ignore-feet" type="checkbox" checked> <span>Ignore feet</span></label>
         <label class="view-option" title="Ignore incoming MIDI velocities below the midpoint between the Ghost and Normal velocity handles"><input id="ignore-ghosts" type="checkbox" checked> <span>Ignore ghosts</span></label>
         <label class="header-tempo drum-tempo-control">
@@ -40,6 +39,8 @@
     <main>
       <section class="melody-filter panel" aria-label="Melodies available to the trainer">
         <label class="mode-control"><span>Mode</span><select id="trainer-mode" aria-label="Trainer mode"><option value="triplets">Triplets</option><option value="vocabulary">Basic Vocabulary</option><option value="extended">Extended Vocabulary</option><option value="fat">Fat Beats</option><option value="ride">Ride Comping</option><option value="kick">Kick 1</option><option value="kick2">Kick 2</option><option value="kick12">Kick 1 + 2</option></select></label>
+        <label class="fat-lead-in-control" title="Precede each Fat Beats pattern with one measure of plain halftime groove"><input id="fat-lead-in" type="checkbox" checked> <span>Groove first</span></label>
+        <label class="ride-intro-control" title="Choose an optional one-measure ride pattern before each Ride Comping card"><span>Intro</span><select id="ride-intro-pattern" aria-label="Ride intro pattern"><option value="none">None</option><option value="quarters">Quarter notes</option><option value="spang">Spang-a-lang</option></select></label>
         <span class="melody-filter-label">Melodies</span>
         <div id="melody-filter-options" class="melody-filter-options" role="group" aria-label="Enabled triplet melodies"></div>
         <label class="emphasis-control" title="Give this pattern a 50% chance on each eligible scramble"><span>Emphasize</span><select id="emphasis" aria-label="Emphasized pattern"><option value="">None</option></select></label>
@@ -96,6 +97,6 @@
         </div>
       </div>
     </dialog>
-  <script type="module" src="app.js?v=20261010-mode-mix-1"></script>
+  <script type="module" src="app.js?v=20261010-ride-clean-engraving-1"></script>
   </body>
 </html>
