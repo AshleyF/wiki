@@ -2,7 +2,7 @@
 
 ## SICP (05 OCT 2026 - )
 
-### [Lecture 1A: Overview and Introduction to Lisp](https://youtu.be/-J_xL4IGhJA?si=XTBJ0xFbkZVt-EqM)
+### Lecture 1A: [Overview and Introduction to Lisp](https://youtu.be/-J_xL4IGhJA?si=XTBJ0xFbkZVt-EqM)
 
 - "Computer Science" is not really about computers and it's not a science (confusing the essence with the tools)
   - Fomalizing declarative knowledge about process ("how to" knowledge)
@@ -56,7 +56,8 @@
         (try (improve guess))))
   (try 1))
 ```
-### [Lecture 1B: Procedures and Processes; Substitution Model](https://youtu.be/V_7mmwpgJHU?si=mbAdqMHgEJ59CQm6)
+
+### Lecture 1B: [Procedures and Processes; Substitution Model](https://youtu.be/V_7mmwpgJHU?si=mbAdqMHgEJ59CQm6)
 
 Kinds of expressions:
 * Numbers
@@ -146,7 +147,7 @@ O(fib)! Unless memoized.
               (move (-1+ n) spare to from))))
 ```
 
-### [Lecture 2A: Higher-order Procedures](https://youtu.be/eJeMOEiHv8c?si=RlB3onIh8_Y8bIXu)
+### Lecture 2A: [Higher-order Procedures](https://youtu.be/eJeMOEiHv8c?si=RlB3onIh8_Y8bIXu)
 
 Almost the same code:
 
@@ -282,7 +283,7 @@ Rights and Privileges of First-class Citizens (in a programming language):
 * To be returned as values of procedures
 * To be incorporated into data structures
 
-### [Lecture 2B: Compound Data](https://youtu.be/DrFkf-T-6Co?si=FmS7pKKEsDNmjYY3)
+### Lecture 2B: [Compound Data](https://youtu.be/DrFkf-T-6Co?si=FmS7pKKEsDNmjYY3)
 
 All about data abstraction. George doesn't know, doesn't want to know. Example was a system of rationals. Issolate use (`+rat`, `*rat`) from representation (pairs, closures) via an "abstraction layer" (`make-rat`, `numer`, `denom`).
 
@@ -358,7 +359,7 @@ Pairs from thin air! "Pure abstraction" as Hal says. Really, it's closures of co
 (define (cdr x) (x 2))
 ```
 
-### [Lecture 3A: Henderson Escher Example](https://youtu.be/PEwZL3H2oKg?si=JxcuP_xLKqLLBfdI)
+### Lecture 3A: [Henderson Escher Example](https://youtu.be/PEwZL3H2oKg?si=JxcuP_xLKqLLBfdI)
 
 ```lisp
 (define (make-vector x y) (cons x y))
@@ -481,7 +482,7 @@ Generalized:
 
 Ending statement was about how language-oriented design is inherently more general. Built in layers instead of a tree. Each layer is a general language. Example: language of pictures, language of transformations, language of schemes (e.g. recursive push). Much more like "Lego" bricks of functionality. And embedded within Lisp so that all the more general facilities (like recursive procedures) are available.
 
-### [Lecture 3B: Symbolic Differentiation; Quotation](https://youtu.be/bV87UzKMRtE?si=wEPDKLk4e5Ekl_OI)
+### Lecture 3B: [Symbolic Differentiation; Quotation](https://youtu.be/bV87UzKMRtE?si=wEPDKLk4e5Ekl_OI)
 
 Language embedding makes computer engineering more powerful than other kinds of engineering.
 
@@ -521,18 +522,19 @@ Derivative of _expression_ rather than numerical approximation of a function.
                    (deriv (a2 exp) var)))
         ((product? exp)
          (make-sum
-           (make-prod (m1 exp)
-                      (deriv (m2 exp) var))
-           (make-prod (deriv (m1 exp) var))
-                      (m2 exp)))))
+           (make-prod (x exp)
+                      (deriv (y exp) var))
+           (make-prod (deriv (x exp) var))
+                      (y exp)))))
 ```
 
 Example expression:
 
 ```lisp
-(+ (* a (* x x))
-   (+ (* b x)
-      c))
+(define myexp
+  '(+ (* a (* x x))
+     (+ (* b x)
+       c)))
 ```
 
 Predicates:
@@ -545,11 +547,85 @@ Predicates:
 (define (same-var? exp var)
   (and (atom? exp)
        (eq? exp var)))
+
+(define (sum? exp)
+  (and (not (atom? exp))
+       (eq? (car exp) '+)))
+
+(define (make-sum x y)
+  (list '+ x y))
+
+(define (product? exp)
+  (and (not (atom? exp))
+       (eq? (car exp) '*)))
+
+(define (make-product x y)
+  (list '* x y))
+
+(define x cadr)
+(define y caddr)
 ```
+
+Say your name. vs Say "your name." Quotations. Tick mark in Lisp.
+
+* `car` is from "contents of address register"
+* `cdr` is from "contents of decrement register"
+* `cadr` is `car` of `cdr`
+* `caddr` is `car` of `cdr` of `cdr`
+
+Verbose result:
+
+```lisp
+(deriv myexp 'x)
+-> (+ (+ (* a (+ (* x 1) (* 1 x)))
+         (* 0 (* x x)))
+      (+ (+ (* b 1) (* 0 x))
+         0))
+```
+
+Simplify expressions:
+
+```lisp
+(define (make-sum x y)
+  (cond ((and (number? x)
+              (number? y))
+         (+ x y))
+        ((and (number? x) (= x 0) x))
+        ((and (number? y) (= y 0) y))
+        (else (list '+ x y))))
+
+(define (make-product x y)
+  (cond ((and (number? x)
+              (number? y))
+         (* x y))
+        ((and (number? x) (= x 1) x))
+        ((and (number? y) (= y 1) y))
+        ((and (number? x) (= x 0) 0))
+        ((and (number? y) (= y 0) 0))
+        (else (list '* x y))))
+```
+
+Now:
+
+```lisp
+(deriv myexp 'x)
+-> (+ (* a (* x x)) b)
+
+(deriv myexp 'a)
+-> (* x x)
+
+(deriv myexp 'b)
+-> x
+
+(deriv myexp 'c)
+-> 1
+```
+
+### Lecture 4A: [Pattern Matching and Rule-based Substitution](https://youtu.be/_fXQ1SwKjDg?si=EBOlrL2DmcdVh8Na)
 
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
-He spends a lot of time just telling stories, while following a loose curriculum.
+He spends a lot of time just telling stories, while following a loose curriculum. It ends with a giant jam session. Fun to watch, but not really a learning experience.
 
 ## Garry Kasparov Teaches Chess (05 AUG 2026 - 10 AUG 2026)
 

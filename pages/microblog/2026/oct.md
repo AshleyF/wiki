@@ -122,4 +122,8 @@ RE: Static analysis as an oracle: Certainly should be thrown in to improve the q
 
 ## 13 OCT 2026 Tue - Woz BASIC
 
-I just thought of a nifty idea: disassemble Woz's original BASIC for the Apple I and port it to the 6809E on the CoCo. I already have a CoCo emulator, and this would be a good example of the "golden oracle" idea. First we'll get Woz's BASIC running in an emulator, then create a massive test suite against it. My big debate with myself now is how to build a good test suite that really encapsulates the behavior of the original. Code coverage isn't a good enough metric because of incidental coverage. I just read [this interesting paper](https://arxiv.org/pdf/2309.02395) that, funny enough, calls it the "oracle gap" and proposes mutation analysis combined with coverage for an oracle gap score. Anyway, I'm pondering ways of validating that the AI has come up with a good set of tests.
+I just thought of a nifty idea: disassemble Woz's original BASIC for the Apple I and port it to the 6809E on the CoCo. I already have a CoCo emulator, and this would be a good example of the "golden oracle" idea. First we'll get Woz's BASIC running in an emulator, then create a massive test suite against it. My big debate with myself now is how to build a good test suite that really encapsulates the behavior of the original. Code coverage isn't a good enough metric because of incidental coverage. I just read [this interesting paper](https://arxiv.org/pdf/2309.02395) that, funny enough, calls it the "oracle gap" and proposes mutation analysis combined with coverage for an oracle gap score. Anyway, I'm pondering ways of validating that the AI has come up with a good set of tests...
+
+Teagan built a new foundation for the shed ramp. He'll finish tomorrow. Tracey made yummy burrito stuff. I drummed about an hour today and watched another SICP lecture (on symbolic differentiation).
+
+## 14 OCT 2026 Wed - 
