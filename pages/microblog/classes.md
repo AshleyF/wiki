@@ -483,6 +483,70 @@ Ending statement was about how language-oriented design is inherently more gener
 
 ### [Lecture 3B: Symbolic Differentiation; Quotation](https://youtu.be/bV87UzKMRtE?si=wEPDKLk4e5Ekl_OI)
 
+Language embedding makes computer engineering more powerful than other kinds of engineering.
+
+Numerical approximation of derivative:
+
+```lisp
+(define deriv
+  (λ (f)
+    (λ (x)
+      (/ (- (f (+ x dx))
+            (f x))
+         dx))))
+```
+
+Symbolic differentiation is exact and follows _reduction_ rules. Recursion is natural. Integrals are the inverse but require search.
+
+```math
+\begin{aligned}
+1.\quad &\frac{dc}{dx}=0 && \text{where } c \text{ is constant} \\
+2.\quad &\frac{dx}{dx}=1 \\
+3.\quad &\frac{d(cu)}{dx}=c\frac{du}{dx} \\
+4.\quad &\frac{d(u+v)}{dx}=\frac{du}{dx}+\frac{dv}{dx} \\
+5.\quad &\frac{d(uv)}{dx}=u\frac{dv}{dx}+\frac{du}{dx}v \\
+6.\quad &\frac{d(u/v)}{dx}=\frac{v\frac{du}{dx}-u\frac{dv}{dx}}{v^2} \\
+7.\quad &\frac{d(u^n)}{dx}=nu^{n-1}\frac{du}{dx}
+\end{aligned}
+```
+
+Derivative of _expression_ rather than numerical approximation of a function.
+
+```lisp
+(define (deriv exp var)
+  (cond ((constant? exp var) 0)
+        ((same-var? exp var) 1)
+        ((sum? exp)
+         (make-sum (deriv (a1 exp) var)
+                   (deriv (a2 exp) var)))
+        ((product? exp)
+         (make-sum
+           (make-prod (m1 exp)
+                      (deriv (m2 exp) var))
+           (make-prod (deriv (m1 exp) var))
+                      (m2 exp)))))
+```
+
+Example expression:
+
+```lisp
+(+ (* a (* x x))
+   (+ (* b x)
+      c))
+```
+
+Predicates:
+
+```lisp
+(define (constant? exp var)
+  (and (atom? exp)
+       (not (eq? exp var))))
+
+(define (same-var? exp var)
+  (and (atom? exp)
+       (eq? exp var)))
+```
+
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
 He spends a lot of time just telling stories, while following a loose curriculum.

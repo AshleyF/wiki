@@ -62,7 +62,64 @@ We made a little loop through Chewelah, Colville, Cusick, ... and stopped at Cry
 
 ## 09 OCT 2026 Fri - Singularity
 
-Tracey got up early and went for a walk! Before I was even out of bed. Then she went grocery shopping (and talked to Chelsea on the phone) until the early afternoon. I drummed. Tracey made a yummy spicy pho soup! And at 19:00, I had an interesting meeting with good ol' Jay Beavers and Greg and a couple of other guys (it turned out that only Jay, John Rice and I showed up). Jay started this little "Secret Society" he calls Singularity Rodeo. It was a fun conversation about the future of AI and getting this little group going. My first "meeting" in several months! We're gonna do it every other Friday.
+Tracey got up early and went for a walk! Before I was even out of bed. Then she went grocery shopping (and talked to Chelsea on the phone) until the early afternoon. I drummed. Tracey made a yummy spicy pho soup! And at 19:00, I had an interesting meeting with good ol' Jay Beavers and Greg and a couple of other guys (it turned out that only Jay, John Rice and I showed up). Jay started this little "Secret Society" he calls Singularity Rodeo. It was a fun conversation about the future of AI and getting this little group going. My first "meeting" in several months! We're gonna do it every other Friday. I also gave Tracey her presents (a Switch and game, etc.).
 
-## 10 OCT 2026 Sat - Mike
+## 10 OCT 2026 Sat - Mike + Jaws
 
+I went out to my parent's place in the early afternoon, while Tracey went to the grandkid's soccer and football games. Mike is over visiting. He drove over today and got their just before me. It was a lot of fun hanging out and chatting with him. He's still doing all his crazy little projects. The latest is an Android app that emulates a bluetooth HID device; a keyboard and mouse that can be joined to a PC. The app then pairs with a game controller and can do arbitrary mapping and translation. You can make macros and "layers" of controls and smooth joysticks, etc. I think the HID device emulation is the coolest part. What else could you do with that? Funny that he's always coming up with "hacks" like that and making something interesting with it. Anyway, we got pizza (Mike, my dad and I in self-driving in the truck). And Josh and Katrina and kids and Katie came over. Later in the evening (about an hour before I got home), Jaws and Teagan arrived. They're staying for the week. Packing her stuff to take to Astoria. We're taking a load too.
+
+## 11 OCT 2026 Sun - Birthday Dinner
+
+We went to dinner at HuHot for Tracey's birthday. Chelsea and family came, along with Calvin. Jaws didn't come.
+
+## 12 OCT 2026 Mon - Actual Birthday
+
+Today is Tracey's birthday! She's caught up to me at 54. We didn't really do anything special. Already did dinner yesterday and presents the day before. We went to Home Depot to get lumber to rebuild the shed ramp. Teagan's going to do that. I also spent some time thinking about and posting my ideas around how to best use AI:
+
+### Feedback Loops and Golden Oracles
+
+Here are a couple of things I've learned over the last year or so. Nothing profound, but they've been helpful for me to keep in mind.
+
+The first is probably familiar by now: let the AI see and touch its own artifact. If it's building a website, give it Playwright so it can open the page, click things, inspect the DOM, and see what actually rendered. If it's building a desktop app, give it UI automation. If it's working on CLI tools, give it access to the terminal. Don't make a human look at every artifact and describe what went wrong.
+
+My little VimFu project is where the power of this really clicked for me. I've used Vim for decades. I started making a Vim curriculum some years ago (before AI). I'm working on a book (just in time for people to stop using editors!), a website and a series of YouTube Shorts. The first fifty videos took about a hundred hours and I got tired of it.
+
+I revived the project with "ShellPilot," an AI-accessible VT100 terminal emulator Claude and I made. Atop this, we built a whole video production pipeline. The AI could author a Vim lesson "script," then make and narrate a demo video controlling real Neovim and tmux, reading the screen, and assembling the video with ffmpeg, and publish it through YouTube's API. Completely automatically. It also made mistakes constantly. Wrong cursor position. Wrong text. Narration out of sync.
+
+My aha moment was to turn the visual artifact back into text. I changed ShellPilot to save a log of textual snapshots after every keystroke: the characters, colors, highlights, and cursor position. The log represented what appeared in the video in a form the LLM could easily consume. It could compare its own artifact with the script it had generated, find the mistakes, and try again.
+
+For a full year, that loop published two videos every day. Roughly 750 videos. [Here is one example.](https://youtube.com/shorts/u-tpto3mR0c) I didn't review them first. I saw each one for the first time after it went public, along with everybody else. That still seems kind of incredible to me.
+
+_Golden Oracle_
+
+The more important idea is a golden oracle: an independent source of ground truth that can objectively tell the AI whether its artifact is correct. The AI doesn't merely critique its own work. It compares the work with an answer that comes from outside.
+
+Anthropic's [C compiler in Rust](https://www.anthropic.com/engineering/building-c-compiler) is a great example. The agents had a giant test suite and GCC as a known-good compiler. GCC was the golden oracle. They could keep asking, “Does my compiler behave like this compiler?” and iterating until their compiler could build Linux.
+
+I used the same idea to build the [VimFu Simulator](https://vimfubook.com/sim/), a Vim-like editor, shell, and tmux environment that runs in a browser. Real Neovim and real tmux were the golden oracles. The harness sent the same keystrokes to both implementations and compared the resulting character cells, cursor, selection, colors, and screen state across thousands of cases. The agents worked on the mismatches for weeks. Eventually the simulator could run the examples from the VimFu curriculum. It's a pretty complete vim and tmux implementation.
+
+The bigger examples are much more consequential. OpenAI published a [proposed solution to the Navier–Stokes Millennium Prize Problem](proposed solution to the Navier–Stokes Millennium Prize Problem) with a Lean formalization. Lean is the golden oracle that can check the proof. Brandon Thomas's [ArtCraft applications](https://getartcraft.com/apps) are an eye-opening example. Open-source clones of Photoshop, Illustrator, Premiere, After Effects, Lightroom, InDesign, Word, PowerPoint, Excel, ... The original applications are the golden oracles. You can see in his [agents.md](https://github.com/storytold/filmcraft/blob/main/AGENTS.md) that he's giving black box access to the original apps. Some of his clones are still early, but they look and behave like the real applications. One guy + Claude. Astonishing.
+
+Getting the human out of the implementation loop is useful. Letting the AI see and touch it's own artifact is super important. But the real unlock is a golden oracle: something outside the model that can say, objectively, "No. That is not the right answer." Human judgment can stay where it belongs, choosing the goal, judging taste, and deciding whether the thing was worth building at all.
+
+----
+
+I think of a golden oracle as the scientific method applied to AI. I think everything an LLM produces is a hallucination of sorts. The model isn't finding the correct answer. It's producing what looks like the most plausible completion of your prompt. A conjecture. Generating conjectures is also a form of creativity. The problem is allowing a plausible conjecture to become an accepted answer without exposing it to reality. Correctness is a separate, external measurement.
+
+Humans hallucinate too. The ancient Greeks explained lightning with Zeus and the sea with Poseidon. There was no clean way to prove those explanations false. Whole cultures could repeat and elaborate the same story until agreement felt like verification. In this sense, ancient myths and religions were collective human hallucinations. Swarms of agents verifying each other can do the same thing.
+
+The scientific method gave us a way out. It closes the loop on human conjecture through Nature. We still generate all kinds of crazy explanations, but Nature determines when they're false. Nature is the ultimate golden oracle.
+
+Essentially, AI needs the same thing: a golden oracle that closes the loop through some external reality. Otherwise, we risk building artifacts on myth.
+
+----
+
+RE: Multiple agents critiquing one another: Adversarial models working with/against each other are great. Definitely leads to better results. But I have to say, I feel like that's more like philosophy than science. Like the great debates in ancient Greece. Aristotle and Democritus debated and led humans to believe that vacuums were impossible for 2000 years until some dude finally consulted the oracle of Nature with a tube of mercury inverted, leaving a vacuum. Such a simple experiment. "Debate" among models can make more elegant, internally consistent code that's still possibly wrong.
+
+----
+
+RE: Static analysis as an oracle: Certainly should be thrown in to improve the quality of the code. But I would say that a static analyzer is about soundness, not correctness. Not exactly an oracle (unless what you're building is another static analyzer!). Sort-of, like you say. It'll give feedback about null refs, unsafe memory access, and such but it doesn't tell the AI whether the code is actually doing what it's supposed to.
+
+## 13 OCT 2026 Tue - Woz BASIC
+
+I just thought of a nifty idea: disassemble Woz's original BASIC for the Apple I and port it to the 6809E on the CoCo. I already have a CoCo emulator, and this would be a good example of the "golden oracle" idea. First we'll get Woz's BASIC running in an emulator, then create a massive test suite against it. My big debate with myself now is how to build a good test suite that really encapsulates the behavior of the original. Code coverage isn't a good enough metric because of incidental coverage. I just read [this interesting paper](https://arxiv.org/pdf/2309.02395) that, funny enough, calls it the "oracle gap" and proposes mutation analysis combined with coverage for an oracle gap score. Anyway, I'm pondering ways of validating that the AI has come up with a good set of tests.
