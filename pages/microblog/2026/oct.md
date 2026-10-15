@@ -126,4 +126,12 @@ I just thought of a nifty idea: disassemble Woz's original BASIC for the Apple I
 
 Teagan built a new foundation for the shed ramp. He'll finish tomorrow. Tracey made yummy burrito stuff. I drummed about an hour today and watched another SICP lecture (on symbolic differentiation).
 
-## 14 OCT 2026 Wed - 
+## 14 OCT 2026 Wed - ModZGamepadKM
+
+Teagan finished the ramp today. Very nice!
+
+At 11:10, Mike sent me an invite to look at his github repo with the game controller BT HID device mapping app. By 16:02 I had a working version of the GATT HID handler and a little demo app and sent him a video. Most of the time was upgrading my OS and installing XCode and Cursor and getting familiar with Grok+Cursor. I've literally never made an iPhone app before. Now I have Grok working on a giant test suite to serve as a "golden oracle" for the port and then I'll have it start porting. It's a fairly simple app. I have full confidence it'll get it done, maybe even by tonight. A same-day, even beginning to work, port would be incredible.
+
+Ha, ha! Now it's 18:37 and I just sent Mike a video of the iPhone app UI looking decent. You can edit mappings with curves and keyboard/mouse mappings, setup layers, etc. And there's the guide and such and a decent icon (taken from his), etc. It all looks pretty decent. I'm sure that just a couple more days and it'll be on par with the Android app. Then he has some changes coming. It'll take 5 minutes to integrate that and keep up with him. Maybe we can simul-ship!
+
+Now at 21:20 it's pretty much done! About 10 hours to port. I need to get a game controller to test it.
