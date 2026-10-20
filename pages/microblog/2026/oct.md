@@ -135,3 +135,35 @@ At 11:10, Mike sent me an invite to look at his github repo with the game contro
 Ha, ha! Now it's 18:37 and I just sent Mike a video of the iPhone app UI looking decent. You can edit mappings with curves and keyboard/mouse mappings, setup layers, etc. And there's the guide and such and a decent icon (taken from his), etc. It all looks pretty decent. I'm sure that just a couple more days and it'll be on par with the Android app. Then he has some changes coming. It'll take 5 minutes to integrate that and keep up with him. Maybe we can simul-ship!
 
 Now at 21:20 it's pretty much done! About 10 hours to port. I need to get a game controller to test it.
+
+## 15 OCT 2026 Thu - Woz & Mike
+
+Today, Tracey took canned tomatoes to Sergio's parents and I went into town about the same time to get an Xbox controller that I can pair with my phone. We met up and had lunch at Jersey Mike's. 
+
+I paired the controller and tested out the app (also made a little test page) and viola! It all works. I made another demo video for Mike. Pretty crazy. He said, "The only thing that I'm disappointed by is that it took you almost 24 hours to create a fully working app. You must be slipping. 🤪😵‍💫" Ha, ha! I had fun really trying it out to [play Wolfenstein on the Mac](https://jamesfriend.com.au/projects/wolf3d/Chocolate-Wolfenstein-3D.html).
+
+Then I'm continuing on the Integer BASIC for the CoCo. It's working. It emulates the 40x24 display in graphics mode and I have some games that were originally written for the Apple-I. A Blackjack game and good ol' StarTrek, which I just found out today that Woz himself used that as his initial test while developing it. So it's the first software to ever run on an Apple-I. And he's mentioned in interviews that he credits Mike Mayfield for it. He got the listing from a book ("101 BASIC Computer Games") in which it was called "Space War" to avoid copyright infringement, but that was Mike's listing. I wasn't able to find that exact listing, nor the one Woz actually used, but I did find one written for the Apple-I a year later; probably a minor adaptation. So what a crazy circle. I played StarTrek on Mike's PDP-11 when I was a kid (on the printer!) and I have a signed copy of iWoz (and game Mike one too) in which he talks about building this BASIC (he doesn't mention StarTrek in the book though, but in interviews). Now I can run it in Integer BASIC for the Apple-I, but on the CoCo, which is my first personal computer. Next I want to get it running on the real hardware.
+
+Tracey made her favorite jello poke cake; a lemon cake with orange and lemon (or lime?) jello poked into it, with a pudding frosting. Yum! It's her favorite birthday cake that he mom used to do.
+
+## 16 OCT 2026 Fri - Gardening
+
+Tracey and I spent several hours outside. Tracey cut down planter beds and clean things out. I basically raked, blew and bagged leaves. We're not going to Oregon now this weekend. Instead, we'll go later in late November or early December and do a big loop including bringing presents to the kids in Seattle area. I'm still not sure why Jaws and Teagan don't get a moving truck. Instead they're adding 2700 miles of driving over 45 hours. Jaws says, "We don't have anything better to do." But other people do! I don't really want to drive 15 hours over two days and pay for a hotel, just to take a small load. Teagan's sister, I'm sure, would rather not pull a trailer 900 miles and pay $250 in gas. They're saving money by having other people pay the cost. It's clearly cheaper overall to rent a truck. Anyway...
+
+## 17 OCT 2026 Sat - Sleepless + Stanley
+
+Tracey hardly slept last night. I saw her on her phone in the middle of the night. So today she's too tired to go to the grandkid's games and to go to the storage unit to load up the truck. Instead we're doing nothing! I'm playing with building Stanley, the home assistant and tweaking the CoCo Integer BASIC port and getting Mike's StarTrek to run (changing to fixed point, etc.). I'm really off working on Stanley now. Using GPT-realtime, but with a wake word and buffered audio (so that "turn on the lights, Stanley" works), and disengagement. Next, controlling the shower.
+
+## 18 OCT 2026 Sun - Stanley
+
+I've spent a lot of time working on Stanley. He an now control the lights and the shower and set timers. The most interesting feature is the ability to write and run ephemeral Python scripts to automate things. For example, "Hey Stanley, set the shower to 100 degrees, but then reducing it by a degree every 10 seconds until it's 90." or "Hey Stanley, turn on the reading lamp at full brightness, but then cycle through the rainbow of hues over the course of two minutes." It works! Also, "Hey Stanley, tell be what files are in my user root directory!" Ha Ha, very dangerous feature!
+
+Tracey made loaded potatoes and I grilled a tri-tip. They wanted it rare, and boy was it. Too rare for me.
+
+## 19 OCT 2026 Mon - Storage Unit
+
+I went to lunch with Calvin, at HuHot this time. He's doing good. He's going to the Seattle area next week. I then joined Tracey and Jaws and Teagan at the storage unit and we loaded the truck with stuff. Such a mess of random stuff and half-empty totes and Jaws was just having fun going through things like a time capsule. I just wanted to load up. Got home around 18:00, so that was the whole day. I worked on Stanley in the evening; adding a memory system and voice identification. Amazing how fast things come together!
+
+## 20 OCT 2026 Tue - Roasting
+
+I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched another SICP lecture.

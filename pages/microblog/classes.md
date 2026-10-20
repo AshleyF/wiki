@@ -623,6 +623,141 @@ Now:
 
 ### Lecture 4A: [Pattern Matching and Rule-based Substitution](https://youtu.be/_fXQ1SwKjDg?si=EBOlrL2DmcdVh8Na)
 
+Bring the computer to the level of the problem, rather than translating the problem into the computer's language; as we did in the last lecture.
+
+```lisp
+(define deriv-rules
+  '(
+    ( (dd (?c v) (? v)) 0 )
+    ( (dd (?v v) (? v)) 1 )
+    ( (dd (?v u) (? v)) 0 )
+    
+    ( (dd (+ (? x1) (? x2)) (? v))
+      (+ (dd (: x1) (: v))
+         (dd (: x2) (: v))))
+    ( (dd (* (? x1) (? x2)) (? v))
+      (+ (* (: x1) (dd (: x2) (: v)))
+         (* (dd (: x1) (: v)) (: x2))))
+    ( (dd (** (? x) (?c n)) (? v))
+      (* (* (: n))))
+  ))
+```
+
+Pattern matching rules:
+
+| Pattern | Match |
+| ------- | ----- |
+| `foo` | exactly `foo` |
+| `(f a b)` | list |
+| `(? x)` | anything, call `x` |
+| `(?c x)` | constant, call `x` |
+| `(?v x)` | variable, call `x` |
+
+Skeletons:
+
+| Pattern | Match |
+| ------- | ----- |
+| `foo` | instance of itself |
+| `(f a b)` | list with sub-elements instantiated |
+| `(: x)` | instance of `x` |
+
+Matcher takes an expression, pattern and dictionary and produces a new dictionary (of pattern variables -> values found by matching).
+
+```lisp
+(define (match pat exp dict)
+  (cond ((eq? dict 'failed) 'failed)
+  ((atom? pat)
+    (if (atom? exp)
+        (if (eq? pat exp)
+            dict
+            'failed)
+        'failed))
+  ((arb-const? pat)
+    (if (const? exp)
+        (extend-dict pat exp dict)
+        'failed))
+  ((arb-var? pat)
+    (if (var? exp)
+        (extend-dict pat exp dict)
+        'failed))
+  ((arb-exp? pat)
+    (extend-dict pat exp dict))
+  ((atom? exp) 'failed)
+  (else
+    (match (cdr pat)
+           (cdr exp)
+           (match (car pat)
+                  (car exp)
+                  dict)))))
+```
+
+Instantiator is given a dictionary and a skeleton and produces an expression.
+
+```list
+(define (instantiate skeleton dict)
+  (define (loop s)
+    (cond ((atom? s) s)
+          ((skeleton-evaluation? s)
+           (evaluate (eval-exp s) dict))
+          (else (cons (loop (car s))
+                      (loop (cdr s))))))
+  (loop skeleton))
+
+(define (evaluate form dict)
+  (inf (atom? form)
+       (lookup form dict)
+       (apply
+         (eval (lookup (car form dict)
+               user-initial-environment)
+         (mapcar (λ (v)
+                   (lookup v dict))
+                 (cdr form))))))
+```
+
+Simplifier:
+
+```lisp
+(define (simplifier rules)
+  (define (simplify-exp exp)
+    ***)
+  (define (simplify-parts exp)
+    ***)
+  (define (try-rules exp)
+    (define (scan rules)
+      (if (null? rules)
+          exp
+          (let ((dict
+                 (match (pattern car rules))
+                        exp
+                        (empty-dict))))
+            (if (eq? dict 'failed)
+                (scan (cdr rules))
+                (simplify-exp
+                  (instantiate
+                    (skeleton (car rules))
+                    dict))))))
+    (scan rules))
+  simplify-exp)
+```
+
+```lisp
+(define (empty-dict) '())
+
+(define (extend-dict pat dat dict)
+  (let ((name (var-name pat)))
+    (let ((v (assq name dict)))
+      (cond ((null? v)
+             (cons (list name dat) dict))
+            ((eq? (cadr v) dat) dict)
+            (else 'failed)))))
+
+(define (lookup var dict)
+  (let ((v (assq var dict)))
+    (if (null? v) var (cadr v))))
+```
+
+### Lecture 4B: [Generic Operators](https://youtu.be/OscT4N2qq7o?si=atT3O5ZlFrJ9R7Ym)
+
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
 He spends a lot of time just telling stories, while following a loose curriculum. It ends with a giant jam session. Fun to watch, but not really a learning experience.
