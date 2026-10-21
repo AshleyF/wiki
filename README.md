@@ -85,7 +85,7 @@ The `cube-cmll` renderer is a dependency-free port of Brief Cubing's case-genera
 
 Strudel blocks are evaluated as JavaScript. Only publish Markdown from authors you trust; this wiki is not designed to safely render untrusted contributions. Strudel is AGPL-3.0 licensed, so review that license before distributing a derived or bundled deployment.
 
-The parser is intentionally small rather than fully CommonMark-compliant; nested lists, tables, images, raw HTML, multiline quotes, and complex inline nesting are not supported. If those become important, replace `renderMarkdown()` with a maintained parser while keeping the same page format and extension registry.
+The parser is intentionally small rather than fully CommonMark-compliant. It supports basic pipe-delimited tables with a Markdown delimiter row and optional column alignment, but nested lists, images, raw HTML, multiline quotes, and complex inline nesting are not supported. If those become important, replace `renderMarkdown()` with a maintained parser while keeping the same page format and extension registry.
 
 ## GitHub Pages
 

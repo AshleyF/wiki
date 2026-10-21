@@ -166,4 +166,4 @@ I went to lunch with Calvin, at HuHot this time. He's doing good. He's going to 
 
 ## 20 OCT 2026 Tue - Roasting
 
-I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched another SICP lecture.
+I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched another SICP lecture. Tracey colored her hair.

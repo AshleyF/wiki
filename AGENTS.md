@@ -128,9 +128,10 @@ Page paths are restricted by `currentPage()` to lowercase ASCII letters, digits,
 - horizontal rules from lines containing four or more hyphens
 - forced line breaks from a trailing backslash at the end of a paragraph line
 - fenced code blocks using triple backticks
+- pipe-delimited tables with a delimiter row and optional column alignment
 - inline code, bold, emphasis, and links
 
-It does not support nested lists, images, tables, raw HTML, multiline block quotes, alternate heading syntax, or complex/nested inline markup. Preserve this distinction in documentation and tests. If the content eventually needs broad Markdown compatibility, replace the parser with a maintained implementation rather than continually growing fragile regular expressions. Keep the fenced renderer contract when doing so.
+It does not support nested lists, images, raw HTML, multiline block quotes, alternate heading syntax, or complex/nested inline markup. Preserve this distinction in documentation and tests. If the content eventually needs broad Markdown compatibility, replace the parser with a maintained implementation rather than continually growing fragile regular expressions. Keep the fenced renderer contract when doing so.
 
 Raw HTML from Markdown is intentionally unsupported. `escapeHtml()` runs before inline substitutions, and ordinary fenced code is escaped. Link destinations are limited to `http:`, `https:`, `mailto:`, hash links, and restricted relative paths under `projects/`. Do not weaken these rules without explicitly redesigning the trust model.
 

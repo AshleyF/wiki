@@ -5,6 +5,7 @@ import { renderReducedTripletSequence } from './projects/rhythm-explorer/reduced
 import { midiName, midiToVexKey, samePitchSet, vexAccidentalForKey } from './projects/piano/trainer-core.js?v=20260903-wiki-score';
 import { boostedAudioOutput } from './projects/shared/audio-output.js?v=20260910-2';
 import { renderInlineMarkdown } from './markdown-inline.js?v=20261001-balanced-links';
+import { renderMarkdownTable } from './markdown-table.js?v=20261020-1';
 import { highlightLisp } from './lisp-highlighter.js?v=20261007-lisp-1';
 
 const content = document.querySelector('#content');
@@ -347,6 +348,14 @@ function renderMarkdown(markdown) {
       while (index < lines.length && !/^```\s*$/.test(lines[index])) body.push(lines[index++]);
       const renderer = fenceRenderers[language] || fenceRenderers.default;
       output.push(renderer(body.join('\n'), language, fence[2] || ''));
+      continue;
+    }
+
+    const table = renderMarkdownTable(lines,index,inline);
+    if (table) {
+      flushParagraph(); closeList();
+      output.push(table.html);
+      index = table.nextIndex - 1;
       continue;
     }
 
