@@ -758,6 +758,94 @@ Simplifier:
 
 ### Lecture 4B: [Generic Operators](https://youtu.be/OscT4N2qq7o?si=atT3O5ZlFrJ9R7Ym)
 
+Complex number example:
+
+Selectors:
+
+```lisp
+(real-part z)
+(imag-part z)
+(magnitude z)
+(angle z)
+
+(make-rectangular x y)
+(make-polar r a)
+```
+
+Complex sum is easier with rectangular coordinates, while product is easier with polar coordinates.
+
+```lisp
+(define (+c z1 z2)
+  (make-rectangular
+    (+ (real-part z1) (real-part z2))
+    (+ (imag-part z1) (imag-part z2))))
+
+(define (*c z1 z2)
+  (make-polar
+    (* (magnitude z1) (magnitude z2))
+    (+ (angle z1) (angle z2))))
+```
+
+George's representation (rectangular):
+
+```lisp
+(define (make-rectangular x y) (cons x y))
+(define real-part car)
+(define imag-part cdr)
+
+(define  (make-polar r a)
+  (cons (* r (cos a)) (* r (sin a))))
+
+(define (magnitude z)
+  (sqrt (+ (square (car z))
+           (square (cdr z)))))
+
+(define (angle z)
+  (atan (cdr z) (car z)))
+```
+
+Martha's representation (polar):
+
+```lisp
+(define (make-polar r a) (cons r a))
+(define magnitude car)
+(define angle cdr)
+
+(define (make-rectangular x y)
+  (cons (sqrt (+ (square x) (square y)))
+        (atan y x)))
+
+(define (real-part z)
+  (* (car z) (cos (cdr z))))
+
+(define (imag-part z)
+  (* (car z) (sin (cdr z))))
+```
+
+Which is better? Don't decide! Add "type tags."
+
+```lisp
+(define attach-type cons)
+(define type car)
+(define contents cdr)
+
+(define (rectangular? z)
+  (eq? (type z) 'rectangular))
+
+(define (polar? z)
+  (eq? (type z) 'polar))
+```
+
+Add type tagging to George's and Martha's constructors and make names unique (append `*-rectangular`, `*-polar`). Then define generic selectors and operators that dispatch on type. Later it's possible to use namespaces to avoid renaming.
+
+Annoying that the dispatch layer nas to change any time a new type is added, and also that it's not doing any "real" work. Really just a table. As in all beuocracies, automation the "manager" out of a job!
+
+Go back and do the same for the rational number library. Hal shows off nested tagged types, unpacked recursively as you pass down the layews. Then he goes on to introduce polynomials and does it in terms of the generic operators, so then coefficients can be *any* type (even polynomials themselves)! Now go back and rewrite the rational library in terms of the generic operators. Recursive type structure.
+
+The coersion problem is not covered in the lecture (it is in the book). For example adding 5 and 3/4. They're incompatible types, but 5 could be converted to 5/1.
+
+### Lecture 5A: [Assignment, State, and Side-effects](https://youtu.be/dO1aqPBJCPg?si=bswz852FzHk7yikX)
+
 ## Ringo Starr Teaches Drumming (05 AUG 2026 - 10 AUG 2026)
 
 He spends a lot of time just telling stories, while following a loose curriculum. It ends with a giant jam session. Fun to watch, but not really a learning experience.
