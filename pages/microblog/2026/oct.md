@@ -164,6 +164,6 @@ Tracey made loaded potatoes and I grilled a tri-tip. They wanted it rare, and bo
 
 I went to lunch with Calvin, at HuHot this time. He's doing good. He's going to the Seattle area next week. I then joined Tracey and Jaws and Teagan at the storage unit and we loaded the truck with stuff. Such a mess of random stuff and half-empty totes and Jaws was just having fun going through things like a time capsule. I just wanted to load up. Got home around 18:00, so that was the whole day. I worked on Stanley in the evening; adding a memory system and voice identification. Amazing how fast things come together!
 
-## 20 OCT 2026 Tue - Roasting
+## 20 OCT 2026 Tue - Random
 
-I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched another SICP lecture. Tracey colored her hair.
+I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched a couple more SICP lecture. Tracey colored her hair. We took apart the sauna and Tracey had sold it on Facebook marketplace for $900. And I drummed for almost an hour and practiced stick tricks while watching SICP.
