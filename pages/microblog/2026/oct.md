@@ -166,4 +166,27 @@ I went to lunch with Calvin, at HuHot this time. He's doing good. He's going to 
 
 ## 20 OCT 2026 Tue - Random
 
-I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched a couple more SICP lecture. Tracey colored her hair. We took apart the sauna and Tracey had sold it on Facebook marketplace for $900. And I drummed for almost an hour and practiced stick tricks while watching SICP.
+I spent most of the morning working on Stanley and on the ModZ app and chatting with Mike about it. Also watched a couple more SICP lecture. Tracey colored her hair. We took apart the sauna and Tracey had sold it on Facebook marketplace for $900. And I drummed for almost an hour and practiced stick tricks while watching SICP. Tracey made burgers for dinner. Jaws and Teagan have been downstairs playing video games all day. ❤️
+
+## 21 OCT 2026 Wed - Roasting + Parents
+
+I spent most of the day roasting. I burned two batches... Then I went and visited my parents in the evening. Nothing really new with them. My mom's diabetes is under control and my dad's PCS numbers are exactly the same as of yesterday. There's a bit more work done around the house; getting ready to pour footings. SpaceX had good earnings yesterday and the stock is up today.
+
+## 23 OCT 2026 Thu - Sushi
+
+Jaws and Teagan left today. Tracey had to finally "shew" them out around 14:00 (they'd said they would leave by 10:00). Tracey felt the need to clean everything once they were gone. Then we went out for Sushi at Izumi's. And we packed for the trip.
+
+## 24 OCT 2026 Fri - Charleston, SC
+
+We flew to Charleston today. Nothing eventful. I watched Jobs on the plane (Aston Kutcher did a good job). One funny thing was the ground crew apparently played tic-tac-toe in the dirt on the wing of the plane! And someone lost. Fred commented that it's concerning that someone who works on planes can *lose* a game of tic-tac-toe. Anyway, made it to the hotel. Got some yummy Mexican food w/habanero sauce.
+
+## 25 OCT 2026 Sat - Wedding
+
+We went to Bill's wedding today. It was pretty nice. The vows were a little funny; talking about putting up with "scars" and "mental issues"... Bill's were super quiet, and he showed us later on his phone. Rachel's bio-dad sat at our table and was already drunk before anything got started. He was loud and silly. During the ceremoney be was yelling, "Yabba dabba do time!" He wife called it "colorful." Everyone on his side of the family spent their time "managing" him; telling him that he missed a belt loop, getting him for pictures because he walked away. It was entertaining at least! We saw Killian and Dalia too. The food was really good; some BBQ place. It was great. ❤️
+
+## 26 OCT 2026 Sun - Charleston Harbor
+
+We spent the afternoon walking around the harbor. There's tons of very old buildings and certain streets look like Colonial times. The oldest I saw was from 1620. A bunch more were from before America (late 1600s/early 1700s). We walked along the water, got coffee, then sandwiches, then more coffee. The last coffe place made French press and charged only $3, with a refill. Not bad! At "The Battery" there's a statue of a couple of naked guys (with the weiner covered by a leaf) commemorating the Confederate soldiers who defended Charleston against the Union army. Weird. There's also a slave market building, turned into a museum. Interesting place. BTW, I brought a practice pad and am getting up to speed on Swiss Triplets and Single Flammed Mills.
+
+## 27 OCT 2026 Mon - Home
+

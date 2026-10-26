@@ -1,5 +1,9 @@
 # Movies
 
+## Jobs (23 OCT 2026)
+
+Aston Kutcher did a great job of playing Steve Jobs. It's a great, inspiring story. 2011... man, the world was different with Steve in it. I wonder when Woz will pass away. What a cool legacy. The whole birth of the PC is incredible. I remember feeling nostalgic working at Intel. I feel like I missed out on that. I wish I were my dad's age. What an incredible time.
+
 ## Good Will Hunting (07 OCT 2026)
 
 We've both seen it before, of course. But it's a great moving. Robin Williams is excellent and Matt, Ben and Minnie are great. I'll probably watch it ten more times in my life.
