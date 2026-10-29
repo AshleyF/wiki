@@ -2,7 +2,7 @@
 
 A single paradiddle is the continuous sticking `R L R R · L R L L`. The four standard forms below follow the **root position plus three inversions** listed by the Percussive Arts Society.
 
-To exaggerate the orchestration, **every right-hand stroke is accented** and every left-hand stroke is a **ghost note**. The kick lands every four notes: twice in each eight-note inversion.
+To exaggerate the orchestration, **every right-hand stroke is accented** and every left-hand stroke is a **ghost note**. The kick lands every four notes: twice in each eighth-note inversion.
 
 See the [Percussive Arts Society overview of paradiddle inversions](https://pas.org/pas-blog/paradiddles-the-whole-story-in-a-nutshell/) for the full family of single, double, and triple paradiddle inversions.
 

@@ -5,8 +5,8 @@
 ### Lecture 1A: [Overview and Introduction to Lisp](https://youtu.be/-J_xL4IGhJA?si=XTBJ0xFbkZVt-EqM)
 
 - "Computer Science" is not really about computers and it's not a science (confusing the essence with the tools)
-  - Fomalizing declarative knowledge about process ("how to" knowledge)
-  - Example: Square root of x: Make a guess (g), improve the guess (average g and x/g), repeate until "good enough."
+  - Formalizing declarative knowledge about process ("how to" knowledge)
+  - Example: Square root of x: Make a guess (g), improve the guess (average g and x/g), repeat until "good enough."
 - Controlling complexity is the essence
   - Software is made with "idealized components" (e.g. electrical engineer can't make a million-stage amplifier, but software can recurse infinitely)
   - Black box abstraction (modularity, eg. `sqrt(a) + sqrt(b)`)
@@ -222,9 +222,9 @@ Iterative implementation ("pluggable" implementations, same `sum-int`/`sum-sq`/`
   (iter a 0))
 ```
 
-Note: passing procedures by name (e.g. `term`, `next`, `identity`, `square`, `1+`) or anonomously (e.g. `(λ (i) (+ i 4))`)
+Note: passing procedures by name (e.g. `term`, `next`, `identity`, `square`, `1+`) or anonymously (e.g. `(λ (i) (+ i 4))`)
 
-Fixed point: f(x) = x. Herron of Alexandria's method is essentially repeated application of function to find fixed point.
+Fixed point: f(x) = x. Heron of Alexandria's method is essentially repeated application of a function to find a fixed point.
 
 
 ```lisp
@@ -285,7 +285,7 @@ Rights and Privileges of First-class Citizens (in a programming language):
 
 ### Lecture 2B: [Compound Data](https://youtu.be/DrFkf-T-6Co?si=FmS7pKKEsDNmjYY3)
 
-All about data abstraction. George doesn't know, doesn't want to know. Example was a system of rationals. Issolate use (`+rat`, `*rat`) from representation (pairs, closures) via an "abstraction layer" (`make-rat`, `numer`, `denom`).
+All about data abstraction. George doesn't know, doesn't want to know. Example was a system of rationals. Isolate use (`+rat`, `*rat`) from representation (pairs, closures) via an "abstraction layer" (`make-rat`, `numer`, `denom`).
 
 ```lisp
 (define (+rat x y)
@@ -410,7 +410,7 @@ Higher-order:
   (map (λ (item) (* item s)))) 
 ```
 
-Man, partial applicaton would be nice (map over `* s`).
+Man, partial application would be nice (map over `* s`).
 
 Henderson Escher pictures:
 
@@ -838,11 +838,11 @@ Which is better? Don't decide! Add "type tags."
 
 Add type tagging to George's and Martha's constructors and make names unique (append `*-rectangular`, `*-polar`). Then define generic selectors and operators that dispatch on type. Later it's possible to use namespaces to avoid renaming.
 
-Annoying that the dispatch layer nas to change any time a new type is added, and also that it's not doing any "real" work. Really just a table. As in all beuocracies, automation the "manager" out of a job!
+Annoying that the dispatch layer has to change any time a new type is added, and also that it's not doing any "real" work. Really just a table. As in all bureaucracies, automate the "manager" out of a job!
 
-Go back and do the same for the rational number library. Hal shows off nested tagged types, unpacked recursively as you pass down the layews. Then he goes on to introduce polynomials and does it in terms of the generic operators, so then coefficients can be *any* type (even polynomials themselves)! Now go back and rewrite the rational library in terms of the generic operators. Recursive type structure.
+Go back and do the same for the rational number library. Hal shows off nested tagged types, unpacked recursively as you pass down the layers. Then he goes on to introduce polynomials and does it in terms of the generic operators, so then coefficients can be *any* type (even polynomials themselves)! Now go back and rewrite the rational library in terms of the generic operators. Recursive type structure.
 
-The coersion problem is not covered in the lecture (it is in the book). For example adding 5 and 3/4. They're incompatible types, but 5 could be converted to 5/1.
+The coercion problem is not covered in the lecture (it is in the book). For example, adding 5 and 3/4. They're incompatible types, but 5 could be converted to 5/1.
 
 ### Lecture 5A: [Assignment, State, and Side-effects](https://youtu.be/dO1aqPBJCPg?si=bswz852FzHk7yikX)
 

@@ -174,7 +174,7 @@ In the evening, we watched The Hunter. Another WIllem Dafoe movie. It's not too 
 
 ## 30 SEP 2026 Wed - Astro
 
-You never know what hobbie of mine will come back to life. I've been thinking about what to take to Austrailia next year to caputer the southern hemosphere sky. I'm thinking that one of the "smart scopes" like the S30 or S50 or the Draco might be best. The S50 looks like about the best balance of size/features. One requirement is being able to pack it to the other side of the planet. Being easier to setup is secondary, but nice. I could technically bring my whole rig. I have a Pelican case for it. I was thinking the ASI Air plus a regular camera and tripod. I might still do that.
+You never know what hobby of mine will come back to life. I've been thinking about what to take to Australia next year to capture the southern hemisphere sky. I'm thinking that one of the "smart scopes" like the S30 or S50 or the Draco might be best. The S50 looks like about the best balance of size/features. One requirement is being able to pack it to the other side of the planet. Being easier to set up is secondary, but nice. I could technically bring my whole rig. I have a Pelican case for it. I was thinking the ASI Air plus a regular camera and tripod. I might still do that.
 
 I've been processing some old data from last October of the Heart nebula. Getting back up to speed with PixInsight and such. I spent the entire day processing one image! I learned a lot and the image is pretty amazing. 24.5 hours of exposure that I did over a couple of weeks in October 2023 and it's just been sitting on my laptop since then.
 
