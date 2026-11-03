@@ -4,7 +4,7 @@ This is a small wiki whose source material is ordinary text. The browser fetches
 
 ## Start exploring
 
-- Open the [music](#/music) to see a fenced Strudel block.
+- Open the [music page](#/music) to see a fenced Strudel block.
 - Check out the [cubing algs](#/cubing) to see alg rendering.
 - See how fenced [math notation](#/math) turns LaTeX-like source into a two-dimensional expression.
 - Train and inspect a tiny [Neural Net Playground](projects/neural-net-playground/).

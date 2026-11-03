@@ -1,6 +1,6 @@
 # SEP 2026
 
-Portland, Astoria, Kirkland trip. Drumming (JP), Roux solver, astro photography. Vibe coding apps.
+Portland, Astoria, Kirkland trip. Drumming (JP), Roux solver, astrophotography. Vibe coding apps.
 
 ## 01 SEP 2026 Tue - JP Bouvet
 
@@ -54,7 +54,7 @@ Another example might be the temperature-controlled shower we have now. We can s
 
 ## 11 SEP 2026 Fri - Chelsea
 
-Tracey went into town very early to get Chelsea's kids to school while she had an appointment. She made eggs and pancakes last night to bring. Lucky kids, but not sure they appreciated ("They taste weird"). Then Tracey and Chelsea hung out most of the day.
+Tracey went into town very early to get Chelsea's kids to school while she had an appointment. She made eggs and pancakes last night to bring. Lucky kids, but not sure they appreciated it ("They taste weird"). Then Tracey and Chelsea hung out most of the day.
 
 I stayed home and played the drums and tweaked my tool. I kind of want to give it to other people doing the JPBM, but it's his content I'm embedding into it. I could lock it down to only members, but what a pain. One idea I have is to make it completely query-string-driven, like the cubing site where people post scrambles and solutions. Then I could share a link with the content appended in the Facebook group. I think that'd be fair. If nothing else, I want to make a video that shows it and talks about the future of software (see yesterday). And I want to show it to JP and the guy who wrote RhythmBot (Jamie Howard), just for some ideas he could incorporate.
 
@@ -170,7 +170,7 @@ I worked on the Roux solver some more, adding search filters and now looking for
 
 I spent several hours washing the cars. Tracey's car had bugs on the front from our Vegas trip *two years ago*! Now I'm sore. I've gotta work out more.
 
-In the evening, we watched The Hunter. Another WIllem Dafoe movie. It's not too bad. Much better than Inside from yesterday.
+In the evening, we watched The Hunter. Another Willem Dafoe movie. It's not too bad. Much better than Inside from yesterday.
 
 ## 30 SEP 2026 Wed - Astro
 

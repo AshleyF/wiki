@@ -4,7 +4,7 @@ My favorite Morse code keyer is Ultimatic. I made [this video](https://www.youtu
 
 ## Single
 
-These are merely holding one or the other paddle. (N)
+These involve merely holding one or the other paddle. (N)
 
 E .
 I ..
@@ -18,7 +18,7 @@ O ---
 
 ## Squeeze
 
-These are a simple squeeze to get a single element, with a well-timed full release after one or more alternate elements. (1N)
+These use a simple squeeze to get a single element, with a well-timed full release after one or more alternate elements. (1N)
 
 A .-
 W .--
@@ -67,6 +67,6 @@ Q --.-
 
 ## Squeeze + Half-Release + Squeeze
 
-This is the odd one out. It cannot be done with a single squeeze. It starts with a squeeze to get dah dit, then a half-release to get another dah, and back to a squeeze for the last dit. For a right handed person, with dits on the thumb, it's a squeeze with a little extra tap of the thumb in the middle.
+This is the odd one out. It cannot be done with a single squeeze. It starts with a squeeze to get dah dit, then a half-release to get another dah, and back to a squeeze for the last dit. For a right-handed person, with dits on the thumb, it's a squeeze with a little extra tap of the thumb in the middle.
 
 C -.-.

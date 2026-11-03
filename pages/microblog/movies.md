@@ -1,12 +1,20 @@
 # Movies
 
+## Animals (30 OCT 2026)
+
+Ben Affleck did fine acting in this. Not to give anything away, it started out great and was pretty riveting. But then it did a little pivot and more and more problems kept being added until it became ridiculous. Then it got cheesy and by the end I'd say it was just plain dumb. I regretted watching it.
+
+## Wake Up Dead Man (29 OCT 2026)
+
+This was a pretty well-done whodunit with a strange religious overtone. It's the murder of a priest and has all these parallels with Jesus. None of that helps solve it. Worth watching.
+
 ## Jobs (23 OCT 2026)
 
-Aston Kutcher did a great job of playing Steve Jobs. It's a great, inspiring story. 2011... man, the world was different with Steve in it. I wonder when Woz will pass away. What a cool legacy. The whole birth of the PC is incredible. I remember feeling nostalgic working at Intel. I feel like I missed out on that. I wish I were my dad's age. What an incredible time.
+Ashton Kutcher did a great job of playing Steve Jobs. It's a great, inspiring story. 2011... man, the world was different with Steve in it. I wonder when Woz will pass away. What a cool legacy. The whole birth of the PC is incredible. I remember feeling nostalgic working at Intel. I feel like I missed out on that. I wish I were my dad's age. What an incredible time.
 
 ## Good Will Hunting (07 OCT 2026)
 
-We've both seen it before, of course. But it's a great moving. Robin Williams is excellent and Matt, Ben and Minnie are great. I'll probably watch it ten more times in my life.
+We've both seen it before, of course. But it's a great movie. Robin Williams is excellent and Matt, Ben and Minnie are great. I'll probably watch it ten more times in my life.
 
 ## To Live and Die in LA (06 OCT 2026)
 
@@ -18,7 +26,7 @@ The novelty of Tom Cruise playing
 
 ## The Hunter (29 SEP 2026)
 
-Yet another Willem Dafoe movie. Pretty good drama. The story unfolds very slowly, but you do care about the character (unlike Inside, below). I didn't really understand his mission though; why it was so important. It felt like a "McGuffin." And in the end his just shoots the McGuffin and it's over. Weird. But you can make sense of it.
+Yet another Willem Dafoe movie. Pretty good drama. The story unfolds very slowly, but you do care about the character (unlike Inside, below). I didn't really understand his mission though; why it was so important. It felt like a "McGuffin." And in the end he just shoots the McGuffin and it's over. Weird. But you can make sense of it.
 
 ## Inside (28 SEP 2026)
 
@@ -50,15 +58,15 @@ Directed by Spielberg and starring Tom Cruise, how could it be bad? It was prett
 
 ## Margin Call (04 SEP 2026)
 
-I didn't realize the movie was about the 2008 financial crisis until a third of the way in. It's very cryptic. A guy gets fired. You don't know who he is, or why. People start freaking out late one night about some numbers in a spreadsheet or some financial modeling program and you don't know what they're talking about. There's all kinds of drama around it and politics between people who you don't know. Very weird. When it's finally clear, they still keep other random facts hidden from the audience. It's as if the director confused crypticness for "suspense" or "mystery." It's not something for the audience to unravel, but simply information being withheld. It does keep you watching to find out, but for the wrong reason. Still, I think it was decent. It was interesting. It had a lot of famous people in it and good acting. Just the storytelling was an odd delivery. In the end, I think it represented Lehman Brothers, which went completely bankrupt and no longer exists after the crisis.
+I didn't realize the movie was about the 2008 financial crisis until a third of the way in. It's very cryptic. A guy gets fired. You don't know who he is, or why. People start freaking out late one night about some numbers in a spreadsheet or some financial modeling program and you don't know what they're talking about. There are all kinds of drama around it and politics between people who you don't know. Very weird. When it's finally clear, they still keep other random facts hidden from the audience. It's as if the director mistook crypticness for "suspense" or "mystery." It's not something for the audience to unravel, but simply information being withheld. It does keep you watching to find out, but for the wrong reason. Still, I think it was decent. It was interesting. It had a lot of famous people in it and good acting. Just the storytelling was an odd delivery. In the end, I think it represented Lehman Brothers, which went completely bankrupt and no longer exists after the crisis.
 
 ## Eva (23 AUG 2026)
 
-A La Femme Nikita kind of thing with our favorite redheaded actress. Lots of action and blood. Pretty predictable and we actually spent it half-watching while on our phones, with me giving Tracey a foot massage.
+A La Femme Nikita kind of thing with our favorite redheaded actress. Lots of action and blood. Pretty predictable and we actually spent the time half-watching while on our phones, with me giving Tracey a foot massage.
 
 ## The Queen of Chess - Judit Polgar (05 AUG 2026)
 
-This was an hour-and-a-half documentary on Judit Polgar, who was an up-and-coming female player in the eighties and nineties. She even beat Kasparov once. She was ranked twenty-something in the world, but by far the highest-ranked woman and broke barriers for women players. Just social ones. Obviously there's no reason that women couldn't play as well as men, except that it's a smaller talent pool simply because there are fewer women interested in it. That part is partially social, but it also seems universal that fewer women are into these weird things that guys get into: cubing, chess, etc. It was a pretty good show, with a nice buildup to her finally beating Kasparov. There was apparently an earlier game in which it would have been a draw, but Kasparov moved a piece and then changed his mind. I mean, he let go of a knight after moving and then regripped and moved it somewhere else. It would have been legal if he hadn't let go. Nobody noticed, except Polgar and the camera caught it. But she let it slide at the time and signed the game sheet at the end, making it irreversible. A big scandal back then. But later she beat him with exceptionally brilliant play.
+This was an hour-and-a-half documentary on Judit Polgar, who was an up-and-coming female player in the eighties and nineties. She even beat Kasparov once. She was ranked twenty-something in the world, but by far the highest-ranked woman and broke barriers for women players. Just social ones. Obviously there's no reason that women couldn't play as well as men, except that it's a smaller talent pool simply because there are fewer women interested in it. That part is partially social, but it also seems universal that fewer women are into these weird things that guys get into: cubing, chess, etc. It was a pretty good show, with a nice buildup to her finally beating Kasparov. There was apparently an earlier game in which it would have been a draw, but Kasparov moved a piece and then changed his mind. I mean, he let go of a knight after moving and then regripped and moved it somewhere else. It would have been legal if he hadn't let go. Nobody noticed except Polgar, but the camera caught it. But she let it slide at the time and signed the game sheet at the end, making it irreversible. A big scandal back then. But later she beat him with exceptionally brilliant play.
 
 ## Bobby Fischer Against the World (03 AUG 2026)
 
@@ -70,7 +78,7 @@ Goofy rom-com. That is all. (Nah, it was fun to watch.)
 
 ## The Odyssey (28 JUL 2026, IMAX, River Park Square)
 
-The Odyssey on IMAX was very good! Everything about it as a standalone story and the acting and effects were perfect. The only issue I have with it is that Nolan diverted from the actual Odyssey. This was Nolan's Odyssey, not Homer's Odyssey. Showing the Trojan horse and the character played by Elliot Page was a fine addition. The whole idea that the horse was immoral trickery wasn't from the book. In fact, in the book he was a much more cunning trickster and less of a disturbed war veteran. The gods were demoted to an imagined religion that Odysseus waffled back and forth on. He ate the lotus leaf and forgot about home for seven years. He never ate it in the book and even pulled his crew from it and *never* did he forget home. The slaughter of the suitors was changed. His son didn't take part and didn't hang the maids. And then the *son* became king while Odysseus and his wife went into exile. That's not from the book at all.
+The Odyssey on IMAX was very good! Everything about it as a standalone story and the acting and effects were perfect. The only issue I have with it is that Nolan deviated from the actual Odyssey. This was Nolan's Odyssey, not Homer's Odyssey. Showing the Trojan horse and the character played by Elliot Page was a fine addition. The whole idea that the horse was immoral trickery wasn't from the book. In fact, in the book he was a much more cunning trickster and less of a disturbed war veteran. The gods were demoted to an imagined religion that Odysseus waffled back and forth on. He ate the lotus leaf and forgot about home for seven years. He never ate it in the book and even pulled his crew from it and *never* did he forget home. The slaughter of the suitors was changed. His son didn't take part and didn't hang the maids. And then the *son* became king while Odysseus and his wife went into exile. That's not from the book at all.
 
 ## Contact (25 JUL 2026)
 

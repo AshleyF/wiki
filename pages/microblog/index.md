@@ -12,3 +12,4 @@
 [AUG](#/microblog/2026/aug)
 [SEP](#/microblog/2026/sep)
 [OCT](#/microblog/2026/oct)
+[NOV](#/microblog/2026/nov)

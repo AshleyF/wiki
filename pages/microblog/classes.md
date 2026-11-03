@@ -8,8 +8,8 @@
   - Formalizing declarative knowledge about process ("how to" knowledge)
   - Example: Square root of x: Make a guess (g), improve the guess (average g and x/g), repeat until "good enough."
 - Controlling complexity is the essence
-  - Software is made with "idealized components" (e.g. electrical engineer can't make a million-stage amplifier, but software can recurse infinitely)
-  - Black box abstraction (modularity, eg. `sqrt(a) + sqrt(b)`)
+  - Software is made with "idealized components" (e.g., an electrical engineer can't make a million-stage amplifier, but software can recurse infinitely)
+  - Black box abstraction (modularity, e.g. `sqrt(a) + sqrt(b)`)
   - Example: Fixed point of f, such that f(x)=x, guess x, apply f until "good enough"
     - Fixed point of f->AVG y AND x/y, produces `sqrt` function (HOF)
   - Conventional interfaces (plug things together, generics)
@@ -222,7 +222,7 @@ Iterative implementation ("pluggable" implementations, same `sum-int`/`sum-sq`/`
   (iter a 0))
 ```
 
-Note: passing procedures by name (e.g. `term`, `next`, `identity`, `square`, `1+`) or anonymously (e.g. `(λ (i) (+ i 4))`)
+Note: passing procedures by name (e.g., `term`, `next`, `identity`, `square`, `1+`) or anonymously (e.g., `(λ (i) (+ i 4))`)
 
 Fixed point: f(x) = x. Heron of Alexandria's method is essentially repeated application of a function to find a fixed point.
 
@@ -247,7 +247,7 @@ Fixed point: f(x) = x. Heron of Alexandria's method is essentially repeated appl
   (λ (x) (average (f x) x)))
 ```
 
-HOF can _take_ a procedure, but can also _return_ a new procedure (e.g. `average-damp`).
+HOF can _take_ a procedure, but can also _return_ a new procedure (e.g., `average-damp`).
 
 Newton's method: Find y such that f(y)=0
 * Start with guess
@@ -317,7 +317,7 @@ Better `make-rat`:
           (/ d g))))
 ```
 
-I liked Hal's quip about how people who religiously espouse designing everything upfront, are people who haven't built very complicated things.
+I liked Hal's quip about how people who religiously espouse designing everything upfront are people who haven't built very complicated things.
 
 Another example (line segments):
 
@@ -383,9 +383,9 @@ Or simpler!
 (define seg-end cdr s)
 ```
 
-"Closure" under means of combination (e.g. Basic & Fortran can make arrays of numbers, but not arrays of arrays).
+"Closure" under means of combination (e.g., Basic & Fortran can make arrays of numbers, but not arrays of arrays).
 
-A "List" in Lisp is a conventional representation of a sequence of data stored in pairs (`car` is data, `cdr` in next pair or nil ... `(cons 1 (cons 2 (cons 3 nil)))` -> `(list 1 2 3)`).
+A "List" in Lisp is a conventional representation of a sequence of data stored in pairs (`car` is data, `cdr` is the next pair or nil ... `(cons 1 (cons 2 (cons 3 nil)))` -> `(list 1 2 3)`).
 
 CDR-ing down a list:
 
@@ -480,7 +480,7 @@ Generalized:
 (define right-push (push beside))
 ```
 
-Ending statement was about how language-oriented design is inherently more general. Built in layers instead of a tree. Each layer is a general language. Example: language of pictures, language of transformations, language of schemes (e.g. recursive push). Much more like "Lego" bricks of functionality. And embedded within Lisp so that all the more general facilities (like recursive procedures) are available.
+Ending statement was about how language-oriented design is inherently more general. Built in layers instead of a tree. Each layer is a general language. Example: language of pictures, language of transformations, language of schemes (e.g., recursive push). Much more like "Lego" bricks of functionality. And embedded within Lisp so that all the more general facilities (like recursive procedures) are available.
 
 ### Lecture 3B: [Symbolic Differentiation; Quotation](https://youtu.be/bV87UzKMRtE?si=wEPDKLk4e5Ekl_OI)
 
@@ -623,7 +623,7 @@ Now:
 
 ### Lecture 4A: [Pattern Matching and Rule-based Substitution](https://youtu.be/_fXQ1SwKjDg?si=EBOlrL2DmcdVh8Na)
 
-Bring the computer to the level of the problem, rather than translating the problem into the computer's language; as we did in the last lecture.
+Bring the computer to the level of the problem, rather than translating the problem into the computer's language, as we did in the last lecture.
 
 ```lisp
 (define deriv-rules
