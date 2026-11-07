@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261010-mode-mix-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261106-kick-break-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -26,6 +26,7 @@ const AUTO_SHUFFLE_KEY = 'triplet-vocabulary-auto-shuffle';
 const PATTERN_ORDER_KEY = 'triplet-vocabulary-pattern-order';
 const METRONOME_KEY = 'triplet-vocabulary-metronome';
 const DRUMS_KEY = 'triplet-vocabulary-drums';
+const KICK_BREAK_KEY = 'triplet-vocabulary-kick-break';
 const FAT_LEAD_IN_KEY = 'triplet-vocabulary-fat-lead-in';
 const RIDE_INTRO_PATTERN_KEY = 'triplet-vocabulary-ride-intro-pattern';
 const LEGACY_RIDE_QUARTER_INTRO_KEY = 'triplet-vocabulary-ride-quarter-intro';
@@ -59,6 +60,7 @@ let extendedCards = Array.from({ length:3 },() => [0,3]);
 let fatBeatCards = Array.from({ length:3 },() => [0,3]);
 let rideCards = Array.from({ length:3 },(_,slot) => [slot%MELODIES.length,(slot+1)%MELODIES.length]);
 let kick12Cards = Array.from({ length:3 },(_,slot) => [slot%MELODIES.length,(slot+1)%MELODIES.length]);
+let kickBreakCards = [false,false,false];
 let audioContext = null;
 let midiAccess = null;
 let midiInput = null;
@@ -457,6 +459,7 @@ function initializeDisplayOptions() {
   }
   $('#metronome').checked = loadBooleanPreference(METRONOME_KEY,false);
   $('#drums').checked = loadBooleanPreference(DRUMS_KEY,true);
+  $('#kick-break').checked = loadBooleanPreference(KICK_BREAK_KEY,false);
   $('#fat-lead-in').checked = loadBooleanPreference(FAT_LEAD_IN_KEY,true);
   $('#ride-intro-pattern').value = loadRideIntroPattern();
   $('#ignore-feet').checked = loadBooleanPreference(IGNORE_FEET_KEY,true);
@@ -472,6 +475,7 @@ function selectedPattern(slot) {
   if (trainerMode === 'fat') return rolesForFatBeats(fatBeatCards[slot],{ leadIn:fatLeadInEnabled() });
   if (trainerMode === 'kick12') {
     const [first,second] = kick12Cards[slot];
+    if (kickBreakCards[slot]) return rolesForKickVocabulary(MELODIES[first] || MELODIES[0]);
     return rolesForKickVocabulary12(MELODIES[first] || MELODIES[0],MELODIES[second] || MELODIES[0]);
   }
   if (trainerMode === 'ride') {
@@ -606,7 +610,7 @@ function renderKickCard(slot,target,width,{
   const recovering = recoveryCards[slot];
   const fatBeats = trainerMode === 'fat' && !recovering;
   const kick2 = trainerMode === 'kick2' && !recovering;
-  const kick12 = trainerMode === 'kick12' && !recovering;
+  const kick12 = trainerMode === 'kick12' && !recovering && !kickBreakCards[slot];
   const snareInPattern = kick2 || kick12;
   const patternStartStep = kick2 ? 6 : 0;
   const patternRoles = fullPattern || kick12 ? roles : kick2 ? roles.slice(6,12) : roles.slice(0,6);
@@ -1477,6 +1481,13 @@ function scheduleEvent() {
   if (playbackScope === 'session' && position.cardBoundary) {
     crossMelodyBoundary((slot+cardCount-1)%cardCount,slot);
   }
+  if (step === 0 && trainerMode === 'kick12') {
+    const breakBar = kickVocabularyBreakBar(eventNumber,$('#kick-break').checked);
+    if (kickBreakCards[slot] !== breakBar) {
+      kickBreakCards[slot] = breakBar;
+      queueCardRender(slot,nextEventTime);
+    }
+  }
   const role = selectedPattern(slot)[step];
   const currentVelocities = velocityValues();
   const ordinaryKick = role === 'A' || role === 'K';
@@ -1773,9 +1784,11 @@ function stop() {
   clearNotationHighlights();
   expectedPracticeHits = [];
   phraseStartTime = null;
+  const hadKickBreak = kickBreakCards.some(Boolean);
+  kickBreakCards.fill(false);
   const wasRecovering = recoveryMode;
   resetRecoveryState();
-  if (wasRecovering) queueNotationRender();
+  if (wasRecovering || hadKickBreak) queueNotationRender();
   setTapMode(false);
   if (midiOutput) { try { midiOutput.clear?.(); } catch {} midiOutput.send([0xb9,120,0]); midiOutput.send([0xb9,123,0]); }
   setTransportState('play'); setCardAuditionState(); setStatus('');
@@ -2058,6 +2071,12 @@ $('#drums').addEventListener('change',event => {
     $('#metronome').checked = true;
     try { localStorage.setItem(METRONOME_KEY,'true'); } catch {}
   }
+});
+$('#kick-break').addEventListener('change',event => {
+  try { localStorage.setItem(KICK_BREAK_KEY,String(event.target.checked)); } catch {}
+  if (playing || pausedSessionEventNumber !== null) stop();
+  kickBreakCards.fill(false);
+  renderAll();
 });
 $('#fat-lead-in').addEventListener('change',event => {
   try { localStorage.setItem(FAT_LEAD_IN_KEY,String(event.target.checked)); } catch {}

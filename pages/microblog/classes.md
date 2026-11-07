@@ -1,5 +1,11 @@
 # Classes
 
+## Neil Peart's [A Work in Progress](https://youtu.be/n3WBnYGoxZ8?si=V5yEhliOYMl_EggN) (06 NOV 2026)
+
+I read about him making this video (originally a set of DVDs) in his book, "Ghost Rider." He spends a bit of time talking about his career and Rush tours and such, and then talks about what he learned from his own drum teacher (Freddie Gruber). Amazing that after 30 years and already being a professional, he went back to learn primitive things again: trad grip, "circular" strokes, etc. Things that a drummer learns in the first year, he returned to learn in his 30th year.
+
+He talks about very high-level things such as rolling *down* the toms because that sounds like a "statement," while going *up* would sound like a question. Or "driving the band" with different timing, sometimes across the bar to match the bass player or singer. He spends a lot of time telling stories about recording each song and then performs each song. It's entertaining, but not very educational other than high-level things that I have no idea how to integrate into my playing. Maybe I'm just too "beginner" to make use of it. Still, well worth the four hours.
+
 ## SICP (05 OCT 2026 - )
 
 ### Lecture 1A: [Overview and Introduction to Lisp](https://youtu.be/-J_xL4IGhJA?si=XTBJ0xFbkZVt-EqM)

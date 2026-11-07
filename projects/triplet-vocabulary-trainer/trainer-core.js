@@ -124,6 +124,11 @@ export function rolesForKickVocabulary2(melody) {
   return ['K','B','B','B','B','B','S',...melody.slice(1)];
 }
 
+// Count sounded bars, including repetitions, independently of the three-card loop.
+export function kickVocabularyBreakBar(eventNumber,enabled) {
+  return Boolean(enabled) && Math.floor(Math.max(0,eventNumber)/12)%4 === 3;
+}
+
 export function rolesForKickVocabulary12(firstMelody,secondMelody) {
   return [...firstMelody,'S',...secondMelody.slice(1)];
 }

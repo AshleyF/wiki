@@ -454,3 +454,6 @@ Current limitations are intentional or accepted, not accidental:
 - There is no offline service worker or asset cache.
 
 Likely future work includes extracting parser and renderer modules, adding test fixtures, introducing optional front matter for titles/navigation, vendoring interactive runtimes, and adding new fenced-language plugins. Any such change should strengthen the central premise: durable human-readable notes, progressively rendered into a useful static wiki.
+
+
+Kick 1 + 2 has a persistent, mode-only `Break every 4 bars` checkbox (default off). It substitutes Kick 1 using that card's first melody on every fourth sounded bar, retaining the beat-3 backbeat and hidden snare ghosts while omitting subsequent kicks. Count actual bars across the three-card loop, including Repeat passes; restarting begins a fresh four-bar phrase. Playback, MIDI scoring targets, and engraving must use the same effective roles. Other modes are unaffected.

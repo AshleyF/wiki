@@ -26,6 +26,7 @@ import {
   rolesForFatBeats,
   rolesForKickVocabulary,
   rolesForKickVocabulary12,
+  kickVocabularyBreakBar,
   rolesForKickVocabulary2,
   rolesForRideVocabulary,
   rolesForTripletMasks,
@@ -368,4 +369,25 @@ test('card auditions queue in click order and cap the sequence at three patterns
   assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:0 }),{ action:'removed',queue:[1] });
   assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:2 }),{ action:'stop',queue:[0,1] });
   assert.deepEqual(updateAuditionQueue([0,1],{ activeSlot:2,slot:3 }),{ action:'full',queue:[0,1] });
+});
+
+
+test('Kick 1 + 2 breaks fall every fourth sounded bar across card loops and repetitions', () => {
+  for (const repeats of [1,2,3,4,16]) {
+    for (let bar=0;bar<24;bar++) {
+      const event = bar*12;
+      const position = trainerEventPosition(event,12,3,repeats);
+      assert.equal(position.step,0);
+      assert.equal(kickVocabularyBreakBar(event,true),bar%4 === 3);
+      assert.equal(kickVocabularyBreakBar(event+11,true),bar%4 === 3);
+      assert.equal(kickVocabularyBreakBar(event,false),false);
+      const first = ['A','B','A','A','B','B'];
+      const second = ['A','A','B','A','B','A'];
+      const roles = kickVocabularyBreakBar(event,true)
+        ? rolesForKickVocabulary(first) : rolesForKickVocabulary12(first,second);
+      assert.deepEqual(roles.slice(0,6),first);
+      assert.equal(roles[6],'S');
+      assert.deepEqual(roles.slice(7),bar%4 === 3 ? ['B','B','B','B','B'] : second.slice(1));
+    }
+  }
 });
