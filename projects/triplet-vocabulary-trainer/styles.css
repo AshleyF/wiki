@@ -120,3 +120,12 @@ body[data-trainer-mode="ride"][data-ride-intro-enabled="true"] .notation.drum-re
 .kick-break-control { display: none; align-items: center; gap: .3rem; color: var(--notation-muted); font: 700 .72rem/1 monospace; cursor: pointer; }
 .kick-break-control input { margin: 0; accent-color: var(--accent); }
 body[data-trainer-mode="kick12"] .kick-break-control { display: inline-flex; }
+
+body[data-trainer-mode="kickpoly"] .melody-filter-label,
+body[data-trainer-mode="kickpoly"] .melody-filter-options,
+body[data-trainer-mode="kickpoly"] .emphasis-control,
+body[data-trainer-mode="kickpoly"] .melody-card header select,
+body[data-trainer-mode="kickpoly"] .order-control,
+body[data-trainer-mode="kickpoly"] #randomize,
+body[data-trainer-mode="kickpoly"] .auto-control { display: none; }
+body[data-trainer-mode="kickpoly"] .notation.drum-render { min-height: 160px; }

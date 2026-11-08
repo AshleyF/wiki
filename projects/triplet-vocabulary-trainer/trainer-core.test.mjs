@@ -26,6 +26,7 @@ import {
   rolesForFatBeats,
   rolesForKickVocabulary,
   rolesForKickVocabulary12,
+  rolesForKickPolyrhythm,
   kickVocabularyBreakBar,
   rolesForKickVocabulary2,
   rolesForRideVocabulary,
@@ -390,4 +391,18 @@ test('Kick 1 + 2 breaks fall every fourth sounded bar across card loops and repe
       assert.deepEqual(roles.slice(7),bar%4 === 3 ? ['B','B','B','B','B'] : second.slice(1));
     }
   }
+});
+
+
+test('kick polyrhythm repeats three evenly spaced kicks over two snare beats', () => {
+  const roles = rolesForKickPolyrhythm();
+  assert.equal(roles.length,12);
+  assert.deepEqual(roles.flatMap((role,step) => role === 'A' ? [step] : []),[0,2,4,6,8,10]);
+  for (let step=0;step<12;step++) {
+    const plan = trainerPlaybackPlan({ role:roles[step],step,kickVocabulary:false,embeddedTimekeeper:true,metronomeEnabled:true });
+    assert.equal(plan.pattern,step%2 === 0);
+    assert.equal(plan.grooveHat,false);
+    assert.equal(plan.metronome,false);
+  }
+  assert.deepEqual(roles.slice(0,6),roles.slice(6));
 });

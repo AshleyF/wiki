@@ -129,6 +129,11 @@ export function kickVocabularyBreakBar(eventNumber,enabled) {
   return Boolean(enabled) && Math.floor(Math.max(0,eventNumber)/12)%4 === 3;
 }
 
+// Three evenly spaced kicks against two quarter-note snare beats, twice per bar.
+export function rolesForKickPolyrhythm() {
+  return Array.from({ length:12 },(_,step) => step%2 === 0 ? 'A' : 'R');
+}
+
 export function rolesForKickVocabulary12(firstMelody,secondMelody) {
   return [...firstMelody,'S',...secondMelody.slice(1)];
 }

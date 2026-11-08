@@ -457,3 +457,6 @@ Likely future work includes extracting parser and renderer modules, adding test 
 
 
 Kick 1 + 2 has a persistent, mode-only `Break every 4 bars` checkbox (default off). It substitutes Kick 1 using that card's first melody on every fourth sounded bar, retaining the beat-3 backbeat and hidden snare ghosts while omitting subsequent kicks. Count actual bars across the three-card loop, including Repeat passes; restarting begins a fresh four-bar phrase. Playback, MIDI scoring targets, and engraving must use the same effective roles. Other modes are unaffected.
+
+
+Kick Polyrhythm (`kickpoly`) follows Kick 1 + 2 in the mode menu. It repeats a fixed 3:2 rhythm: kick on triplet slots 0, 2, and 4 of every two beats, with a normal-velocity snare on every quarter-note beat replacing hi-hat timekeeping. Silent subdivisions have no ghost strokes. The kick grid supplies scoring targets; snare is the timekeeper. Reuse `renderKickCard` for full percussion notation and the shared scheduler/sample preparation for both browser and MIDI playback. Pattern selectors, filters, scrambling, and ordering are hidden because the pattern is fixed; recovery and repeats remain available.

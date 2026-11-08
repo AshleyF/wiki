@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261106-kick-break-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261108-kick-polyrhythm-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -129,7 +129,7 @@ function extendedLabel(index) {
 function loadTrainerMode() {
   try {
     const saved = localStorage.getItem(TRAINER_MODE_KEY);
-    return ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12'].includes(saved) ? saved : 'vocabulary';
+    return ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12','kickpoly'].includes(saved) ? saved : 'vocabulary';
   } catch { return 'vocabulary'; }
 }
 function loadPatternOrder() {
@@ -470,6 +470,7 @@ function repeatCount() {
 }
 function selectedPattern(slot) {
   if (recoveryCards[slot]) return recoveryPulseRoles(stepsPerCard());
+  if (trainerMode === 'kickpoly') return rolesForKickPolyrhythm();
   if (trainerMode === 'triplets') return rolesForTripletMasks(tripletCards[slot]);
   if (trainerMode === 'extended') return rolesForExtendedBar(extendedCards[slot]);
   if (trainerMode === 'fat') return rolesForFatBeats(fatBeatCards[slot],{ leadIn:fatLeadInEnabled() });
@@ -611,6 +612,7 @@ function renderKickCard(slot,target,width,{
   const fatBeats = trainerMode === 'fat' && !recovering;
   const kick2 = trainerMode === 'kick2' && !recovering;
   const kick12 = trainerMode === 'kick12' && !recovering && !kickBreakCards[slot];
+  const polyrhythm = trainerMode === 'kickpoly' && !recovering;
   const snareInPattern = kick2 || kick12;
   const patternStartStep = kick2 ? 6 : 0;
   const patternRoles = fullPattern || kick12 ? roles : kick2 ? roles.slice(6,12) : roles.slice(0,6);
@@ -681,7 +683,7 @@ function renderKickCard(slot,target,width,{
   const grooveNotes = Array.from({ length:4 },(_,beat) => {
     const landing = recovering ? beat >= 2 : beat === 2;
     const silent = recovering && beat < 2;
-    const keys = silent
+    const keys = polyrhythm ? ['c/5'] : silent
       ? ['b/4']
       : recovering
         ? ['c/5']
@@ -692,7 +694,7 @@ function renderKickCard(slot,target,width,{
     note.trainerStep = beat*3;
     note.trainerSlots = 3;
     note.trainerHidden = recovering && silent;
-    if (!recovering && landing && !snareInPattern) {
+    if (!recovering && !polyrhythm && landing && !snareInPattern) {
       const accent = new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE);
       note.addModifier(accent,0);
       note.trainerCount = '3';
@@ -837,8 +839,8 @@ function renderCard(slot) {
     cards[slot].repeatLabel = secondMeasure.repeatLabel;
     return;
   }
-  if (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
-    const rendered = renderKickCard(slot,target,width);
+  if (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12' || trainerMode === 'kickpoly') {
+    const rendered = renderKickCard(slot,target,width,{ fullPattern:trainerMode === 'kickpoly' });
     cards[slot].stepElements = rendered.stepElements;
     cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
     cards[slot].repeatLabel = rendered.repeatLabel;
@@ -898,7 +900,7 @@ function updateModeUI() {
   document.body.dataset.rideIntroEnabled = String(rideIntroEnabled());
   $('#trainer-mode').value = trainerMode;
   const ignoreFeet = $('#ignore-feet');
-  if (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') {
+  if (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12' || trainerMode === 'kickpoly') {
     ignoreFeet.checked = false;
     ignoreFeet.disabled = true;
     ignoreFeet.closest('label').title = 'Kick strokes are scoring input in Kick mode';
@@ -909,7 +911,7 @@ function updateModeUI() {
   }
   cards.forEach((card,slot) => {
     card.hidden = slot >= activeCardCount();
-    card.querySelector('.card-kind').textContent = trainerMode === 'triplets'
+    card.querySelector('.card-kind').textContent = trainerMode === 'kickpoly' ? '3:2 · Kick / Snare' : trainerMode === 'triplets'
       ? `Bar ${slot+1}`
       : trainerMode === 'extended' || trainerMode === 'fat' || trainerMode === 'ride' || trainerMode === 'kick12' ? `Bar ${slot+1}` : 'Melody';
   });
@@ -928,11 +930,11 @@ function updateModeUI() {
   requestAnimationFrame(renderAll);
 }
 function systematicOrderActive() {
-  return patternOrder === 'systematic' && trainerMode !== 'triplets';
+  return patternOrder === 'systematic' && trainerMode !== 'triplets' && trainerMode !== 'kickpoly';
 }
 function updatePatternOrderUI() {
   const orderSelect = $('#pattern-order');
-  const unavailable = trainerMode === 'triplets';
+  const unavailable = trainerMode === 'triplets' || trainerMode === 'kickpoly';
   orderSelect.value = patternOrder;
   orderSelect.disabled = unavailable;
   orderSelect.closest('label').title = unavailable
@@ -1026,6 +1028,7 @@ function regenerateSlot(slot,forbidden = adjacentPatterns(slot)) {
   renderCard(slot);
 }
 function randomizeAll() {
+  if (trainerMode === 'kickpoly') { renderAll(); updatePositions(0); return; }
   const count = activeCardCount();
   if (trainerMode === 'triplets') {
     const sequence = randomTripletMasks(enabledTripletMasks(),count*4,Math.random,currentEmphasis());
@@ -1437,7 +1440,7 @@ function crossMelodyBoundary(previousSlot, nextSlot) {
       updatePatternOrderUI();
     },delay);
     visualTimers.add(timer);
-  } else if ($('#auto-randomize').checked) {
+  } else if ($('#auto-randomize').checked && trainerMode !== 'kickpoly') {
     const visualTime = calibratedVisualTime(nextEventTime,latencyCompensation);
     const delay = Math.max(0, (visualTime-audioContext.currentTime)*1000);
     const timer = setTimeout(() => {
@@ -1502,7 +1505,7 @@ function scheduleEvent() {
     if (recoveryCards[slot]) recoveryExpectedHits.push(expected);
     else expectedPracticeHits.push(expected);
   }
-  const kickVocabulary = (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12') && !recoveryCards[slot];
+  const kickVocabulary = (trainerMode === 'fat' || trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12' || trainerMode === 'kickpoly') && !recoveryCards[slot];
   const fatBeats = trainerMode === 'fat' && !recoveryCards[slot];
   const rideComping = trainerMode === 'ride' && !recoveryCards[slot];
   const fatMix = fatBeatsVelocityProfile(midiOutput
@@ -1514,7 +1517,7 @@ function scheduleEvent() {
   const playbackPlan = trainerPlaybackPlan({
     role,
     step,
-    kickVocabulary,
+    kickVocabulary:kickVocabulary && trainerMode !== 'kickpoly',
     embeddedTimekeeper:kickVocabulary || rideComping,
     drumsEnabled:$('#drums').checked,
     metronomeEnabled:$('#metronome').checked
@@ -1523,6 +1526,9 @@ function scheduleEvent() {
     if (trainerMode === 'ride') scheduleRide(nextEventTime,rideMix.ride);
     else if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
     else scheduleSnare(nextEventTime,velocity);
+  }
+  if (trainerMode === 'kickpoly' && !recoveryCards[slot] && $('#drums').checked && step%3 === 0) {
+    scheduleSnare(nextEventTime,midiOutput ? currentVelocities[1] : activeVelocities.normal);
   }
   if (fatBeats && $('#drums').checked && step%12 === 6) {
     scheduleSnare(nextEventTime,fatMix.snare);
@@ -1568,7 +1574,7 @@ function schedulerTick() {
   }
 }
 async function prepareKickModeSamples(normalVelocity,ghostVelocity,accentVelocity) {
-  if (midiOutput || !['fat','ride','kick','kick2','kick12'].includes(trainerMode)) return;
+  if (midiOutput || !['fat','ride','kick','kick2','kick12','kickpoly'].includes(trainerMode)) return;
   const rideMix = rideCompingVelocityProfile({ ghost:ghostVelocity,normal:normalVelocity,accent:accentVelocity });
   try {
     kickSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.kickCenter });
@@ -1836,7 +1842,7 @@ function attachMidiInput(nextInput) {
   midiInput.onmidimessage = event => {
     const [status,note,velocity = 0] = event.data || [];
     if ((status&0xf0) !== 0x90 || velocity <= 0) return;
-    if (['kick','kick2','kick12'].includes(trainerMode) && [42,44,46].includes(Number(note))) return;
+    if (['kick','kick2','kick12','kickpoly'].includes(trainerMode) && [42,44,46].includes(Number(note))) return;
     const [ghostVelocity,normalVelocity] = velocityValues();
     const accepted = midiPracticeHitAccepted(note,velocity,{
       ignoreFeet:$('#ignore-feet').checked,
@@ -2013,7 +2019,7 @@ extendedSecondSelectors.forEach((select,slot) => select.addEventListener('change
 }));
 $('#trainer-mode').addEventListener('change',event => {
   if (playing) stop();
-  trainerMode = ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12'].includes(event.target.value) ? event.target.value : 'vocabulary';
+  trainerMode = ['vocabulary','extended','fat','triplets','ride','kick','kick2','kick12','kickpoly'].includes(event.target.value) ? event.target.value : 'vocabulary';
   try { localStorage.setItem(TRAINER_MODE_KEY,trainerMode); } catch {}
   updateModeUI();
   generateAll();
