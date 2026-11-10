@@ -1,5 +1,13 @@
 # Shows
 
+## The Durrells (08 NOV 2026 -)
+
+We've forgotten it enough to watch again. Tracey has the books from the older son too. We had planned to visit the home and the set back before the pandemic, but it was cancelled. Really good show, with a great setting and people.
+
+## Secrets of the Blue Zones (04 NOV 2026)
+
+We started watching this series randomly one night. The first zone was in Okinawa, the next in Sardinia, then Loma Linda, California, then Ikaria, Greece, Costa Rica and Singapore. It was like a mystery unravelling and lots of great nuggets of information. But it was the people and places that made it so interesting. We were riveted and binge-watched the whole series in a single sitting! All of the people got incidental exercise from gardening, walking up hills, shepherding, playing pickleball, or whatever. I think none of them explicitly exercised. They all had low-stress lives and environments. Very chill. Even the hard workers would get up early, get everything done, and then take a siesta for the afternoon. They all consumed fewer calories than average people and were mostly vegetarian with lots of beans. Hara hachi bu (moderation). They all had tight social circles (moai) and many of the old people had younger family to take care of them, but none were immobile or had dementia or anything like that. Many drank wine. All had a life's purpose (ikigai) and never stopped moving and doing things.
+
 ## Queen's Gambit (31 JUL 2026 - 02 AUG 2026)
 
 We watched this when it first came out. Excellent show. Tracey's been getting into chess lately, so this is fun to revisit.

@@ -196,6 +196,21 @@ export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount
   };
 }
 
+// Return the start of the target card's current or next occurrence. This lets
+// rolling notation prepare a card only after it has become safely trailing,
+// rather than changing it when playback reaches that card.
+export function nextCardStartEvent(eventNumber,targetSlot,cardSteps,cardCount,repeatCount = 1) {
+  const event = Math.max(0,Math.floor(Number(eventNumber) || 0));
+  const steps = Math.max(1,Math.floor(Number(cardSteps) || 1));
+  const cards = Math.max(1,Math.floor(Number(cardCount) || 1));
+  const repetitions = Math.max(1,Math.min(16,Math.floor(Number(repeatCount) || 1)));
+  const position = trainerEventPosition(event,steps,cards,repetitions);
+  const normalizedTarget = ((Math.floor(Number(targetSlot) || 0)%cards)+cards)%cards;
+  const cardStart = event-position.step-position.repetition*steps;
+  const slotsAhead = (normalizedTarget-position.slot+cards)%cards;
+  return cardStart+slotsAhead*position.eventsPerCard;
+}
+
 export function trainerResumeEventNumber(nextEventNumber,nextEventTime,currentTime,subdivisionSeconds) {
   const nextEvent = Math.max(0,Math.floor(Number(nextEventNumber) || 0));
   const duration = Math.max(.001,Number(subdivisionSeconds) || .001);

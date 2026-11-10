@@ -11,6 +11,7 @@ import {
   expirePracticeTargets,
   fatBeatsVelocityProfile,
   midiPracticeHitAccepted,
+  nextCardStartEvent,
   practiceAccuracy,
   practiceTimingWindowSeconds,
   practiceTimingWindows,
@@ -391,6 +392,24 @@ test('Kick 1 + 2 breaks fall every fourth sounded bar across card loops and repe
       assert.deepEqual(roles.slice(7),bar%4 === 3 ? ['B','B','B','B','B'] : second.slice(1));
     }
   }
+});
+
+test('Kick 1 + 2 prepares each trailing card for its next loop before playback reaches it', () => {
+  assert.deepEqual(
+    [0,1,2].map(slot => nextCardStartEvent(0,slot,12,3,1)),
+    [0,12,24]
+  );
+  assert.equal(nextCardStartEvent(12,0,12,3,1),36);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(12,0,12,3,1),true),true);
+  assert.equal(nextCardStartEvent(24,1,12,3,1),48);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(24,1,12,3,1),true),false);
+  assert.equal(nextCardStartEvent(60,1,12,3,1),84);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(60,1,12,3,1),true),true);
+
+  // Repeated cards occupy more timeline before the next card comes around.
+  assert.equal(nextCardStartEvent(12,0,12,3,2),0);
+  assert.equal(nextCardStartEvent(24,0,12,3,2),72);
+  assert.equal(nextCardStartEvent(24,1,12,3,2),24);
 });
 
 
