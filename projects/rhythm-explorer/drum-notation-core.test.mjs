@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS, classifySingleInstrumentNotation, singleLineDrumKey, singleLineDrumStaveOptions } from './drum-notation-core.js';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, classifySingleInstrumentNotation, renderedTupletBracketCenter, singleLineDrumKey, singleLineDrumStaveOptions, translateDrumNoteStemToX } from './drum-notation-core.js';
 
 test('reduced triplet spellings consume exactly three source slots', () => {
   for (const [mask,spelling] of Object.entries(DRUM_HIDDEN_TRIPLET_SPELLINGS)) {
@@ -12,7 +12,25 @@ test('core vocabulary cells retain the wiki engraving', () => {
   assert.deepEqual(DRUM_HIDDEN_TRIPLET_SPELLINGS['100'].events,[{ step:0,slots:3,duration:'4' }]);
   assert.deepEqual(DRUM_HIDDEN_TRIPLET_SPELLINGS['101'].events,[{ step:0,slots:2,duration:'4' },{ step:2,slots:1,duration:'8' }]);
   assert.equal(DRUM_HIDDEN_TRIPLET_SPELLINGS['010'].extendThroughLastDuration,true);
+  assert.equal(DRUM_HIDDEN_TRIPLET_SPELLINGS['010'].events.at(-1).centerStem,true);
   assert.equal(DRUM_HIDDEN_TRIPLET_SPELLINGS['110'].events.at(-1).rest,true);
+});
+
+test('middle-only triplets align their stem with the rendered bracket center', () => {
+  const attributes = new Map();
+  const element = {
+    getAttribute:name => attributes.get(name) || null,
+    setAttribute:(name,value) => attributes.set(name,value)
+  };
+  const note = { getStemX:() => 201.5,getSVGElement:() => element };
+  assert.equal(translateDrumNoteStemToX(note,187.25),-14.25);
+  assert.equal(attributes.get('transform'),'translate(-14.25 0)');
+
+  const rect = (x,width) => ({
+    tagName:'rect',
+    getAttribute:name => name === 'x' ? String(x) : name === 'width' ? String(width) : null
+  });
+  assert.equal(renderedTupletBracketCenter({ children:[rect(156,21),rect(197,21),rect(156,1),rect(218,1)] }),187.5);
 });
 
 test('single-line notation ignores hidden playback rows', () => {

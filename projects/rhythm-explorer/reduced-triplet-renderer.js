@@ -1,4 +1,4 @@
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS, singleLineDrumKey, singleLineDrumStaveOptions } from './drum-notation-core.js?v=20260908-single-line-2';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, singleLineDrumKey, singleLineDrumStaveOptions, translateDrumNoteStemToX } from './drum-notation-core.js?v=20261111-middle-stem-3';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const GLYPH_CENTER_OFFSETS = Object.freeze({
@@ -145,6 +145,11 @@ export function renderReducedTripletSequence({
   });
 
   cells.flatMap((cell) => cell.notes).forEach((note) => note.draw());
+  cells.forEach((cell) => cell.notes.forEach((note) => {
+    if (!note.reducedTripletEvent.centerStem) return;
+    const targetX = cell.geometry.slotCenters[note.reducedTripletEvent.step];
+    translateDrumNoteStemToX(note,targetX);
+  }));
   cells.forEach((cell) => cell.beam?.setContext(context).draw());
   const svg = [...target.querySelectorAll('svg')].at(-1);
   const repeatLabel = appendRepeatCount(svg,repeatCount,width-12,staveY+4);

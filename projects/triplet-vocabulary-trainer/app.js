@@ -1,6 +1,6 @@
 import { DrumSampleLibrary, pushOrderedVelocities } from '../rhythm-explorer/drum-sample-kit.js?v=20261005-metadata-no-store-1';
-import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote } from '../rhythm-explorer/drum-notation-core.js?v=20260908-single-line-2';
-import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20261010-multi-measure-1';
+import { DRUM_HIDDEN_TRIPLET_SPELLINGS, addDrumStepElement, renderedDrumStems, renderedStemForNote, renderedTupletBracketCenter, translateDrumNoteStemToX } from '../rhythm-explorer/drum-notation-core.js?v=20261111-middle-stem-3';
+import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet-renderer.js?v=20261111-middle-stem-3';
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
@@ -663,6 +663,7 @@ function renderKickCard(slot,target,width,{
       note.trainerSlots = event.slots;
       note.trainerCount = event.rest ? '' : tripletCountForStep(step);
       note.trainerHidden = fatBeats && event.rest;
+      note.trainerCenterStem = Boolean(event.centerStem);
       if (patternSnare) {
         note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.BELOW),0);
         note.trainerPatternAccent = true;
@@ -742,9 +743,17 @@ function renderKickCard(slot,target,width,{
   positionKick2SnareAccents(renderedSvg,patternNotes);
   patternGroups.forEach(group => {
     if (!group.tuplet) return;
-    if (typeof context.openGroup === 'function') context.openGroup('tuplet');
+    const groupCount = renderedSvg.querySelectorAll('.vf-tuplet').length;
+    const openedGroup = typeof context.openGroup === 'function' ? context.openGroup('tuplet') : null;
     group.tuplet.setContext(context).draw();
     if (typeof context.closeGroup === 'function') context.closeGroup();
+    const renderedGroup = renderedSvg.querySelectorAll('.vf-tuplet')[groupCount] || openedGroup;
+    const centerX = renderedTupletBracketCenter(renderedGroup);
+    if (Number.isFinite(centerX)) {
+      group.notes.filter(note => note.trainerCenterStem).forEach(note => {
+        translateDrumNoteStemToX(note,centerX);
+      });
+    }
   });
   if ($('#show-counting').checked) {
     const svg = renderedSvg;

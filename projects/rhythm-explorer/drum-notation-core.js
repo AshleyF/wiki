@@ -1,7 +1,7 @@
 export const DRUM_HIDDEN_TRIPLET_SPELLINGS = Object.freeze({
   '000': { tuplet:false, events:[{ rest:true, step:0, slots:3, duration:'4' }] },
   '001': { tuplet:true, events:[{ rest:true, step:0, slots:2, duration:'4' }, { step:2, slots:1, duration:'8' }] },
-  '010': { tuplet:true, extendThroughLastDuration:true, events:[{ rest:true, step:0, slots:1, duration:'8' }, { step:1, slots:2, duration:'4' }] },
+  '010': { tuplet:true, extendThroughLastDuration:true, events:[{ rest:true, step:0, slots:1, duration:'8' }, { step:1, slots:2, duration:'4', centerStem:true }] },
   '011': { tuplet:true, events:[{ rest:true, step:0, slots:1, duration:'8' }, { step:1, slots:1, duration:'8' }, { step:2, slots:1, duration:'8' }] },
   '100': { tuplet:false, events:[{ step:0, slots:3, duration:'4' }] },
   '101': { tuplet:true, events:[{ step:0, slots:2, duration:'4' }, { step:2, slots:1, duration:'8' }] },
@@ -38,6 +38,27 @@ export function singleLineDrumKey(sticking = '.', notehead = '') {
 export function addDrumStepElement(stepElements, step, element) {
   if (!element || !stepElements[step] || stepElements[step].includes(element)) return;
   stepElements[step].push(element);
+}
+
+export function translateDrumNoteStemToX(note, targetX) {
+  const stemX = Number(note?.getStemX?.());
+  const desiredX = Number(targetX);
+  const element = note?.getSVGElement?.();
+  const shift = desiredX-stemX;
+  if (!element || !Number.isFinite(shift) || Math.abs(shift) < .01) return 0;
+  const transform = element.getAttribute('transform');
+  element.setAttribute('transform',`${transform ? `${transform} ` : ''}translate(${shift} 0)`);
+  return shift;
+}
+
+export function renderedTupletBracketCenter(group) {
+  const rects = [...(group?.children || [])].filter(element => element.tagName.toLowerCase() === 'rect');
+  const extents = rects.flatMap((rect) => {
+    const x = Number(rect.getAttribute('x'));
+    const width = Number(rect.getAttribute('width'));
+    return Number.isFinite(x) && Number.isFinite(width) ? [x,x+width] : [];
+  });
+  return extents.length ? (Math.min(...extents)+Math.max(...extents))/2 : null;
 }
 
 export function renderedDrumStems(target, stemUp = 1, stemDown = -1) {
