@@ -374,22 +374,23 @@ test('card auditions queue in click order and cap the sequence at three patterns
 });
 
 
-test('Kick 1 + 2 breaks fall every fourth sounded bar across card loops and repetitions', () => {
+test('Kick 1 + 2 breaks fall on every fourth generated card without changing between repeats', () => {
   for (const repeats of [1,2,3,4,16]) {
-    for (let bar=0;bar<24;bar++) {
-      const event = bar*12;
+    for (let card=0;card<24;card++) {
+      const event = card*12*repeats;
       const position = trainerEventPosition(event,12,3,repeats);
       assert.equal(position.step,0);
-      assert.equal(kickVocabularyBreakBar(event,true),bar%4 === 3);
-      assert.equal(kickVocabularyBreakBar(event+11,true),bar%4 === 3);
-      assert.equal(kickVocabularyBreakBar(event,false),false);
+      assert.equal(position.repetition,0);
+      assert.equal(kickVocabularyBreakBar(event,true,repeats),card%4 === 3);
+      assert.equal(kickVocabularyBreakBar(event+12*repeats-1,true,repeats),card%4 === 3);
+      assert.equal(kickVocabularyBreakBar(event,false,repeats),false);
       const first = ['A','B','A','A','B','B'];
       const second = ['A','A','B','A','B','A'];
-      const roles = kickVocabularyBreakBar(event,true)
+      const roles = kickVocabularyBreakBar(event,true,repeats)
         ? rolesForKickVocabulary(first) : rolesForKickVocabulary12(first,second);
       assert.deepEqual(roles.slice(0,6),first);
       assert.equal(roles[6],'S');
-      assert.deepEqual(roles.slice(7),bar%4 === 3 ? ['B','B','B','B','B'] : second.slice(1));
+      assert.deepEqual(roles.slice(7),card%4 === 3 ? ['B','B','B','B','B'] : second.slice(1));
     }
   }
 });
@@ -400,16 +401,38 @@ test('Kick 1 + 2 prepares each trailing card for its next loop before playback r
     [0,12,24]
   );
   assert.equal(nextCardStartEvent(12,0,12,3,1),36);
-  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(12,0,12,3,1),true),true);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(12,0,12,3,1),true,1),true);
   assert.equal(nextCardStartEvent(24,1,12,3,1),48);
-  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(24,1,12,3,1),true),false);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(24,1,12,3,1),true,1),false);
   assert.equal(nextCardStartEvent(60,1,12,3,1),84);
-  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(60,1,12,3,1),true),true);
+  assert.equal(kickVocabularyBreakBar(nextCardStartEvent(60,1,12,3,1),true,1),true);
 
-  // Repeated cards occupy more timeline before the next card comes around.
+  // Repeated cards occupy more timeline before the next card comes around,
+  // but their break state stays fixed for every pass of that card.
   assert.equal(nextCardStartEvent(12,0,12,3,2),0);
   assert.equal(nextCardStartEvent(24,0,12,3,2),72);
   assert.equal(nextCardStartEvent(24,1,12,3,2),24);
+  assert.equal(kickVocabularyBreakBar(36,true,2),false);
+  assert.equal(kickVocabularyBreakBar(72,true,2),true);
+  assert.equal(kickVocabularyBreakBar(95,true,2),true);
+
+  const rollingBreaks = [false,false,false];
+  const states = [];
+  for (let generatedCard=1;generatedCard<=5;generatedCard++) {
+    const event = generatedCard*24;
+    const currentSlot = generatedCard%3;
+    const completedSlot = (currentSlot+2)%3;
+    const nextStart = nextCardStartEvent(event,completedSlot,12,3,2);
+    rollingBreaks[completedSlot] = kickVocabularyBreakBar(nextStart,true,2);
+    states.push([...rollingBreaks]);
+  }
+  assert.deepEqual(states,[
+    [true,false,false], // Card 1 trails and previews generated bar 4: the break.
+    [true,false,false],
+    [true,false,false], // The break is stable when playback reaches it.
+    [false,false,false], // It becomes an ordinary future card only after leaving it.
+    [false,true,false] // The next break advances to the next rolling slot.
+  ]);
 });
 
 

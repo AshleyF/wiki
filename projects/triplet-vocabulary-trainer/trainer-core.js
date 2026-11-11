@@ -124,9 +124,12 @@ export function rolesForKickVocabulary2(melody) {
   return ['K','B','B','B','B','B','S',...melody.slice(1)];
 }
 
-// Count sounded bars, including repetitions, independently of the three-card loop.
-export function kickVocabularyBreakBar(eventNumber,enabled) {
-  return Boolean(enabled) && Math.floor(Math.max(0,eventNumber)/12)%4 === 3;
+// Count generated cards independently of the three visible slots. Repeating a
+// card must not make its notation change between passes: all repetitions are
+// the same bar, and every fourth newly generated bar is the break.
+export function kickVocabularyBreakBar(eventNumber,enabled,repeatCount = 1) {
+  const repetitions = Math.max(1,Math.min(16,Math.floor(Number(repeatCount) || 1)));
+  return Boolean(enabled) && Math.floor(Math.max(0,eventNumber)/(12*repetitions))%4 === 3;
 }
 
 // Three evenly spaced kicks against two quarter-note snare beats, twice per bar.

@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261110-kick-break-roll-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261110-kick-break-cards-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -476,7 +476,7 @@ function kickBreakForSlotOccurrence(referenceEvent,slot) {
     activeCardCount(),
     repeatCount()
   );
-  return kickVocabularyBreakBar(occurrenceStart,$('#kick-break').checked);
+  return kickVocabularyBreakBar(occurrenceStart,$('#kick-break').checked,repeatCount());
 }
 function initializeKickBreakCards(referenceEvent) {
   if (trainerMode !== 'kick12') return;
@@ -1512,16 +1512,6 @@ function scheduleEvent() {
     : position.slot;
   if (playbackScope === 'session' && position.cardBoundary) {
     crossMelodyBoundary((slot+cardCount-1)%cardCount,slot);
-  }
-  // A card entering from another slot was prepared when it last became the
-  // trailing card. Repetitions stay on the same card, so their per-bar break
-  // state can only be changed at the repeat boundary itself.
-  if (step === 0 && position.repetition > 0 && trainerMode === 'kick12') {
-    const breakBar = kickVocabularyBreakBar(eventNumber,$('#kick-break').checked);
-    if (kickBreakCards[slot] !== breakBar) {
-      kickBreakCards[slot] = breakBar;
-      queueCardRender(slot,nextEventTime);
-    }
   }
   const role = selectedPattern(slot)[step];
   const currentVelocities = velocityValues();
