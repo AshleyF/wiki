@@ -199,6 +199,16 @@ export function trainerEventPosition(eventNumber,cardSteps,cardCount,repeatCount
   };
 }
 
+export function vanishCoveredSteps({ currentSlot,currentStep,targetSlot,cardSteps,cardCount,leadSteps }) {
+  const steps = Math.max(1,Math.floor(Number(cardSteps) || 1));
+  const cards = Math.max(1,Math.floor(Number(cardCount) || 1));
+  const activeSlot = ((Math.floor(Number(currentSlot) || 0)%cards)+cards)%cards;
+  const slot = ((Math.floor(Number(targetSlot) || 0)%cards)+cards)%cards;
+  const slotOffset = (slot-activeSlot+cards)%cards;
+  const cutoff = Math.floor(Number(currentStep) || 0)+1+Math.max(1,Math.floor(Number(leadSteps) || 1));
+  return Math.max(0,Math.min(steps,cutoff-slotOffset*steps));
+}
+
 // Return the start of the target card's current or next occurrence. This lets
 // rolling notation prepare a card only after it has become safely trailing,
 // rather than changing it when playback reaches that card.

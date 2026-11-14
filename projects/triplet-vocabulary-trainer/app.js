@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue } from './trainer-core.js?v=20261110-kick-break-cards-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue, vanishCoveredSteps } from './trainer-core.js?v=20261113-vanish-2';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -32,6 +32,8 @@ const RIDE_INTRO_PATTERN_KEY = 'triplet-vocabulary-ride-intro-pattern';
 const LEGACY_RIDE_QUARTER_INTRO_KEY = 'triplet-vocabulary-ride-quarter-intro';
 const SHOW_COUNTING_KEY = 'triplet-vocabulary-show-counting';
 const FOLLOW_HIGHLIGHTING_KEY = 'triplet-vocabulary-follow-highlighting';
+const VANISH_NOTATION_KEY = 'triplet-vocabulary-vanish-notation';
+const VANISH_LEAD_KEY = 'triplet-vocabulary-vanish-lead';
 const REPEAT_PATTERN_KEY = 'triplet-vocabulary-repeat-pattern';
 const IGNORE_FEET_KEY = 'triplet-vocabulary-ignore-feet';
 const IGNORE_GHOSTS_KEY = 'triplet-vocabulary-ignore-ghosts';
@@ -73,6 +75,7 @@ let auditionEndTimer = null;
 let scheduler = null;
 let nextEventTime = 0;
 let eventNumber = 0;
+let lastVanishPosition = null;
 let activeSlot = 0;
 let queuedRandomize = false;
 let activeVelocities = { ghost:DEFAULT_VELOCITIES[0],normal:DEFAULT_VELOCITIES[1],accent:DEFAULT_VELOCITIES[2] };
@@ -448,9 +451,24 @@ function loadRideIntroPattern() {
     return 'none';
   }
 }
+function vanishLead() {
+  return Math.max(1,Math.min(12,Math.floor(Number($('#vanish-lead').value) || 1)));
+}
+function syncVanishControls() {
+  const lead = vanishLead();
+  $('#vanish-lead').disabled = !$('#vanish-notation').checked;
+  $('#vanish-lead-output').textContent = `${lead} ${lead === 1 ? 'note' : 'notes'}`;
+}
 function initializeDisplayOptions() {
   $('#show-counting').checked = loadBooleanPreference(SHOW_COUNTING_KEY,false);
   $('#follow-highlighting').checked = loadBooleanPreference(FOLLOW_HIGHLIGHTING_KEY);
+  $('#vanish-notation').checked = loadBooleanPreference(VANISH_NOTATION_KEY,false);
+  try {
+    $('#vanish-lead').value = String(Math.max(1,Math.min(12,Math.floor(Number(localStorage.getItem(VANISH_LEAD_KEY)) || 1))));
+  } catch {
+    $('#vanish-lead').value = '1';
+  }
+  syncVanishControls();
   try {
     const saved = localStorage.getItem(REPEAT_PATTERN_KEY);
     $('#repeat-count').value = saved === 'true' ? '2' : saved === 'false' || saved === null ? '1' : String(Math.max(1,Math.min(16,Number(saved) || 1)));
@@ -538,6 +556,66 @@ function tripletCountForStep(step) {
 }
 function setStatus(message) { $('#status').textContent = message; }
 function vexflow() { return window.Vex?.Flow || window.VexFlow; }
+let vanishGradientId = 0;
+function createVanishSegment(svg,{ left,right,stepCount,startStep = 0 }) {
+  if (!svg || !Number.isFinite(left) || !Number.isFinite(right) || right <= left) return null;
+  const namespace = 'http://www.w3.org/2000/svg';
+  const gradientId = `vanish-gradient-${++vanishGradientId}`;
+  const defs = document.createElementNS(namespace,'defs');
+  const gradient = document.createElementNS(namespace,'linearGradient');
+  gradient.id = gradientId;
+  gradient.setAttribute('x1','0');
+  gradient.setAttribute('x2','1');
+  gradient.setAttribute('y1','0');
+  gradient.setAttribute('y2','0');
+  const opaque = document.createElementNS(namespace,'stop');
+  opaque.setAttribute('offset','0');
+  opaque.setAttribute('stop-opacity','1');
+  opaque.classList.add('vanish-curtain-stop');
+  const transparent = document.createElementNS(namespace,'stop');
+  transparent.setAttribute('offset','1');
+  transparent.setAttribute('stop-opacity','0');
+  transparent.classList.add('vanish-curtain-stop');
+  gradient.append(opaque,transparent);
+  defs.append(gradient);
+  const group = document.createElementNS(namespace,'g');
+  group.classList.add('vanish-curtain');
+  group.style.display = 'none';
+  const solid = document.createElementNS(namespace,'rect');
+  solid.classList.add('vanish-curtain-solid');
+  const fade = document.createElementNS(namespace,'rect');
+  fade.setAttribute('fill',`url(#${gradientId})`);
+  const height = svg.getAttribute('height') || '100%';
+  [solid,fade].forEach(rect => {
+    rect.setAttribute('y','0');
+    rect.setAttribute('height',height);
+  });
+  group.append(solid,fade);
+  svg.prepend(defs);
+  svg.append(group);
+  return {
+    group,solid,fade,
+    gridLeft:left,
+    gridRight:right,
+    coverLeft:0,
+    coverRight:Number(svg.getAttribute('width')) || right,
+    stepCount,
+    startStep,
+    boundary:null,
+    animationFrame:null
+  };
+}
+function kickVanishBounds(notes,width) {
+  const anchors = notes.map(note => note.getAbsoluteX?.()).filter(Number.isFinite);
+  if (!anchors.length) return { left:24,right:width-18 };
+  const leftAnchor = Math.min(...anchors);
+  const rightAnchor = Math.max(...anchors);
+  const approximateStep = Math.max(8,(rightAnchor-leftAnchor)/9);
+  return {
+    left:Math.max(8,leftAnchor-approximateStep/2),
+    right:Math.min(width-8,rightAnchor+approximateStep*2.5)
+  };
+}
 function sampleKitLabel(definition) {
   return [definition.drum.manufacturer,definition.drum.model,definition.name !== 'center' ? definition.name : ''].filter(Boolean).join(' ');
 }
@@ -788,10 +866,12 @@ function renderKickCard(slot,target,width,{
       coveredSteps.forEach(step => addDrumStepElement(stepElements,step,stem));
     }
   });
+  const bounds = kickVanishBounds(grooveNotes,width);
   return {
     stepElements,
     repeatBarlineElements:[...(renderedSvg?.querySelectorAll('.vf-stavebarline') || [])].slice(-1),
-    repeatLabel
+    repeatLabel,
+    vanishSegment:createVanishSegment(renderedSvg,{ ...bounds,stepCount:roles.length })
   };
 }
 function renderReducedCardMeasure(target,width,masks,{
@@ -841,13 +921,19 @@ function renderReducedCardMeasure(target,width,masks,{
   return {
     stepElements,
     repeatBarlineElements:rendered.repeatBarlineElements,
-    repeatLabel:rendered.repeatLabel
+    repeatLabel:rendered.repeatLabel,
+    vanishSegment:createVanishSegment(renderedSvg,{
+      left:gridLeft,
+      right:gridLeft+gridWidth,
+      stepCount
+    })
   };
 }
 function renderCard(slot) {
   const VF = vexflow();
   const target = cards[slot].querySelector('.notation');
   target.replaceChildren();
+  cards[slot].vanishSegments = [];
   if (!VF) { target.textContent = 'Notation could not load.'; return; }
   const width = Math.max(290, Math.floor(target.clientWidth || 360));
   if (trainerMode === 'fat') {
@@ -857,6 +943,7 @@ function renderCard(slot) {
       cards[slot].stepElements = rendered.stepElements;
       cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
       cards[slot].repeatLabel = rendered.repeatLabel;
+      cards[slot].vanishSegments = [rendered.vanishSegment].filter(Boolean);
       return;
     }
     const firstMeasure = renderKickCard(slot,target,width,{
@@ -874,6 +961,8 @@ function renderCard(slot) {
     cards[slot].stepElements = [...firstMeasure.stepElements,...secondMeasure.stepElements];
     cards[slot].repeatBarlineElements = secondMeasure.repeatBarlineElements;
     cards[slot].repeatLabel = secondMeasure.repeatLabel;
+    if (secondMeasure.vanishSegment) secondMeasure.vanishSegment.startStep = firstMeasure.stepElements.length;
+    cards[slot].vanishSegments = [firstMeasure.vanishSegment,secondMeasure.vanishSegment].filter(Boolean);
     return;
   }
   if (trainerMode === 'kick' || trainerMode === 'kick2' || trainerMode === 'kick12' || trainerMode === 'kickpoly') {
@@ -881,6 +970,7 @@ function renderCard(slot) {
     cards[slot].stepElements = rendered.stepElements;
     cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
     cards[slot].repeatLabel = rendered.repeatLabel;
+    cards[slot].vanishSegments = [rendered.vanishSegment].filter(Boolean);
     return;
   }
   if (trainerMode === 'ride') {
@@ -893,6 +983,7 @@ function renderCard(slot) {
       cards[slot].stepElements = rendered.stepElements;
       cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
       cards[slot].repeatLabel = rendered.repeatLabel;
+      cards[slot].vanishSegments = [rendered.vanishSegment].filter(Boolean);
       return;
     }
     const firstMeasure = renderReducedCardMeasure(target,width,masks.slice(0,4),{
@@ -905,6 +996,8 @@ function renderCard(slot) {
     cards[slot].stepElements = [...firstMeasure.stepElements,...secondMeasure.stepElements];
     cards[slot].repeatBarlineElements = secondMeasure.repeatBarlineElements;
     cards[slot].repeatLabel = secondMeasure.repeatLabel;
+    if (secondMeasure.vanishSegment) secondMeasure.vanishSegment.startStep = firstMeasure.stepElements.length;
+    cards[slot].vanishSegments = [firstMeasure.vanishSegment,secondMeasure.vanishSegment].filter(Boolean);
     return;
   }
   const masks = selectedMasks(slot);
@@ -918,6 +1011,7 @@ function renderCard(slot) {
   cards[slot].stepElements = rendered.stepElements;
   cards[slot].repeatBarlineElements = rendered.repeatBarlineElements;
   cards[slot].repeatLabel = rendered.repeatLabel;
+  cards[slot].vanishSegments = [rendered.vanishSegment].filter(Boolean);
 }
 function renderAll() {
   cards.forEach((card,slot) => {
@@ -927,9 +1021,90 @@ function renderAll() {
       card.stepElements = [];
       card.repeatBarlineElements = [];
       card.repeatLabel = null;
+      card.vanishSegments = [];
     }
   });
   updatePositions(activeSlot);
+  if (lastVanishPosition) updateVanishCurtains(lastVanishPosition.slot,lastVanishPosition.step);
+}
+function paintVanishBoundary(segment,boundary) {
+  const stepWidth = (segment.gridRight-segment.gridLeft)/segment.stepCount;
+  const fadeWidth = Math.min(32,stepWidth*.65,Math.max(0,boundary-segment.coverLeft));
+  const solidWidth = Math.max(0,boundary-fadeWidth-segment.coverLeft);
+  segment.solid.setAttribute('x',String(segment.coverLeft));
+  segment.solid.setAttribute('width',String(solidWidth));
+  segment.fade.setAttribute('x',String(segment.coverLeft+solidWidth));
+  segment.fade.setAttribute('width',String(fadeWidth));
+  segment.boundary = boundary;
+}
+function animateVanishBoundary(segment,targetBoundary) {
+  if (segment.animationFrame !== null) cancelAnimationFrame(segment.animationFrame);
+  if (!Number.isFinite(segment.boundary)) {
+    paintVanishBoundary(segment,targetBoundary);
+    return;
+  }
+  const startBoundary = segment.boundary;
+  const startTime = performance.now();
+  const duration = Math.max(50,eventDuration()*900);
+  const tick = now => {
+    const progress = Math.min(1,(now-startTime)/duration);
+    paintVanishBoundary(segment,startBoundary+(targetBoundary-startBoundary)*progress);
+    if (progress < 1) segment.animationFrame = requestAnimationFrame(tick);
+    else segment.animationFrame = null;
+  };
+  segment.animationFrame = requestAnimationFrame(tick);
+}
+function updateVanishSegment(segment,coveredSteps,animate = false) {
+  const localCoverage = Math.max(0,Math.min(segment.stepCount,coveredSteps-segment.startStep));
+  if (!$('#vanish-notation').checked || localCoverage <= 0) {
+    if (segment.animationFrame !== null) cancelAnimationFrame(segment.animationFrame);
+    segment.animationFrame = null;
+    segment.boundary = segment.coverLeft;
+    segment.group.style.display = 'none';
+    return;
+  }
+  const totalWidth = segment.gridRight-segment.gridLeft;
+  const stepWidth = totalWidth/segment.stepCount;
+  const fadeWidth = Math.min(32,stepWidth*.65);
+  const targetBoundary = localCoverage >= segment.stepCount
+    ? segment.coverRight+fadeWidth
+    : Math.min(
+      segment.coverRight+fadeWidth,
+      segment.gridLeft+totalWidth*(localCoverage/segment.stepCount)+stepWidth*.35+fadeWidth
+    );
+  segment.group.style.display = '';
+  if (animate) animateVanishBoundary(segment,targetBoundary);
+  else paintVanishBoundary(segment,targetBoundary);
+}
+function clearVanishCurtains(forgetPosition = true) {
+  cards.forEach(card => card.vanishSegments?.forEach(segment => {
+    if (segment.animationFrame !== null) cancelAnimationFrame(segment.animationFrame);
+    segment.animationFrame = null;
+    segment.boundary = null;
+    segment.group.style.display = 'none';
+  }));
+  if (forgetPosition) lastVanishPosition = null;
+}
+function updateVanishCurtains(slot,step,animate = false) {
+  lastVanishPosition = { slot,step };
+  if (!$('#vanish-notation').checked) {
+    clearVanishCurtains(false);
+    return;
+  }
+  const cardSteps = stepsPerCard();
+  const cardCount = activeCardCount();
+  cards.forEach((card,targetSlot) => {
+    if (targetSlot >= cardCount) return;
+    const coveredSteps = vanishCoveredSteps({
+      currentSlot:slot,
+      currentStep:step,
+      targetSlot,
+      cardSteps,
+      cardCount,
+      leadSteps:vanishLead()
+    });
+    card.vanishSegments?.forEach(segment => updateVanishSegment(segment,coveredSteps,animate));
+  });
 }
 function updateModeUI() {
   document.body.dataset.trainerMode = trainerMode;
@@ -1398,6 +1573,7 @@ function scheduleSnare(time, velocity) {
   }
 }
 function clearNotationHighlights() {
+  clearVanishCurtains();
   cards.forEach(card => {
     card.stepElements?.flat().forEach(element => element?.classList.remove('drum-current-note'));
     card.repeatBarlineElements?.forEach(element => element?.classList.remove('drum-current-note'));
@@ -1446,6 +1622,7 @@ function showStep(slot, step, time, repetition) {
     if ($('#follow-highlighting').checked) {
       cards[slot].stepElements?.[step]?.forEach(element => element.classList.add('drum-current-note'));
     }
+    updateVanishCurtains(slot,step,true);
   }, delay);
   visualTimers.add(timer);
 }
@@ -2141,6 +2318,20 @@ $('#follow-highlighting').addEventListener('change', event => {
   if (!event.target.checked) {
     clearNotationHighlights();
   }
+});
+$('#vanish-notation').addEventListener('change',event => {
+  try { localStorage.setItem(VANISH_NOTATION_KEY,String(event.target.checked)); } catch {}
+  syncVanishControls();
+  if (event.target.checked && lastVanishPosition) {
+    updateVanishCurtains(lastVanishPosition.slot,lastVanishPosition.step);
+  } else {
+    clearVanishCurtains(false);
+  }
+});
+$('#vanish-lead').addEventListener('input',event => {
+  try { localStorage.setItem(VANISH_LEAD_KEY,String(vanishLead())); } catch {}
+  syncVanishControls();
+  if (lastVanishPosition) updateVanishCurtains(lastVanishPosition.slot,lastVanishPosition.step);
 });
 $('#repeat-count').addEventListener('change',event => {
   try { localStorage.setItem(REPEAT_PATTERN_KEY,String(repeatCount())); } catch {}

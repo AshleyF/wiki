@@ -40,7 +40,8 @@ import {
   trainerPlaybackPlan,
   choosePatternAvoiding,
   tripletMasksForRoles,
-  updateAuditionQueue
+  updateAuditionQueue,
+  vanishCoveredSteps
 } from './trainer-core.js';
 
 test('extended vocabulary builds each four-triplet bar from its two pattern groups', () => {
@@ -207,6 +208,15 @@ test('repeat count traverses each card the requested number of times before adva
   assert.deepEqual(trainerEventPosition(95,6,3,16),{
     step:5,slot:0,repetition:15,cardBoundary:false,eventsPerCard:96
   });
+});
+
+test('vanishing curtain covers the current card and crosses into the next card by its lead', () => {
+  const base = { currentSlot:1,cardSteps:12,cardCount:3 };
+  assert.equal(vanishCoveredSteps({ ...base,currentStep:4,targetSlot:1,leadSteps:1 }),6);
+  assert.equal(vanishCoveredSteps({ ...base,currentStep:4,targetSlot:2,leadSteps:1 }),0);
+  assert.equal(vanishCoveredSteps({ ...base,currentStep:11,targetSlot:1,leadSteps:3 }),12);
+  assert.equal(vanishCoveredSteps({ ...base,currentStep:11,targetSlot:2,leadSteps:3 }),3);
+  assert.equal(vanishCoveredSteps({ ...base,currentStep:11,targetSlot:0,leadSteps:3 }),0);
 });
 
 test('pausing resumes at the first event that has not sounded', () => {
