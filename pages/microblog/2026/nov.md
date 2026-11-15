@@ -82,3 +82,6 @@ Went to lunch with Calvin at HuHut. Great food and less expensive than Denny's o
 
 ## 14 NOV 2026 Sat - Mom's BDay
 
+I went out to my parent's place this afternoon and gave my mom a few presents for her birthday. She liked them. Even the antique we found that wasn't on her list.
+
+Tracey and I watched The Cleaner. Samual L. Jackson, Ed Harris, and Eva Mendes. Pretty good. Tracey's super tired from not really sleeping last night. She fell asleap for a few minutes...

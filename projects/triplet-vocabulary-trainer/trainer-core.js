@@ -10,6 +10,17 @@ export const EXTENDED_PATTERNS = Object.freeze([
   Object.freeze(['R','B','A','B','B','A']),
   Object.freeze(['R','B','A','A','B','A'])
 ]);
+
+export function formatPracticeDuration(milliseconds) {
+  const totalSeconds = Math.max(0,Math.floor((Number(milliseconds) || 0)/1000));
+  const seconds = totalSeconds%60;
+  const totalMinutes = Math.floor(totalSeconds/60);
+  if (totalMinutes < 60) return `${totalMinutes}:${String(seconds).padStart(2,'0')}`;
+  const hours = Math.floor(totalMinutes/60);
+  const minutes = totalMinutes%60;
+  return `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+}
+
 export function randomChoiceWithEmphasis(choices,emphasized = null,random = Math.random) {
   if (!choices.length) throw new Error('At least one choice must be enabled.');
   if (!choices.includes(emphasized) || choices.length === 1) {

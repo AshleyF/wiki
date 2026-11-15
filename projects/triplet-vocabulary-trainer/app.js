@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue, vanishCoveredSteps } from './trainer-core.js?v=20261113-vanish-2';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, formatPracticeDuration, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue, vanishCoveredSteps } from './trainer-core.js?v=20261114-session-timer-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -104,7 +104,33 @@ let patternPaint = null;
 let suppressPatternClick = false;
 let systematicPatternIndex = 0;
 let pausedSessionEventNumber = null;
+let sessionElapsedMilliseconds = 0;
+let sessionStartedAt = null;
+let sessionTimer = null;
 const screenWakeLock = createScreenWakeLock();
+
+function currentSessionElapsedMilliseconds() {
+  return sessionElapsedMilliseconds+(sessionStartedAt === null ? 0 : performance.now()-sessionStartedAt);
+}
+function updateSessionTime() {
+  $('#session-time').textContent = formatPracticeDuration(currentSessionElapsedMilliseconds());
+}
+function runSessionTimer({ reset = false } = {}) {
+  if (reset) sessionElapsedMilliseconds = 0;
+  if (sessionStartedAt === null) sessionStartedAt = performance.now();
+  clearInterval(sessionTimer);
+  sessionTimer = setInterval(updateSessionTime,250);
+  updateSessionTime();
+}
+function pauseSessionTimer() {
+  if (sessionStartedAt !== null) {
+    sessionElapsedMilliseconds += performance.now()-sessionStartedAt;
+    sessionStartedAt = null;
+  }
+  clearInterval(sessionTimer);
+  sessionTimer = null;
+  updateSessionTime();
+}
 
 function loadLatencyCompensation() {
   try {
@@ -1910,6 +1936,7 @@ async function start({ tapMode = false } = {}) {
     initializeKickBreakCards(eventNumber);
     pausedSessionEventNumber = null;
     playing = true; playbackScope = 'session'; auditionSlot = null; auditionQueue = []; countInBeat = 0; countInBeatsRemaining = resuming ? 0 : (withMetronome ? 4 : 0); nextEventTime = audioContext.currentTime+.08;
+    runSessionTimer({ reset:!resuming });
     void screenWakeLock.setActive(true);
     setTransportState('pause'); updatePositions(activeSlot); setStatus('');
     scheduler = setInterval(schedulerTick, 25); schedulerTick();
@@ -1987,6 +2014,7 @@ function finishAudition() {
   setCardAuditionState();
 }
 function stop() {
+  pauseSessionTimer();
   playing = false; clearInterval(scheduler); scheduler = null;
   clearTimeout(auditionEndTimer); auditionEndTimer = null;
   playbackScope = null;
@@ -2011,6 +2039,7 @@ function stop() {
 
 function pauseSession() {
   if (!playing || playbackScope !== 'session') return;
+  pauseSessionTimer();
   pausedSessionEventNumber = trainerResumeEventNumber(
     eventNumber,
     nextEventTime,

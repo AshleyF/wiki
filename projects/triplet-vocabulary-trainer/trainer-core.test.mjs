@@ -10,6 +10,7 @@ import {
   expirePracticeHits,
   expirePracticeTargets,
   fatBeatsVelocityProfile,
+  formatPracticeDuration,
   midiPracticeHitAccepted,
   nextCardStartEvent,
   practiceAccuracy,
@@ -43,6 +44,14 @@ import {
   updateAuditionQueue,
   vanishCoveredSteps
 } from './trainer-core.js';
+
+test('practice duration uses a compact clock and adds hours when needed',() => {
+  assert.equal(formatPracticeDuration(0),'0:00');
+  assert.equal(formatPracticeDuration(61_000),'1:01');
+  assert.equal(formatPracticeDuration(3_599_999),'59:59');
+  assert.equal(formatPracticeDuration(3_600_000),'1:00:00');
+  assert.equal(formatPracticeDuration(27_906_000),'7:45:06');
+});
 
 test('extended vocabulary builds each four-triplet bar from its two pattern groups', () => {
   assert.deepEqual(EXTENDED_PATTERNS.map(pattern => pattern.join('')),[

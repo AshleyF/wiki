@@ -1,5 +1,9 @@
 # Movies
 
+## The Cleaner (14 NOV 2026)
+
+Samual L. Jackson, Ed Harris, and Eva Mendes. Pretty good. A decent little murder mystery. Somewhat predictable though. We both guessed the killer early on.
+
 ## Mutiny (07 NOV 2026)
 
 It's not too bad. Jason Statham doing his normal thing. Pretty predictable and shallow, but a decent pure action movie.
