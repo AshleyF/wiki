@@ -21,6 +21,10 @@ export function formatPracticeDuration(milliseconds) {
   return `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
 }
 
+export function usesMidTomVocabularyMelody(mode,role) {
+  return (mode === 'vocabulary' || mode === 'extended') && role === 'A';
+}
+
 export function randomChoiceWithEmphasis(choices,emphasized = null,random = Math.random) {
   if (!choices.length) throw new Error('At least one choice must be enabled.');
   if (!choices.includes(emphasized) || choices.length === 1) {

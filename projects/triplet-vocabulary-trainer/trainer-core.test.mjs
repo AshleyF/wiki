@@ -42,6 +42,7 @@ import {
   choosePatternAvoiding,
   tripletMasksForRoles,
   updateAuditionQueue,
+  usesMidTomVocabularyMelody,
   vanishCoveredSteps
 } from './trainer-core.js';
 
@@ -51,6 +52,14 @@ test('practice duration uses a compact clock and adds hours when needed',() => {
   assert.equal(formatPracticeDuration(3_599_999),'59:59');
   assert.equal(formatPracticeDuration(3_600_000),'1:00:00');
   assert.equal(formatPracticeDuration(27_906_000),'7:45:06');
+});
+
+test('basic and extended vocabulary put only the main melody on mid tom',() => {
+  assert.equal(usesMidTomVocabularyMelody('vocabulary','A'),true);
+  assert.equal(usesMidTomVocabularyMelody('extended','A'),true);
+  assert.equal(usesMidTomVocabularyMelody('vocabulary','B'),false);
+  assert.equal(usesMidTomVocabularyMelody('extended','R'),false);
+  assert.equal(usesMidTomVocabularyMelody('kick','A'),false);
 });
 
 test('extended vocabulary builds each four-triplet bar from its two pattern groups', () => {

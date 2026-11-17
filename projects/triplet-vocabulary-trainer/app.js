@@ -4,7 +4,7 @@ import { renderReducedTripletSequence } from '../rhythm-explorer/reduced-triplet
 import { boostedAudioOutput } from '../shared/audio-output.js?v=20260910-2';
 import { createScreenWakeLock } from '../shared/screen-wake-lock.js?v=20260911-1';
 import { FIXED_DRUM_SAMPLE_KIT_IDS, alternatingClosedHiHatArticulation, closedHiHatMidiNote } from '../shared/drum-sample-orchestration.js?v=20261010-ride-tip-1';
-import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, formatPracticeDuration, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue, vanishCoveredSteps } from './trainer-core.js?v=20261114-session-timer-1';
+import { EXTENDED_PATTERNS, TRIPLET_MASKS, calibratedVisualTime, calibrationOffsetSeconds, choosePatternAvoiding, commitPracticeMisses, consistentCalibrationOffset, createPracticeScore, expirePracticeHits, expirePracticeTargets, fatBeatsVelocityProfile, formatPracticeDuration, midiPracticeHitAccepted, nextCardStartEvent, practiceAccuracy, practiceTimingWindows, practiceTouchExceededThreshold, randomChoiceWithEmphasis, randomExtendedPatternPair, randomTripletMasks, recoveryHitTarget, recoveryPulseRoles, rideCompingTimekeeper, rideCompingVelocityProfile, rolesForExtendedBar, rolesForFatBeats, rolesForKickVocabulary, rolesForKickVocabulary12, rolesForKickPolyrhythm, kickVocabularyBreakBar, rolesForKickVocabulary2, rolesForRideVocabulary, rolesForTripletMasks, scorePracticeTap, systematicPatternCombinations, systematicPatternStep, trainerEventPosition, trainerPlaybackPlan, trainerResumeEventNumber, tripletMasksForRoles, updateAuditionQueue, usesMidTomVocabularyMelody, vanishCoveredSteps } from './trainer-core.js?v=20261116-mid-tom-vocabulary-1';
 
 const MELODIES = [
   ['A','B','B','A','B','B'], ['A','B','A','A','B','B'], ['A','A','B','A','B','B'],
@@ -45,6 +45,7 @@ const ALL_MELODY_INDEXES = MELODIES.map((_, index) => index);
 const ALL_EXTENDED_INDEXES = EXTENDED_PATTERNS.map((_,index) => index);
 let sampleKit = null;
 let kickSampleKit = null;
+let midTomSampleKit = null;
 let closedHatTipSampleKit = null;
 let closedHatEdgeSampleKit = null;
 let pedalHatChickSampleKit = null;
@@ -1564,6 +1565,27 @@ function scheduleKick(time,velocity) {
   oscillator.onended = () => scheduledSources.delete(oscillator);
   scheduledSources.add(oscillator);
 }
+function scheduleMidTom(time,velocity) {
+  if (velocity <= 0) return;
+  if (midiOutput) { scheduleMidi(47,velocity,time,.1); return; }
+  if (trackScheduledSource(midTomSampleKit?.schedule(audioContext, {
+    velocity,
+    time,
+    destination:boostedAudioOutput(audioContext)
+  }))) return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(190,time);
+  oscillator.frequency.exponentialRampToValueAtTime(105,time+.13);
+  gain.gain.setValueAtTime(Math.max(.02,velocity/127*.5),time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+.2);
+  oscillator.connect(gain).connect(boostedAudioOutput(audioContext));
+  oscillator.start(time);
+  oscillator.stop(time+.21);
+  oscillator.onended = () => scheduledSources.delete(oscillator);
+  scheduledSources.add(oscillator);
+}
 function scheduleRide(time,velocity) {
   if (velocity <= 0) return;
   if (midiOutput) { scheduleMidi(51,velocity,time,.12); return; }
@@ -1758,6 +1780,7 @@ function scheduleEvent() {
   });
   if (playbackPlan.pattern) {
     if (trainerMode === 'ride') scheduleRide(nextEventTime,rideMix.ride);
+    else if (!recoveryCards[slot] && usesMidTomVocabularyMelody(trainerMode,role)) scheduleMidTom(nextEventTime,velocity);
     else if (kickVocabulary && (role === 'A' || role === 'K')) scheduleKick(nextEventTime,velocity);
     else scheduleSnare(nextEventTime,velocity);
   }
@@ -1852,6 +1875,16 @@ async function preparePedalHatSamples(normalVelocity,accentVelocity) {
     console.warn('Using synthesized pedal hi-hat fallback.',error);
   }
 }
+async function prepareVocabularyMidTomSamples(normalVelocity) {
+  if (midiOutput || !['vocabulary','extended'].includes(trainerMode)) return;
+  try {
+    midTomSampleKit ||= await sampleLibrary.getKit({ kitId:FIXED_DRUM_SAMPLE_KIT_IDS.midTomCenter });
+    await midTomSampleKit.prepare(audioContext,[normalVelocity]);
+  } catch (error) {
+    midTomSampleKit = null;
+    console.warn('Using synthesized mid-tom fallback.',error);
+  }
+}
 async function prepareAudio() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) throw new Error('Web Audio is unavailable in this browser.');
@@ -1861,6 +1894,7 @@ async function prepareAudio() {
   const [ghost, normal, accent] = velocityValues();
   const requested = { ghost, normal, accent };
   await preparePedalHatSamples(normal,accent);
+  await prepareVocabularyMidTomSamples(normal);
   if (!$('#drums').checked) {
     activeVelocities = requested;
     return;
