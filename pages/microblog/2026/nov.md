@@ -85,3 +85,17 @@ Went to lunch with Calvin at HuHut. Great food and less expensive than Denny's o
 I went out to my parent's place this afternoon and gave my mom a few presents for her birthday. She liked them. Even the antique we found that wasn't on her list.
 
 Tracey and I watched The Cleaner. Samual L. Jackson, Ed Harris, and Eva Mendes. Pretty good. Tracey's super tired from not really sleeping last night. She fell asleap for a few minutes...
+
+## 15 NOV 2026 Sun - Eva Schnider
+
+Tracey and I went into Spokane to get coffee and shop before the Eva Schnider event. We got some interesting snacks for grandma at the World Market.
+
+The Eva Schnider talk was incredible. She's one of the last surviving people to have been to Auchwitz, and at an age that she can recall the experience. There are other stories of people much too young to remember; some even *born* in Auchwitz. She was 11 and she's incredibly lucid at 93 now. He father was arrested and disappeared. Then her mother and her hid for years. Finally, they were arrested and sent to Auchwitz. Miracle #1 was that the crematoriam had been blown up in a revolt just a few weeks earlier and their train was the first to *not* be sent to the gas chambers. Somehow she and her mother did know about the chambers and what would likely happen to them. He mother told her to "breath deeply" to make it quick. They weren't killed upon arriving. Sometime later, her mother was called out and sent to another camp. She was completely alone at 11. She survived the Death March. Our question to her was whether she saw any hint of compassion from the Germans. She didn't get to it, but her miracle #2 was an example. A soldier gave her a little bag of powdered sugar on the march. She went to Mauhausen and was told that she'd be put in the brothel. Her miracle #3 was that a doctor got her discharged from that. She instead went to a textile factory. Another compassion example happened on her 12th birthday. A guard left a piece of bread with jelly on her bed. Finally, she was liberated from there two days before the war ended. Both her parents survived too. They moved to Switzerland and then to the States. She married and her husband only recently died, after 68 years of marriage. She starded talking about her story a few years ago. It was quite an experience to listen to her.
+
+## 16 NOV 2026 Mon - YouTube
+
+I have 1200 subscribers and 3050 watch hours on my channel. I need 4000 by February to monitize. I have a small list of video ideas. Today I recorded a short one on using the BOSS foot switch instead of a drop clutch for the hi-hat. I also recorded myself doing the kick 1+2 patterns for my progress check-in video. Next, extended vocabulary. Then ride patterns (I think the same vocabulary). And then "fat beats" with some new patterns. Then I'm done with that chapter of the course. I'm really enjoying the JP Bouvet stuff. It's a bit over my head, but I feel like Drumeo is too "beginner." ❤️
+
+## 17 NOV 2026 Tue - Gig Harbor
+
+We drove to Gig Harbor today. The funeral is tomorrow.
